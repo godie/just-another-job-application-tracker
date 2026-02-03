@@ -3,35 +3,29 @@
 This is a modern Job Application Tracker built using React, TypeScript, and Tailwind CSS. The project follows Test-Driven Development (TDD) principles, utilizing Vitest and React Testing Library for comprehensive unit and component testing.The application manages job applications locally, with an architecture designed for seamless integration with external services like Google Sheets.
 
 # Project Status
-**Completion: 90%**
+**Completion: 95%**
 
-This project is feature-complete for its core functionality. Based on the project [recommendations](./RECOMMENDATIONS.md), 36 out of 38 planned features have been implemented and are fully tested. Recent additions include full dark mode support, improved UI with sidebar navigation, and comprehensive test coverage improvements.
+This project is feature-complete for its core functionality. Based on the project [recommendations](./RECOMMENDATIONS.md), 41 out of 41 planned features have been implemented and are fully tested. Recent additions include state management with Zustand, full internationalization, and a community support system.
 
 ## Recent Updates
-- **Search Filter Debounce Fix**: Fixed debounce implementation for search filter to prevent interference with sync logic
-  - Search debounce now properly skips on mount to avoid unnecessary calls
-  - Fixed sync logic to prevent infinite loops and interference with debounce
-  - All 348 tests now passing (30 test files)
+- **Zustand State Management**: Migrated from prop-drilling to a robust state management system using Zustand stores for applications, opportunities, preferences, and authentication.
+- **Full Internationalization (i18n)**: Implementation of `i18next` providing a completely bilingual experience (English/Spanish) across the entire application, including dynamic translations for statuses and field types.
+- **Support & Suggestions System**: Added a new Support page featuring a community suggestion form backed by a lightweight PHP + SQLite backend with numeric CAPTCHA protection.
+- **Direct ATS Search**: New feature on the Opportunities page that generates targeted Google search queries for major Applicant Tracking Systems (Ashby, Greenhouse, Lever, Workable, Workday, etc.).
+- **Insights Page Improvements**: Fixed interview event detection logic and added new "Interviews by Type" chart
+  - Correctly identifies all interview event types (screener_call, technical_interview, hiring_manager, etc.)
+  - Added comprehensive interview type breakdown visualization
 - **Mobile-First Responsive Design**: Complete mobile optimization with card-based views, compact metrics, and responsive header
   - Header adapts by screen size: logo icon (< 768px), "JAJAT" text (768-1023px), full title (≥ 1024px)
   - Login button shows Google "G" icon on mobile for space efficiency
   - Metrics summary displays 3 cards in a single row on mobile with compact styling
   - Application table switches to card view on mobile (< 768px) and table view on desktop
-- **Insights Page Improvements**: Fixed interview event detection logic and added new "Interviews by Type" chart
-  - Correctly identifies all interview event types (screener_call, technical_interview, hiring_manager, etc.)
-  - Added comprehensive interview type breakdown visualization
-- **Type System Improvements**: Unified FieldDefinition types, fixed TypeScript compatibility issues with verbatimModuleSyntax
-- **Storage Key Consistency**: Standardized storage keys (jobTrackerData) for production compatibility
-- **Test Fixes**: Fixed 3 failing tests related to field definitions and column expectations
-- **Default Preferences**: Updated DEFAULT_PREFERENCES to include all fields by default for better UX
-- **Dark Mode**: Full dark mode implementation with persistent theme preference
-- **Sidebar Navigation**: Clean sidebar navigation with theme toggle and opportunities badge
-- **Test Infrastructure**: Migrated from jsdom to happy-dom, achieving 100% test pass rate (348 tests passing)
-- **UI Improvements**: All components now support dark mode with consistent styling
+- **Test Infrastructure**: Achieved 100% test pass rate (366 tests passing) with migration to `happy-dom`.
 
 ## Next Steps
-- Analytics dashboard / Insights page enhancements
-- Export/import functionality
+- AI-Assisted job matching and resume optimization
+- Browser notifications for interviews and follow-ups
+- Export to PDF/CSV and enhanced data import
 
 For a detailed feature breakdown, please see the [recommendations document](./RECOMMENDATIONS.md).
 
@@ -40,10 +34,12 @@ The project is built on the following modern technologies:
 
 | Category | Technology | Purpose |
 |----------|-----------|----------|
-| Frontend | React (Hooks & Functional Components) | User Interface |
-| Language | TypeScript | Strong Typing and Scalability |
-| Styling | Tailwind CSS | Utility-First CSS Framework and Responsive Design |
-| Tooling | Vite | Modern Frontend Build Tool |
+| Frontend | React 19 (Hooks & Functional Components) | User Interface |
+| State Management | Zustand | Lightweight and Scalable State Management |
+| Internationalization | i18next & react-i18next | Full Multi-language Support (EN/ES) |
+| Language | TypeScript 5.9+ | Strong Typing and Scalability |
+| Styling | Tailwind CSS 4 | Modern Utility-First CSS Framework |
+| Tooling | Vite 7 | High-performance Frontend Build Tool |
 | Testing | Vitest & React Testing Library | Test Runner and Component Testing (TDD) |
 | Authentication | @react-oauth/google | Google OAuth Integration |
 
@@ -145,9 +141,10 @@ In the project directory, you can run:
 - Google OAuth Authentication: Implements secure Google authentication using `@react-oauth/google` library with backend cookie support for token storage
 - **Google Sheets Integration**: One-way sync to Google Sheets with automatic spreadsheet creation, sync status tracking, and error handling
 - **Chrome Extension**: Capture job opportunities from LinkedIn, Greenhouse, and AshbyHQ with automatic data extraction and sync with the web app
-- **Opportunities Page**: Separate view for managing captured job opportunities before converting them to applications
-- **Manual Opportunity Creation**: Add opportunities directly from the web app with a full-featured form
-- **Bidirectional Extension Sync**: Real-time synchronization between Chrome extension and web app
+- **Opportunities Page**: Separate view for managing captured job opportunities before converting them to applications.
+- **Direct ATS Search**: Integrated tool to search for job openings directly on major ATS platforms (Ashby, Greenhouse, Lever, etc.) using optimized Google queries.
+- **Manual Opportunity Creation**: Add opportunities directly from the web app with a full-featured form.
+- **Bidirectional Extension Sync**: Real-time synchronization between Chrome extension and web app.
 - **Configurable Settings Page**: Comprehensive settings with multiple sections:
   - **Table Fields Configuration**: Show/hide and reorder columns in the applications table
   - **Default View Selection**: Choose your preferred view (Table, Timeline, Kanban, Calendar) when opening the app
@@ -157,6 +154,8 @@ In the project directory, you can run:
 - Footer: Displays version information, attribution, and links to Terms of Service and Privacy Policy
 - **Legal Pages**: Bilingual Terms of Service and Privacy Policy pages with language switcher (English/Spanish, default: English)
 - **Minimalist UI with Sidebar**: A clean, minimalist UI with a sidebar for easy navigation between pages (Applications, Opportunities, Settings, Insights)
+- **Internationalization (i18n)**: Fully bilingual interface (English/Spanish) with automatic language detection and manual override.
+- **Support & Suggestions**: Dedicated support page for community feedback and donations (Buy Me a Coffee).
 - **Dark Theme Support**: Full dark mode implementation with persistent theme preference stored in localStorage. Theme toggle switch with sun/moon icons available in the sidebar. All components support dark mode styling.
 - **Insights Page**: Analytics dashboard with comprehensive statistics and visualizations:
   - Total applications, interviews, rejections, and rejection percentage metrics
@@ -183,7 +182,7 @@ Supported interview stages include: Application Submitted, Screener Call, First 
 ## Security & Authentication
 - Secure Cookie Storage: Google OAuth tokens are stored in secure, HTTP-only cookies managed by PHP backend.
 - OAuth 2.0 Flow: Full OAuth 2.0 implementation with access token management.
-- Backend Integration: PHP endpoints for secure cookie handling (set and read).
+- **Backend Integration**: PHP endpoints for secure cookie handling and community suggestions.
 - Google Sheets API Scope: OAuth includes Google Sheets API scope for spreadsheet synchronization.
 - **Legal Compliance**: Complete Terms of Service and Privacy Policy pages required for Google OAuth verification and production deployment.
 
@@ -351,6 +350,12 @@ job-application-tracker/
 │   │   └── InsightsPage.tsx     // Page for displaying insights and analytics.
 │   ├── layouts/
 │   │   └── MainLayout.tsx       // Main layout with sidebar navigation and header, supports dark mode.
+│   ├── stores/                  // Zustand state management stores
+│   │   ├── applicationsStore.ts // Global applications state and actions
+│   │   ├── opportunitiesStore.ts// Global opportunities state and actions
+│   │   ├── preferencesStore.ts  // User preferences and settings state
+│   │   ├── authStore.ts         // Authentication state management
+│   │   └── index.ts             // Store exports
 │   ├── types/                   // TypeScript type definitions organized by domain
 │   │   ├── applications.ts      // Job application and interview event types
 │   │   ├── opportunities.ts     // Job opportunity types
@@ -484,8 +489,8 @@ The React app automatically calls these endpoints when:
 The project includes comprehensive test coverage:
 
 ```
-Test Files: 30 passed (30)
-Tests: 348 passed (348)
+Test Files: 34 passed (34)
+Tests: 366 passed (366)
 ```
 
 ### Test Coverage Includes:
@@ -511,6 +516,10 @@ Tests: 348 passed (348)
 - **Component Testing**: React Testing Library for user-centric tests
 - **Mocking**: Comprehensive mocks for localStorage, Google OAuth, and API endpoints
 - All tests can be run with `npm test` or `npm run test:watch` for TDD workflow
+
+## AI Agent Integration
+
+This project is optimized for collaboration with AI agents. We include an [AGENTS.md](./AGENTS.md) file that provides specific context, coding standards, and architectural guidelines to help AI assistants contribute effectively to the codebase while maintaining consistency and quality.
 
 ## Git Pre-Commit Hook
 

@@ -384,6 +384,35 @@ export const migrateApplicationData = (oldApp: any): JobApplication => {
 - [x] Improve responsive breakpoints and touch targets
 - [x] Optimize spacing and typography for mobile devices
 
+### Phase 12 (Completed): Internationalization & Localization ✅
+- [x] Implement `i18next` and `react-i18next` for framework-level i18n
+- [x] Create bilingual translation files (English/Spanish)
+- [x] Implement automatic language detection (browser/localStorage)
+- [x] Add dynamic translation for statuses, interview stages, and field types
+- [x] Update all UI components to use translation hooks
+- [x] Comprehensive test coverage for bilingual legal pages
+
+### Phase 13 (Completed): Community Support & Suggestions ✅
+- [x] Create a dedicated Support page with donation links
+- [x] Implement a suggestions form for community feedback
+- [x] Build a lightweight PHP backend for suggestion storage (SQLite)
+- [x] Implement a numeric CAPTCHA system to prevent automated spam
+- [x] Add bilingual support for the suggestion system
+
+### Phase 14 (Completed): Direct ATS Search ✅
+- [x] Implement Direct ATS Search component on Opportunities page
+- [x] Support major platforms: Ashby, Greenhouse, Lever, Workable, Workday, Teamtailor, iCIMS
+- [x] Add configurable search filters (roles, keywords, location)
+- [x] Persistence of search filters in user preferences
+- [x] "Search All" functionality with delayed tab opening
+
+### Phase 15 (Completed): State Management Migration ✅
+- [x] Implement Zustand for global state management
+- [x] Create dedicated stores: `applicationsStore`, `opportunitiesStore`, `preferencesStore`, `authStore`
+- [x] Migrate all core components from prop-drilling to store-based access
+- [x] Implement middleware for local storage persistence within stores
+- [x] Centralize data migration and sanitization logic in the store layer
+
 **Future Enhancements for Chrome Extension:**
 - [x] Support for additional job boards:
   - [x] Greenhouse (greenhouse.io) ✅
@@ -555,21 +584,21 @@ export const useAppStore = create<AppState>((set) => ({
 41. ✅ **Performance optimizations** with React.memo for presentational components (StatCard, ViewSwitcher, BottomNav, Footer, StatusBarChart, InterviewBarChart)
 
 **Immediate Next Steps:**
-1. **State Management Implementation** - Consider Context API or Zustand for centralized state management
-2. Chrome Extension enhancements:
+1. **Export/Import Functionality**: Support for exporting data to CSV/JSON and importing from other trackers.
+2. **AI-Assisted Features**: Integration with LLMs for resume matching, cover letter suggestions, and interview preparation.
+3. **Enhanced Security**: Optional encryption for data stored in localStorage and sensitive field masking.
+4. **Chrome Extension enhancements**:
    - Extension detection and installation prompt
    - Video mini-tutorial for extension usage
-3. Export/import functionality
 
 **Future Enhancements:**
-- Insights Page
-- Advanced analytics and insights
-- Mobile app version
-- Real-time collaboration
-- Email notifications for upcoming interviews
-- Chrome Extension support for additional job boards (Lever, Workday, Greenhouse, Indeed, Glassdoor, etc.)
-- Batch job capture from multiple sources
-- Direct application submission from extension
+- **Push Notifications**: Browser-based alerts for upcoming interviews or follow-up tasks.
+- **Document Management**: Ability to upload and link specific resume versions or cover letters to each application (stored as Blobs or via external storage).
+- **Advanced Analytics**: More detailed funnel analysis and time-to-hire metrics.
+- **Mobile app version**: Progressive Web App (PWA) support or native mobile application.
+- **Real-time collaboration**: Shared boards for teams or referral tracking.
+- **Email notifications**: Periodic summaries and reminders for upcoming events.
+- **Additional Extractors**: Support for Indeed, Glassdoor, and specialized tech job boards.
 - **Web Accessibility (WCAG 2.1 compliance)** - See section below for detailed status and recommendations
 - **User Profile Page** - Profile management page with basic user information:
   - User name and email
