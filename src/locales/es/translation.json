@@ -257,6 +257,19 @@
       "added": "¡La oportunidad \"{{position}}\" en {{company}} ha sido añadida!",
       "convertError": "Error al convertir la oportunidad en aplicación. Por favor, inténtalo de nuevo.",
       "addError": "Error al añadir la oportunidad. Por favor, inténtalo de nuevo."
+    },
+    "atsSearch": {
+      "title": "Búsqueda Directa en ATS",
+      "subtitle": "Evita las limitaciones de LinkedIn buscando directamente en las plataformas de las empresas.",
+      "roles": "Roles",
+      "keywords": "Palabras Clave",
+      "location": "Ubicación",
+      "search": "Buscar",
+      "searchAll": "Buscar en Todos",
+      "settings": "Configurar Filtros de Búsqueda",
+      "placeholderRoles": "ej. \"software engineer\" OR \"frontend\"",
+      "placeholderKeywords": "ej. \"hiring\" OR \"apply\"",
+      "placeholderLocation": "ej. \"remoto\" OR \"España\""
     }
   },
   "filters": {

@@ -30,7 +30,7 @@ const SettingsPageContent: React.FC<SettingsPageProps> = () => {
   const resetPreferences = usePreferencesStore((state) => state.resetPreferences);
   
   const [hasChanges, setHasChanges] = useState(false);
-  const [activeSection, setActiveSection] = useState<'fields' | 'view' | 'date' | 'custom' | 'interviewing'>('fields');
+  const [activeSection, setActiveSection] = useState<'fields' | 'view' | 'date' | 'custom' | 'interviewing' | 'atsSearch'>('fields');
   const [editingCustomField, setEditingCustomField] = useState<FieldDefinition | null>(null);
   const [customFieldForm, setCustomFieldForm] = useState<Partial<FieldDefinition>>({
     label: '',
@@ -214,6 +214,7 @@ const SettingsPageContent: React.FC<SettingsPageProps> = () => {
     { id: 'date' as const, label: t('settings.sections.date'), icon: '📅' },
     { id: 'custom' as const, label: t('settings.sections.custom'), icon: '➕' },
     { id: 'interviewing' as const, label: t('settings.sections.interviewing'), icon: '🎯' },
+    { id: 'atsSearch' as const, label: t('opportunities.atsSearch.title'), icon: '🔍' },
   ];
 
   return (
@@ -621,6 +622,70 @@ const SettingsPageContent: React.FC<SettingsPageProps> = () => {
                   <p className="text-sm">{t('settings.custom.noCustom')}</p>
                 </div>
               )}
+            </div>
+          )}
+
+          {/* ATS Search Section */}
+          {activeSection === 'atsSearch' && (
+            <div>
+              <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">{t('opportunities.atsSearch.settings')}</h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
+                {t('opportunities.atsSearch.subtitle')}
+              </p>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    {t('opportunities.atsSearch.roles')}
+                  </label>
+                  <input
+                    type="text"
+                    value={preferences.atsSearch?.roles || ''}
+                    onChange={(e) => {
+                      updatePreferences({
+                        atsSearch: { ...preferences.atsSearch!, roles: e.target.value }
+                      });
+                      setHasChanges(true);
+                    }}
+                    placeholder={t('opportunities.atsSearch.placeholderRoles')}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    {t('opportunities.atsSearch.keywords')}
+                  </label>
+                  <input
+                    type="text"
+                    value={preferences.atsSearch?.keywords || ''}
+                    onChange={(e) => {
+                      updatePreferences({
+                        atsSearch: { ...preferences.atsSearch!, keywords: e.target.value }
+                      });
+                      setHasChanges(true);
+                    }}
+                    placeholder={t('opportunities.atsSearch.placeholderKeywords')}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    {t('opportunities.atsSearch.location')}
+                  </label>
+                  <input
+                    type="text"
+                    value={preferences.atsSearch?.location || ''}
+                    onChange={(e) => {
+                      updatePreferences({
+                        atsSearch: { ...preferences.atsSearch!, location: e.target.value }
+                      });
+                      setHasChanges(true);
+                    }}
+                    placeholder={t('opportunities.atsSearch.placeholderLocation')}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  />
+                </div>
+              </div>
             </div>
           )}
 

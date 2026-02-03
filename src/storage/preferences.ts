@@ -34,6 +34,8 @@ export const getPreferences = (): UserPreferences => {
 
     const customInterviewEvents = parsed.customInterviewEvents ?? DEFAULT_PREFERENCES.customInterviewEvents;
 
+    const atsSearch = parsed.atsSearch ?? DEFAULT_PREFERENCES.atsSearch;
+
     return {
       enabledFields,
       columnOrder,
@@ -41,6 +43,7 @@ export const getPreferences = (): UserPreferences => {
       defaultView,
       dateFormat,
       customInterviewEvents,
+      atsSearch,
     };
   } catch (error) {
     console.error('Error loading preferences from localStorage:', error);
