@@ -15,7 +15,7 @@ const Footer: React.FC<FooterProps> = ({ version }) => {
         <p className="text-center text-sm text-gray-600 dark:text-gray-400">
             <Trans
               i18nKey="common.footer.vibecoded"
-              values={{ version, year: new Date().getFullYear() }}
+              values={{ version, year: currentYear }}
               components={{
                 link: <a className="text-blue-500 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300" href="https://github.com/godie" target="_blank" rel="noopener noreferrer" />
               }}
@@ -34,4 +34,3 @@ const Footer: React.FC<FooterProps> = ({ version }) => {
 Footer.displayName = 'Footer';
 
 export default memo(Footer);
-

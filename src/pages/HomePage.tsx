@@ -13,6 +13,7 @@ import {
   DEFAULT_FIELDS,
   type JobApplication,
 } from '../utils/localStorage';
+import type { TableColumn } from '../types/table';
 import AddJobForm from '../components/AddJobComponent';
 import GoogleSheetsSync from '../components/GoogleSheetsSync';
 import packageJson from '../../package.json';
@@ -131,7 +132,7 @@ const HomePageContent: React.FC<HomePageContentProps> = () => {
     return () => {
       window.removeEventListener('message', handleMessage);
     };
-  }, [loadApplications, loadPreferences, showSuccess]);
+  }, [loadApplications, loadPreferences, showSuccess, t]);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -315,26 +316,30 @@ const HomePageContent: React.FC<HomePageContentProps> = () => {
     });
   }, [applicationsWithParsedDates, filters]);
 
-  const tableColumns = useMemo(() => {
+  const tableColumns: TableColumn[] = useMemo(() => {
+    const buildColumn = (id: string, fallbackLabel: string): TableColumn => ({
+      id,
+      label: t(`fields.${id}`, fallbackLabel),
+    });
+
     if (!preferences) {
-      return DEFAULT_FIELDS.map((field) => t(`fields.${field.id}`, field.label));
+      return DEFAULT_FIELDS.map((field) => buildColumn(field.id, field.label));
     }
 
     const enabledSet = new Set(preferences.enabledFields);
 
-    // Map from id to label using DEFAULT_FIELDS first, then custom fields
-    const fieldById = new Map<string, string>();
+    const fieldById = new Map<string, TableColumn>();
     DEFAULT_FIELDS.forEach((field) => {
-      fieldById.set(field.id, t(`fields.${field.id}`, field.label));
+      fieldById.set(field.id, buildColumn(field.id, field.label));
     });
     preferences.customFields.forEach((field) => {
-      fieldById.set(field.id, field.label);
+      fieldById.set(field.id, { id: field.id, label: field.label });
     });
 
     return preferences.columnOrder
       .filter((id) => enabledSet.has(id))
       .map((id) => fieldById.get(id))
-      .filter((label): label is string => Boolean(label));
+      .filter((column): column is TableColumn => Boolean(column));
   }, [preferences, t]);
 
   const renderCurrentView = () => {

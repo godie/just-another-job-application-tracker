@@ -4,6 +4,14 @@ import '@testing-library/jest-dom';
 import './tests/google-oauth-mock';
 import { vi } from 'vitest';
 
+declare global {
+  // Flag picked up in components to avoid real network calls while testing.
+  var __TEST__: boolean | undefined;
+}
+
+const globalWithTestFlag = globalThis as typeof globalThis & { __TEST__?: boolean };
+globalWithTestFlag.__TEST__ = true;
+
 // Mock react-i18next
 vi.mock('react-i18next', () => {
   const translations: Record<string, string> = {
@@ -94,14 +102,26 @@ vi.mock('react-i18next', () => {
   "support.donationsDesc": "If this tool has been useful to you and you want to support its maintenance and new features, consider buying us a coffee.",
   "support.buyMeACoffee": "Buy Me a Coffee",
   "support.suggestions": "Suggestions",
-  "support.suggestionsDesc": "Your ideas become \"prompts\" that you can send to me (Jules) to implement improvements.",
+  "support.suggestionsDesc": "Share your ideas directly with us. Every submission goes into a secure queue so we can review it later.",
   "support.suggestionType": "Suggestion type",
   "support.explanation": "Explanation",
   "support.explanationPlaceholder": "Tell us more about your idea or the problem you found...",
-  "support.saveLocally": "Save locally",
-  "support.copyForJules": "Copy for Jules",
+  "support.submit": "Send suggestion",
+  "support.submitting": "Sending...",
+  "support.submitSuccess": "Thanks! Your suggestion was sent.",
+  "support.submitError": "We couldn't send your suggestion. Please try again in a moment.",
+  "support.submitInfo": "Suggestions are stored on a lightweight PHP + SQLite queue that we download and process manually.",
+  "support.captchaLabel": "Captcha",
+  "support.captchaDesc": "Enter the digits displayed to prove you're human.",
+  "support.captchaRefresh": "New code",
+  "support.captchaPlaceholder": "Enter digits",
+  "support.captchaLoading": "Loading...",
+  "support.captchaRequired": "Please complete the captcha before sending your suggestion.",
+  "support.captchaError": "We couldn't generate the captcha. Refresh and try again.",
+  "support.explanationRequired": "Please describe your idea before sending it.",
+  "support.errorGeneric": "Something went wrong. Please try again later.",
   "support.howItWorks": "How does it work?",
-  "support.howItWorksDesc": "Since I don't have a centralized database, your suggestions are saved in your browser. By clicking <strong>\"Copy for Jules\"</strong>, a special text will be generated that you can paste to me in our next interaction. That way I can understand exactly what you need!",
+  "support.howItWorksDesc": "We now store suggestions in a lightweight server queue. Each submission uses a short <strong>numeric captcha</strong> to keep bots away so the server doesn't get flooded.",
   "support.types.ui-ux": "UI/UX",
   "support.types.functionality": "Functionality",
   "support.types.bug": "Bug",
@@ -310,9 +330,11 @@ vi.mock('react-i18next', () => {
   "fields.role": "Position"
 };
 
+  type TranslationValues = Record<string, string | number | undefined>;
+
   return {
     useTranslation: () => ({
-      t: (key: string, options?: any) => {
+      t: (key: string, options?: TranslationValues) => {
         let result = translations[key] || key;
         if (options) {
           if (options.count !== undefined) {
@@ -322,8 +344,9 @@ vi.mock('react-i18next', () => {
              if (key === 'home.showing') return options.count === 1 ? `Showing 1 of ${options.total} applications` : `Showing ${options.count} of ${options.total} applications`;
              if (key === 'opportunities.showing') return options.count === 1 ? `Showing 1 of ${options.total} opportunities` : `Showing ${options.count} of ${options.total} opportunities`;
           }
-          Object.keys(options).forEach(optKey => {
-            result = result.replace('{{' + optKey + '}}', String(options[optKey]));
+          Object.keys(options).forEach((optKey) => {
+            const value = options[optKey];
+            result = result.replace('{{' + optKey + '}}', value !== undefined ? String(value) : '');
           });
         }
         return result;
@@ -337,11 +360,20 @@ vi.mock('react-i18next', () => {
       type: '3rdParty',
       init: () => {},
     },
-    Trans: ({ i18nKey, values, children }: any) => {
+    Trans: ({
+      i18nKey,
+      values,
+      children,
+    }: {
+      i18nKey: string;
+      values?: TranslationValues;
+      children?: React.ReactNode;
+    }) => {
       let result = translations[i18nKey] || i18nKey || '';
       if (values) {
-        Object.keys(values).forEach(optKey => {
-          result = result.replace('{{' + optKey + '}}', String(values[optKey]));
+        Object.keys(values).forEach((optKey) => {
+          const value = values[optKey];
+          result = result.replace('{{' + optKey + '}}', value !== undefined ? String(value) : '');
         });
       }
 

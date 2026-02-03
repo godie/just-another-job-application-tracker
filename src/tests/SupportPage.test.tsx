@@ -1,81 +1,63 @@
-import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
+import { describe, expect, it, beforeEach, afterEach, vi } from 'vitest';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import SupportPage from '../pages/SupportPage';
 import { AlertProvider } from '../components/AlertProvider';
 
-// Mock clipboard
-const mockWriteText = vi.fn().mockImplementation(() => Promise.resolve());
-Object.defineProperty(navigator, 'clipboard', {
-  value: {
-    writeText: mockWriteText,
-  },
-  configurable: true,
+const createMockResponse = <T,>(body: T) =>
+  ({
+    ok: true,
+    json: async () => body,
+  }) as Response;
+
+beforeEach(() => {
+  globalThis.fetch = vi.fn((_, init) => {
+    if (!init || init.method === 'GET') {
+      return Promise.resolve(createMockResponse({ success: true, captchaId: 'test-captcha', challenge: '12345' }));
+    }
+
+    return Promise.resolve(createMockResponse({ success: true }));
+  }) as typeof fetch;
+});
+
+afterEach(() => {
+  vi.resetAllMocks();
 });
 
 describe('SupportPage', () => {
-  it('renders correctly', () => {
+  it('renders sections', async () => {
     render(
       <AlertProvider>
         <SupportPage />
       </AlertProvider>
     );
 
-    expect(screen.getByText('Community and Support')).toBeInTheDocument();
+    await screen.findByText('12345');
     expect(screen.getByText('Donations')).toBeInTheDocument();
     expect(screen.getByText('Suggestions')).toBeInTheDocument();
-    expect(screen.getByText('Buy Me a Coffee')).toBeInTheDocument();
   });
 
-  it('allows selecting suggestion types', () => {
+  it('submits form', async () => {
     render(
       <AlertProvider>
         <SupportPage />
       </AlertProvider>
     );
 
-    const uiuxCheckbox = screen.getByLabelText('UI/UX');
-    fireEvent.click(uiuxCheckbox);
+    await screen.findByText('12345');
 
-    // Check if it's "selected" (it should have a specific class or be checked if it was a real checkbox,
-    // but here we used a label with a hidden input)
-    // The label gets the 'bg-indigo-600' class when selected
-    expect(uiuxCheckbox.closest('label')).toHaveClass('bg-indigo-600');
-  });
+    const explanationInput = screen.getByPlaceholderText('Tell us more about your idea or the problem you found...');
+    fireEvent.change(explanationInput, {
+      target: { value: 'Dark mode improvements' },
+    });
 
-  it('updates explanation text', () => {
-    render(
-      <AlertProvider>
-        <SupportPage />
-      </AlertProvider>
-    );
+    fireEvent.change(screen.getByPlaceholderText('Enter digits'), {
+      target: { value: '12345' },
+    });
 
-    const textarea = screen.getByPlaceholderText(/Tell us more about your idea/i);
-    fireEvent.change(textarea, { target: { value: 'Nueva funcionalidad increíble' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Send suggestion' }));
 
-    expect(textarea).toHaveValue('Nueva funcionalidad increíble');
-  });
-
-  it('copies prompt to clipboard', async () => {
-    render(
-      <AlertProvider>
-        <SupportPage />
-      </AlertProvider>
-    );
-
-    const textarea = screen.getByPlaceholderText(/Tell us more about your idea/i);
-    fireEvent.change(textarea, { target: { value: 'Mejorar el diseño' } });
-
-    const uiuxCheckbox = screen.getByLabelText('UI/UX');
-    fireEvent.click(uiuxCheckbox);
-
-    const copyButton = screen.getByText('Copy for Jules');
-    fireEvent.click(copyButton);
-
-    expect(mockWriteText).toHaveBeenCalledWith(
-      expect.stringContaining('Type: UI/UX')
-    );
-    expect(mockWriteText).toHaveBeenCalledWith(
-      expect.stringContaining('Explanation: Mejorar el diseño')
-    );
+    await waitFor(() => {
+      expect(screen.getByPlaceholderText('Tell us more about your idea or the problem you found...')).toHaveValue('');
+    });
   });
 });

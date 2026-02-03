@@ -3,6 +3,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import ApplicationCard from './ApplicationCard';
 import type { JobApplication } from '../types/applications';
+import type { TableColumn } from '../types/table';
 
 vi.mock('dompurify', () => ({
   default: { sanitize: (html: string) => html },
@@ -26,9 +27,9 @@ const columnToKeyMap: Record<string, keyof JobApplication> = {
   link: 'link',
 };
 
-const getCellValue = (item: JobApplication, column: string): string => {
-  const n = column.toLowerCase().replace(/ /g, '').replace(/-/g, '');
-  const key = columnToKeyMap[n];
+const getCellValue = (item: JobApplication, columnId: string): string => {
+  const normalized = columnId.toLowerCase().replace(/ /g, '').replace(/-/g, '');
+  const key = columnToKeyMap[normalized];
   return key ? String(item[key] ?? '') : '';
 };
 
@@ -51,8 +52,11 @@ const mockApplication: JobApplication = {
 describe('ApplicationCard', () => {
   const mockOnEdit = vi.fn();
   const mockOnDeleteRequest = vi.fn();
-  const primaryColumns = ['Position', 'Company', 'Status'];
-  const otherColumns = ['Salary', 'Application Date', 'Link'];
+  const otherColumns: TableColumn[] = [
+    { id: 'salary', label: 'Salary' },
+    { id: 'applicationDate', label: 'Application Date' },
+    { id: 'link', label: 'Link' },
+  ];
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -62,7 +66,6 @@ describe('ApplicationCard', () => {
     render(
       <ApplicationCard
         item={mockApplication}
-        primaryColumns={primaryColumns}
         otherColumns={otherColumns}
         onEdit={mockOnEdit}
         onDeleteRequest={mockOnDeleteRequest}
@@ -78,7 +81,6 @@ describe('ApplicationCard', () => {
     render(
       <ApplicationCard
         item={mockApplication}
-        primaryColumns={primaryColumns}
         otherColumns={otherColumns}
         onEdit={mockOnEdit}
         onDeleteRequest={mockOnDeleteRequest}
@@ -93,7 +95,6 @@ describe('ApplicationCard', () => {
     render(
       <ApplicationCard
         item={mockApplication}
-        primaryColumns={primaryColumns}
         otherColumns={otherColumns}
         onEdit={mockOnEdit}
         onDeleteRequest={mockOnDeleteRequest}
@@ -112,7 +113,6 @@ describe('ApplicationCard', () => {
     render(
       <ApplicationCard
         item={mockApplication}
-        primaryColumns={primaryColumns}
         otherColumns={otherColumns}
         onEdit={mockOnEdit}
         onDeleteRequest={mockOnDeleteRequest}
@@ -131,7 +131,6 @@ describe('ApplicationCard', () => {
     render(
       <ApplicationCard
         item={mockApplication}
-        primaryColumns={primaryColumns}
         otherColumns={otherColumns}
         onEdit={mockOnEdit}
         onDeleteRequest={mockOnDeleteRequest}
@@ -158,7 +157,6 @@ describe('ApplicationCard', () => {
     render(
       <ApplicationCard
         item={emptyApp}
-        primaryColumns={primaryColumns}
         otherColumns={otherColumns}
         onEdit={mockOnEdit}
         onDeleteRequest={mockOnDeleteRequest}
@@ -175,7 +173,6 @@ describe('ApplicationCard', () => {
     render(
       <ApplicationCard
         item={mockApplication}
-        primaryColumns={primaryColumns}
         otherColumns={otherColumns}
         onEdit={mockOnEdit}
         onDeleteRequest={mockOnDeleteRequest}

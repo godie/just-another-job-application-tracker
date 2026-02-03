@@ -10,6 +10,8 @@ interface KanbanViewProps {
   onDelete?: (application: JobApplication) => void;
 }
 
+type TranslateFn = (key: string, options?: Record<string, unknown>) => string;
+
 const DEFAULT_STATUS_ORDER = [
   'Applied',
   'Interviewing',
@@ -20,25 +22,26 @@ const DEFAULT_STATUS_ORDER = [
 ];
 
 // Determine the current interview stage for applications in "Interviewing" status
-const getInterviewingSubStatus = (app: JobApplication, t: (key: string, options?: any) => string): string | null => {
+const getInterviewingSubStatus = (app: JobApplication, t: TranslateFn): string | null => {
   if (app.status !== 'Interviewing' || !app.timeline || app.timeline.length === 0) {
     return null;
   }
 
   // Sort timeline events by date (ascending - earliest first)
-  const sortedEvents = [...app.timeline].sort((a, b) => 
+  const sortedEvents = [...app.timeline].sort((a, b) =>
     parseLocalDate(a.date).getTime() - parseLocalDate(b.date).getTime()
   );
 
   // First, look for the next active event (scheduled or pending) - the upcoming step
   const activeEvent = sortedEvents.find(
-    (event) => (event.status === 'scheduled' || event.status === 'pending') && 
+    (event) => (event.status === 'scheduled' || event.status === 'pending') &&
                parseLocalDate(event.date) >= new Date()
   );
 
   const getDisplayName = (type: string, customName?: string) => {
       if (type === 'custom' && customName) return customName;
-      return t(`insights.interviewTypes.${type}`, type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()));
+      //type = type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+      return t(`insights.interviewTypes.${type}`);
   };
 
   if (activeEvent) {
@@ -50,7 +53,7 @@ const getInterviewingSubStatus = (app: JobApplication, t: (key: string, options?
   const completedEvents = sortedEvents
     .filter((event) => event.status === 'completed')
     .sort((a, b) => parseLocalDate(b.date).getTime() - parseLocalDate(a.date).getTime());
-  
+
   if (completedEvents.length > 0) {
     return getDisplayName(completedEvents[0].type, completedEvents[0].customTypeName);
   }
@@ -72,7 +75,7 @@ const KanbanView: React.FC<KanbanViewProps> = ({ applications, onEdit, onDelete 
 
     applications.forEach((app) => {
       let statusKey = app.status || 'Unknown';
-      
+
       // For "Interviewing" status, check if we should create a sub-status based on timeline
       if (app.status === 'Interviewing') {
         const subStatus = getInterviewingSubStatus(app, t);
@@ -80,7 +83,7 @@ const KanbanView: React.FC<KanbanViewProps> = ({ applications, onEdit, onDelete 
           statusKey = `Interviewing - ${subStatus}`;
         }
       }
-      
+
       statuses.add(statusKey);
       if (!byStatus.has(statusKey)) {
         byStatus.set(statusKey, []);

@@ -2,12 +2,13 @@
 import React, { useState, memo, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { JobApplication } from '../types/applications';
+import type { TableColumn } from '../types/table';
 import ConfirmDialog from './ConfirmDialog';
 import ApplicationTableRow from './ApplicationTableRow';
 import ApplicationCard from './ApplicationCard';
 
 interface ApplicationTableProps {
-    columns: string[];
+    columns: TableColumn[];
     data: JobApplication[];
     onEdit: (application: JobApplication) => void;
     onDelete: (application: JobApplication) => void;
@@ -29,20 +30,25 @@ const columnToKeyMap: Record<string, keyof JobApplication> = {
   'link': 'link',
 };
 
+const PRIMARY_COLUMN_IDS = ['position', 'company', 'status'];
+
 // ⚡ Bolt: Moved static helpers outside the component.
 // These functions do not depend on component state or props, so defining them
 // outside prevents them from being recreated on every render. This reduces
 // garbage collection pressure and improves rendering performance.
-const getCellValue = (item: JobApplication, column: string): string => {
-  const normalizedColumn = column.toLowerCase().replace(/ /g, '').replace(/-/g, '');
+const getCellValue = (item: JobApplication, columnId: string): string => {
+  const directValue = item[columnId as keyof JobApplication];
+  if (typeof directValue === 'string' || typeof directValue === 'number') {
+    return directValue ? String(directValue) : '';
+  }
+
+  if (item.customFields && columnId in item.customFields) {
+    return item.customFields[columnId] ?? '';
+  }
+
+  const normalizedColumn = columnId.toLowerCase().replace(/ /g, '').replace(/-/g, '');
   const key = columnToKeyMap[normalizedColumn];
   return key ? String(item[key] ?? '') : '';
-};
-
-// Get primary columns for mobile view (Position, Company, Status)
-const getPrimaryColumns = (columns: string[]): string[] => {
-  const primary = ['Position', 'Company', 'Status'];
-  return columns.filter(col => primary.includes(col)).slice(0, 3);
 };
 
 const ApplicationTable: React.FC<ApplicationTableProps> = ({ columns, data, onEdit, onDelete }) => {
@@ -58,8 +64,10 @@ const ApplicationTable: React.FC<ApplicationTableProps> = ({ columns, data, onEd
   // re-computed when the `columns` prop changes. This prevents unnecessary
   // array filtering on every render, which is a small but meaningful
   // optimization, especially if the component re-renders frequently.
-  const primaryColumns = useMemo(() => getPrimaryColumns(columns), [columns]);
-  const otherColumns = useMemo(() => columns.filter(col => !primaryColumns.includes(col)), [columns, primaryColumns]);
+  const otherColumns = useMemo(() => {
+    const excluded = new Set(PRIMARY_COLUMN_IDS);
+    return columns.filter(col => !excluded.has(col.id));
+  }, [columns]);
 
   const handleDeleteRequest = useCallback((application: JobApplication) => {
     setDeleteConfirm({ isOpen: true, application });
@@ -86,7 +94,6 @@ const ApplicationTable: React.FC<ApplicationTableProps> = ({ columns, data, onEd
             <ApplicationCard
               key={item.id}
               item={item}
-              primaryColumns={primaryColumns}
               otherColumns={otherColumns}
               onEdit={onEdit}
               onDeleteRequest={handleDeleteRequest}
@@ -103,11 +110,11 @@ const ApplicationTable: React.FC<ApplicationTableProps> = ({ columns, data, onEd
           <tr>
             {columns.map((column) => (
               <th
-                key={column}
+                key={column.id}
                 scope="col"
                 className="px-4 sm:px-6 py-3 text-left text-[11px] sm:text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider bg-indigo-50 dark:bg-indigo-900 whitespace-nowrap"
               >
-                {column}
+                {column.label}
               </th>
             ))}
             <th scope="col" className="relative px-4 sm:px-6 py-3 w-1">

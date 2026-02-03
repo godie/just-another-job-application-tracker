@@ -15,6 +15,7 @@ interface CalendarDay {
 }
 
 const WEEKDAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+type TranslateFn = (key: string, options?: Record<string, unknown>) => string;
 
 const formatMonthYear = (date: Date, locale?: string) =>
   date.toLocaleDateString(locale, { month: 'long', year: 'numeric' });
@@ -40,7 +41,7 @@ const getDaysDifference = (eventDate: Date): number => {
 };
 
 // Format relative time indicator
-const formatRelativeTime = (eventDate: Date, t: (key: string, options?: any) => string): string => {
+const formatRelativeTime = (eventDate: Date, t: TranslateFn): string => {
   const daysDiff = getDaysDifference(eventDate);
   
   if (daysDiff === 0) {
