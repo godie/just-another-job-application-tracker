@@ -1,5 +1,6 @@
 // src/components/AddJobForm.tsx
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { JobApplication, InterviewEvent, InterviewStageType } from '../utils/localStorage';
 import { generateId } from '../utils/localStorage';
 import useKeyboardEscape from '../hooks/useKeyboardEscape';
@@ -68,6 +69,7 @@ const buildTimeline = (data: Omit<JobApplication, 'id'> | JobApplication): Inter
 };
 
 const AddJobForm: React.FC<AddJobFormProps> = ({ onSave, onCancel, initialData }) => {
+  const { t } = useTranslation();
   const isCreationMode = initialData && !initialData.id;
   const isEditing = !!initialData && !!initialData.id;
   
@@ -117,18 +119,18 @@ const AddJobForm: React.FC<AddJobFormProps> = ({ onSave, onCancel, initialData }
     <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center p-4 z-50">
       <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl p-8 overflow-y-auto max-h-[90vh]">
         <h2 className="text-3xl font-bold mb-6 text-indigo-700">
-            {isEditing ? 'Edit Application' : 'Add New Job Application'}
+            {isEditing ? t('form.editTitle') : t('form.addTitle')}
         </h2>
         <form onSubmit={handleSubmit} data-testid="job-form">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             
             {/* Group 1: Required Details */}
             <div className="col-span-full border-b pb-2 mb-4">
-              <p className="font-semibold text-lg text-gray-600">Basic Details</p>
+              <p className="font-semibold text-lg text-gray-600">{t('form.basicDetails')}</p>
             </div>
             
             <label className="block">
-              <span className="text-gray-700 font-medium">Position *</span>
+              <span className="text-gray-700 font-medium">{t('form.position')}</span>
               <input
                 type="text"
                 name="position"
@@ -141,7 +143,7 @@ const AddJobForm: React.FC<AddJobFormProps> = ({ onSave, onCancel, initialData }
             </label>
             
             <label className="block">
-              <span className="text-gray-700 font-medium">Company *</span>
+              <span className="text-gray-700 font-medium">{t('form.company')}</span>
               <input
                 type="text"
                 name="company"
@@ -155,11 +157,11 @@ const AddJobForm: React.FC<AddJobFormProps> = ({ onSave, onCancel, initialData }
 
             {/* Group 2: Dates and Status */}
             <div className="col-span-full border-b pb-2 mb-4 mt-4">
-              <p className="font-semibold text-lg text-gray-600">Tracking & Timeline</p>
+              <p className="font-semibold text-lg text-gray-600">{t('form.trackingTimeline')}</p>
             </div>
 
             <label className="block">
-              <span className="text-gray-700 font-medium">Application Date *</span>
+              <span className="text-gray-700 font-medium">{t('form.applicationDate')}</span>
               <input
                 type="date"
                 data-testid="form-application-date"
@@ -172,7 +174,7 @@ const AddJobForm: React.FC<AddJobFormProps> = ({ onSave, onCancel, initialData }
             </label>
 
             <label className="block">
-              <span className="text-gray-700 font-medium">Status *</span>
+              <span className="text-gray-700 font-medium">{t('form.status')}</span>
               <select
                 name="status"
                 value={formData.status || 'Applied'}
@@ -182,13 +184,13 @@ const AddJobForm: React.FC<AddJobFormProps> = ({ onSave, onCancel, initialData }
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border bg-white"
               >
                 {['Applied', 'Interviewing', 'Offer', 'Rejected', 'Hold'].map(s => (
-                  <option key={s} value={s}>{s}</option>
+                  <option key={s} value={s}>{t(`statuses.${s.toLowerCase()}`)}</option>
                 ))}
               </select>
             </label>
 
             <label className="block">
-              <span className="text-gray-700 font-medium">Salary / Range</span>
+              <span className="text-gray-700 font-medium">{t('form.salary')}</span>
               <input
                 type="text"
                 name="salary"
@@ -199,7 +201,7 @@ const AddJobForm: React.FC<AddJobFormProps> = ({ onSave, onCancel, initialData }
             </label>
 
             <label className="block">
-              <span className="text-gray-700 font-medium">Interview Date</span>
+              <span className="text-gray-700 font-medium">{t('form.interviewDate')}</span>
               <input
                 type="date"
                 name="interviewDate"
@@ -210,7 +212,7 @@ const AddJobForm: React.FC<AddJobFormProps> = ({ onSave, onCancel, initialData }
             </label>
 
             <label className="block">
-              <span className="text-gray-700 font-medium">Follow-up Date</span>
+              <span className="text-gray-700 font-medium">{t('form.followUpDate')}</span>
               <input
                 type="date"
                 name="followUpDate"
@@ -221,7 +223,7 @@ const AddJobForm: React.FC<AddJobFormProps> = ({ onSave, onCancel, initialData }
             </label>
 
             <label className="block">
-              <span className="text-gray-700 font-medium">Link (Job Posting)</span>
+              <span className="text-gray-700 font-medium">{t('form.link')}</span>
               <input
                 type="url"
                 name="link"
@@ -233,11 +235,11 @@ const AddJobForm: React.FC<AddJobFormProps> = ({ onSave, onCancel, initialData }
 
             {/* Group 3: Auxiliary Details */}
             <div className="col-span-full border-b pb-2 mb-4 mt-4">
-              <p className="font-semibold text-lg text-gray-600">Source & Contact</p>
+              <p className="font-semibold text-lg text-gray-600">{t('form.sourceContact')}</p>
             </div>
             
             <label className="block">
-              <span className="text-gray-700 font-medium">Platform</span>
+              <span className="text-gray-700 font-medium">{t('form.platform')}</span>
               <select
                 data-testid="form-platform"
                 name="platform"
@@ -246,13 +248,13 @@ const AddJobForm: React.FC<AddJobFormProps> = ({ onSave, onCancel, initialData }
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border bg-white"
               >
                 {['LinkedIn', 'Indeed', 'Company Website', 'Referral', 'Other'].map(p => (
-                  <option key={p} value={p}>{p}</option>
+                  <option key={p} value={p}>{t(`form.platforms.${p}`)}</option>
                 ))}
               </select>
             </label>
 
             <label className="block">
-              <span className="text-gray-700 font-medium">Contact Name (Recruiter/Hiring Manager)</span>
+              <span className="text-gray-700 font-medium">{t('form.contactName')}</span>
               <input
                 type="text"
                 name="contactName"
@@ -264,7 +266,7 @@ const AddJobForm: React.FC<AddJobFormProps> = ({ onSave, onCancel, initialData }
             </label>
             
             <label className="block col-span-full">
-              <span className="text-gray-700 font-medium">Notes</span>
+              <span className="text-gray-700 font-medium">{t('form.notes')}</span>
               <textarea
                 name="notes"
                 value={formData.notes}
@@ -291,14 +293,14 @@ const AddJobForm: React.FC<AddJobFormProps> = ({ onSave, onCancel, initialData }
               className="px-6 py-2 border border-gray-300 rounded-md shadow-sm text-gray-700 hover:bg-gray-50 transition"
               data-testid="form-cancel"
             >
-              Cancel
+              {t('common.cancel')}
             </button>
             <button
               type="submit"
               className="px-6 py-2 bg-indigo-600 text-white rounded-md shadow-lg hover:bg-indigo-700 transition"
               data-testid="form-save"
             >
-              {isEditing ? 'Save Changes' : 'Save Application'}
+              {isEditing ? t('form.saveChanges') : t('form.saveApplication')}
             </button>
           </div>
         </form>

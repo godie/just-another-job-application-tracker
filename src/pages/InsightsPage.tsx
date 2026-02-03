@@ -1,5 +1,6 @@
 // src/pages/InsightsPage.tsx
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import StatCard from '../components/StatCard';
 import StatusBarChart from '../components/StatusBarChart';
 import InterviewBarChart from '../components/InterviewBarChart';
@@ -23,25 +24,8 @@ const isInterviewEvent = (eventType: string): boolean => {
   return interviewTypes.includes(eventType);
 };
 
-/**
- * Get display name for interview event type
- */
-const getInterviewTypeDisplayName = (eventType: string): string => {
-  const typeNames: Record<string, string> = {
-    'screener_call': 'Screener Call',
-    'first_contact': 'First Contact',
-    'technical_interview': 'Technical Interview',
-    'code_challenge': 'Code Challenge',
-    'live_coding': 'Live Coding',
-    'hiring_manager': 'Hiring Manager',
-    'system_design': 'System Design',
-    'cultural_fit': 'Cultural Fit',
-    'final_round': 'Final Round',
-  };
-  return typeNames[eventType] || eventType;
-};
-
 const InsightsPage: React.FC = () => {
+  const { t } = useTranslation();
   const applications = useApplicationsStore((state) => state.applications);
 
   // Get all interview events
@@ -90,32 +74,32 @@ const InsightsPage: React.FC = () => {
 
   const interviewTypeChartData = Object.keys(interviewTypeData)
     .map(key => ({
-      name: getInterviewTypeDisplayName(key),
+      name: t(`insights.interviewTypes.${key}`, key),
       value: interviewTypeData[key],
     }))
     .sort((a, b) => b.value - a.value); // Sort by count descending
 
   return (
     <div className="max-w-7xl mx-auto">
-      <h1 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">Insights</h1>
+      <h1 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">{t('insights.title')}</h1>
       <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4 mb-8">
-        <StatCard title="Total Applications" value={totalApplications} compact />
-        <StatCard title="Total Interviews" value={totalInterviews} compact />
-        <StatCard title="Rejected Applications" value={rejectedApplications} compact />
-        <StatCard title="Rejection Percentage" value={rejectionPercentage} compact />
+        <StatCard title={t('insights.totalApplications')} value={totalApplications} compact />
+        <StatCard title={t('insights.totalInterviews')} value={totalInterviews} compact />
+        <StatCard title={t('insights.rejectedApplications')} value={rejectedApplications} compact />
+        <StatCard title={t('insights.rejectionPercentage')} value={rejectionPercentage} compact />
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
         <StatusBarChart data={statusChartData} />
         <InterviewBarChart 
           data={interviewChartData} 
-          title="Interviews by Application Status"
+          title={t('insights.interviewsByStatus')}
         />
       </div>
       {interviewTypeChartData.length > 0 && (
         <div className="mb-8">
           <InterviewBarChart 
             data={interviewTypeChartData} 
-            title="Interviews by Type"
+            title={t('insights.interviewsByType')}
           />
         </div>
       )}

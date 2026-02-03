@@ -1,5 +1,6 @@
 // src/components/Header.tsx
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useGoogleLogin } from '@react-oauth/google';
 import { checkLoginStatus, setLoginStatus } from '../utils/localStorage';
 import { setAuthCookie, clearAuthCookie } from '../utils/api';
@@ -10,6 +11,7 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({ onToggleSidebar }) => {
+  const { t, i18n } = useTranslation();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [theme, setTheme] = useState<'light' | 'dark'>(() => {
@@ -156,6 +158,29 @@ const Header: React.FC<HeaderProps> = ({ onToggleSidebar }) => {
         </h1>
       </div>
       <div className="flex items-center gap-4">
+        {/* Language Switcher */}
+        <div className="flex items-center gap-2 mr-2">
+          <button
+            onClick={() => i18n.changeLanguage('en')}
+            className={`text-xs font-bold px-1.5 py-0.5 rounded transition-colors ${
+              i18n.language.startsWith('en')
+                ? 'bg-indigo-600 text-white'
+                : 'text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700'
+            }`}
+          >
+            EN
+          </button>
+          <button
+            onClick={() => i18n.changeLanguage('es')}
+            className={`text-xs font-bold px-1.5 py-0.5 rounded transition-colors ${
+              i18n.language.startsWith('es')
+                ? 'bg-indigo-600 text-white'
+                : 'text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700'
+            }`}
+          >
+            ES
+          </button>
+        </div>
         {/* Theme Toggle */}
         <div className="flex items-center gap-3">
           {/* Sun Icon (Light Mode) */}
@@ -218,12 +243,12 @@ const Header: React.FC<HeaderProps> = ({ onToggleSidebar }) => {
           disabled={isLoading}
         >
           {isLoading ? (
-            <span className="hidden md:inline">Loading...</span>
+            <span className="hidden md:inline">{t('common.loading')}</span>
           ) : isLoggedIn ? (
-            "Logout"
+            t('common.logout')
           ) : (
             <>
-              <span className="hidden md:inline">Login with Google</span>
+              <span className="hidden md:inline">{t('common.loginWithGoogle')}</span>
               {/* Google "G" icon for mobile */}
               <svg 
                 className="md:hidden w-6 h-6" 

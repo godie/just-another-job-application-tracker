@@ -1,0 +1,386 @@
+{
+  "landing": {
+    "heroTitle": "Domina tu Búsqueda de Empleo",
+    "heroSubtitle": "La herramienta definitiva para rastrear aplicaciones, gestionar entrevistas y conseguir el trabajo de tus sueños.",
+    "getStarted": "Empezar",
+    "features": "Funcionalidades",
+    "feature1Title": "Múltiples Perspectivas",
+    "feature1Desc": "Visualiza tus aplicaciones a través de las vistas de Tabla, Kanban, Línea de Tiempo y Calendario.",
+    "feature2Title": "Extensión de Chrome",
+    "feature2Desc": "Captura detalles de empleos directamente desde LinkedIn, Greenhouse y más con un solo clic.",
+    "feature3Title": "Análisis Potente",
+    "feature3Desc": "Rastrea tu embudo, analiza el rendimiento en las entrevistas y ve dónde estás teniendo éxito.",
+    "feature4Title": "Sincronización con Google Sheets",
+    "feature4Desc": "Mantén tus datos seguros y sincronizados con tus propias Hojas de Cálculo de Google.",
+    "roadmap": "Lo que está por venir",
+    "ready": "¿Listo para acelerar tu carrera?",
+    "enterApp": "Entrar a la Aplicación",
+    "footer": "© 2025 Job Application Tracker. Domina tu camino profesional."
+  },
+  "common": {
+    "footer": {
+      "vibecoded": "Vibecoded con amor ❤️ por <link>godie</link> con cursor v{{version}} ({{year}})",
+      "terms": "Términos de Servicio",
+      "privacy": "Privacidad"
+    },
+    "loading": "Cargando...",
+    "loginSuccess": "¡Inicio de sesión exitoso con Google!",
+    "loginError": "Inicio de sesión exitoso, pero falló el almacenamiento seguro de las credenciales.",
+    "loginFailed": "Error al iniciar sesión con Google. Por favor, inténtalo de nuevo.",
+    "logoutSuccess": "¡Sesión cerrada con éxito!",
+    "logoutPartial": "Sesión cerrada (algunas credenciales pueden permanecer en el servidor).",
+    "logout": "Cerrar sesión",
+    "loginWithGoogle": "Iniciar sesión con Google",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "add": "Añadir",
+    "actions": "Acciones",
+    "status": "Estado",
+    "company": "Empresa",
+    "position": "Posición",
+    "date": "Fecha",
+    "example": "Ejemplo",
+    "anyAport": "¡Cualquier aporte es enormemente agradecido! ❤️",
+    "next": "Siguiente",
+    "previous": "Anterior",
+    "goToPage": "Ir a la página {{page}}",
+    "status_types": {
+      "completed": "Completado",
+      "scheduled": "Programado",
+      "cancelled": "Cancelado",
+      "pending": "Pendiente"
+    }
+  },
+  "statuses": {
+    "applied": "Aplicado",
+    "interviewing": "Entrevistando",
+    "offer": "Oferta",
+    "rejected": "Rechazado",
+    "withdrawn": "Retirado",
+    "hold": "En espera"
+  },
+  "fields": {
+    "position": "Posición",
+    "company": "Empresa",
+    "status": "Estado",
+    "applicationDate": "Fecha de Aplicación",
+    "timeline": "Línea de tiempo",
+    "notes": "Notas",
+    "link": "Enlace",
+    "platform": "Plataforma",
+    "salary": "Salario",
+    "contactName": "Contacto",
+    "followUpDate": "Seguimiento"
+  },
+  "nav": {
+    "applications": "Aplicaciones",
+    "opportunities": "Oportunidades",
+    "settings": "Ajustes",
+    "insights": "Análisis",
+    "support": "Soporte",
+    "about": "Acerca de"
+  },
+  "home": {
+    "pipeline": "Pipeline de Aplicaciones",
+    "addEntry": "+ Añadir Entrada",
+    "showing": "Mostrando <bold>{{count}}</bold> de {{total}} aplicaciones",
+    "noApplications": "¡Usa el botón \"+ Añadir Entrada\" para empezar a rastrear tus aplicaciones!",
+    "metrics": {
+      "applications": "Aplicaciones",
+      "interviews": "Entrevistas",
+      "offers": "Ofertas"
+    },
+    "deleteConfirm": {
+      "title": "Eliminar Aplicación",
+      "titleFor": "Eliminar aplicación para {{position}} en {{company}}",
+      "message": "¿Estás seguro de que quieres eliminar la aplicación para \"{{position}}\" en {{company}}? Esta acción la marcará como eliminada."
+    },
+    "success": {
+      "captured": "¡Nueva oportunidad de trabajo capturada desde LinkedIn!",
+      "deleted": "La aplicación \"{{position}}\" en {{company}} ha sido marcada como eliminada."
+    }
+  },
+  "support": {
+    "title": "Comunidad y Soporte",
+    "subtitle": "Ayúdanos a mejorar la herramienta o apoya el desarrollo.",
+    "donations": "Donaciones",
+    "donationsDesc": "Si esta herramienta te ha sido útil y quieres apoyar su mantenimiento y nuevas funcionalidades, considera invitarnos a un café.",
+    "buyMeACoffee": "Buy Me a Coffee",
+    "suggestions": "Sugerencias",
+    "suggestionsDesc": "Comparte tus ideas directamente con nosotros. Cada envío va a una cola segura que revisamos manualmente.",
+    "suggestionType": "Tipo de sugerencia",
+    "explanation": "Explicación",
+    "explanationPlaceholder": "Cuéntanos más sobre tu idea o el problema que encontraste...",
+    "submit": "Enviar sugerencia",
+    "submitting": "Enviando...",
+    "submitSuccess": "¡Gracias! Tu sugerencia fue enviada.",
+    "submitError": "No pudimos enviar tu sugerencia. Intenta de nuevo en un momento.",
+    "submitInfo": "Las sugerencias se guardan en un pequeño sistema PHP + SQLite que descargamos y revisamos manualmente.",
+    "captchaLabel": "Captcha",
+    "captchaDesc": "Escribe los dígitos mostrados para demostrar que eres humano.",
+    "captchaRefresh": "Nuevo código",
+    "captchaPlaceholder": "Ingresa los dígitos",
+    "captchaLoading": "Cargando...",
+    "captchaRequired": "Completa el captcha antes de enviar la sugerencia.",
+    "captchaError": "No pudimos generar el captcha. Recarga e intenta de nuevo.",
+    "explanationRequired": "Describe tu idea antes de enviarla.",
+    "errorGeneric": "Ocurrió un error. Intenta nuevamente más tarde.",
+    "howItWorks": "¿Cómo funciona?",
+    "howItWorksDesc": "Ahora guardamos las sugerencias en una cola ligera del servidor. Cada envío usa un <strong>captcha numérico</strong> para evitar bots y que no saturen el servidor.",
+    "types": {
+      "ui-ux": "UI/UX",
+      "functionality": "Funcionalidad",
+      "bug": "Bug",
+      "feature": "Feature",
+      "improvements": "Mejoras"
+    }
+  },
+  "settings": {
+    "title": "Ajustes",
+    "subtitle": "Personaliza tu experiencia de seguimiento de aplicaciones. Todos los cambios se guardan localmente en tu navegador.",
+    "sections": {
+      "fields": "Campos de Tabla",
+      "view": "Vista Predeterminada",
+      "date": "Formato de Fecha",
+      "dateDesc": "Elige cómo se deben mostrar las fechas en toda la aplicación.",
+      "custom": "Campos Personalizados",
+      "interviewing": "Eventos de Entrevista"
+    },
+    "saveChanges": "Guardar Cambios",
+    "resetDefault": "Restablecer valores predeterminados",
+    "unsavedChanges": "Tienes cambios sin guardar",
+    "fields": {
+      "title": "Configuración de Campos de Aplicación",
+      "desc": "Elige qué columnas quieres ver en tu tabla de Aplicaciones y ajusta su orden.",
+      "required": "Campo principal obligatorio",
+      "optional": "Campo opcional",
+      "custom": "Personalizado"
+    },
+    "view": {
+      "title": "Vista Predeterminada",
+      "desc": "Elige qué vista se debe mostrar al abrir la página de Aplicaciones.",
+      "table": "Tabla mejorada con filtros",
+      "timeline": "Flujo de entrevistas cronológico",
+      "kanban": "Vista de tablero agrupada por estado",
+      "calendar": "Calendario mensual de entrevistas"
+    },
+    "custom": {
+      "title": "Campos Personalizados",
+      "desc": "Crea tus propios campos para rastrear información adicional sobre tus aplicaciones.",
+      "add": "Añadir Nuevo Campo Personalizado",
+      "edit": "Editar Campo Personalizado",
+      "label": "Etiqueta del Campo *",
+      "type": "Tipo de Campo *",
+      "options": "Opciones (una por línea) *",
+      "optionsDesc": "Introduce una opción por línea. Aparecerán como opciones de menú desplegable.",
+      "required": "Campo obligatorio",
+      "update": "Actualizar Campo",
+      "addField": "Añadir Campo",
+      "noCustom": "No hay campos personalizados todavía. ¡Crea uno arriba para empezar!",
+      "types": {
+        "text": "Texto",
+        "date": "Fecha",
+        "number": "Número",
+        "select": "Selección (Desplegable)",
+        "checkbox": "Casilla de verificación",
+        "url": "URL"
+      }
+    },
+    "interviewing": {
+      "title": "Eventos de Entrevista",
+      "desc": "Gestiona tipos de eventos de entrevista personalizados que estarán disponibles al crear eventos en el cronograma.",
+      "add": "Añadir Nuevo Evento de Entrevista",
+      "edit": "Editar Evento de Entrevista",
+      "label": "Etiqueta del Evento *",
+      "update": "Actualizar Evento",
+      "addEvent": "Añadir Evento",
+      "noEvents": "No hay eventos de entrevista personalizados todavía. ¡Crea uno arriba para empezar!"
+    },
+    "success": "¡Ajustes guardados con éxito!"
+  },
+  "insights": {
+    "title": "Análisis",
+    "applicationsByStatus": "Aplicaciones por Estado",
+    "totalApplications": "Total de Aplicaciones",
+    "totalInterviews": "Total de Entrevistas",
+    "rejectedApplications": "Aplicaciones Rechazadas",
+    "rejectionPercentage": "Porcentaje de Rechazo",
+    "interviewsByStatus": "Entrevistas por Estado de Aplicación",
+    "interviewsByType": "Entrevistas por Tipo",
+    "interviewTypes": {
+      "screener_call": "Llamada de cribado",
+      "first_contact": "Primer contacto",
+      "technical_interview": "Entrevista técnica",
+      "code_challenge": "Prueba de código",
+      "live_coding": "Live Coding",
+      "hiring_manager": "Hiring Manager",
+      "system_design": "Diseño de sistemas",
+      "cultural_fit": "Fit cultural",
+      "final_round": "Ronda Final",
+      "application_submitted": "Aplicación Enviada",
+      "offer": "Oferta",
+      "rejected": "Rechazado",
+      "withdrawn": "Retirado",
+      "custom": "Personalizado"
+    }
+  },
+  "opportunities": {
+    "title": "Oportunidades Interesantes",
+    "subtitle": "Oportunidades de empleo capturadas de LinkedIn o añadidas manualmente. Haz clic en \"Aplicar\" para convertirlas en aplicaciones.",
+    "addOpportunity": "+ Añadir Oportunidad",
+    "noOpportunities": "No hay oportunidades todavía",
+    "noOpportunitiesDesc": "Instala la extensión de Chrome para capturar oportunidades de empleo de LinkedIn.",
+    "searchPlaceholder": "Buscar oportunidades...",
+    "showing": "Mostrando <bold>{{count}}</bold> de {{total}} oportunidades",
+    "table": {
+      "position": "Posición",
+      "company": "Empresa",
+      "location": "Ubicación",
+      "jobType": "Tipo de empleo",
+      "posted": "Publicado",
+      "captured": "Capturado",
+      "actions": "Acciones"
+    },
+    "actions": {
+      "view": "Ver",
+      "apply": "Aplicar"
+    },
+    "deleteConfirm": {
+      "title": "Eliminar Oportunidad",
+      "message": "¿Estás seguro de que quieres eliminar \"{{position}}\" en {{company}}?"
+    },
+    "success": {
+      "addedToApps": "¡\"{{position}}\" en {{company}} ha sido añadida a tus aplicaciones!",
+      "deleted": "La oportunidad \"{{position}}\" ha sido eliminada.",
+      "added": "¡La oportunidad \"{{position}}\" en {{company}} ha sido añadida!",
+      "convertError": "Error al convertir la oportunidad en aplicación. Por favor, inténtalo de nuevo.",
+      "addError": "Error al añadir la oportunidad. Por favor, inténtalo de nuevo."
+    }
+  },
+  "filters": {
+    "search": "Buscar",
+    "searchPlaceholder": "Buscar por posición, empresa, notas...",
+    "status": "Estado",
+    "include": "Incluir",
+    "includeWithCount": "✓ Incluir ({{count}})",
+    "exclude": "Excluir",
+    "excludeWithCount": "✗ Excluir ({{count}})",
+    "clearStatus": "Limpiar filtros de estado",
+    "platform": "Plataforma",
+    "all": "Todos",
+    "from": "Desde",
+    "to": "Hasta",
+    "clear": "Limpiar"
+  },
+  "views": {
+    "table": "Tabla",
+    "timeline": "Cronograma",
+    "kanban": "Kanban",
+    "calendar": "Calendario"
+  },
+  "kanban": {
+    "noApplications": "No hay aplicaciones todavía.",
+    "startAdding": "Empieza a añadir entradas para verlas organizadas aquí.",
+    "noAppsInStage": "No hay aplicaciones en esta etapa.",
+    "applied": "Aplicado el {{date}}",
+    "timeline": "Línea de tiempo",
+    "more": "+{{count}} más"
+  },
+  "timeline": {
+    "noApplications": "No hay aplicaciones todavía.",
+    "startAdding": "Empieza a añadir entradas para ver el cronograma de entrevistas.",
+    "nextEvent": "Próxima: {{date}}",
+    "noEvents": "Aún no hay eventos en el cronograma.",
+    "expand": "Expandir detalles de la aplicación",
+    "collapse": "Contraer detalles de la aplicación"
+  },
+  "calendar": {
+    "title": "Calendario",
+    "today": "Hoy",
+    "noApplications": "No hay aplicaciones todavía. Añade algunas para verlas en el calendario.",
+    "relative": {
+      "today": "Hoy",
+      "tomorrow": "Mañana",
+      "yesterday": "Ayer",
+      "inDays": "en {{count}} días",
+      "daysAgo": "hace {{count}} días"
+    },
+    "weekdays": {
+      "Sun": "Dom",
+      "Mon": "Lun",
+      "Tue": "Mar",
+      "Wed": "Mié",
+      "Thu": "Jue",
+      "Fri": "Vie",
+      "Sat": "Sáb"
+    }
+  },
+  "sheets": {
+    "title": "Integración con Google Sheets",
+    "loginRequired": "<strong>Sincronización con Google Sheets:</strong> Por favor, inicia sesión con Google para habilitar la sincronización de la hoja de cálculo.",
+    "loginFirst": "Por favor, inicia sesión con Google primero",
+    "status": "Estado",
+    "error": "Error",
+    "synced": "Sincronizado {{time}}",
+    "notSynced": "Aún no sincronizado",
+    "openSheet": "Abrir Hoja de Cálculo →",
+    "changeSheet": "Cambiar Hoja",
+    "createSheetDesc": "Crea una Hoja de Cálculo de Google para sincronizar tus aplicaciones.",
+    "createSheet": "Crear Hoja",
+    "creating": "Creando...",
+    "selectExisting": "Seleccionar Existente",
+    "syncNow": "Sincronizar ahora",
+    "syncing": "Sincronizando...",
+    "spreadsheetCreated": "¡Hoja de cálculo creada! Abriendo en una nueva pestaña...",
+    "syncSuccess": "¡Se ha sincronizado {{count}} aplicación con Google Sheets!",
+    "syncSuccess_plural": "¡Se han sincronizado {{count}} aplicaciones con Google Sheets!",
+    "syncError": "Error al sincronizar los datos",
+    "noSpreadsheet": "No se encontró ninguna hoja de cálculo. Por favor, crea una primero.",
+    "selectTitle": "Seleccionar Hoja de Cálculo Existente",
+    "selectDesc": "Introduce el ID de la hoja de cálculo o la URL completa de Google Sheets",
+    "placeholder": "ID o URL de la Hoja de Cálculo",
+    "set": "Establecer",
+    "setting": "Estableciendo...",
+    "selectSuccess": "¡Hoja de cálculo \"{{title}}\" seleccionada con éxito!",
+    "setError": "Error al establecer la hoja de cálculo"
+  },
+  "form": {
+    "addTitle": "Añadir Nueva Aplicación de Empleo",
+    "addOpportunityTitle": "Añadir Nueva Oportunidad",
+    "editTitle": "Editar Aplicación",
+    "basicDetails": "Detalles Básicos",
+    "trackingTimeline": "Seguimiento y Cronograma",
+    "sourceContact": "Fuente y Contacto",
+    "position": "Posición *",
+    "company": "Empresa *",
+    "applicationDate": "Fecha de Aplicación *",
+    "status": "Estado *",
+    "salary": "Salario / Rango",
+    "interviewDate": "Fecha de Entrevista",
+    "followUpDate": "Fecha de Seguimiento",
+    "link": "Enlace (Anuncio de empleo)",
+    "platform": "Plataforma",
+    "contactName": "Nombre de Contacto (Reclutador/Hiring Manager)",
+    "notes": "Notas",
+    "description": "Descripción",
+    "postedDate": "Fecha de publicación",
+    "saveApplication": "Guardar Aplicación",
+    "saveChanges": "Guardar Cambios",
+    "saveOpportunity": "Guardar Oportunidad",
+    "validation": {
+      "positionRequired": "La posición es obligatoria",
+      "companyRequired": "La empresa es obligatoria",
+      "linkRequired": "El enlace es obligatorio",
+      "invalidUrl": "Por favor, introduce una URL válida"
+    },
+    "platforms": {
+      "LinkedIn": "LinkedIn",
+      "Indeed": "Indeed",
+      "Company Website": "Web de la empresa",
+      "Referral": "Referido",
+      "Other": "Otro"
+    }
+  }
+}

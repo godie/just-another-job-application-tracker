@@ -1,5 +1,6 @@
 // src/components/ViewSwitcher.tsx
 import React, { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export type ViewType = 'table' | 'timeline' | 'kanban' | 'calendar';
 
@@ -9,46 +10,47 @@ interface ViewSwitcherProps {
 }
 
 const ViewSwitcher: React.FC<ViewSwitcherProps> = ({ currentView, onViewChange }) => {
+  const { t } = useTranslation();
   const views = [
     {
       id: 'table' as ViewType,
-      label: 'Table',
+      label: t('views.table'),
       icon: (
         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
         </svg>
       ),
-      description: 'Enhanced table with filters',
+      description: t('settings.view.table'),
     },
     {
       id: 'timeline' as ViewType,
-      label: 'Timeline',
+      label: t('views.timeline'),
       icon: (
         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
       ),
-      description: 'Chronological interview flow',
+      description: t('settings.view.timeline'),
     },
     {
       id: 'kanban' as ViewType,
-      label: 'Kanban',
+      label: t('views.kanban'),
       icon: (
         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2" />
         </svg>
       ),
-      description: 'Board view grouped by status',
+      description: t('settings.view.kanban'),
     },
     {
       id: 'calendar' as ViewType,
-      label: 'Calendar',
+      label: t('views.calendar'),
       icon: (
         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
         </svg>
       ),
-      description: 'Monthly calendar of interviews',
+      description: t('settings.view.calendar'),
     },
   ];
 
@@ -83,4 +85,3 @@ const ViewSwitcher: React.FC<ViewSwitcherProps> = ({ currentView, onViewChange }
 ViewSwitcher.displayName = 'ViewSwitcher';
 
 export default memo(ViewSwitcher);
-

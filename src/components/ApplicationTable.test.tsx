@@ -3,6 +3,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import ApplicationTable from './ApplicationTable';
 import type { JobApplication } from '../utils/localStorage';
+import type { TableColumn } from '../types/table';
 
 // Mock DOMPurify
 vi.mock('dompurify', () => ({
@@ -10,6 +11,8 @@ vi.mock('dompurify', () => ({
     sanitize: (html: string) => html,
   },
 }));
+
+const toColumn = (id: string, label: string): TableColumn => ({ id, label });
 
 const mockApplication: JobApplication = {
   id: '1',
@@ -30,7 +33,12 @@ const mockApplication: JobApplication = {
 describe('ApplicationTable', () => {
   const mockOnEdit = vi.fn();
   const mockOnDelete = vi.fn();
-  const defaultColumns = ['Position', 'Company', 'Status', 'Salary'];
+  const defaultColumns: TableColumn[] = [
+    toColumn('position', 'Position'),
+    toColumn('company', 'Company'),
+    toColumn('status', 'Status'),
+    toColumn('salary', 'Salary'),
+  ];
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -67,7 +75,7 @@ describe('ApplicationTable', () => {
 
     // Check table headers
     defaultColumns.forEach(column => {
-      expect(screen.getByRole('columnheader', { name: column })).toBeInTheDocument();
+      expect(screen.getByRole('columnheader', { name: column.label })).toBeInTheDocument();
     });
 
     // Check table data (should exist in both views, but we're checking desktop view)
@@ -203,7 +211,7 @@ describe('ApplicationTable', () => {
   it('renders link as clickable anchor', () => {
     render(
       <ApplicationTable
-        columns={['Position', 'Link']}
+        columns={[toColumn('position', 'Position'), toColumn('link', 'Link')]}
         data={[mockApplication]}
         onEdit={mockOnEdit}
         onDelete={mockOnDelete}
@@ -288,7 +296,11 @@ describe('ApplicationTable', () => {
 
     render(
       <ApplicationTable
-        columns={['Position', 'Salary', 'Notes']}
+        columns={[
+          toColumn('position', 'Position'),
+          toColumn('salary', 'Salary'),
+          toColumn('notes', 'Notes'),
+        ]}
         data={[emptyApplication]}
         onEdit={mockOnEdit}
         onDelete={mockOnDelete}
@@ -299,4 +311,3 @@ describe('ApplicationTable', () => {
     expect(screen.getAllByText('Software Engineer').length).toBeGreaterThan(0);
   });
 });
-

@@ -1,5 +1,6 @@
 // src/pages/OpportunitiesPage.tsx
 import React, { useState, useEffect, useMemo } from 'react';
+import { useTranslation, Trans } from 'react-i18next';
 import Footer from '../components/Footer';
 import { useAlert } from '../components/AlertProvider';
 import { 
@@ -20,6 +21,7 @@ interface OpportunitiesPageContentProps {
 }
 
 const OpportunitiesPageContent: React.FC<OpportunitiesPageContentProps> = () => {
+  const { t, i18n } = useTranslation();
   const { showSuccess, showError } = useAlert();
   
   // Use Zustand stores
@@ -82,10 +84,10 @@ const OpportunitiesPageContent: React.FC<OpportunitiesPageContentProps> = () => 
       // Remove opportunity
       deleteOpportunity(opportunity.id);
       
-      showSuccess(`"${opportunity.position}" at ${opportunity.company} has been added to your applications!`);
+      showSuccess(t('opportunities.success.addedToApps', { position: opportunity.position, company: opportunity.company }));
     } catch (error) {
       console.error('Error converting opportunity:', error);
-      showError('Failed to convert opportunity to application. Please try again.');
+      showError(t('opportunities.success.convertError'));
     }
   };
 
@@ -111,7 +113,7 @@ const OpportunitiesPageContent: React.FC<OpportunitiesPageContentProps> = () => 
         console.error('Error sending delete message to extension:', error);
       }
       
-      showSuccess(`Opportunity "${opportunity.position}" has been deleted.`);
+      showSuccess(t('opportunities.success.deleted', { position: opportunity.position }));
       setDeleteConfirm({ isOpen: false, opportunity: null });
     }
   };
@@ -119,7 +121,7 @@ const OpportunitiesPageContent: React.FC<OpportunitiesPageContentProps> = () => 
   const handleAddOpportunity = (opportunityData: Omit<JobOpportunity, 'id' | 'capturedDate'>) => {
     try {
       const newOpportunity = addOpportunity(opportunityData);
-      showSuccess(`Opportunity "${opportunityData.position}" at ${opportunityData.company} has been added!`);
+      showSuccess(t('opportunities.success.added', { position: opportunityData.position, company: opportunityData.company }));
       
       // Also sync to chrome.storage.local if extension is available
       // Use window.postMessage to send to content script
@@ -134,7 +136,7 @@ const OpportunitiesPageContent: React.FC<OpportunitiesPageContentProps> = () => 
       }
     } catch (error) {
       console.error('Error adding opportunity:', error);
-      showError('Failed to add opportunity. Please try again.');
+      showError(t('opportunities.success.addError'));
     }
   };
 
@@ -154,7 +156,7 @@ const OpportunitiesPageContent: React.FC<OpportunitiesPageContentProps> = () => 
     if (!dateString) return 'N/A';
     try {
       const date = new Date(dateString);
-      return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+      return date.toLocaleDateString(i18n.language, { year: 'numeric', month: 'short', day: 'numeric' });
     } catch {
       return dateString;
     }
@@ -164,24 +166,24 @@ const OpportunitiesPageContent: React.FC<OpportunitiesPageContentProps> = () => 
     <div className="max-w-7xl mx-auto">
         <div className="mb-6 flex justify-between items-start">
           <div>
-            <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">Interesting Opportunities</h2>
+            <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">{t('opportunities.title')}</h2>
             <p className="text-sm text-gray-600 dark:text-gray-400">
-              Job opportunities captured from LinkedIn or added manually. Click "Apply" to convert them into applications.
+              {t('opportunities.subtitle')}
             </p>
           </div>
           <button
             onClick={() => setIsFormOpen(true)}
             className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 transition duration-150"
           >
-            + Add Opportunity
+            {t('opportunities.addOpportunity')}
           </button>
         </div>
 
         {opportunities.length === 0 ? (
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8 text-center">
-            <p className="text-gray-500 dark:text-gray-400 text-lg mb-2">No opportunities yet</p>
+            <p className="text-gray-500 dark:text-gray-400 text-lg mb-2">{t('opportunities.noOpportunities')}</p>
             <p className="text-gray-400 dark:text-gray-500 text-sm">
-              Install the Chrome extension to capture job opportunities from LinkedIn.
+              {t('opportunities.noOpportunitiesDesc')}
             </p>
           </div>
         ) : (
@@ -189,13 +191,17 @@ const OpportunitiesPageContent: React.FC<OpportunitiesPageContentProps> = () => 
             <div className="mb-4">
               <input
                 type="text"
-                placeholder="Search opportunities..."
+                placeholder={t('opportunities.searchPlaceholder')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full sm:w-64 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
               />
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-                Showing {filteredOpportunities.length} of {opportunities.length} opportunities
+                <Trans
+                  i18nKey="opportunities.showing"
+                  values={{ count: filteredOpportunities.length, total: opportunities.length }}
+                  components={{ bold: <span className="font-semibold text-gray-700 dark:text-gray-300" /> }}
+                />
               </p>
             </div>
 
@@ -205,25 +211,25 @@ const OpportunitiesPageContent: React.FC<OpportunitiesPageContentProps> = () => 
                   <thead className="bg-gray-50 dark:bg-gray-900">
                     <tr>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                        Position
+                        {t('opportunities.table.position')}
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                        Company
+                        {t('opportunities.table.company')}
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                        Location
+                        {t('opportunities.table.location')}
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                        Job Type
+                        {t('opportunities.table.jobType')}
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                        Posted
+                        {t('opportunities.table.posted')}
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                        Captured
+                        {t('opportunities.table.captured')}
                       </th>
                       <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Actions
+                        {t('opportunities.table.actions')}
                       </th>
                     </tr>
                   </thead>
@@ -260,21 +266,21 @@ const OpportunitiesPageContent: React.FC<OpportunitiesPageContentProps> = () => 
                               target="_blank"
                               rel="noopener noreferrer"
                               className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-300"
-                              title="View on LinkedIn"
+                              title={t('opportunities.actions.view')}
                             >
-                              View
+                              {t('opportunities.actions.view')}
                             </a>
                             <button
                               onClick={() => handleApply(opp)}
                               className="text-green-600 dark:text-green-400 hover:text-green-900 dark:hover:text-green-300 font-semibold"
                             >
-                              Apply
+                              {t('opportunities.actions.apply')}
                             </button>
                             <button
                               onClick={() => handleDelete(opp)}
                               className="text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300"
                             >
-                              Delete
+                              {t('common.delete')}
                             </button>
                           </div>
                         </td>
@@ -294,10 +300,13 @@ const OpportunitiesPageContent: React.FC<OpportunitiesPageContentProps> = () => 
       />
       <ConfirmDialog
         isOpen={deleteConfirm.isOpen}
-        title="Delete Opportunity"
-        message={`Are you sure you want to delete "${deleteConfirm.opportunity?.position}" at ${deleteConfirm.opportunity?.company}?`}
-        confirmText="Delete"
-        cancelText="Cancel"
+        title={t('opportunities.deleteConfirm.title')}
+        message={t('opportunities.deleteConfirm.message', {
+          position: deleteConfirm.opportunity?.position,
+          company: deleteConfirm.opportunity?.company
+        })}
+        confirmText={t('common.delete')}
+        cancelText={t('common.cancel')}
         type="danger"
         onConfirm={confirmDelete}
         onCancel={() => setDeleteConfirm({ isOpen: false, opportunity: null })}

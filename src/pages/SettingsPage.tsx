@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import Footer from '../components/Footer';
 import { useAlert } from '../components/AlertProvider';
 import {
@@ -19,6 +20,7 @@ interface SettingsPageProps {
 }
 
 const SettingsPageContent: React.FC<SettingsPageProps> = () => {
+  const { t } = useTranslation();
   const { showSuccess } = useAlert();
   
   // Use Zustand store
@@ -198,7 +200,7 @@ const SettingsPageContent: React.FC<SettingsPageProps> = () => {
   const handleSave = () => {
     // Preferences are already saved automatically by the store
     setHasChanges(false);
-    showSuccess('Settings saved successfully!');
+    showSuccess(t('settings.success'));
   };
 
   // Build ordered list of fields based on columnOrder
@@ -207,19 +209,19 @@ const SettingsPageContent: React.FC<SettingsPageProps> = () => {
     .filter((field): field is FieldDefinition => Boolean(field));
 
   const sections = [
-    { id: 'fields' as const, label: 'Table Fields', icon: '📋' },
-    { id: 'view' as const, label: 'Default View', icon: '👁️' },
-    { id: 'date' as const, label: 'Date Format', icon: '📅' },
-    { id: 'custom' as const, label: 'Custom Fields', icon: '➕' },
-    { id: 'interviewing' as const, label: 'Interview Events', icon: '🎯' },
+    { id: 'fields' as const, label: t('settings.sections.fields'), icon: '📋' },
+    { id: 'view' as const, label: t('settings.sections.view'), icon: '👁️' },
+    { id: 'date' as const, label: t('settings.sections.date'), icon: '📅' },
+    { id: 'custom' as const, label: t('settings.sections.custom'), icon: '➕' },
+    { id: 'interviewing' as const, label: t('settings.sections.interviewing'), icon: '🎯' },
   ];
 
   return (
     <div className="max-w-5xl mx-auto">
         <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-800 dark:text-white dark:text-white mb-2">Settings</h1>
+          <h1 className="text-3xl font-bold text-gray-800 dark:text-white dark:text-white mb-2">{t('settings.title')}</h1>
           <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">
-            Customize your application tracking experience. All changes are saved locally in your browser.
+            {t('settings.subtitle')}
           </p>
         </div>
 
@@ -255,19 +257,19 @@ const SettingsPageContent: React.FC<SettingsPageProps> = () => {
                   : 'bg-gray-200 text-gray-500 dark:text-gray-400 cursor-not-allowed'
               }`}
             >
-              Save Changes
+              {t('settings.saveChanges')}
             </button>
             <button
               type="button"
               onClick={handleReset}
               className="px-4 py-2 rounded-full text-sm font-semibold border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700 transition"
             >
-              Reset to Default
+              {t('settings.resetDefault')}
             </button>
           </div>
           {hasChanges && (
             <span className="text-xs text-amber-600 font-medium">
-              You have unsaved changes
+              {t('settings.unsavedChanges')}
             </span>
           )}
         </div>
@@ -277,9 +279,9 @@ const SettingsPageContent: React.FC<SettingsPageProps> = () => {
           {/* Table Fields Section */}
           {activeSection === 'fields' && (
             <div>
-              <h2 className="text-2xl font-bold text-gray-800 dark:text-white dark:text-white mb-2">Application Fields Configuration</h2>
+              <h2 className="text-2xl font-bold text-gray-800 dark:text-white dark:text-white mb-2">{t('settings.fields.title')}</h2>
               <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400 mb-6">
-                Choose which columns you want to see in your Applications table and adjust their order.
+                {t('settings.fields.desc')}
               </p>
 
               <div className="mt-4 border border-gray-100 rounded-lg divide-y divide-gray-100">
@@ -305,7 +307,7 @@ const SettingsPageContent: React.FC<SettingsPageProps> = () => {
                             htmlFor={`field-${field.id}`}
                             className="text-sm font-medium text-gray-800 dark:text-white"
                           >
-                            {field.label}
+                            {!isCustom ? t(`fields.${field.id}`, field.label) : field.label}
                             {isCustom && (
                               <span className="ml-2 text-xs text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded">
                                 Custom
@@ -313,7 +315,7 @@ const SettingsPageContent: React.FC<SettingsPageProps> = () => {
                             )}
                           </label>
                           <p className="text-xs text-gray-500 dark:text-gray-400">
-                            {field.required ? 'Required core field' : 'Optional field'}
+                            {field.required ? t('settings.fields.required') : t('settings.fields.optional')}
                           </p>
                         </div>
                       </div>
@@ -353,9 +355,9 @@ const SettingsPageContent: React.FC<SettingsPageProps> = () => {
           {/* Default View Section */}
           {activeSection === 'view' && (
             <div>
-              <h2 className="text-2xl font-bold text-gray-800 dark:text-white dark:text-white mb-2">Default View</h2>
+              <h2 className="text-2xl font-bold text-gray-800 dark:text-white dark:text-white mb-2">{t('settings.view.title')}</h2>
               <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400 mb-6">
-                Choose which view should be displayed when you open the Applications page.
+                {t('settings.view.desc')}
               </p>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -371,12 +373,9 @@ const SettingsPageContent: React.FC<SettingsPageProps> = () => {
                     }`}
                   >
                     <div className="text-left">
-                      <div className="font-semibold text-gray-800 dark:text-white capitalize mb-1">{view}</div>
+                      <div className="font-semibold text-gray-800 dark:text-white capitalize mb-1">{t(`views.${view}`)}</div>
                       <div className="text-xs text-gray-500 dark:text-gray-400">
-                        {view === 'table' && 'Enhanced table with filters'}
-                        {view === 'timeline' && 'Chronological interview flow'}
-                        {view === 'kanban' && 'Board view grouped by status'}
-                        {view === 'calendar' && 'Monthly calendar of interviews'}
+                        {t(`settings.view.${view}`)}
                       </div>
                     </div>
                   </button>
@@ -388,9 +387,9 @@ const SettingsPageContent: React.FC<SettingsPageProps> = () => {
           {/* Date Format Section */}
           {activeSection === 'date' && (
             <div>
-              <h2 className="text-2xl font-bold text-gray-800 dark:text-white dark:text-white mb-2">Date Format</h2>
+              <h2 className="text-2xl font-bold text-gray-800 dark:text-white dark:text-white mb-2">{t('settings.sections.date')}</h2>
               <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400 mb-6">
-                Choose how dates should be displayed throughout the application.
+                {t('settings.sections.dateDesc', 'Choose how dates should be displayed throughout the application.')}
               </p>
 
               <div className="space-y-3">
@@ -433,7 +432,7 @@ const SettingsPageContent: React.FC<SettingsPageProps> = () => {
                       />
                       <div className="flex-1">
                         <div className="font-semibold text-gray-800 dark:text-white">{format}</div>
-                        <div className="text-xs text-gray-500 dark:text-gray-400">Example: {example}</div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400">{t('common.example')}: {example}</div>
                       </div>
                     </label>
                   );
@@ -445,20 +444,20 @@ const SettingsPageContent: React.FC<SettingsPageProps> = () => {
           {/* Custom Fields Section */}
           {activeSection === 'custom' && (
             <div>
-              <h2 className="text-2xl font-bold text-gray-800 dark:text-white dark:text-white mb-2">Custom Fields</h2>
-              <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400 mb-6">
-                Create your own fields to track additional information about your applications.
+              <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">{t('settings.custom.title')}</h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
+                {t('settings.custom.desc')}
               </p>
 
               {/* Add/Edit Custom Field Form */}
               <div className="mb-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-700">
                 <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-4">
-                  {editingCustomField ? 'Edit Custom Field' : 'Add New Custom Field'}
+                  {editingCustomField ? t('settings.custom.edit') : t('settings.custom.add')}
                 </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      Field Label *
+                      {t('settings.custom.label')}
                     </label>
                     <input
                       type="text"
@@ -470,7 +469,7 @@ const SettingsPageContent: React.FC<SettingsPageProps> = () => {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      Field Type *
+                      {t('settings.custom.type')}
                     </label>
                     <select
                       value={customFieldForm.type || 'text'}
@@ -483,18 +482,18 @@ const SettingsPageContent: React.FC<SettingsPageProps> = () => {
                       }
                       className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
                     >
-                      <option value="text">Text</option>
-                      <option value="date">Date</option>
-                      <option value="number">Number</option>
-                      <option value="select">Select (Dropdown)</option>
-                      <option value="checkbox">Checkbox</option>
-                      <option value="url">URL</option>
+                      <option value="text">{t('settings.custom.types.text')}</option>
+                      <option value="date">{t('settings.custom.types.date')}</option>
+                      <option value="number">{t('settings.custom.types.number')}</option>
+                      <option value="select">{t('settings.custom.types.select')}</option>
+                      <option value="checkbox">{t('settings.custom.types.checkbox')}</option>
+                      <option value="url">{t('settings.custom.types.url')}</option>
                     </select>
                   </div>
                   {customFieldForm.type === 'select' && (
                     <div className="sm:col-span-2">
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        Options (one per line) *
+                        {t('settings.custom.options')}
                       </label>
                       <textarea
                         value={(customFieldForm.options || []).join('\n')}
@@ -509,7 +508,7 @@ const SettingsPageContent: React.FC<SettingsPageProps> = () => {
                         className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
                       />
                       <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                        Enter one option per line. These will appear as dropdown options.
+                        {t('settings.custom.optionsDesc')}
                       </p>
                     </div>
                   )}
@@ -525,7 +524,7 @@ const SettingsPageContent: React.FC<SettingsPageProps> = () => {
                       className="h-4 w-4 text-indigo-600 border-gray-300 dark:border-gray-600 rounded"
                     />
                     <label htmlFor="required-field" className="text-sm text-gray-700 dark:text-gray-300">
-                      Required field
+                      {t('settings.custom.required')}
                     </label>
                   </div>
                 </div>
@@ -542,7 +541,7 @@ const SettingsPageContent: React.FC<SettingsPageProps> = () => {
                             : 'bg-gray-200 text-gray-500 dark:text-gray-400 cursor-not-allowed'
                         }`}
                       >
-                        Update Field
+                        {t('settings.custom.update')}
                       </button>
                       <button
                         type="button"
@@ -552,7 +551,7 @@ const SettingsPageContent: React.FC<SettingsPageProps> = () => {
                         }}
                         className="px-4 py-2 rounded-md text-sm font-medium border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700"
                       >
-                        Cancel
+                        {t('common.cancel')}
                       </button>
                     </>
                   ) : (
@@ -566,7 +565,7 @@ const SettingsPageContent: React.FC<SettingsPageProps> = () => {
                           : 'bg-gray-200 text-gray-500 dark:text-gray-400 cursor-not-allowed'
                       }`}
                     >
-                      Add Field
+                      {t('settings.custom.addField')}
                     </button>
                   )}
                 </div>
@@ -588,7 +587,7 @@ const SettingsPageContent: React.FC<SettingsPageProps> = () => {
                           </span>
                           {field.required && (
                             <span className="ml-2 text-xs text-red-600 bg-red-50 px-2 py-0.5 rounded">
-                              Required
+                            {t('settings.custom.required')}
                             </span>
                           )}
                         </div>
@@ -604,14 +603,14 @@ const SettingsPageContent: React.FC<SettingsPageProps> = () => {
                           onClick={() => handleEditCustomField(field)}
                           className="px-3 py-1 text-xs font-medium text-indigo-600 border border-indigo-300 rounded hover:bg-indigo-50"
                         >
-                          Edit
+                          {t('common.edit')}
                         </button>
                         <button
                           type="button"
                           onClick={() => handleDeleteCustomField(field.id)}
                           className="px-3 py-1 text-xs font-medium text-red-600 border border-red-300 rounded hover:bg-red-50"
                         >
-                          Delete
+                          {t('common.delete')}
                         </button>
                       </div>
                     </div>
@@ -619,7 +618,7 @@ const SettingsPageContent: React.FC<SettingsPageProps> = () => {
                 </div>
               ) : (
                 <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-                  <p className="text-sm">No custom fields yet. Create one above to get started!</p>
+                  <p className="text-sm">{t('settings.custom.noCustom')}</p>
                 </div>
               )}
             </div>
@@ -628,20 +627,20 @@ const SettingsPageContent: React.FC<SettingsPageProps> = () => {
           {/* Interview Events Section */}
           {activeSection === 'interviewing' && (
             <div>
-              <h2 className="text-2xl font-bold text-gray-800 dark:text-white dark:text-white mb-2">Interview Events</h2>
-              <p className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400 mb-6">
-                Manage custom interview event types that will be available when creating timeline events.
+              <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">{t('settings.interviewing.title')}</h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
+                {t('settings.interviewing.desc')}
               </p>
 
               {/* Add/Edit Interview Event Form */}
               <div className="mb-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-700">
                 <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-4">
-                  {editingInterviewEvent ? 'Edit Interview Event' : 'Add New Interview Event'}
+                  {editingInterviewEvent ? t('settings.interviewing.edit') : t('settings.interviewing.add')}
                 </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      Event Label *
+                      {t('settings.interviewing.label')}
                     </label>
                     <input
                       type="text"
@@ -665,7 +664,7 @@ const SettingsPageContent: React.FC<SettingsPageProps> = () => {
                             : 'bg-gray-200 text-gray-500 dark:text-gray-400 cursor-not-allowed'
                         }`}
                       >
-                        Update Event
+                        {t('settings.interviewing.update')}
                       </button>
                       <button
                         type="button"
@@ -675,7 +674,7 @@ const SettingsPageContent: React.FC<SettingsPageProps> = () => {
                         }}
                         className="px-4 py-2 rounded-md text-sm font-medium border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700"
                       >
-                        Cancel
+                        {t('common.cancel')}
                       </button>
                     </>
                   ) : (
@@ -689,7 +688,7 @@ const SettingsPageContent: React.FC<SettingsPageProps> = () => {
                           : 'bg-gray-200 text-gray-500 dark:text-gray-400 cursor-not-allowed'
                       }`}
                     >
-                      Add Event
+                      {t('settings.interviewing.addEvent')}
                     </button>
                   )}
                 </div>
@@ -714,14 +713,14 @@ const SettingsPageContent: React.FC<SettingsPageProps> = () => {
                           onClick={() => handleEditInterviewEvent(event)}
                           className="px-3 py-1 text-xs font-medium text-indigo-600 border border-indigo-300 rounded hover:bg-indigo-50"
                         >
-                          Edit
+                          {t('common.edit')}
                         </button>
                         <button
                           type="button"
                           onClick={() => handleDeleteInterviewEvent(event.id)}
                           className="px-3 py-1 text-xs font-medium text-red-600 border border-red-300 rounded hover:bg-red-50"
                         >
-                          Delete
+                          {t('common.delete')}
                         </button>
                       </div>
                     </div>
@@ -729,7 +728,7 @@ const SettingsPageContent: React.FC<SettingsPageProps> = () => {
                 </div>
               ) : (
                 <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-                  <p className="text-sm">No custom interview events yet. Create one above to get started!</p>
+                  <p className="text-sm">{t('settings.interviewing.noEvents')}</p>
                 </div>
               )}
             </div>

@@ -1,5 +1,6 @@
 // src/components/TimelineView.tsx
 import React, { useState, useMemo, useEffect, memo } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { JobApplication, InterviewEvent } from '../utils/localStorage';
 import ConfirmDialog from './ConfirmDialog';
 import { parseLocalDate } from '../utils/date';
@@ -14,6 +15,7 @@ const ITEMS_PER_PAGE = 10;
 
 // Memoized to prevent re-renders when filteredApplications reference changes but content is the same
 const TimelineView: React.FC<TimelineViewProps> = ({ applications, onEdit, onDelete }) => {
+  const { t } = useTranslation();
   const [deleteConfirm, setDeleteConfirm] = useState<{ isOpen: boolean; application: JobApplication | null }>({
     isOpen: false,
     application: null,
@@ -24,23 +26,7 @@ const TimelineView: React.FC<TimelineViewProps> = ({ applications, onEdit, onDel
     if (type === 'custom' && customTypeName) {
       return customTypeName;
     }
-    const names: Record<string, string> = {
-      'application_submitted': 'Application Submitted',
-      'screener_call': 'Screener Call',
-      'first_contact': 'First Contact',
-      'technical_interview': 'Technical Interview',
-      'code_challenge': 'Code Challenge',
-      'live_coding': 'Live Coding',
-      'hiring_manager': 'Hiring Manager',
-      'system_design': 'System Design',
-      'cultural_fit': 'Cultural Fit',
-      'final_round': 'Final Round',
-      'offer': 'Offer',
-      'rejected': 'Rejected',
-      'withdrawn': 'Withdrawn',
-      'custom': 'Custom',
-    };
-    return names[type] || type;
+    return t(`insights.interviewTypes.${type}`, type);
   };
 
   const getStatusColor = (status: string): string => {
@@ -109,8 +95,8 @@ const TimelineView: React.FC<TimelineViewProps> = ({ applications, onEdit, onDel
   if (applications.length === 0) {
     return (
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-dashed border-gray-300 dark:border-gray-600 p-8 text-center text-gray-500 dark:text-gray-400">
-        <p className="font-medium">No applications yet.</p>
-        <p className="text-sm mt-2">Start adding entries to see the interview timeline.</p>
+        <p className="font-medium">{t('timeline.noApplications')}</p>
+        <p className="text-sm mt-2">{t('timeline.startAdding')}</p>
       </div>
     );
   }
@@ -140,7 +126,7 @@ const TimelineView: React.FC<TimelineViewProps> = ({ applications, onEdit, onDel
                       <div className="flex items-center gap-2 bg-white dark:bg-gray-700 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg shadow-sm border border-gray-200 dark:border-gray-600 flex-shrink-0">
                         <span className="inline-block w-2 h-2 bg-blue-500 rounded-full animate-pulse"></span>
                         <span className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">
-                          Next: {formatDate(nextEvent.date)}
+                          {t('timeline.nextEvent', { date: formatDate(nextEvent.date) })}
                         </span>
                       </div>
                     )}
@@ -152,7 +138,7 @@ const TimelineView: React.FC<TimelineViewProps> = ({ applications, onEdit, onDel
                     toggleExpanded(app.id);
                   }}
                   className="ml-4 flex-shrink-0 p-2 rounded-lg hover:bg-white dark:hover:bg-gray-700 transition-colors"
-                  aria-label={isExpanded ? 'Collapse application details' : 'Expand application details'}
+                  aria-label={isExpanded ? t('timeline.collapse') : t('timeline.expand')}
                   aria-expanded={isExpanded}
                 >
                   <svg
@@ -178,7 +164,7 @@ const TimelineView: React.FC<TimelineViewProps> = ({ applications, onEdit, onDel
                     {/* Timeline events */}
                     <div className="space-y-6 pl-10 sm:pl-12">
                       {sortedEvents.length === 0 ? (
-                        <p className="text-sm text-gray-500 dark:text-gray-400 italic">No timeline events yet.</p>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 italic">{t('timeline.noEvents')}</p>
                       ) : (
                         sortedEvents.map((event) => (
                           <div key={event.id} className="relative flex items-start">
@@ -232,7 +218,7 @@ const TimelineView: React.FC<TimelineViewProps> = ({ applications, onEdit, onDel
                                     event.status === 'cancelled' ? 'bg-gray-100 dark:bg-gray-600 text-gray-800 dark:text-gray-200' :
                                     'bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200'
                                   }`}>
-                                    {event.status}
+                                    {t(`common.status_types.${event.status}`)}
                                   </span>
                                 </div>
                               </div>
@@ -251,7 +237,7 @@ const TimelineView: React.FC<TimelineViewProps> = ({ applications, onEdit, onDel
                       onClick={() => onEdit(app)}
                       className="px-4 py-2 text-sm font-medium text-indigo-700 dark:text-indigo-300 bg-indigo-100 dark:bg-indigo-900 hover:bg-indigo-200 dark:hover:bg-indigo-800 rounded-lg transition"
                     >
-                      Edit
+                      {t('common.edit')}
                     </button>
                   )}
                   {onDelete && (
@@ -261,7 +247,7 @@ const TimelineView: React.FC<TimelineViewProps> = ({ applications, onEdit, onDel
                       }}
                       className="px-4 py-2 text-sm font-medium text-red-700 dark:text-red-300 bg-red-100 dark:bg-red-900 hover:bg-red-200 dark:hover:bg-red-800 rounded-lg transition"
                     >
-                      Delete
+                      {t('common.delete')}
                     </button>
                   )}
                 </div>
@@ -278,9 +264,9 @@ const TimelineView: React.FC<TimelineViewProps> = ({ applications, onEdit, onDel
             onClick={() => goToPage(currentPage - 1)}
             disabled={currentPage === 1}
             className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
-            aria-label="Previous page"
+            aria-label={t('common.previous')}
           >
-            Previous
+            {t('common.previous')}
           </button>
           
           <div className="flex items-center gap-1">
@@ -293,7 +279,7 @@ const TimelineView: React.FC<TimelineViewProps> = ({ applications, onEdit, onDel
                     ? 'bg-indigo-600 text-white'
                     : 'text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700'
                 }`}
-                aria-label={`Go to page ${page}`}
+                aria-label={t('common.goToPage', { page })}
                 aria-current={currentPage === page ? 'page' : undefined}
               >
                 {page}
@@ -305,18 +291,21 @@ const TimelineView: React.FC<TimelineViewProps> = ({ applications, onEdit, onDel
             onClick={() => goToPage(currentPage + 1)}
             disabled={currentPage === totalPages}
             className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
-            aria-label="Next page"
+            aria-label={t('common.next')}
           >
-            Next
+            {t('common.next')}
           </button>
         </div>
       )}
       <ConfirmDialog
         isOpen={deleteConfirm.isOpen}
-        title="Delete Application"
-        message={`Are you sure you want to delete the application for "${deleteConfirm.application?.position}" at ${deleteConfirm.application?.company}? This action will mark it as deleted.`}
-        confirmText="Delete"
-        cancelText="Cancel"
+        title={t('home.deleteConfirm.title')}
+        message={t('home.deleteConfirm.message', {
+          position: deleteConfirm.application?.position,
+          company: deleteConfirm.application?.company
+        })}
+        confirmText={t('common.delete')}
+        cancelText={t('common.cancel')}
         type="warning"
         onConfirm={() => {
           if (deleteConfirm.application && onDelete) {
@@ -333,4 +322,3 @@ const TimelineView: React.FC<TimelineViewProps> = ({ applications, onEdit, onDel
 TimelineView.displayName = 'TimelineView';
 
 export default memo(TimelineView);
-
