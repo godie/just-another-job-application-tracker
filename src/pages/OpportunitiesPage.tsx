@@ -10,6 +10,7 @@ import {
 } from '../utils/localStorage';
 import OpportunityForm from '../components/OpportunityForm';
 import ConfirmDialog from '../components/ConfirmDialog';
+import ATSSearch from '../components/ATSSearch';
 import packageJson from '../../package.json';
 import { useOpportunitiesStore } from '../stores/opportunitiesStore';
 import { useApplicationsStore } from '../stores/applicationsStore';
@@ -164,6 +165,8 @@ const OpportunitiesPageContent: React.FC<OpportunitiesPageContentProps> = () => 
 
   return (
     <div className="max-w-7xl mx-auto">
+        <ATSSearch />
+
         <div className="mb-6 flex justify-between items-start">
           <div>
             <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">{t('opportunities.title')}</h2>

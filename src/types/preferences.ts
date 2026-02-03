@@ -29,6 +29,12 @@ export interface CustomInterviewEvent {
   label: string;
 }
 
+export interface ATSSearchPreferences {
+  roles: string;
+  keywords: string;
+  location: string;
+}
+
 export interface UserPreferences {
   /** IDs of fields that should be visible/enabled in the table */
   enabledFields: string[];
@@ -42,5 +48,7 @@ export interface UserPreferences {
   dateFormat: DateFormat;
   /** User defined custom interview event types */
   customInterviewEvents: CustomInterviewEvent[];
+  /** ATS Search filters configuration */
+  atsSearch?: ATSSearchPreferences;
 }
 

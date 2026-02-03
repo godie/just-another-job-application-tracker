@@ -257,6 +257,19 @@
       "added": "Opportunity \"{{position}}\" at {{company}} has been added!",
       "convertError": "Failed to convert opportunity to application. Please try again.",
       "addError": "Failed to add opportunity. Please try again."
+    },
+    "atsSearch": {
+      "title": "Direct ATS Search",
+      "subtitle": "Bypass LinkedIn's limitations by searching company platforms directly.",
+      "roles": "Roles",
+      "keywords": "Keywords",
+      "location": "Location",
+      "search": "Search",
+      "searchAll": "Search All",
+      "settings": "Configure Search Filters",
+      "placeholderRoles": "e.g. \"software engineer\" OR \"frontend\"",
+      "placeholderKeywords": "e.g. \"hiring\" OR \"apply\"",
+      "placeholderLocation": "e.g. \"remote\" OR \"London\""
     }
   },
   "filters": {
