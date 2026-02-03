@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect, useCallback, useRef } from 'react'
 import { Trans, useTranslation } from 'react-i18next';
 import { FaCoffee, FaHeart, FaClipboard } from 'react-icons/fa';
 import { useAlert } from '../components/AlertProvider';
+import { Card, Button, Input } from '../components/ui';
 
 const SUPPORT_API_BASE_URL =
   import.meta.env.VITE_SUPPORT_API_BASE_URL ||
@@ -183,7 +184,7 @@ const SupportPage: React.FC = () => {
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <section className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 border border-gray-100 dark:border-gray-700">
+        <Card className="p-6 border-none shadow-md">
           <div className="flex items-center gap-3 mb-4">
             <div className="p-2 bg-pink-100 dark:bg-pink-900 rounded-lg text-pink-600 dark:text-pink-300">
               <FaHeart size={24} />
@@ -203,9 +204,9 @@ const SupportPage: React.FC = () => {
           <p className="text-xs text-center text-gray-500 dark:text-gray-400 mt-4">
             {t('common.anyAport')}
           </p>
-        </section>
+        </Card>
 
-        <section className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 border border-gray-100 dark:border-gray-700">
+        <Card className="p-6 border-none shadow-md">
           <div className="flex items-center gap-3 mb-4">
             <div className="p-2 bg-indigo-100 dark:bg-indigo-900 rounded-lg text-indigo-600 dark:text-indigo-300">
               <FaClipboard size={24} />
@@ -276,47 +277,41 @@ const SupportPage: React.FC = () => {
                     ? t('support.captchaLoading')
                     : captchaChallenge || t('support.captchaLoading')}
                 </div>
-                <button
+                <Button
                   type="button"
+                  variant="outline"
                   onClick={() => void fetchCaptcha()}
                   disabled={isRefreshingCaptcha}
-                  className={`px-4 py-3 rounded-xl font-semibold border border-indigo-200 dark:border-indigo-700 transition ${
-                    isRefreshingCaptcha
-                      ? 'bg-gray-200 dark:bg-gray-700 text-gray-500 cursor-not-allowed'
-                      : 'bg-white dark:bg-gray-900 text-indigo-600 dark:text-indigo-300 hover:bg-indigo-50 dark:hover:bg-gray-800'
-                  }`}
+                  className="px-4 py-3 h-auto"
                 >
                   {t('support.captchaRefresh')}
-                </button>
+                </Button>
               </div>
-              <input
+              <Input
                 type="text"
                 inputMode="numeric"
                 pattern="[0-9]*"
                 value={captchaInput}
                 onChange={(event) => setCaptchaInput(event.target.value)}
                 placeholder={t('support.captchaPlaceholder')}
-                className="mt-3 w-full px-4 py-2 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-indigo-500 dark:text-white outline-none"
+                className="mt-3"
               />
             </div>
 
             <div className="flex flex-col sm:flex-row gap-3">
-              <button
+              <Button
                 type="submit"
+                variant="primary"
                 disabled={isSubmitDisabled}
-                className={`flex-1 font-semibold py-3 px-4 rounded-xl transition flex items-center justify-center ${
-                  isSubmitDisabled
-                    ? 'bg-gray-300 dark:bg-gray-700 text-gray-500 cursor-not-allowed'
-                    : 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-md'
-                }`}
+                className="flex-1 py-3"
               >
                 {isSubmitting ? t('support.submitting') : t('support.submit')}
-              </button>
+              </Button>
             </div>
 
             <p className="text-xs text-gray-500 dark:text-gray-400">{t('support.submitInfo')}</p>
           </form>
-        </section>
+        </Card>
       </div>
 
       <section className="mt-12 bg-indigo-50 dark:bg-indigo-900/20 rounded-2xl p-6 border border-indigo-100 dark:border-indigo-900/30">

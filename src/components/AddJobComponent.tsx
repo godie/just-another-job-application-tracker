@@ -5,6 +5,7 @@ import type { JobApplication, InterviewEvent, InterviewStageType } from '../util
 import { generateId } from '../utils/localStorage';
 import useKeyboardEscape from '../hooks/useKeyboardEscape';
 import TimelineEditor from './TimelineEditor';
+import { Button, Input, Select, Card } from './ui';
 
 interface AddJobFormProps {
   onSave: (newEntry: Omit<JobApplication, 'id'>) => void; // Acepta la entrada sin ID
@@ -116,165 +117,137 @@ const AddJobForm: React.FC<AddJobFormProps> = ({ onSave, onCancel, initialData }
   };
 
   return (
-    <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-xl shadow-2xl w-full max-w-4xl p-8 overflow-y-auto max-h-[90vh]">
-        <h2 className="text-3xl font-bold mb-6 text-indigo-700">
+    <div className="fixed inset-0 bg-gray-600/75 dark:bg-gray-900/75 flex items-center justify-center p-4 z-50">
+      <Card className="w-full max-w-4xl p-8 overflow-y-auto max-h-[90vh] shadow-2xl">
+        <h2 className="text-3xl font-bold mb-6 text-indigo-700 dark:text-indigo-400">
             {isEditing ? t('form.editTitle') : t('form.addTitle')}
         </h2>
         <form onSubmit={handleSubmit} data-testid="job-form">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             
             {/* Group 1: Required Details */}
-            <div className="col-span-full border-b pb-2 mb-4">
-              <p className="font-semibold text-lg text-gray-600">{t('form.basicDetails')}</p>
+            <div className="col-span-full border-b dark:border-gray-700 pb-2 mb-4">
+              <p className="font-semibold text-lg text-gray-600 dark:text-gray-400">{t('form.basicDetails')}</p>
             </div>
             
-            <label className="block">
-              <span className="text-gray-700 font-medium">{t('form.position')}</span>
-              <input
-                type="text"
-                name="position"
-                value={formData.position}
-                onChange={handleChange}
-                required
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border"
-                data-testid="form-position"
-              />
-            </label>
+            <Input
+              label={t('form.position')}
+              type="text"
+              name="position"
+              value={formData.position}
+              onChange={handleChange}
+              required
+              data-testid="form-position"
+            />
             
-            <label className="block">
-              <span className="text-gray-700 font-medium">{t('form.company')}</span>
-              <input
-                type="text"
-                name="company"
-                value={formData.company}
-                onChange={handleChange}
-                required
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border"
-                data-testid="form-company"
-              />
-            </label>
+            <Input
+              label={t('form.company')}
+              type="text"
+              name="company"
+              value={formData.company}
+              onChange={handleChange}
+              required
+              data-testid="form-company"
+            />
 
             {/* Group 2: Dates and Status */}
-            <div className="col-span-full border-b pb-2 mb-4 mt-4">
-              <p className="font-semibold text-lg text-gray-600">{t('form.trackingTimeline')}</p>
+            <div className="col-span-full border-b dark:border-gray-700 pb-2 mb-4 mt-4">
+              <p className="font-semibold text-lg text-gray-600 dark:text-gray-400">{t('form.trackingTimeline')}</p>
             </div>
 
-            <label className="block">
-              <span className="text-gray-700 font-medium">{t('form.applicationDate')}</span>
-              <input
-                type="date"
-                data-testid="form-application-date"
-                name="applicationDate"
-                value={formData.applicationDate}
-                onChange={handleChange}
-                required
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border"
-              />
-            </label>
+            <Input
+              label={t('form.applicationDate')}
+              type="date"
+              data-testid="form-application-date"
+              name="applicationDate"
+              value={formData.applicationDate}
+              onChange={handleChange}
+              required
+            />
 
-            <label className="block">
-              <span className="text-gray-700 font-medium">{t('form.status')}</span>
-              <select
-                name="status"
-                value={formData.status || 'Applied'}
-                data-testid="form-status"
-                onChange={handleChange}
-                required
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border bg-white"
-              >
-                {['Applied', 'Interviewing', 'Offer', 'Rejected', 'Hold'].map(s => (
-                  <option key={s} value={s}>{t(`statuses.${s.toLowerCase()}`)}</option>
-                ))}
-              </select>
-            </label>
+            <Select
+              label={t('form.status')}
+              name="status"
+              value={formData.status || 'Applied'}
+              data-testid="form-status"
+              onChange={handleChange}
+              required
+            >
+              {['Applied', 'Interviewing', 'Offer', 'Rejected', 'Hold'].map(s => (
+                <option key={s} value={s}>{t(`statuses.${s.toLowerCase()}`)}</option>
+              ))}
+            </Select>
 
-            <label className="block">
-              <span className="text-gray-700 font-medium">{t('form.salary')}</span>
-              <input
-                type="text"
-                name="salary"
-                value={formData.salary}
-                onChange={handleChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border"
-              />
-            </label>
+            <Input
+              label={t('form.salary')}
+              type="text"
+              name="salary"
+              value={formData.salary}
+              onChange={handleChange}
+            />
 
-            <label className="block">
-              <span className="text-gray-700 font-medium">{t('form.interviewDate')}</span>
-              <input
-                type="date"
-                name="interviewDate"
-                value={formData.interviewDate}
-                onChange={handleChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border"
-              />
-            </label>
+            <Input
+              label={t('form.interviewDate')}
+              type="date"
+              name="interviewDate"
+              value={formData.interviewDate}
+              onChange={handleChange}
+            />
 
-            <label className="block">
-              <span className="text-gray-700 font-medium">{t('form.followUpDate')}</span>
-              <input
-                type="date"
-                name="followUpDate"
-                value={formData.followUpDate}
-                onChange={handleChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border"
-              />
-            </label>
+            <Input
+              label={t('form.followUpDate')}
+              type="date"
+              name="followUpDate"
+              value={formData.followUpDate}
+              onChange={handleChange}
+            />
 
-            <label className="block">
-              <span className="text-gray-700 font-medium">{t('form.link')}</span>
-              <input
-                type="url"
-                name="link"
-                value={formData.link}
-                onChange={handleChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border"
-              />
-            </label>
+            <Input
+              label={t('form.link')}
+              type="url"
+              name="link"
+              value={formData.link}
+              onChange={handleChange}
+            />
 
             {/* Group 3: Auxiliary Details */}
-            <div className="col-span-full border-b pb-2 mb-4 mt-4">
-              <p className="font-semibold text-lg text-gray-600">{t('form.sourceContact')}</p>
+            <div className="col-span-full border-b dark:border-gray-700 pb-2 mb-4 mt-4">
+              <p className="font-semibold text-lg text-gray-600 dark:text-gray-400">{t('form.sourceContact')}</p>
             </div>
             
-            <label className="block">
-              <span className="text-gray-700 font-medium">{t('form.platform')}</span>
-              <select
-                data-testid="form-platform"
-                name="platform"
-                value={formData.platform}
-                onChange={handleChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border bg-white"
-              >
-                {['LinkedIn', 'Indeed', 'Company Website', 'Referral', 'Other'].map(p => (
-                  <option key={p} value={p}>{t(`form.platforms.${p}`)}</option>
-                ))}
-              </select>
-            </label>
+            <Select
+              label={t('form.platform')}
+              data-testid="form-platform"
+              name="platform"
+              value={formData.platform}
+              onChange={handleChange}
+            >
+              {['LinkedIn', 'Indeed', 'Company Website', 'Referral', 'Other'].map(p => (
+                <option key={p} value={p}>{t(`form.platforms.${p}`)}</option>
+              ))}
+            </Select>
 
-            <label className="block">
-              <span className="text-gray-700 font-medium">{t('form.contactName')}</span>
-              <input
-                type="text"
-                name="contactName"
-                data-testid="form-contact-name"
-                value={formData.contactName}
-                onChange={handleChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border"
-              />
-            </label>
+            <Input
+              label={t('form.contactName')}
+              type="text"
+              name="contactName"
+              data-testid="form-contact-name"
+              value={formData.contactName}
+              onChange={handleChange}
+            />
             
-            <label className="block col-span-full">
-              <span className="text-gray-700 font-medium">{t('form.notes')}</span>
+            <div className="col-span-full">
+              <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">
+                {t('form.notes')}
+              </label>
               <textarea
                 name="notes"
                 value={formData.notes}
                 onChange={handleChange}
                 rows={3}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border"
+                className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:border-indigo-500 focus:ring-indigo-500"
               />
-            </label>
+            </div>
           </div>
 
           {/* Timeline Editor */}
@@ -287,24 +260,24 @@ const AddJobForm: React.FC<AddJobFormProps> = ({ onSave, onCancel, initialData }
 
           {/* Form Actions */}
           <div className="mt-8 flex justify-end space-x-4">
-            <button
+            <Button
+              variant="outline"
               type="button"
               onClick={onCancel}
-              className="px-6 py-2 border border-gray-300 rounded-md shadow-sm text-gray-700 hover:bg-gray-50 transition"
               data-testid="form-cancel"
             >
               {t('common.cancel')}
-            </button>
-            <button
+            </Button>
+            <Button
+              variant="primary"
               type="submit"
-              className="px-6 py-2 bg-indigo-600 text-white rounded-md shadow-lg hover:bg-indigo-700 transition"
               data-testid="form-save"
             >
               {isEditing ? t('form.saveChanges') : t('form.saveApplication')}
-            </button>
+            </Button>
           </div>
         </form>
-      </div>
+      </Card>
     </div>
   );
 };

@@ -5,6 +5,7 @@ import { useGoogleLogin } from '@react-oauth/google';
 import { checkLoginStatus, setLoginStatus } from '../utils/localStorage';
 import { setAuthCookie, clearAuthCookie } from '../utils/api';
 import { useAlert } from './AlertProvider';
+import { Button } from './ui';
 
 interface HeaderProps {
   onToggleSidebar: () => void;
@@ -120,9 +121,11 @@ const Header: React.FC<HeaderProps> = ({ onToggleSidebar }) => {
     <header className="flex items-center justify-between p-4 border-b border-gray-200 bg-white shadow-sm dark:bg-gray-800 dark:border-gray-700 fixed top-0 left-0 right-0 z-50 h-16">
       <div className="flex items-center gap-4">
         {/* Hamburger menu button */}
-        <button
+        <Button
+          variant="ghost"
+          size="icon"
           onClick={onToggleSidebar}
-          className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors hidden md:block"
+          className="hidden md:flex"
           aria-label="Toggle sidebar"
           data-testid="sidebar-toggle"
         >
@@ -140,7 +143,7 @@ const Header: React.FC<HeaderProps> = ({ onToggleSidebar }) => {
               d="M4 6h16M4 12h16M4 18h16"
             />
           </svg>
-        </button>
+        </Button>
         {/* Logo/Icon for mobile (< 768px) */}
         <img 
           src="/jajat-logo.png" 
@@ -159,27 +162,23 @@ const Header: React.FC<HeaderProps> = ({ onToggleSidebar }) => {
       </div>
       <div className="flex items-center gap-4">
         {/* Language Switcher */}
-        <div className="flex items-center gap-2 mr-2">
-          <button
+        <div className="flex items-center gap-1 mr-2">
+          <Button
+            variant={i18n.language.startsWith('en') ? 'primary' : 'ghost'}
+            size="sm"
             onClick={() => i18n.changeLanguage('en')}
-            className={`text-xs font-bold px-1.5 py-0.5 rounded transition-colors ${
-              i18n.language.startsWith('en')
-                ? 'bg-indigo-600 text-white'
-                : 'text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700'
-            }`}
+            className="px-1.5 py-0.5 h-auto text-xs font-bold"
           >
             EN
-          </button>
-          <button
+          </Button>
+          <Button
+            variant={i18n.language.startsWith('es') ? 'primary' : 'ghost'}
+            size="sm"
             onClick={() => i18n.changeLanguage('es')}
-            className={`text-xs font-bold px-1.5 py-0.5 rounded transition-colors ${
-              i18n.language.startsWith('es')
-                ? 'bg-indigo-600 text-white'
-                : 'text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700'
-            }`}
+            className="px-1.5 py-0.5 h-auto text-xs font-bold"
           >
             ES
-          </button>
+          </Button>
         </div>
         {/* Theme Toggle */}
         <div className="flex items-center gap-3">
@@ -231,12 +230,11 @@ const Header: React.FC<HeaderProps> = ({ onToggleSidebar }) => {
           </svg>
         </div>
         {/* Login/Logout Button */}
-        <button 
-          className={`font-medium py-2 px-2 md:px-5 rounded-lg shadow-md transition duration-150 transform hover:scale-[1.02] ${
-            isLoggedIn 
-              ? 'bg-red-600 hover:bg-red-700 text-white' 
-              : 'bg-blue-600 hover:bg-blue-700 text-white'
-          } ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+        <Button
+          variant={isLoggedIn ? 'danger' : 'primary'}
+          className={`font-medium py-2 px-2 md:px-5 shadow-md transition duration-150 transform hover:scale-[1.02] ${
+            !isLoggedIn ? 'bg-blue-600 hover:bg-blue-700' : ''
+          }`}
           onClick={handleAuth}
           data-testid="login-button"
           aria-label={isLoggedIn ? "Logout" : "Login with Google"}
@@ -276,7 +274,7 @@ const Header: React.FC<HeaderProps> = ({ onToggleSidebar }) => {
               </svg>
             </>
           )}
-        </button>
+        </Button>
       </div>
     </header>
   );

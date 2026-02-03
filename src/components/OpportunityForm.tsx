@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { type JobOpportunity } from '../utils/localStorage';
+import { Button, Input, Card } from './ui';
 
 interface OpportunityFormProps {
   isOpen: boolean;
@@ -102,156 +103,121 @@ const OpportunityForm: React.FC<OpportunityFormProps> = ({ isOpen, onClose, onSa
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+      <Card className="max-w-2xl w-full max-h-[90vh] overflow-y-auto p-0">
         <div className="p-6">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-xl font-bold text-gray-800">{t('form.addOpportunityTitle')}</h3>
-            <button
+            <h3 className="text-xl font-bold text-gray-800 dark:text-white">{t('form.addOpportunityTitle')}</h3>
+            <Button
+              variant="ghost"
+              size="icon"
               onClick={handleCancel}
-              className="text-gray-400 hover:text-gray-600 text-2xl font-bold"
+              className="text-gray-400 hover:text-gray-600"
               aria-label="Close"
             >
               ×
-            </button>
+            </Button>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                {t('form.position')}
-              </label>
-              <input
-                type="text"
-                value={formData.position}
-                onChange={(e) => handleInputChange('position', e.target.value)}
-                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent ${
-                  errors.position ? 'border-red-500' : 'border-gray-300'
-                }`}
-                placeholder="e.g., Software Engineer"
-              />
-              {errors.position && (
-                <p className="text-red-500 text-xs mt-1">{errors.position}</p>
-              )}
-            </div>
+            <Input
+              label={t('form.position')}
+              type="text"
+              value={formData.position}
+              onChange={(e) => handleInputChange('position', e.target.value)}
+              error={errors.position}
+              placeholder="e.g., Software Engineer"
+            />
 
-            <div>
-              <label htmlFor="company" className="block text-sm font-medium text-gray-700 mb-1">
-                {t('form.company')}
-              </label>
-              <input
-                id="company"
-                type="text"
-                value={formData.company}
-                onChange={(e) => handleInputChange('company', e.target.value)}
-                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent ${
-                  errors.company ? 'border-red-500' : 'border-gray-300'
-                }`}
-                placeholder="e.g., Google"
-              />
-              {errors.company && (
-                <p className="text-red-500 text-xs mt-1">{errors.company}</p>
-              )}
-            </div>
+            <Input
+              id="company"
+              label={t('form.company')}
+              type="text"
+              value={formData.company}
+              onChange={(e) => handleInputChange('company', e.target.value)}
+              error={errors.company}
+              placeholder="e.g., Google"
+            />
 
-            <div>
-              <label htmlFor="link" className="block text-sm font-medium text-gray-700 mb-1">
-                {t('form.link')}
-              </label>
-              <input
-                id="link"
-                type="url"
-                value={formData.link}
-                onChange={(e) => handleInputChange('link', e.target.value)}
-                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent ${
-                  errors.link ? 'border-red-500' : 'border-gray-300'
-                }`}
-                placeholder="https://linkedin.com/jobs/view/..."
-              />
-              {errors.link && (
-                <p className="text-red-500 text-xs mt-1">{errors.link}</p>
-              )}
-            </div>
+            <Input
+              id="link"
+              label={t('form.link')}
+              type="url"
+              value={formData.link}
+              onChange={(e) => handleInputChange('link', e.target.value)}
+              error={errors.link}
+              placeholder="https://linkedin.com/jobs/view/..."
+            />
 
             <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-1">{t('opportunities.table.location')}</label>
-                <input
-                  id="location"
-                  type="text"
-                  value={formData.location}
-                  onChange={(e) => handleInputChange('location', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                  placeholder="e.g., Remote, San Francisco, CA"
-                />
-              </div>
-
-              <div>
-                <label htmlFor="jobType" className="block text-sm font-medium text-gray-700 mb-1">{t('opportunities.table.jobType')}</label>
-                <input
-                  id="jobType"
-                  type="text"
-                  value={formData.jobType}
-                  onChange={(e) => handleInputChange('jobType', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                  placeholder="Remote/Hybrid/On-site"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label htmlFor="salary" className="block text-sm font-medium text-gray-700 mb-1">{t('fields.salary')}</label>
-              <input
-                id="salary"
+              <Input
+                id="location"
+                label={t('opportunities.table.location')}
                 type="text"
-                value={formData.salary}
-                onChange={(e) => handleInputChange('salary', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                placeholder="e.g., $120k - $150k"
+                value={formData.location}
+                onChange={(e) => handleInputChange('location', e.target.value)}
+                placeholder="e.g., Remote, San Francisco, CA"
+              />
+
+              <Input
+                id="jobType"
+                label={t('opportunities.table.jobType')}
+                type="text"
+                value={formData.jobType}
+                onChange={(e) => handleInputChange('jobType', e.target.value)}
+                placeholder="Remote/Hybrid/On-site"
               />
             </div>
 
+            <Input
+              id="salary"
+              label={t('fields.salary')}
+              type="text"
+              value={formData.salary}
+              onChange={(e) => handleInputChange('salary', e.target.value)}
+              placeholder="e.g., $120k - $150k"
+            />
+
             <div>
-              <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">{t('form.description')}</label>
+              <label htmlFor="description" className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">
+                {t('form.description')}
+              </label>
               <textarea
                 id="description"
                 value={formData.description}
                 onChange={(e) => handleInputChange('description', e.target.value)}
                 rows={4}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none"
+                className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:border-indigo-500 focus:ring-indigo-500 resize-none"
                 placeholder="Job description or notes..."
               />
             </div>
 
-            <div>
-              <label htmlFor="postedDate" className="block text-sm font-medium text-gray-700 mb-1">{t('form.postedDate')}</label>
-              <input
-                id="postedDate"
-                type="date"
-                value={formData.postedDate}
-                onChange={(e) => handleInputChange('postedDate', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-              />
-            </div>
+            <Input
+              id="postedDate"
+              label={t('form.postedDate')}
+              type="date"
+              value={formData.postedDate}
+              onChange={(e) => handleInputChange('postedDate', e.target.value)}
+            />
 
             <div className="flex justify-end gap-3 pt-4">
-              <button
+              <Button
                 type="button"
+                variant="outline"
                 onClick={handleCancel}
-                className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 focus:ring-2 focus:ring-indigo-500"
               >
                 {t('common.cancel')}
-              </button>
-              <button
+              </Button>
+              <Button
                 type="submit"
-                className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500"
+                variant="primary"
               >
                 {t('form.saveOpportunity')}
-              </button>
+              </Button>
             </div>
           </form>
         </div>
-      </div>
+      </Card>
     </div>
   );
 };

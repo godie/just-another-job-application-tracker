@@ -3,6 +3,7 @@ import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { type PageType } from '../App';
 import { useOpportunitiesStore } from '../stores/opportunitiesStore';
+import { Button, Badge } from './ui';
 
 interface SidebarProps {
   currentPage?: PageType;
@@ -63,21 +64,26 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPage = 'applications', onNavig
         <ul>
           {navItems.map((item) => (
             <li key={item.page} className="mb-4">
-              <button
+              <Button
+                variant={currentPage === item.page ? 'secondary' : 'ghost'}
+                size="lg"
                 onClick={() => handleNavigation(item.page)}
-                className={`w-full text-left text-lg font-semibold text-gray-700 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white py-2 px-3 rounded-lg transition-colors relative ${
+                className={`w-full justify-start text-lg relative ${
                   currentPage === item.page
                     ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white'
-                    : 'hover:bg-gray-100 dark:hover:bg-gray-700'
+                    : ''
                 }`}
               >
                 {item.label}
                 {item.showBadge && opportunitiesCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                  <Badge
+                    variant="danger"
+                    className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center rounded-full font-bold"
+                  >
                     {opportunitiesCount > 9 ? '9+' : opportunitiesCount}
-                  </span>
+                  </Badge>
                 )}
-              </button>
+              </Button>
             </li>
           ))}
         </ul>

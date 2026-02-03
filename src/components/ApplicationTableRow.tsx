@@ -5,6 +5,7 @@ import type { JobApplication } from '../types/applications';
 import type { TableColumn } from '../types/table';
 import { sanitizeUrl } from '../utils/localStorage';
 import DOMPurify from 'dompurify';
+import { TableRow, TableCell, Button } from './ui';
 
 interface ApplicationTableRowProps {
   item: JobApplication;
@@ -39,8 +40,8 @@ const ApplicationTableRow: React.FC<ApplicationTableRowProps> = ({
   };
 
   return (
-    <tr
-      className="hover:bg-gray-50 dark:hover:bg-gray-700 transition duration-100 cursor-pointer group"
+    <TableRow
+      className="cursor-pointer group"
       onMouseEnter={() => onMouseEnter(item.id)}
       onMouseLeave={onMouseLeave}
       data-testid={`row-${item.id}`}
@@ -72,7 +73,7 @@ const ApplicationTableRow: React.FC<ApplicationTableRowProps> = ({
           const shouldWrap = hasLineBreaks || originalLength > NOTES_WORD_WRAP_LENGTH;
 
           return (
-            <td
+            <TableCell
               key={column.id}
               onClick={() => onEdit(item)}
               className={`px-4 sm:px-6 py-3 text-gray-900 dark:text-gray-100 border-r border-gray-100 dark:border-gray-700 group-hover:bg-indigo-50 dark:group-hover:bg-indigo-900 ${
@@ -83,13 +84,13 @@ const ApplicationTableRow: React.FC<ApplicationTableRowProps> = ({
                 className={`block ${shouldWrap ? 'break-words' : 'truncate'} ${isNotes ? '' : 'max-w-[180px] sm:max-w-none'}`}
                 dangerouslySetInnerHTML={createMarkup(finalContent)}
               />
-            </td>
+            </TableCell>
           );
         }
 
         const isLink = column.id === 'link';
         return (
-          <td
+          <TableCell
             key={column.id}
             onClick={() => onEdit(item)}
             className="px-4 sm:px-6 py-3 whitespace-nowrap text-gray-900 dark:text-gray-100 border-r border-gray-100 dark:border-gray-700 group-hover:bg-indigo-50 dark:group-hover:bg-indigo-900"
@@ -109,26 +110,28 @@ const ApplicationTableRow: React.FC<ApplicationTableRowProps> = ({
                 dangerouslySetInnerHTML={createMarkup(cellContent)}
               />
             )}
-          </td>
+          </TableCell>
         );
       })}
 
-      <td className="px-4 sm:px-6 py-3 whitespace-nowrap text-right text-sm font-medium w-1">
+      <TableCell className="px-4 sm:px-6 py-3 whitespace-nowrap text-right text-sm font-medium w-1">
         {isHovered && (
-          <button
+          <Button
+            variant="danger"
+            size="sm"
             onClick={(e) => {
               e.stopPropagation();
               onDeleteRequest(item);
             }}
-            className="inline-flex items-center gap-1 text-xs font-semibold text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 bg-red-50 dark:bg-red-900 px-3 py-1 rounded-full transition"
-          aria-label={t('home.deleteConfirm.titleFor', { position: item.position, company: item.company })}
+            className="inline-flex items-center gap-1 text-xs px-3 py-1 rounded-full transition"
+            aria-label={t('home.deleteConfirm.titleFor', { position: item.position, company: item.company })}
             data-testid={`delete-btn-${item.id}`}
           >
             <span>{t('common.delete')}</span>
-          </button>
+          </Button>
         )}
-      </td>
-    </tr>
+      </TableCell>
+    </TableRow>
   );
 };
 
