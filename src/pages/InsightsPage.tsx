@@ -1,83 +1,95 @@
 // src/pages/InsightsPage.tsx
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import StatCard from '../components/StatCard';
 import StatusBarChart from '../components/StatusBarChart';
 import InterviewBarChart from '../components/InterviewBarChart';
 import { useApplicationsStore } from '../stores/applicationsStore';
 
-/**
- * Check if an event type is considered an interview event
- */
-const isInterviewEvent = (eventType: string): boolean => {
-  const interviewTypes = [
-    'screener_call',
-    'first_contact',
-    'technical_interview',
-    'code_challenge',
-    'live_coding',
-    'hiring_manager',
-    'system_design',
-    'cultural_fit',
-    'final_round',
-  ];
-  return interviewTypes.includes(eventType);
-};
+// ⚡ Bolt: Moved interview types to a Set outside the component.
+// Using a Set provides O(1) lookup time compared to O(N) with an array's `includes`.
+// Defining it outside the component ensures it's only created once.
+const INTERVIEW_EVENT_TYPES = new Set([
+  'screener_call',
+  'first_contact',
+  'technical_interview',
+  'code_challenge',
+  'live_coding',
+  'hiring_manager',
+  'system_design',
+  'cultural_fit',
+  'final_round',
+]);
 
 const InsightsPage: React.FC = () => {
   const { t } = useTranslation();
   const applications = useApplicationsStore((state) => state.applications);
 
-  // Get all interview events
-  const allInterviewEvents = applications.flatMap(app => 
-    (app.timeline || []).filter(event => isInterviewEvent(event.type))
-  );
+  // ⚡ Bolt: Consolidated multiple array passes into a single loop using useMemo.
+  // This refactoring reduces the computational complexity from multiple O(N) passes
+  // (flatMap, filter, reduce) to a single O(N + E) pass, where N is applications
+  // and E is the total number of timeline events. Memoizing the result also
+  // prevents these expensive calculations from re-running on every render.
+  const {
+    totalApplications,
+    totalInterviews,
+    rejectedApplications,
+    statusChartData,
+    interviewChartData,
+    interviewTypeChartData
+  } = useMemo(() => {
+    const statusData: Record<string, number> = {};
+    const interviewStatusData: Record<string, number> = {};
+    const interviewTypeData: Record<string, number> = {};
+    let rejectedCount = 0;
+    let interviewCount = 0;
 
-  const totalInterviews = allInterviewEvents.length;
-
-  const rejectedApplications = applications.filter(app => app.status.toLowerCase() === 'rejected').length;
-  const totalApplications = applications.length;
-  const rejectionPercentage = totalApplications > 0 ? ((rejectedApplications / totalApplications) * 100).toFixed(2) + '%' : '0%';
-
-  const statusData = applications.reduce((acc, app) => {
-    const status = app.status.toLowerCase();
-    acc[status] = (acc[status] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
-
-  const statusChartData = Object.keys(statusData).map(key => ({
-    name: key,
-    value: statusData[key],
-  }));
-
-  // Interviews by application status (the current chart)
-  const interviewStatusData = applications.reduce((acc, app) => {
-    const interviewEvents = (app.timeline || []).filter(event => isInterviewEvent(event.type));
-    if (interviewEvents.length > 0) {
+    applications.forEach(app => {
       const status = app.status.toLowerCase();
-      acc[status] = (acc[status] || 0) + interviewEvents.length;
-    }
-    return acc;
-  }, {} as Record<string, number>);
 
-  const interviewChartData = Object.keys(interviewStatusData).map(key => ({
-    name: key,
-    value: interviewStatusData[key],
-  }));
+      // Calculate status distribution
+      statusData[status] = (statusData[status] || 0) + 1;
 
-  // Interviews by type (new chart - more useful!)
-  const interviewTypeData = allInterviewEvents.reduce((acc, event) => {
-    const type = event.type;
-    acc[type] = (acc[type] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
+      if (status === 'rejected') {
+        rejectedCount++;
+      }
 
-  const interviewTypeChartData = Object.keys(interviewTypeData)
-    .map(key => ({
-      name: t(`insights.interviewTypes.${key}`, key),
-      value: interviewTypeData[key],
-    }))
-    .sort((a, b) => b.value - a.value); // Sort by count descending
+      // Calculate interview metrics in the same pass
+      const interviewEvents = (app.timeline || []).filter(event => INTERVIEW_EVENT_TYPES.has(event.type));
+
+      if (interviewEvents.length > 0) {
+        interviewCount += interviewEvents.length;
+        interviewStatusData[status] = (interviewStatusData[status] || 0) + interviewEvents.length;
+
+        interviewEvents.forEach(event => {
+          interviewTypeData[event.type] = (interviewTypeData[event.type] || 0) + 1;
+        });
+      }
+    });
+
+    // Format data for charts
+    const sChartData = Object.entries(statusData).map(([name, value]) => ({ name, value }));
+    const iChartData = Object.entries(interviewStatusData).map(([name, value]) => ({ name, value }));
+    const tChartData = Object.entries(interviewTypeData)
+      .map(([key, value]) => ({
+        name: t(`insights.interviewTypes.${key}`, key),
+        value,
+      }))
+      .sort((a, b) => b.value - a.value);
+
+    return {
+      totalApplications: applications.length,
+      totalInterviews: interviewCount,
+      rejectedApplications: rejectedCount,
+      statusChartData: sChartData,
+      interviewChartData: iChartData,
+      interviewTypeChartData: tChartData
+    };
+  }, [applications, t]);
+
+  const rejectionPercentage = totalApplications > 0
+    ? ((rejectedApplications / totalApplications) * 100).toFixed(2) + '%'
+    : '0%';
 
   return (
     <div className="max-w-7xl mx-auto">
