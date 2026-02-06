@@ -1,83 +1,113 @@
 // src/pages/InsightsPage.tsx
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import StatCard from '../components/StatCard';
 import StatusBarChart from '../components/StatusBarChart';
 import InterviewBarChart from '../components/InterviewBarChart';
 import { useApplicationsStore } from '../stores/applicationsStore';
+import type { InterviewEvent } from '../types/applications';
 
 /**
- * Check if an event type is considered an interview event
+ * ⚡ Bolt: Use a Set for O(1) interview type lookups.
+ * Moving this outside the component prevents it from being recreated on every render.
  */
-const isInterviewEvent = (eventType: string): boolean => {
-  const interviewTypes = [
-    'screener_call',
-    'first_contact',
-    'technical_interview',
-    'code_challenge',
-    'live_coding',
-    'hiring_manager',
-    'system_design',
-    'cultural_fit',
-    'final_round',
-  ];
-  return interviewTypes.includes(eventType);
-};
+const INTERVIEW_TYPES = new Set([
+  'screener_call',
+  'first_contact',
+  'technical_interview',
+  'code_challenge',
+  'live_coding',
+  'hiring_manager',
+  'system_design',
+  'cultural_fit',
+  'final_round',
+]);
 
 const InsightsPage: React.FC = () => {
   const { t } = useTranslation();
   const applications = useApplicationsStore((state) => state.applications);
 
-  // Get all interview events
-  const allInterviewEvents = applications.flatMap(app => 
-    (app.timeline || []).filter(event => isInterviewEvent(event.type))
-  );
+  // ⚡ Bolt: Single consolidated pass for metrics using "loop fusion".
+  // This reduces computational complexity from O(N * M) to O(N + E), where N is the
+  // number of applications and E is the total number of timeline events.
+  // We use useMemo to ensure these expensive calculations only run when the
+  // `applications` array reference actually changes.
+  const {
+    allInterviewEvents,
+    statusData,
+    interviewStatusData,
+    interviewTypeData,
+    rejectedApplicationsCount
+  } = useMemo(() => {
+    const interviewEvents: InterviewEvent[] = [];
+    const statusMap: Record<string, number> = {};
+    const interviewStatusMap: Record<string, number> = {};
+    const interviewTypeMap: Record<string, number> = {};
+    let rejectedCount = 0;
+
+    applications.forEach(app => {
+      const status = app.status.toLowerCase();
+
+      // 1. Status metrics
+      statusMap[status] = (statusMap[status] || 0) + 1;
+      if (status === 'rejected') rejectedCount++;
+
+      // 2. Interview metrics from timeline
+      if (app.timeline && app.timeline.length > 0) {
+        let appInterviewCount = 0;
+
+        app.timeline.forEach(event => {
+          if (INTERVIEW_TYPES.has(event.type)) {
+            interviewEvents.push(event);
+            appInterviewCount++;
+
+            // Track interview type frequency
+            interviewTypeMap[event.type] = (interviewTypeMap[event.type] || 0) + 1;
+          }
+        });
+
+        if (appInterviewCount > 0) {
+          // Track total interview events by application status
+          interviewStatusMap[status] = (interviewStatusMap[status] || 0) + appInterviewCount;
+        }
+      }
+    });
+
+    return {
+      allInterviewEvents: interviewEvents,
+      statusData: statusMap,
+      interviewStatusData: interviewStatusMap,
+      interviewTypeData: interviewTypeMap,
+      rejectedApplicationsCount: rejectedCount
+    };
+  }, [applications]);
 
   const totalInterviews = allInterviewEvents.length;
-
-  const rejectedApplications = applications.filter(app => app.status.toLowerCase() === 'rejected').length;
   const totalApplications = applications.length;
-  const rejectionPercentage = totalApplications > 0 ? ((rejectedApplications / totalApplications) * 100).toFixed(2) + '%' : '0%';
+  const rejectionPercentage = totalApplications > 0
+    ? ((rejectedApplicationsCount / totalApplications) * 100).toFixed(2) + '%'
+    : '0%';
 
-  const statusData = applications.reduce((acc, app) => {
-    const status = app.status.toLowerCase();
-    acc[status] = (acc[status] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
+  // ⚡ Bolt: Memoize chart data to prevent unnecessary re-renders of chart components.
+  const statusChartData = useMemo(() =>
+    Object.keys(statusData).map(key => ({
+      name: key,
+      value: statusData[key],
+    })), [statusData]);
 
-  const statusChartData = Object.keys(statusData).map(key => ({
-    name: key,
-    value: statusData[key],
-  }));
+  const interviewChartData = useMemo(() =>
+    Object.keys(interviewStatusData).map(key => ({
+      name: key,
+      value: interviewStatusData[key],
+    })), [interviewStatusData]);
 
-  // Interviews by application status (the current chart)
-  const interviewStatusData = applications.reduce((acc, app) => {
-    const interviewEvents = (app.timeline || []).filter(event => isInterviewEvent(event.type));
-    if (interviewEvents.length > 0) {
-      const status = app.status.toLowerCase();
-      acc[status] = (acc[status] || 0) + interviewEvents.length;
-    }
-    return acc;
-  }, {} as Record<string, number>);
-
-  const interviewChartData = Object.keys(interviewStatusData).map(key => ({
-    name: key,
-    value: interviewStatusData[key],
-  }));
-
-  // Interviews by type (new chart - more useful!)
-  const interviewTypeData = allInterviewEvents.reduce((acc, event) => {
-    const type = event.type;
-    acc[type] = (acc[type] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
-
-  const interviewTypeChartData = Object.keys(interviewTypeData)
-    .map(key => ({
-      name: t(`insights.interviewTypes.${key}`, key),
-      value: interviewTypeData[key],
-    }))
-    .sort((a, b) => b.value - a.value); // Sort by count descending
+  const interviewTypeChartData = useMemo(() =>
+    Object.keys(interviewTypeData)
+      .map(key => ({
+        name: t(`insights.interviewTypes.${key}`, key),
+        value: interviewTypeData[key],
+      }))
+      .sort((a, b) => b.value - a.value), [interviewTypeData, t]);
 
   return (
     <div className="max-w-7xl mx-auto">
@@ -85,7 +115,7 @@ const InsightsPage: React.FC = () => {
       <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4 mb-8">
         <StatCard title={t('insights.totalApplications')} value={totalApplications} compact />
         <StatCard title={t('insights.totalInterviews')} value={totalInterviews} compact />
-        <StatCard title={t('insights.rejectedApplications')} value={rejectedApplications} compact />
+        <StatCard title={t('insights.rejectedApplications')} value={rejectedApplicationsCount} compact />
         <StatCard title={t('insights.rejectionPercentage')} value={rejectionPercentage} compact />
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">

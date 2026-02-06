@@ -226,24 +226,22 @@ const HomePageContent: React.FC<HomePageContentProps> = () => {
 
   //useKeyboardEscape(handleCancel, isFormOpen);
 
-  const availableStatuses = useMemo(() => {
-    const set = new Set<string>();
-    applications.forEach((app) => {
-      if (app.status) {
-        set.add(app.status);
-      }
-    });
-    return Array.from(set).sort((a, b) => a.localeCompare(b));
-  }, [applications]);
+  // ⚡ Bolt: Single pass to extract available statuses and platforms.
+  // This "loop fusion" optimization reduces the number of iterations over the
+  // `applications` array from two to one, improving performance as the list grows.
+  const { availableStatuses, availablePlatforms } = useMemo(() => {
+    const statuses = new Set<string>();
+    const platforms = new Set<string>();
 
-  const availablePlatforms = useMemo(() => {
-    const set = new Set<string>();
     applications.forEach((app) => {
-      if (app.platform) {
-        set.add(app.platform);
-      }
+      if (app.status) statuses.add(app.status);
+      if (app.platform) platforms.add(app.platform);
     });
-    return Array.from(set).sort((a, b) => a.localeCompare(b));
+
+    return {
+      availableStatuses: Array.from(statuses).sort((a, b) => a.localeCompare(b)),
+      availablePlatforms: Array.from(platforms).sort((a, b) => a.localeCompare(b)),
+    };
   }, [applications]);
 
   // ⚡ Bolt: Pre-parse application dates to optimize filtering.
