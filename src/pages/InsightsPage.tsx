@@ -5,10 +5,11 @@ import StatCard from '../components/StatCard';
 import StatusBarChart from '../components/StatusBarChart';
 import InterviewBarChart from '../components/InterviewBarChart';
 import { useApplicationsStore } from '../stores/applicationsStore';
+import type { InterviewEvent } from '../types/applications';
 
 /**
- * ⚡ Bolt: Use a Set for O(1) lookups instead of an array.
- * This is used frequently during the metrics calculation pass.
+ * ⚡ Bolt: Use a Set for O(1) interview type lookups.
+ * Moving this outside the component prevents it from being recreated on every render.
  */
 const INTERVIEW_TYPES = new Set([
   'screener_call',
@@ -26,85 +27,87 @@ const InsightsPage: React.FC = () => {
   const { t } = useTranslation();
   const applications = useApplicationsStore((state) => state.applications);
 
-  // ⚡ Bolt: Consolidate multiple passes over the applications array into a single
-  // O(N + E) pass using loop fusion (where N is applications and E is total events).
-  // This significantly improves performance for larger datasets and reduces memory
-  // allocations from intermediate arrays (flatMap, filter, reduce).
+  // ⚡ Bolt: Single consolidated pass for metrics using "loop fusion".
+  // This reduces computational complexity from O(N * M) to O(N + E), where N is the
+  // number of applications and E is the total number of timeline events.
+  // We use useMemo to ensure these expensive calculations only run when the
+  // `applications` array reference actually changes.
   const {
-    totalApplications,
-    totalInterviews,
-    rejectedApplications,
-    statusChartData,
-    interviewChartData,
-    interviewTypeChartData,
+    allInterviewEvents,
+    statusData,
+    interviewStatusData,
+    interviewTypeData,
+    rejectedApplicationsCount
   } = useMemo(() => {
+    const interviewEvents: InterviewEvent[] = [];
     const statusMap: Record<string, number> = {};
     const interviewStatusMap: Record<string, number> = {};
     const interviewTypeMap: Record<string, number> = {};
     let rejectedCount = 0;
-    let interviewsCount = 0;
 
-    applications.forEach((app) => {
+    applications.forEach(app => {
       const status = app.status.toLowerCase();
 
-      // 1. Calculate status distribution
+      // 1. Status metrics
       statusMap[status] = (statusMap[status] || 0) + 1;
+      if (status === 'rejected') rejectedCount++;
 
-      // 2. Count rejected applications
-      if (status === 'rejected') {
-        rejectedCount++;
-      }
-
-      // 3. Process timeline events in a single sub-pass
+      // 2. Interview metrics from timeline
       if (app.timeline && app.timeline.length > 0) {
-        let appInterviews = 0;
-        app.timeline.forEach((event) => {
+        let appInterviewCount = 0;
+
+        app.timeline.forEach(event => {
           if (INTERVIEW_TYPES.has(event.type)) {
-            appInterviews++;
-            interviewsCount++;
-            // 4. Calculate interview types distribution
+            interviewEvents.push(event);
+            appInterviewCount++;
+
+            // Track interview type frequency
             interviewTypeMap[event.type] = (interviewTypeMap[event.type] || 0) + 1;
           }
         });
 
-        // 5. Calculate interviews by application status
-        if (appInterviews > 0) {
-          interviewStatusMap[status] = (interviewStatusMap[status] || 0) + appInterviews;
+        if (appInterviewCount > 0) {
+          // Track total interview events by application status
+          interviewStatusMap[status] = (interviewStatusMap[status] || 0) + appInterviewCount;
         }
       }
     });
 
-    // Transform maps to chart data format
-    const statusChartData = Object.keys(statusMap).map(key => ({
-      name: key,
-      value: statusMap[key],
-    }));
+    return {
+      allInterviewEvents: interviewEvents,
+      statusData: statusMap,
+      interviewStatusData: interviewStatusMap,
+      interviewTypeData: interviewTypeMap,
+      rejectedApplicationsCount: rejectedCount
+    };
+  }, [applications]);
 
-    const interviewChartData = Object.keys(interviewStatusMap).map(key => ({
-      name: key,
-      value: interviewStatusMap[key],
-    }));
+  const totalInterviews = allInterviewEvents.length;
+  const totalApplications = applications.length;
+  const rejectionPercentage = totalApplications > 0
+    ? ((rejectedApplicationsCount / totalApplications) * 100).toFixed(2) + '%'
+    : '0%';
 
-    const interviewTypeChartData = Object.keys(interviewTypeMap)
+  // ⚡ Bolt: Memoize chart data to prevent unnecessary re-renders of chart components.
+  const statusChartData = useMemo(() =>
+    Object.keys(statusData).map(key => ({
+      name: key,
+      value: statusData[key],
+    })), [statusData]);
+
+  const interviewChartData = useMemo(() =>
+    Object.keys(interviewStatusData).map(key => ({
+      name: key,
+      value: interviewStatusData[key],
+    })), [interviewStatusData]);
+
+  const interviewTypeChartData = useMemo(() =>
+    Object.keys(interviewTypeData)
       .map(key => ({
         name: t(`insights.interviewTypes.${key}`, key),
-        value: interviewTypeMap[key],
+        value: interviewTypeData[key],
       }))
-      .sort((a, b) => b.value - a.value);
-
-    return {
-      totalApplications: applications.length,
-      totalInterviews: interviewsCount,
-      rejectedApplications: rejectedCount,
-      statusChartData,
-      interviewChartData,
-      interviewTypeChartData,
-    };
-  }, [applications, t]);
-
-  const rejectionPercentage = totalApplications > 0
-    ? ((rejectedApplications / totalApplications) * 100).toFixed(2) + '%'
-    : '0%';
+      .sort((a, b) => b.value - a.value), [interviewTypeData, t]);
 
   return (
     <div className="max-w-7xl mx-auto">
@@ -112,7 +115,7 @@ const InsightsPage: React.FC = () => {
       <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4 mb-8">
         <StatCard title={t('insights.totalApplications')} value={totalApplications} compact />
         <StatCard title={t('insights.totalInterviews')} value={totalInterviews} compact />
-        <StatCard title={t('insights.rejectedApplications')} value={rejectedApplications} compact />
+        <StatCard title={t('insights.rejectedApplications')} value={rejectedApplicationsCount} compact />
         <StatCard title={t('insights.rejectionPercentage')} value={rejectionPercentage} compact />
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
