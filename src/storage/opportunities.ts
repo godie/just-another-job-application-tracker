@@ -1,6 +1,7 @@
 // src/storage/opportunities.ts
 import { OPPORTUNITIES_STORAGE_KEY } from '../utils/constants';
 import { generateId } from '../utils/id';
+import { sanitizeObject } from '../utils/url';
 import type { JobOpportunity } from '../types/opportunities';
 import type { JobApplication } from '../types/applications';
 
@@ -15,7 +16,8 @@ export const getOpportunities = (): JobOpportunity[] => {
     const opportunities = JSON.parse(data);
     if (!Array.isArray(opportunities)) return [];
     
-    return opportunities as JobOpportunity[];
+    // ⚡ Bolt: Centralized sanitization on load.
+    return (opportunities as JobOpportunity[]).map(opp => sanitizeObject(opp));
   } catch (error) {
     console.error("Error loading opportunities from localStorage:", error);
     return [];
