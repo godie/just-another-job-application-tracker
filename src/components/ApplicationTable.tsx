@@ -6,6 +6,7 @@ import type { TableColumn } from '../types/table';
 import ConfirmDialog from './ConfirmDialog';
 import ApplicationTableRow from './ApplicationTableRow';
 import ApplicationCard from './ApplicationCard';
+import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell, Card } from './ui';
 
 interface ApplicationTableProps {
     columns: TableColumn[];
@@ -104,49 +105,48 @@ const ApplicationTable: React.FC<ApplicationTableProps> = ({ columns, data, onEd
       </div>
 
       {/* Desktop Table View */}
-      <div className="hidden md:block overflow-x-auto shadow-xl rounded-lg border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800">
-        <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-xs sm:text-sm" data-testid="application-table">
-        <thead className="bg-gray-50 dark:bg-gray-900">
-          <tr>
-            {columns.map((column) => (
-              <th
-                key={column.id}
-                scope="col"
-                className="px-4 sm:px-6 py-3 text-left text-[11px] sm:text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider bg-indigo-50 dark:bg-indigo-900 whitespace-nowrap"
-              >
-                {column.label}
-              </th>
-            ))}
-            <th scope="col" className="relative px-4 sm:px-6 py-3 w-1">
-              <span className="sr-only">{t('common.actions')}</span>
-            </th>
-          </tr>
-        </thead>
-        <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-100 dark:divide-gray-700">
-          {data.length === 0 ? (
-            <tr>
-              <td colSpan={columns.length + 1} className="px-4 sm:px-6 py-10 text-center text-gray-400 dark:text-gray-500 italic text-sm">
-                {t('home.noApplications')}
-              </td>
-            </tr>
-          ) : (
-            data.map((item) => (
-              <ApplicationTableRow
-                key={item.id}
-                item={item}
-                columns={columns}
-                isHovered={hoveredRowId === item.id}
-                onEdit={onEdit}
-                onDeleteRequest={handleDeleteRequest}
-                onMouseEnter={handleMouseEnter}
-                onMouseLeave={handleMouseLeave}
-                getCellValue={getCellValue}
-              />
-            ))
-          )}
-        </tbody>
-      </table>
-      </div>
+      <Card className="hidden md:block overflow-hidden shadow-xl">
+        <Table data-testid="application-table">
+          <TableHeader>
+            <TableRow className="hover:bg-transparent">
+              {columns.map((column) => (
+                <TableHead
+                  key={column.id}
+                  className="px-4 sm:px-6 py-3 text-[11px] sm:text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider bg-indigo-50 dark:bg-indigo-900/50 whitespace-nowrap"
+                >
+                  {column.label}
+                </TableHead>
+              ))}
+              <TableHead className="relative px-4 sm:px-6 py-3 w-1 bg-indigo-50 dark:bg-indigo-900/50">
+                <span className="sr-only">{t('common.actions')}</span>
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {data.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={columns.length + 1} className="px-4 sm:px-6 py-10 text-center text-gray-400 dark:text-gray-500 italic text-sm">
+                  {t('home.noApplications')}
+                </TableCell>
+              </TableRow>
+            ) : (
+              data.map((item) => (
+                <ApplicationTableRow
+                  key={item.id}
+                  item={item}
+                  columns={columns}
+                  isHovered={hoveredRowId === item.id}
+                  onEdit={onEdit}
+                  onDeleteRequest={handleDeleteRequest}
+                  onMouseEnter={handleMouseEnter}
+                  onMouseLeave={handleMouseLeave}
+                  getCellValue={getCellValue}
+                />
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </Card>
       <ConfirmDialog
         isOpen={deleteConfirm.isOpen}
         title={t('home.deleteConfirm.title')}

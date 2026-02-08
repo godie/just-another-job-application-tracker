@@ -1,4 +1,5 @@
 import React from 'react';
+import { Button } from './ui';
 
 interface ConfirmDialogProps {
   isOpen: boolean;
@@ -66,20 +67,21 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
                 {message}
               </p>
               <div className="flex justify-end gap-3">
-                <button
+                <Button
+                  variant="outline"
                   type="button"
                   onClick={onCancel}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600 transition"
                 >
                   {cancelText}
-                </button>
-                <button
+                </Button>
+                <Button
+                  variant={type === 'danger' ? 'danger' : 'primary'}
                   type="button"
                   onClick={onConfirm}
-                  className={`px-4 py-2 text-sm font-medium text-white rounded-md transition ${styles.button}`}
+                  className={type === 'warning' ? styles.button : ''}
                 >
                   {confirmText}
-                </button>
+                </Button>
               </div>
             </div>
           </div>
