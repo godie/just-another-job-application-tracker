@@ -93,6 +93,15 @@ interface HomePageContentProps {
   onNavigate?: (page: PageType) => void;
 }
 
+/**
+ * Interface for applications with pre-calculated metadata for performance optimization.
+ * ⚡ Bolt: Using a specialized interface helps optimize filtering and searching.
+ */
+interface ApplicationWithMetadata extends JobApplication {
+  parsedApplicationDate: Date | null;
+  searchMetadata: string;
+}
+
 const HomePageContent: React.FC<HomePageContentProps> = () => {
   const { t } = useTranslation();
   const { showSuccess } = useAlert();
@@ -226,34 +235,53 @@ const HomePageContent: React.FC<HomePageContentProps> = () => {
 
   //useKeyboardEscape(handleCancel, isFormOpen);
 
-  // ⚡ Bolt: Single pass to extract available statuses and platforms.
-  // This "loop fusion" optimization reduces the number of iterations over the
-  // `applications` array from two to one, improving performance as the list grows.
-  const { availableStatuses, availablePlatforms } = useMemo(() => {
-    const statuses = new Set<string>();
-    const platforms = new Set<string>();
+  // ⚡ Bolt: Fused Loop for Application Processing
+  // Instead of multiple separate loops (one for statuses, one for platforms, one for dates,
+  // and one for non-deleted apps), we iterate over the `applications` array once.
+  // We also pre-calculate a `searchMetadata` string for each application to optimize
+  // the filtering process, especially for the search bar.
+  const {
+    applicationsWithMetadata,
+    availableStatuses,
+    availablePlatforms,
+    nonDeletedApplications
+  } = useMemo(() => {
+    const statusesSet = new Set<string>();
+    const platformsSet = new Set<string>();
+    const nonDeleted: JobApplication[] = [];
 
-    applications.forEach((app) => {
-      if (app.status) statuses.add(app.status);
-      if (app.platform) platforms.add(app.platform);
+    const withMetadata: ApplicationWithMetadata[] = applications.map(app => {
+      // 1. Collect unique statuses and platforms
+      if (app.status) statusesSet.add(app.status);
+      if (app.platform) platformsSet.add(app.platform);
+
+      // 2. Identify non-deleted applications
+      if (app.status !== 'Deleted') {
+        nonDeleted.push(app);
+      }
+
+      // 3. Pre-calculate searchable string (Search Metadata)
+      // This combines all searchable fields into a single lowercase string
+      // to avoid expensive mapping and multiple checks during every filter update.
+      const timelineStr = app.timeline?.map(event =>
+        `${event.notes ?? ''} ${event.customTypeName ?? ''} ${event.interviewerName ?? ''}`
+      ).join(' ') || '';
+
+      const searchMetadata = `${app.position ?? ''} ${app.company ?? ''} ${app.contactName ?? ''} ${app.notes ?? ''} ${timelineStr}`.toLowerCase();
+
+      return {
+        ...app,
+        parsedApplicationDate: app.applicationDate ? parseLocalDate(app.applicationDate) : null,
+        searchMetadata,
+      };
     });
 
     return {
-      availableStatuses: Array.from(statuses).sort((a, b) => a.localeCompare(b)),
-      availablePlatforms: Array.from(platforms).sort((a, b) => a.localeCompare(b)),
+      applicationsWithMetadata: withMetadata,
+      availableStatuses: Array.from(statusesSet).sort((a, b) => a.localeCompare(b)),
+      availablePlatforms: Array.from(platformsSet).sort((a, b) => a.localeCompare(b)),
+      nonDeletedApplications: nonDeleted,
     };
-  }, [applications]);
-
-  // ⚡ Bolt: Pre-parse application dates to optimize filtering.
-  // By converting date strings to Date objects once and memoizing the result,
-  // we avoid calling the expensive `parseLocalDate` function inside the filter
-  // loop on every re-render. This significantly improves performance when
-  // filtering by date, especially with a large number of applications.
-  const applicationsWithParsedDates = useMemo(() => {
-    return applications.map(app => ({
-      ...app,
-      parsedApplicationDate: app.applicationDate ? parseLocalDate(app.applicationDate) : null,
-    }));
   }, [applications]);
 
   const filteredApplications = useMemo(() => {
@@ -261,20 +289,17 @@ const HomePageContent: React.FC<HomePageContentProps> = () => {
     const fromDate = filters.dateFrom ? parseLocalDate(filters.dateFrom) : null;
     const toDate = filters.dateTo ? parseLocalDate(filters.dateTo) : null;
 
-    return applicationsWithParsedDates.filter(app => {
+    return applicationsWithMetadata.filter(app => {
       // Exclude deleted applications by default
       if (app.status === 'Deleted') {
         return false;
       }
 
-      const position = app.position?.toLowerCase() || '';
-      const company = app.company?.toLowerCase() || '';
-      const contact = app.contactName?.toLowerCase() || '';
-      const notes = app.notes?.toLowerCase() || '';
-      const timelineNotes = app.timeline?.map(event => `${event.notes ?? ''} ${event.customTypeName ?? ''} ${event.interviewerName ?? ''}`.toLowerCase()).join(' ') || '';
-
+      // ⚡ Bolt: Optimized Search Check
+      // Using pre-calculated searchMetadata avoids expensive string operations
+      // and timeline mapping inside the filter loop.
       const matchesSearch = normalizedSearch
-        ? [position, company, contact, notes, timelineNotes].some(value => value.includes(normalizedSearch))
+        ? app.searchMetadata.includes(normalizedSearch)
         : true;
 
       // Advanced status filtering with include/exclude
@@ -312,7 +337,7 @@ const HomePageContent: React.FC<HomePageContentProps> = () => {
 
       return matchesSearch && matchesStatus && matchesPlatform && matchesDateFrom && matchesDateTo;
     });
-  }, [applicationsWithParsedDates, filters]);
+  }, [applicationsWithMetadata, filters]);
 
   const tableColumns: TableColumn[] = useMemo(() => {
     const buildColumn = (id: string, fallbackLabel: string): TableColumn => ({
@@ -376,14 +401,6 @@ const HomePageContent: React.FC<HomePageContentProps> = () => {
         );
     }
   };
-
-  const nonDeletedApplications = useMemo(() => {
-    // ⚡ Bolt: Memoize the list of non-deleted applications.
-    // This prevents the GoogleSheetsSync component from re-rendering every time
-    // the filters change, as it was receiving a new array instance on every render.
-    // Now, it only re-renders when the core `applications` data changes.
-    return applications.filter(app => app.status !== 'Deleted');
-  }, [applications]);
 
   return (
     <div className="max-w-7xl mx-auto">
