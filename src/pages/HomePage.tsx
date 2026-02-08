@@ -1,5 +1,5 @@
 // src/pages/HomePage.tsx
-import React, { useState, useEffect, useCallback, useMemo, memo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import Footer from '../components/Footer';
 import ApplicationTable from '../components/ApplicationTable';
@@ -8,6 +8,7 @@ import KanbanView from '../components/KanbanView';
 import CalendarView from '../components/CalendarView';
 import ViewSwitcher, { type ViewType } from '../components/ViewSwitcher';
 import FiltersBar, { type Filters } from '../components/FiltersBar';
+import MetricsSummary from '../components/MetricsSummary';
 import { useAlert } from '../components/AlertProvider';
 import {
   DEFAULT_FIELDS,
@@ -17,9 +18,9 @@ import type { TableColumn } from '../types/table';
 import AddJobForm from '../components/AddJobComponent';
 import GoogleSheetsSync from '../components/GoogleSheetsSync';
 import packageJson from '../../package.json';
-import { parseLocalDate } from '../utils/date';
 import { useApplicationsStore } from '../stores/applicationsStore';
 import { usePreferencesStore } from '../stores/preferencesStore';
+import { useFilteredApplications } from '../hooks/useFilteredApplications';
 
 const VIEW_STORAGE_KEY = 'preferredView';
 const FILTERS_STORAGE_KEY = 'applicationFilters';
@@ -34,72 +35,10 @@ const defaultFilters: Filters = {
   dateTo: '',
 };
 
-// Componente Placeholder para la sección de métricas
-// Memoized to prevent re-renders when filteredApplications reference changes but content is the same
-const MetricsSummary: React.FC<{ applications: JobApplication[] }> = ({ applications }) => {
-  const { t } = useTranslation();
-  // ⚡ Bolt: Separated stat calculation from metric array creation.
-  // By memoizing the aggregated stats object first, we can use its primitive
-  // values (interviews, offers) as dependencies for the final metrics array.
-  // This prevents the metrics array from being recalculated when the
-  // `applications` array reference changes but the actual numbers haven't,
-  // making the memoization more precise and effective.
-  const stats = useMemo(() => {
-    return applications.reduce(
-      (acc, app) => {
-        if (app.interviewDate) {
-          acc.interviews++;
-        }
-        if (app.status === 'Offer') {
-          acc.offers++;
-        }
-        return acc;
-      },
-      { interviews: 0, offers: 0 }
-    );
-  }, [applications]);
-
-  const metrics = useMemo(() => {
-    return [
-      { label: t('home.metrics.applications'), value: applications.length, color: 'border-blue-500' },
-      { label: t('home.metrics.interviews'), value: stats.interviews, color: 'border-yellow-500' },
-      { label: t('home.metrics.offers'), value: stats.offers, color: 'border-green-500' },
-    ];
-  }, [applications.length, stats.interviews, stats.offers, t]);
-
-  return (
-    <section className="grid grid-cols-3 gap-2 sm:gap-4 my-8" data-testid="metrics-summary">
-      {metrics.map((metric) => (
-        <div 
-          key={metric.label} 
-          className={`bg-white dark:bg-gray-800 p-2 sm:p-6 rounded-lg sm:rounded-xl shadow sm:shadow-lg border-l-4 ${metric.color} transition duration-300 hover:shadow-lg sm:hover:shadow-xl`}
-        >
-          <p className="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">{metric.label}</p>
-          <p className="mt-0.5 sm:mt-1 text-xl sm:text-4xl font-extrabold text-gray-900 dark:text-white">{metric.value}</p>
-        </div>
-      ))}
-    </section>
-  );
-};
-
-MetricsSummary.displayName = 'MetricsSummary';
-
-// Export memoized version
-const MemoizedMetricsSummary = memo(MetricsSummary);
-
 import { type PageType } from '../App';
 
 interface HomePageContentProps {
   onNavigate?: (page: PageType) => void;
-}
-
-/**
- * Interface for applications with pre-calculated metadata for performance optimization.
- * ⚡ Bolt: Using a specialized interface helps optimize filtering and searching.
- */
-interface ApplicationWithMetadata extends JobApplication {
-  parsedApplicationDate: Date | null;
-  searchMetadata: string;
 }
 
 const HomePageContent: React.FC<HomePageContentProps> = () => {
@@ -143,39 +82,35 @@ const HomePageContent: React.FC<HomePageContentProps> = () => {
     };
   }, [loadApplications, loadPreferences, showSuccess, t]);
 
+  // Sync view preference
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      // Use default view from preferences, fallback to localStorage for backward compatibility
-      if (preferences?.defaultView) {
-        setCurrentView(preferences.defaultView);
-        // Also update localStorage for backward compatibility
-        window.localStorage.setItem(VIEW_STORAGE_KEY, preferences.defaultView);
-      } else {
-        const storedView = window.localStorage.getItem(VIEW_STORAGE_KEY) as ViewType | null;
-        if (storedView) {
-          setCurrentView(storedView);
-        }
-      }
-      
-      const storedFilters = window.localStorage.getItem(FILTERS_STORAGE_KEY);
-      if (storedFilters) {
-        try {
-          const parsed = JSON.parse(storedFilters) as Filters;
-          setFilters({ ...defaultFilters, ...parsed });
-        } catch {
-          // ignore JSON parse errors
-        }
+    if (typeof window === 'undefined') return;
+
+    if (preferences?.defaultView) {
+      setCurrentView(preferences.defaultView);
+      window.localStorage.setItem(VIEW_STORAGE_KEY, preferences.defaultView);
+    } else {
+      const storedView = window.localStorage.getItem(VIEW_STORAGE_KEY) as ViewType | null;
+      if (storedView) {
+        setCurrentView(storedView);
       }
     }
   }, [preferences?.defaultView]);
   
-  // Update view when preferences change
+  // Load filters from localStorage only on mount
   useEffect(() => {
-    if (preferences?.defaultView) {
-      setCurrentView(preferences.defaultView);
-      window.localStorage.setItem(VIEW_STORAGE_KEY, preferences.defaultView);
+    if (typeof window === 'undefined') return;
+
+    const storedFilters = window.localStorage.getItem(FILTERS_STORAGE_KEY);
+    if (storedFilters) {
+      try {
+        const parsed = JSON.parse(storedFilters) as Filters;
+        setFilters({ ...defaultFilters, ...parsed });
+      } catch {
+        // ignore JSON parse errors
+      }
     }
-  }, [preferences?.defaultView]);
+  }, []);
 
   const handleViewChange = useCallback((view: ViewType) => {
     setCurrentView(view);
@@ -235,109 +170,12 @@ const HomePageContent: React.FC<HomePageContentProps> = () => {
 
   //useKeyboardEscape(handleCancel, isFormOpen);
 
-  // ⚡ Bolt: Fused Loop for Application Processing
-  // Instead of multiple separate loops (one for statuses, one for platforms, one for dates,
-  // and one for non-deleted apps), we iterate over the `applications` array once.
-  // We also pre-calculate a `searchMetadata` string for each application to optimize
-  // the filtering process, especially for the search bar.
   const {
-    applicationsWithMetadata,
+    filteredApplications,
     availableStatuses,
     availablePlatforms,
     nonDeletedApplications
-  } = useMemo(() => {
-    const statusesSet = new Set<string>();
-    const platformsSet = new Set<string>();
-    const nonDeleted: JobApplication[] = [];
-
-    const withMetadata: ApplicationWithMetadata[] = applications.map(app => {
-      // 1. Collect unique statuses and platforms
-      if (app.status) statusesSet.add(app.status);
-      if (app.platform) platformsSet.add(app.platform);
-
-      // 2. Identify non-deleted applications
-      if (app.status !== 'Deleted') {
-        nonDeleted.push(app);
-      }
-
-      // 3. Pre-calculate searchable string (Search Metadata)
-      // This combines all searchable fields into a single lowercase string
-      // to avoid expensive mapping and multiple checks during every filter update.
-      const timelineStr = app.timeline?.map(event =>
-        `${event.notes ?? ''} ${event.customTypeName ?? ''} ${event.interviewerName ?? ''}`
-      ).join(' ') || '';
-
-      const searchMetadata = `${app.position ?? ''} ${app.company ?? ''} ${app.contactName ?? ''} ${app.notes ?? ''} ${timelineStr}`.toLowerCase();
-
-      return {
-        ...app,
-        parsedApplicationDate: app.applicationDate ? parseLocalDate(app.applicationDate) : null,
-        searchMetadata,
-      };
-    });
-
-    return {
-      applicationsWithMetadata: withMetadata,
-      availableStatuses: Array.from(statusesSet).sort((a, b) => a.localeCompare(b)),
-      availablePlatforms: Array.from(platformsSet).sort((a, b) => a.localeCompare(b)),
-      nonDeletedApplications: nonDeleted,
-    };
-  }, [applications]);
-
-  const filteredApplications = useMemo(() => {
-    const normalizedSearch = filters.search.trim().toLowerCase();
-    const fromDate = filters.dateFrom ? parseLocalDate(filters.dateFrom) : null;
-    const toDate = filters.dateTo ? parseLocalDate(filters.dateTo) : null;
-
-    return applicationsWithMetadata.filter(app => {
-      // Exclude deleted applications by default
-      if (app.status === 'Deleted') {
-        return false;
-      }
-
-      // ⚡ Bolt: Optimized Search Check
-      // Using pre-calculated searchMetadata avoids expensive string operations
-      // and timeline mapping inside the filter loop.
-      const matchesSearch = normalizedSearch
-        ? app.searchMetadata.includes(normalizedSearch)
-        : true;
-
-      // Advanced status filtering with include/exclude
-      let matchesStatus = true;
-      const statusInclude = filters.statusInclude || [];
-      const statusExclude = filters.statusExclude || [];
-      
-      // If using legacy single status filter
-      if (filters.status && statusInclude.length === 0 && statusExclude.length === 0) {
-        matchesStatus = app.status === filters.status;
-      } else {
-        // New advanced filtering
-        // If there are included statuses, app must be in that list
-        if (statusInclude.length > 0) {
-          matchesStatus = statusInclude.includes(app.status);
-        }
-        // Excluded statuses always take precedence
-        if (statusExclude.length > 0 && statusExclude.includes(app.status)) {
-          matchesStatus = false;
-        }
-      }
-
-      const matchesPlatform = filters.platform ? app.platform === filters.platform : true;
-
-      let matchesDateFrom = true;
-      let matchesDateTo = true;
-
-      if (fromDate) {
-        matchesDateFrom = app.parsedApplicationDate ? app.parsedApplicationDate >= fromDate : false;
-      }
-
-      if (toDate) {
-        matchesDateTo = app.parsedApplicationDate ? app.parsedApplicationDate <= toDate : false;
-      }
-
-      return matchesSearch && matchesStatus && matchesPlatform && matchesDateFrom && matchesDateTo;
-    });
-  }, [applicationsWithMetadata, filters]);
+  } = useFilteredApplications(applications, filters);
 
   const tableColumns: TableColumn[] = useMemo(() => {
     const buildColumn = (id: string, fallbackLabel: string): TableColumn => ({
@@ -406,7 +244,7 @@ const HomePageContent: React.FC<HomePageContentProps> = () => {
     <div className="max-w-7xl mx-auto">
           
           {/* Summary Section */}
-          <MemoizedMetricsSummary applications={filteredApplications} />
+          <MetricsSummary applications={filteredApplications} />
 
           {/* Google Sheets Sync */}
           <GoogleSheetsSync 
