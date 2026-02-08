@@ -6,6 +6,7 @@ import HomePage from './pages/HomePage';
 import OpportunitiesPage from './pages/OpportunitiesPage';
 import SettingsPage from './pages/SettingsPage';
 import InsightsPage from './pages/InsightsPage';
+import SupportPage from './pages/SupportPage';
 import LandingPage from './pages/LandingPage';
 import MainLayout from './layouts/MainLayout';
 import { useApplicationsStore } from './stores/applicationsStore';
@@ -13,7 +14,7 @@ import { useApplicationsStore } from './stores/applicationsStore';
 // ⚡ Bolt: Provide a dummy client ID if not present to prevent crash in dev/test environments
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || 'dummy-client-id.apps.googleusercontent.com';
 
-export type PageType = 'landing' | 'applications' | 'opportunities' | 'settings' | 'insights';
+export type PageType = 'landing' | 'applications' | 'opportunities' | 'settings' | 'insights' | 'support';
 
 function App() {
   const [currentPage, setCurrentPage] = useState<PageType>(() => {
@@ -48,6 +49,8 @@ function App() {
         return <SettingsPage onNavigate={setCurrentPage} />;
       case 'insights':
         return <InsightsPage />;
+      case 'support':
+        return <SupportPage />;
       case 'landing':
         return <LandingPage onNavigate={setCurrentPage} />;
       default:

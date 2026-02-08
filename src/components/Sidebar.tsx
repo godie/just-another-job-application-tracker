@@ -1,5 +1,6 @@
 // src/components/Sidebar.tsx
 import React, { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { type PageType } from '../App';
 import { useOpportunitiesStore } from '../stores/opportunitiesStore';
 
@@ -10,6 +11,7 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ currentPage = 'applications', onNavigate, isOpen = true }) => {
+  const { t } = useTranslation();
   const opportunities = useOpportunitiesStore((state) => state.opportunities);
   const loadOpportunities = useOpportunitiesStore((state) => state.loadOpportunities);
   const refreshOpportunities = useOpportunitiesStore((state) => state.refreshOpportunities);
@@ -43,11 +45,12 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPage = 'applications', onNavig
   };
 
   const navItems: { page: PageType; label: string; showBadge?: boolean }[] = [
-    { page: 'applications', label: 'Applications' },
-    { page: 'opportunities', label: 'Opportunities', showBadge: true },
-    { page: 'settings', label: 'Settings' },
-    { page: 'insights', label: 'Insights' },
-    { page: 'landing', label: 'About' },
+    { page: 'applications', label: t('nav.applications') },
+    { page: 'opportunities', label: t('nav.opportunities'), showBadge: true },
+    { page: 'settings', label: t('nav.settings') },
+    { page: 'insights', label: t('nav.insights') },
+    { page: 'support', label: t('nav.support') },
+    { page: 'landing', label: t('nav.about') },
   ];
 
   return (

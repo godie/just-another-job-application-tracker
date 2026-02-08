@@ -1,5 +1,6 @@
 // src/components/OpportunityForm.tsx
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { type JobOpportunity } from '../utils/localStorage';
 
 interface OpportunityFormProps {
@@ -9,6 +10,7 @@ interface OpportunityFormProps {
 }
 
 const OpportunityForm: React.FC<OpportunityFormProps> = ({ isOpen, onClose, onSave }) => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState<Omit<JobOpportunity, 'id' | 'capturedDate'>>({
     position: '',
     company: '',
@@ -40,19 +42,19 @@ const OpportunityForm: React.FC<OpportunityFormProps> = ({ isOpen, onClose, onSa
     const newErrors: { [key: string]: string } = {};
 
     if (!formData.position.trim()) {
-      newErrors.position = 'Position is required';
+      newErrors.position = t('form.validation.positionRequired');
     }
     if (!formData.company.trim()) {
-      newErrors.company = 'Company is required';
+      newErrors.company = t('form.validation.companyRequired');
     }
     if (!formData.link.trim()) {
-      newErrors.link = 'Link is required';
+      newErrors.link = t('form.validation.linkRequired');
     } else {
       // Basic URL validation
       try {
         new URL(formData.link);
       } catch {
-        newErrors.link = 'Please enter a valid URL';
+        newErrors.link = t('form.validation.invalidUrl');
       }
     }
 
@@ -104,7 +106,7 @@ const OpportunityForm: React.FC<OpportunityFormProps> = ({ isOpen, onClose, onSa
       <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <div className="p-6">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-xl font-bold text-gray-800">Add New Opportunity</h3>
+            <h3 className="text-xl font-bold text-gray-800">{t('form.addOpportunityTitle')}</h3>
             <button
               onClick={handleCancel}
               className="text-gray-400 hover:text-gray-600 text-2xl font-bold"
@@ -117,7 +119,7 @@ const OpportunityForm: React.FC<OpportunityFormProps> = ({ isOpen, onClose, onSa
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Position <span className="text-red-500">*</span>
+                {t('form.position')}
               </label>
               <input
                 type="text"
@@ -135,7 +137,7 @@ const OpportunityForm: React.FC<OpportunityFormProps> = ({ isOpen, onClose, onSa
 
             <div>
               <label htmlFor="company" className="block text-sm font-medium text-gray-700 mb-1">
-                Company <span className="text-red-500">*</span>
+                {t('form.company')}
               </label>
               <input
                 id="company"
@@ -154,7 +156,7 @@ const OpportunityForm: React.FC<OpportunityFormProps> = ({ isOpen, onClose, onSa
 
             <div>
               <label htmlFor="link" className="block text-sm font-medium text-gray-700 mb-1">
-                Link <span className="text-red-500">*</span>
+                {t('form.link')}
               </label>
               <input
                 id="link"
@@ -173,7 +175,7 @@ const OpportunityForm: React.FC<OpportunityFormProps> = ({ isOpen, onClose, onSa
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-1">Location</label>
+                <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-1">{t('opportunities.table.location')}</label>
                 <input
                   id="location"
                   type="text"
@@ -185,7 +187,7 @@ const OpportunityForm: React.FC<OpportunityFormProps> = ({ isOpen, onClose, onSa
               </div>
 
               <div>
-                <label htmlFor="jobType" className="block text-sm font-medium text-gray-700 mb-1">Job Type</label>
+                <label htmlFor="jobType" className="block text-sm font-medium text-gray-700 mb-1">{t('opportunities.table.jobType')}</label>
                 <input
                   id="jobType"
                   type="text"
@@ -198,7 +200,7 @@ const OpportunityForm: React.FC<OpportunityFormProps> = ({ isOpen, onClose, onSa
             </div>
 
             <div>
-              <label htmlFor="salary" className="block text-sm font-medium text-gray-700 mb-1">Salary</label>
+              <label htmlFor="salary" className="block text-sm font-medium text-gray-700 mb-1">{t('fields.salary')}</label>
               <input
                 id="salary"
                 type="text"
@@ -210,7 +212,7 @@ const OpportunityForm: React.FC<OpportunityFormProps> = ({ isOpen, onClose, onSa
             </div>
 
             <div>
-              <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+              <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">{t('form.description')}</label>
               <textarea
                 id="description"
                 value={formData.description}
@@ -222,7 +224,7 @@ const OpportunityForm: React.FC<OpportunityFormProps> = ({ isOpen, onClose, onSa
             </div>
 
             <div>
-              <label htmlFor="postedDate" className="block text-sm font-medium text-gray-700 mb-1">Posted Date</label>
+              <label htmlFor="postedDate" className="block text-sm font-medium text-gray-700 mb-1">{t('form.postedDate')}</label>
               <input
                 id="postedDate"
                 type="date"
@@ -238,13 +240,13 @@ const OpportunityForm: React.FC<OpportunityFormProps> = ({ isOpen, onClose, onSa
                 onClick={handleCancel}
                 className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 focus:ring-2 focus:ring-indigo-500"
               >
-                Cancel
+                {t('common.cancel')}
               </button>
               <button
                 type="submit"
                 className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500"
               >
-                Save Opportunity
+                {t('form.saveOpportunity')}
               </button>
             </div>
           </form>

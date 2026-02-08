@@ -1,18 +1,20 @@
 // src/components/ApplicationTableRow.tsx
 import React, { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { JobApplication } from '../types/applications';
+import type { TableColumn } from '../types/table';
 import { sanitizeUrl } from '../utils/localStorage';
 import DOMPurify from 'dompurify';
 
 interface ApplicationTableRowProps {
   item: JobApplication;
-  columns: string[];
+  columns: TableColumn[];
   isHovered: boolean;
   onEdit: (application: JobApplication) => void;
   onDeleteRequest: (application: JobApplication) => void;
   onMouseEnter: (id: string) => void;
   onMouseLeave: () => void;
-  getCellValue: (item: JobApplication, column: string) => string;
+  getCellValue: (item: JobApplication, columnId: string) => string;
 }
 
 const NOTES_TRUNCATE_LENGTH = 100;
@@ -31,6 +33,7 @@ const ApplicationTableRow: React.FC<ApplicationTableRowProps> = ({
   onMouseLeave,
   getCellValue,
 }) => {
+  const { t } = useTranslation();
   const createMarkup = (htmlContent: string) => {
     return { __html: DOMPurify.sanitize(htmlContent) };
   };
@@ -42,9 +45,16 @@ const ApplicationTableRow: React.FC<ApplicationTableRowProps> = ({
       onMouseLeave={onMouseLeave}
       data-testid={`row-${item.id}`}
     >
-      {columns.map((column, index) => {
-        const cellContent = getCellValue(item, column);
-        const isNotes = column.toLowerCase() === 'notes';
+      {columns.map((column) => {
+        let cellContent = getCellValue(item, column.id);
+
+        if (column.id === 'status' && cellContent) {
+          cellContent = t(`statuses.${cellContent.toLowerCase()}`, cellContent);
+        } else if (column.id === 'platform' && cellContent) {
+          cellContent = t(`form.platforms.${cellContent}`, cellContent);
+        }
+
+        const isNotes = column.id === 'notes';
 
         if (isNotes) {
           const originalLength = cellContent.length;
@@ -63,7 +73,7 @@ const ApplicationTableRow: React.FC<ApplicationTableRowProps> = ({
 
           return (
             <td
-              key={index}
+              key={column.id}
               onClick={() => onEdit(item)}
               className={`px-4 sm:px-6 py-3 text-gray-900 dark:text-gray-100 border-r border-gray-100 dark:border-gray-700 group-hover:bg-indigo-50 dark:group-hover:bg-indigo-900 ${
                 shouldWrap ? 'whitespace-normal' : 'whitespace-nowrap'
@@ -77,10 +87,10 @@ const ApplicationTableRow: React.FC<ApplicationTableRowProps> = ({
           );
         }
 
-        const isLink = column.toLowerCase() === 'link';
+        const isLink = column.id === 'link';
         return (
           <td
-            key={index}
+            key={column.id}
             onClick={() => onEdit(item)}
             className="px-4 sm:px-6 py-3 whitespace-nowrap text-gray-900 dark:text-gray-100 border-r border-gray-100 dark:border-gray-700 group-hover:bg-indigo-50 dark:group-hover:bg-indigo-900"
           >
@@ -111,10 +121,10 @@ const ApplicationTableRow: React.FC<ApplicationTableRowProps> = ({
               onDeleteRequest(item);
             }}
             className="inline-flex items-center gap-1 text-xs font-semibold text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 bg-red-50 dark:bg-red-900 px-3 py-1 rounded-full transition"
-            aria-label={`Delete application for ${item.position}`}
+          aria-label={t('home.deleteConfirm.titleFor', { position: item.position, company: item.company })}
             data-testid={`delete-btn-${item.id}`}
           >
-            <span>Delete</span>
+            <span>{t('common.delete')}</span>
           </button>
         )}
       </td>

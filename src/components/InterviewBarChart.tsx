@@ -1,20 +1,23 @@
 // src/components/InterviewBarChart.tsx
 import React, { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, CartesianGrid } from 'recharts';
-import { VALUE_BY_STATUS } from '../utils/constants';
 
 interface InterviewBarChartProps {
   data: { name: string; value: number }[];
   title?: string;
 }
 
-const InterviewBarChart: React.FC<InterviewBarChartProps> = ({ data, title = "Interviews by Status" }) => {
+const InterviewBarChart: React.FC<InterviewBarChartProps> = ({ data, title }) => {
+  const { t } = useTranslation();
+
   // Only map status names when showing interviews by application status
-  const shouldMapStatus = title === "Interviews by Application Status" || title === "Interviews by Status";
+  // We check against the English keys to determine if we should map
+  const shouldMapStatus = title === t('insights.interviewsByStatus');
   
   const chartData = data.map(item => ({
     ...item,
-    name: shouldMapStatus ? (VALUE_BY_STATUS[item.name] || item.name) : item.name,
+    name: shouldMapStatus ? t(`statuses.${item.name.toLowerCase()}`, item.name) : item.name,
   }));
 
   return (

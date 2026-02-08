@@ -1,4 +1,5 @@
 import React, { useMemo, useState, memo } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { JobApplication, InterviewEvent } from '../utils/localStorage';
 import { parseLocalDate } from '../utils/date';
 
@@ -14,9 +15,10 @@ interface CalendarDay {
 }
 
 const WEEKDAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+type TranslateFn = (key: string, options?: Record<string, unknown>) => string;
 
-const formatMonthYear = (date: Date) =>
-  date.toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
+const formatMonthYear = (date: Date, locale?: string) =>
+  date.toLocaleDateString(locale, { month: 'long', year: 'numeric' });
 
 const startOfMonth = (date: Date) => new Date(date.getFullYear(), date.getMonth(), 1);
 
@@ -39,24 +41,25 @@ const getDaysDifference = (eventDate: Date): number => {
 };
 
 // Format relative time indicator
-const formatRelativeTime = (eventDate: Date): string => {
+const formatRelativeTime = (eventDate: Date, t: TranslateFn): string => {
   const daysDiff = getDaysDifference(eventDate);
   
   if (daysDiff === 0) {
-    return 'Today';
+    return t('calendar.relative.today');
   } else if (daysDiff === 1) {
-    return 'Tomorrow';
+    return t('calendar.relative.tomorrow');
   } else if (daysDiff === -1) {
-    return 'Yesterday';
+    return t('calendar.relative.yesterday');
   } else if (daysDiff > 1) {
-    return `in ${daysDiff} days`;
+    return t('calendar.relative.inDays', { count: daysDiff });
   } else {
-    return `${Math.abs(daysDiff)} days ago`;
+    return t('calendar.relative.daysAgo', { count: Math.abs(daysDiff) });
   }
 };
 
 // Memoized to prevent re-renders when filteredApplications reference changes but content is the same
 const CalendarView: React.FC<CalendarViewProps> = ({ applications, onEdit }) => {
+  const { t, i18n } = useTranslation();
   const [focusMonth, setFocusMonth] = useState(() => startOfMonth(new Date()));
 
   const calendar = useMemo(() => {
@@ -97,8 +100,8 @@ const CalendarView: React.FC<CalendarViewProps> = ({ applications, onEdit }) => 
     <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
       <header className="flex items-center justify-between px-4 py-3 bg-gray-50 border-b border-gray-200 flex-wrap gap-3">
         <div>
-          <h2 className="text-lg font-semibold text-gray-900">Calendar</h2>
-          <p className="text-sm text-gray-500">{formatMonthYear(focusMonth)}</p>
+          <h2 className="text-lg font-semibold text-gray-900">{t('calendar.title')}</h2>
+          <p className="text-sm text-gray-500">{formatMonthYear(focusMonth, i18n.language)}</p>
         </div>
         <div className="flex items-center gap-2 text-sm">
           <button
@@ -106,21 +109,21 @@ const CalendarView: React.FC<CalendarViewProps> = ({ applications, onEdit }) => 
             onClick={() => setFocusMonth((prev) => addMonths(prev, -1))}
             className="px-3 py-1.5 rounded-md border border-gray-200 hover:bg-gray-100 transition"
           >
-            Previous
+            {t('common.previous')}
           </button>
           <button
             type="button"
             onClick={() => setFocusMonth(startOfMonth(new Date()))}
             className="px-3 py-1.5 rounded-md border border-indigo-200 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 transition"
           >
-            Today
+            {t('calendar.today')}
           </button>
           <button
             type="button"
             onClick={() => setFocusMonth((prev) => addMonths(prev, 1))}
             className="px-3 py-1.5 rounded-md border border-gray-200 hover:bg-gray-100 transition"
           >
-            Next
+            {t('common.next')}
           </button>
         </div>
       </header>
@@ -128,7 +131,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({ applications, onEdit }) => 
       <div className="hidden sm:grid grid-cols-7 bg-gray-100 border-b border-gray-200 text-xs font-semibold uppercase tracking-wide text-gray-600">
         {WEEKDAY_LABELS.map((label) => (
           <div key={label} className="px-3 py-2 text-center">
-            {label}
+            {t(`calendar.weekdays.${label}`)}
           </div>
         ))}
       </div>
@@ -164,7 +167,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({ applications, onEdit }) => 
               <ul className="mt-1 space-y-0.5 sm:space-y-1">
                 {day.events.slice(0, 3).map(({ application, event }) => {
                   const eventDate = parseLocalDate(event.date);
-                  const relativeTime = formatRelativeTime(eventDate);
+                  const relativeTime = formatRelativeTime(eventDate, t);
                   const daysDiff = getDaysDifference(eventDate);
                   const isPast = daysDiff < 0;
                   
@@ -180,7 +183,11 @@ const CalendarView: React.FC<CalendarViewProps> = ({ applications, onEdit }) => 
                         }`}
                       >
                         <span className="font-semibold block truncate">{application.position}</span>
-                        <span className="block truncate capitalize">{event.type.replace(/_/g, ' ')}</span>
+                        <span className="block truncate capitalize">
+                          {event.type === 'custom' && event.customTypeName
+                            ? event.customTypeName
+                            : t(`insights.interviewTypes.${event.type}`, event.type.replace(/_/g, ' '))}
+                        </span>
                         <span
                           className={`block truncate text-[9px] sm:text-[10px] mt-0.5 ${
                             isPast ? 'text-gray-500' : 'text-indigo-600 font-medium'
@@ -193,7 +200,9 @@ const CalendarView: React.FC<CalendarViewProps> = ({ applications, onEdit }) => 
                   );
                 })}
                 {day.events.length > 3 && (
-                  <li className="text-[10px] sm:text-[11px] text-gray-500">+{day.events.length - 3} more</li>
+                  <li className="text-[10px] sm:text-[11px] text-gray-500">
+                    {t('kanban.more', { count: day.events.length - 3 })}
+                  </li>
                 )}
               </ul>
             </div>
@@ -203,7 +212,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({ applications, onEdit }) => 
 
       {applications.length === 0 && (
         <div className="px-4 py-3 bg-gray-50 border-t border-gray-200 text-sm text-gray-500">
-          No applications yet. Add some to see them on the calendar.
+          {t('calendar.noApplications')}
         </div>
       )}
     </div>
@@ -213,5 +222,3 @@ const CalendarView: React.FC<CalendarViewProps> = ({ applications, onEdit }) => 
 CalendarView.displayName = 'CalendarView';
 
 export default memo(CalendarView);
-
-

@@ -1,6 +1,7 @@
 // src/components/BottomNav.tsx
 import React, { memo } from 'react';
-import { FaTable, FaLightbulb, FaCog, FaChartBar, FaInfoCircle } from 'react-icons/fa';
+import { useTranslation } from 'react-i18next';
+import { FaTable, FaLightbulb, FaCog, FaChartBar, FaInfoCircle, FaHeart } from 'react-icons/fa';
 import { type PageType } from '../App';
 
 interface BottomNavProps {
@@ -9,12 +10,14 @@ interface BottomNavProps {
 }
 
 const BottomNav: React.FC<BottomNavProps> = ({ currentPage, onNavigate }) => {
+  const { t } = useTranslation();
   const navItems = [
-    { page: 'applications', label: 'Applications', icon: <FaTable size={24} /> },
-    { page: 'opportunities', label: 'Opportunities', icon: <FaLightbulb size={24} /> },
-    { page: 'settings', label: 'Settings', icon: <FaCog size={24} /> },
-    { page: 'insights', label: 'Insights', icon: <FaChartBar size={24} /> },
-    { page: 'landing', label: 'About', icon: <FaInfoCircle size={24} /> },
+    { page: 'applications', label: t('nav.applications'), icon: <FaTable size={24} /> },
+    { page: 'opportunities', label: t('nav.opportunities'), icon: <FaLightbulb size={24} /> },
+    { page: 'settings', label: t('nav.settings'), icon: <FaCog size={24} /> },
+    { page: 'insights', label: t('nav.insights'), icon: <FaChartBar size={24} /> },
+    { page: 'support', label: t('nav.support'), icon: <FaHeart size={24} /> },
+    { page: 'landing', label: t('nav.about'), icon: <FaInfoCircle size={24} /> },
   ];
 
   return (

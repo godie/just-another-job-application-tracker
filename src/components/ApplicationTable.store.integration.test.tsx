@@ -7,6 +7,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import ApplicationTable from './ApplicationTable';
 import type { JobApplication } from '../types/applications';
+import type { TableColumn } from '../types/table';
 
 const mockApplications: JobApplication[] = [
   {
@@ -59,7 +60,12 @@ vi.mock('../utils/localStorage', () => ({
   sanitizeUrl: (url: string) => url,
 }));
 
-const columns = ['Position', 'Company', 'Status', 'Platform'];
+const columns: TableColumn[] = [
+  { id: 'position', label: 'Position' },
+  { id: 'company', label: 'Company' },
+  { id: 'status', label: 'Status' },
+  { id: 'platform', label: 'Platform' },
+];
 
 describe('ApplicationTable + Zustand store integration', () => {
   const mockOnEdit = vi.fn();

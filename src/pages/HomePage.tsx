@@ -1,5 +1,6 @@
 // src/pages/HomePage.tsx
 import React, { useState, useEffect, useCallback, useMemo, memo } from 'react';
+import { useTranslation, Trans } from 'react-i18next';
 import Footer from '../components/Footer';
 import ApplicationTable from '../components/ApplicationTable';
 import TimelineView from '../components/TimelineView';
@@ -12,6 +13,7 @@ import {
   DEFAULT_FIELDS,
   type JobApplication,
 } from '../utils/localStorage';
+import type { TableColumn } from '../types/table';
 import AddJobForm from '../components/AddJobComponent';
 import GoogleSheetsSync from '../components/GoogleSheetsSync';
 import packageJson from '../../package.json';
@@ -35,6 +37,7 @@ const defaultFilters: Filters = {
 // Componente Placeholder para la sección de métricas
 // Memoized to prevent re-renders when filteredApplications reference changes but content is the same
 const MetricsSummary: React.FC<{ applications: JobApplication[] }> = ({ applications }) => {
+  const { t } = useTranslation();
   // ⚡ Bolt: Separated stat calculation from metric array creation.
   // By memoizing the aggregated stats object first, we can use its primitive
   // values (interviews, offers) as dependencies for the final metrics array.
@@ -58,11 +61,11 @@ const MetricsSummary: React.FC<{ applications: JobApplication[] }> = ({ applicat
 
   const metrics = useMemo(() => {
     return [
-      { label: 'Applications', value: applications.length, color: 'border-blue-500' },
-      { label: 'Interviews', value: stats.interviews, color: 'border-yellow-500' },
-      { label: 'Offers', value: stats.offers, color: 'border-green-500' },
+      { label: t('home.metrics.applications'), value: applications.length, color: 'border-blue-500' },
+      { label: t('home.metrics.interviews'), value: stats.interviews, color: 'border-yellow-500' },
+      { label: t('home.metrics.offers'), value: stats.offers, color: 'border-green-500' },
     ];
-  }, [applications.length, stats.interviews, stats.offers]);
+  }, [applications.length, stats.interviews, stats.offers, t]);
 
   return (
     <section className="grid grid-cols-3 gap-2 sm:gap-4 my-8" data-testid="metrics-summary">
@@ -100,6 +103,7 @@ interface ApplicationWithMetadata extends JobApplication {
 }
 
 const HomePageContent: React.FC<HomePageContentProps> = () => {
+  const { t } = useTranslation();
   const { showSuccess } = useAlert();
   
   // Use Zustand stores
@@ -128,7 +132,7 @@ const HomePageContent: React.FC<HomePageContentProps> = () => {
       if (event.data && event.data.type === 'JOB_OPPORTUNITY_SYNC') {
         // New opportunity added from extension
         // Refresh applications count in header will be handled automatically
-        showSuccess('New job opportunity captured from LinkedIn!');
+        showSuccess(t('home.success.captured'));
       }
     };
     
@@ -137,7 +141,7 @@ const HomePageContent: React.FC<HomePageContentProps> = () => {
     return () => {
       window.removeEventListener('message', handleMessage);
     };
-  }, [loadApplications, loadPreferences, showSuccess]);
+  }, [loadApplications, loadPreferences, showSuccess, t]);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -215,8 +219,8 @@ const HomePageContent: React.FC<HomePageContentProps> = () => {
     // `applications` from the useCallback dependency array, stabilizing this
     // function and preventing unnecessary re-renders of child components like
     // ApplicationTable, KanbanView, and TimelineView.
-    showSuccess(`Application "${appToDelete.position}" at ${appToDelete.company} has been marked as deleted.`);
-  }, [deleteApplication, showSuccess]);
+    showSuccess(t('home.success.deleted', { position: appToDelete.position, company: appToDelete.company }));
+  }, [deleteApplication, showSuccess, t]);
 
   const handleEdit = useCallback((appToEdit: JobApplication | null) => {
     setCurrentApplication(appToEdit);
@@ -335,27 +339,31 @@ const HomePageContent: React.FC<HomePageContentProps> = () => {
     });
   }, [applicationsWithMetadata, filters]);
 
-  const tableColumns = useMemo(() => {
+  const tableColumns: TableColumn[] = useMemo(() => {
+    const buildColumn = (id: string, fallbackLabel: string): TableColumn => ({
+      id,
+      label: t(`fields.${id}`, fallbackLabel),
+    });
+
     if (!preferences) {
-      return DEFAULT_FIELDS.map((field) => field.label);
+      return DEFAULT_FIELDS.map((field) => buildColumn(field.id, field.label));
     }
 
     const enabledSet = new Set(preferences.enabledFields);
 
-    // Map from id to label using DEFAULT_FIELDS first, then custom fields
-    const fieldById = new Map<string, string>();
+    const fieldById = new Map<string, TableColumn>();
     DEFAULT_FIELDS.forEach((field) => {
-      fieldById.set(field.id, field.label);
+      fieldById.set(field.id, buildColumn(field.id, field.label));
     });
     preferences.customFields.forEach((field) => {
-      fieldById.set(field.id, field.label);
+      fieldById.set(field.id, { id: field.id, label: field.label });
     });
 
     return preferences.columnOrder
       .filter((id) => enabledSet.has(id))
       .map((id) => fieldById.get(id))
-      .filter((label): label is string => Boolean(label));
-  }, [preferences]);
+      .filter((column): column is TableColumn => Boolean(column));
+  }, [preferences, t]);
 
   const renderCurrentView = () => {
     switch (currentView) {
@@ -419,7 +427,11 @@ const HomePageContent: React.FC<HomePageContentProps> = () => {
             />
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
               <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
-                Showing <span className="font-semibold text-gray-700 dark:text-gray-300">{filteredApplications.length}</span> of {applications.length} applications
+                <Trans
+                  i18nKey="home.showing"
+                  values={{ count: filteredApplications.length, total: applications.length }}
+                  components={{ bold: <span className="font-semibold text-gray-700 dark:text-gray-300" /> }}
+                />
               </p>
             </div>
           </div>
@@ -427,16 +439,16 @@ const HomePageContent: React.FC<HomePageContentProps> = () => {
           {/* View Switcher, Header and Add Button */}
           <div className="flex flex-col gap-4 mb-6 mt-6 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between lg:flex-1">
-              <h2 className="text-2xl font-bold text-gray-800 dark:text-white">Application Pipeline</h2>
+              <h2 className="text-2xl font-bold text-gray-800 dark:text-white">{t('home.pipeline')}</h2>
               <ViewSwitcher currentView={currentView} onViewChange={handleViewChange} />
             </div>
             <button 
               className="self-start sm:self-auto bg-green-600 hover:bg-green-700 text-white font-bold py-2.5 px-6 rounded-full shadow-lg transition duration-150 transform hover:scale-[1.02]"
               onClick={handleCreateNew}
-              aria-label="Add new application entry"
+              aria-label={t('home.addEntry')}
               data-testid="add-entry-button"
             >
-              + Add Entry
+              {t('home.addEntry')}
             </button>
           </div>
           

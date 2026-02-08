@@ -3,6 +3,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import ApplicationTableRow from './ApplicationTableRow';
 import type { JobApplication } from '../types/applications';
+import type { TableColumn } from '../types/table';
 
 vi.mock('dompurify', () => ({
   default: { sanitize: (html: string) => html },
@@ -26,8 +27,8 @@ const columnToKeyMap: Record<string, keyof JobApplication> = {
   link: 'link',
 };
 
-const getCellValue = (item: JobApplication, column: string): string => {
-  const n = column.toLowerCase().replace(/ /g, '').replace(/-/g, '');
+const getCellValue = (item: JobApplication, columnId: string): string => {
+  const n = columnId.toLowerCase().replace(/ /g, '').replace(/-/g, '');
   const key = columnToKeyMap[n];
   return key ? String(item[key] ?? '') : '';
 };
@@ -53,7 +54,12 @@ describe('ApplicationTableRow', () => {
   const mockOnDeleteRequest = vi.fn();
   const mockOnMouseEnter = vi.fn();
   const mockOnMouseLeave = vi.fn();
-  const columns = ['Position', 'Company', 'Status', 'Link'];
+  const columns: TableColumn[] = [
+    { id: 'position', label: 'Position' },
+    { id: 'company', label: 'Company' },
+    { id: 'status', label: 'Status' },
+    { id: 'link', label: 'Link' },
+  ];
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -230,7 +236,7 @@ describe('ApplicationTableRow', () => {
         <tbody>
           <ApplicationTableRow
             item={mockApplication}
-            columns={['Link']}
+            columns={[{ id: 'link', label: 'Link' }]}
             isHovered={false}
             onEdit={mockOnEdit}
             onDeleteRequest={mockOnDeleteRequest}

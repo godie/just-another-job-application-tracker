@@ -1,0 +1,399 @@
+{
+  "landing": {
+    "heroTitle": "Master Your Job Search",
+    "heroSubtitle": "The ultimate tool to track applications, manage interviews, and land your dream job.",
+    "getStarted": "Get Started",
+    "features": "Features",
+    "feature1Title": "Multiple Perspectives",
+    "feature1Desc": "Visualize your applications through Table, Kanban, Timeline, and Calendar views.",
+    "feature2Title": "Chrome Extension",
+    "feature2Desc": "Capture job details directly from LinkedIn, Greenhouse, and more with a single click.",
+    "feature3Title": "Powerful Insights",
+    "feature3Desc": "Track your funnel, analyze interview performance, and see where you're succeeding.",
+    "feature4Title": "Google Sheets Sync",
+    "feature4Desc": "Keep your data safe and synced with your own Google Sheets for easy backup and sharing.",
+    "roadmap": "What's Coming Next",
+    "ready": "Ready to accelerate your career?",
+    "enterApp": "Enter Application",
+    "footer": "© 2025 Job Application Tracker. Master your career path."
+  },
+  "common": {
+    "footer": {
+      "vibecoded": "Vibecoded with love ❤️ by <link>godie</link> with cursor v{{version}} ({{year}})",
+      "terms": "Terms of Service",
+      "privacy": "Privacy"
+    },
+    "loading": "Loading...",
+    "loginSuccess": "Successful Login with Google!",
+    "loginError": "Login successful but failed to store credentials securely.",
+    "loginFailed": "Failed to login with Google. Please try again.",
+    "logoutSuccess": "Logged out successfully!",
+    "logoutPartial": "Logged out (some credentials may remain on server).",
+    "logout": "Logout",
+    "loginWithGoogle": "Login with Google",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "actions": "Actions",
+    "status": "Status",
+    "company": "Company",
+    "position": "Position",
+    "date": "Date",
+    "example": "Example",
+    "anyAport": "Any contribution is greatly appreciated! ❤️",
+    "next": "Next",
+    "previous": "Previous",
+    "goToPage": "Go to page {{page}}",
+    "status_types": {
+      "completed": "Completed",
+      "scheduled": "Scheduled",
+      "cancelled": "Cancelled",
+      "pending": "Pending"
+    }
+  },
+  "statuses": {
+    "applied": "Applied",
+    "interviewing": "Interviewing",
+    "offer": "Offer",
+    "rejected": "Rejected",
+    "withdrawn": "Withdrawn",
+    "hold": "Hold"
+  },
+  "fields": {
+    "position": "Position",
+    "company": "Company",
+    "status": "Status",
+    "applicationDate": "Application Date",
+    "timeline": "Timeline",
+    "notes": "Notes",
+    "link": "Link",
+    "platform": "Platform",
+    "salary": "Salary",
+    "contactName": "Contact",
+    "followUpDate": "Follow Up"
+  },
+  "nav": {
+    "applications": "Applications",
+    "opportunities": "Opportunities",
+    "settings": "Settings",
+    "insights": "Insights",
+    "support": "Support",
+    "about": "About"
+  },
+  "home": {
+    "pipeline": "Application Pipeline",
+    "addEntry": "+ Add Entry",
+    "showing": "Showing <bold>{{count}}</bold> of {{total}} applications",
+    "noApplications": "Use the \"+ Add Entry\" button to start tracking your applications!",
+    "metrics": {
+      "applications": "Applications",
+      "interviews": "Interviews",
+      "offers": "Offers"
+    },
+    "deleteConfirm": {
+      "title": "Delete Application",
+      "titleFor": "Delete application for {{position}} at {{company}}",
+      "message": "Are you sure you want to delete the application for \"{{position}}\" at {{company}}? This action will mark it as deleted."
+    },
+    "success": {
+      "captured": "New job opportunity captured from LinkedIn!",
+      "deleted": "Application \"{{position}}\" at {{company}} has been marked as deleted."
+    }
+  },
+  "support": {
+    "title": "Community and Support",
+    "subtitle": "Help us improve the tool or support development.",
+    "donations": "Donations",
+    "donationsDesc": "If this tool has been useful to you and you want to support its maintenance and new features, consider buying us a coffee.",
+    "buyMeACoffee": "Buy Me a Coffee",
+    "suggestions": "Suggestions",
+    "suggestionsDesc": "Share your ideas directly with us. Every submission goes into a secure queue so we can review it later.",
+    "suggestionType": "Suggestion type",
+    "explanation": "Explanation",
+    "explanationPlaceholder": "Tell us more about your idea or the problem you found...",
+    "submit": "Send suggestion",
+    "submitting": "Sending...",
+    "submitSuccess": "Thanks! Your suggestion was sent.",
+    "submitError": "We couldn't send your suggestion. Please try again in a moment.",
+    "submitInfo": "Suggestions are stored on a lightweight PHP + SQLite queue that we download and process manually.",
+    "captchaLabel": "Captcha",
+    "captchaDesc": "Enter the digits displayed to prove you're human.",
+    "captchaRefresh": "New code",
+    "captchaPlaceholder": "Enter digits",
+    "captchaLoading": "Loading...",
+    "captchaRequired": "Please complete the captcha before sending your suggestion.",
+    "captchaError": "We couldn't generate the captcha. Refresh and try again.",
+    "explanationRequired": "Please describe your idea before sending it.",
+    "errorGeneric": "Something went wrong. Please try again later.",
+    "howItWorks": "How does it work?",
+    "howItWorksDesc": "We now store suggestions in a lightweight server queue. Each submission uses a short <strong>numeric captcha</strong> to keep bots away so the server doesn't get flooded.",
+    "types": {
+      "ui-ux": "UI/UX",
+      "functionality": "Functionality",
+      "bug": "Bug",
+      "feature": "Feature",
+      "improvements": "Improvements"
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Customize your application tracking experience. All changes are saved locally in your browser.",
+    "sections": {
+      "fields": "Table Fields",
+      "view": "Default View",
+      "date": "Date Format",
+      "dateDesc": "Choose how dates should be displayed throughout the application.",
+      "custom": "Custom Fields",
+      "interviewing": "Interview Events"
+    },
+    "saveChanges": "Save Changes",
+    "resetDefault": "Reset to Default",
+    "unsavedChanges": "You have unsaved changes",
+    "fields": {
+      "title": "Application Fields Configuration",
+      "desc": "Choose which columns you want to see in your Applications table and adjust their order.",
+      "required": "Required core field",
+      "optional": "Optional field",
+      "custom": "Custom"
+    },
+    "view": {
+      "title": "Default View",
+      "desc": "Choose which view should be displayed when you open the Applications page.",
+      "table": "Enhanced table with filters",
+      "timeline": "Chronological interview flow",
+      "kanban": "Board view grouped by status",
+      "calendar": "Monthly calendar of interviews"
+    },
+    "custom": {
+      "title": "Custom Fields",
+      "desc": "Create your own fields to track additional information about your applications.",
+      "add": "Add New Custom Field",
+      "edit": "Edit Custom Field",
+      "label": "Field Label *",
+      "type": "Field Type *",
+      "options": "Options (one per line) *",
+      "optionsDesc": "Enter one option per line. These will appear as dropdown options.",
+      "required": "Required field",
+      "update": "Update Field",
+      "addField": "Add Field",
+      "noCustom": "No custom fields yet. Create one above to get started!",
+      "types": {
+        "text": "Text",
+        "date": "Date",
+        "number": "Number",
+        "select": "Select (Dropdown)",
+        "checkbox": "Checkbox",
+        "url": "URL"
+      }
+    },
+    "interviewing": {
+      "title": "Interview Events",
+      "desc": "Manage custom interview event types that will be available when creating timeline events.",
+      "add": "Add New Interview Event",
+      "edit": "Edit Interview Event",
+      "label": "Event Label *",
+      "update": "Update Event",
+      "addEvent": "Add Event",
+      "noEvents": "No custom interview events yet. Create one above to get started!"
+    },
+    "success": "Settings saved successfully!"
+  },
+  "insights": {
+    "title": "Insights",
+    "applicationsByStatus": "Applications by Status",
+    "totalApplications": "Total Applications",
+    "totalInterviews": "Total Interviews",
+    "rejectedApplications": "Rejected Applications",
+    "rejectionPercentage": "Rejection Percentage",
+    "interviewsByStatus": "Interviews by Application Status",
+    "interviewsByType": "Interviews by Type",
+    "interviewTypes": {
+      "screener_call": "Screener Call",
+      "first_contact": "First Contact",
+      "technical_interview": "Technical Interview",
+      "code_challenge": "Code Challenge",
+      "live_coding": "Live Coding",
+      "hiring_manager": "Hiring Manager",
+      "system_design": "System Design",
+      "cultural_fit": "Cultural Fit",
+      "final_round": "Final Round",
+      "application_submitted": "Application Submitted",
+      "offer": "Offer",
+      "rejected": "Rejected",
+      "withdrawn": "Withdrawn",
+      "custom": "Custom"
+    }
+  },
+  "opportunities": {
+    "title": "Interesting Opportunities",
+    "subtitle": "Job opportunities captured from LinkedIn or added manually. Click \"Apply\" to convert them into applications.",
+    "addOpportunity": "+ Add Opportunity",
+    "noOpportunities": "No opportunities yet",
+    "noOpportunitiesDesc": "Install the Chrome extension to capture job opportunities from LinkedIn.",
+    "searchPlaceholder": "Search opportunities...",
+    "showing": "Showing <bold>{{count}}</bold> of {{total}} opportunities",
+    "table": {
+      "position": "Position",
+      "company": "Company",
+      "location": "Location",
+      "jobType": "Job Type",
+      "posted": "Posted",
+      "captured": "Captured",
+      "actions": "Actions"
+    },
+    "actions": {
+      "view": "View",
+      "apply": "Apply"
+    },
+    "deleteConfirm": {
+      "title": "Delete Opportunity",
+      "message": "Are you sure you want to delete \"{{position}}\" at {{company}}?"
+    },
+    "success": {
+      "addedToApps": "\"{{position}}\" at {{company}} has been added to your applications!",
+      "deleted": "Opportunity \"{{position}}\" has been deleted.",
+      "added": "Opportunity \"{{position}}\" at {{company}} has been added!",
+      "convertError": "Failed to convert opportunity to application. Please try again.",
+      "addError": "Failed to add opportunity. Please try again."
+    },
+    "atsSearch": {
+      "title": "Direct ATS Search",
+      "subtitle": "Bypass LinkedIn's limitations by searching company platforms directly.",
+      "roles": "Roles",
+      "keywords": "Keywords",
+      "location": "Location",
+      "search": "Search",
+      "searchAll": "Search All",
+      "settings": "Configure Search Filters",
+      "placeholderRoles": "e.g. \"software engineer\" OR \"frontend\"",
+      "placeholderKeywords": "e.g. \"hiring\" OR \"apply\"",
+      "placeholderLocation": "e.g. \"remote\" OR \"London\""
+    }
+  },
+  "filters": {
+    "search": "Search",
+    "searchPlaceholder": "Search by position, company, notes...",
+    "status": "Status",
+    "include": "Include",
+    "includeWithCount": "✓ Include ({{count}})",
+    "exclude": "Exclude",
+    "excludeWithCount": "✗ Exclude ({{count}})",
+    "clearStatus": "Clear status filters",
+    "platform": "Platform",
+    "all": "All",
+    "from": "From",
+    "to": "To",
+    "clear": "Clear"
+  },
+  "views": {
+    "table": "Table",
+    "timeline": "Timeline",
+    "kanban": "Kanban",
+    "calendar": "Calendar"
+  },
+  "kanban": {
+    "noApplications": "No applications yet.",
+    "startAdding": "Start adding entries to see them organized here.",
+    "noAppsInStage": "No applications in this stage.",
+    "applied": "Applied {{date}}",
+    "timeline": "Timeline",
+    "more": "+{{count}} more"
+  },
+  "timeline": {
+    "noApplications": "No applications yet.",
+    "startAdding": "Start adding entries to see the interview timeline.",
+    "nextEvent": "Next: {{date}}",
+    "noEvents": "No timeline events yet.",
+    "expand": "Expand application details",
+    "collapse": "Collapse application details"
+  },
+  "calendar": {
+    "title": "Calendar",
+    "today": "Today",
+    "noApplications": "No applications yet. Add some to see them on the calendar.",
+    "relative": {
+      "today": "Today",
+      "tomorrow": "Tomorrow",
+      "yesterday": "Yesterday",
+      "inDays": "in {{count}} days",
+      "daysAgo": "{{count}} days ago"
+    },
+    "weekdays": {
+      "Sun": "Sun",
+      "Mon": "Mon",
+      "Tue": "Tue",
+      "Wed": "Wed",
+      "Thu": "Thu",
+      "Fri": "Fri",
+      "Sat": "Sat"
+    }
+  },
+  "sheets": {
+    "title": "Google Sheets Integration",
+    "loginRequired": "<strong>Google Sheets Sync:</strong> Please log in with Google to enable spreadsheet synchronization.",
+    "loginFirst": "Please log in with Google first",
+    "status": "Status",
+    "error": "Sync Error",
+    "synced": "Synced {{time}}",
+    "notSynced": "Not synced yet",
+    "openSheet": "Open Spreadsheet →",
+    "changeSheet": "Change Sheet",
+    "createSheetDesc": "Create a Google Sheet to sync your job applications.",
+    "createSheet": "Create Sheet",
+    "creating": "Creating...",
+    "selectExisting": "Select Existing",
+    "syncNow": "Sync Now",
+    "syncing": "Syncing...",
+    "spreadsheetCreated": "Spreadsheet created! Opening in new tab...",
+    "syncSuccess": "Successfully synced {{count}} application to Google Sheets!",
+    "syncSuccess_plural": "Successfully synced {{count}} applications to Google Sheets!",
+    "syncError": "Failed to sync data",
+    "noSpreadsheet": "No spreadsheet found. Please create one first.",
+    "selectTitle": "Select Existing Spreadsheet",
+    "selectDesc": "Enter the spreadsheet ID or full URL from Google Sheets",
+    "placeholder": "Spreadsheet ID or URL",
+    "set": "Set",
+    "setting": "Setting...",
+    "selectSuccess": "Spreadsheet \"{{title}}\" selected successfully!",
+    "setError": "Failed to set spreadsheet"
+  },
+  "form": {
+    "addTitle": "Add New Job Application",
+    "addOpportunityTitle": "Add New Opportunity",
+    "editTitle": "Edit Application",
+    "basicDetails": "Basic Details",
+    "trackingTimeline": "Tracking & Timeline",
+    "sourceContact": "Source & Contact",
+    "position": "Position *",
+    "company": "Company *",
+    "applicationDate": "Application Date *",
+    "status": "Status *",
+    "salary": "Salary / Range",
+    "interviewDate": "Interview Date",
+    "followUpDate": "Follow-up Date",
+    "link": "Link (Job Posting)",
+    "platform": "Platform",
+    "contactName": "Contact Name (Recruiter/Hiring Manager)",
+    "notes": "Notes",
+    "description": "Description",
+    "postedDate": "Posted Date",
+    "saveApplication": "Save Application",
+    "saveChanges": "Save Changes",
+    "saveOpportunity": "Save Opportunity",
+    "validation": {
+      "positionRequired": "Position is required",
+      "companyRequired": "Company is required",
+      "linkRequired": "Link is required",
+      "invalidUrl": "Please enter a valid URL"
+    },
+    "platforms": {
+      "LinkedIn": "LinkedIn",
+      "Indeed": "Indeed",
+      "Company Website": "Company Website",
+      "Referral": "Referral",
+      "Other": "Other"
+    }
+  }
+}

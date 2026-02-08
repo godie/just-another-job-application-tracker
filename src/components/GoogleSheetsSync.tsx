@@ -1,6 +1,7 @@
 // src/components/GoogleSheetsSync.tsx
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { useTranslation, Trans } from 'react-i18next';
 import { useAlert } from './AlertProvider';
 import { checkLoginStatus } from '../utils/localStorage';
 import {
@@ -20,6 +21,7 @@ interface GoogleSheetsSyncProps {
 }
 
 const GoogleSheetsSync: React.FC<GoogleSheetsSyncProps> = ({ applications, onSyncComplete }) => {
+  const { t } = useTranslation();
   // ⚡ Bolt: Use ref to store the latest applications without causing re-renders
   // This allows handleSync to always use the most recent data without
   // the component needing to re-render when applications array reference changes
@@ -69,7 +71,7 @@ const GoogleSheetsSync: React.FC<GoogleSheetsSyncProps> = ({ applications, onSyn
 
   const handleCreateSheet = async () => {
     if (!isLoggedIn) {
-      showError('Please log in with Google first');
+      showError(t('sheets.loginFirst'));
       return;
     }
 
@@ -77,7 +79,7 @@ const GoogleSheetsSync: React.FC<GoogleSheetsSyncProps> = ({ applications, onSyn
     try {
       const sheetInfo = await createSpreadsheet('Job Application Tracker');
       setSpreadsheetUrl(sheetInfo.spreadsheetUrl);
-      showSuccess(`Spreadsheet created! Opening in new tab...`);
+      showSuccess(t('sheets.spreadsheetCreated'));
       
       // Open spreadsheet in new tab
       window.open(sheetInfo.spreadsheetUrl, '_blank');
@@ -87,7 +89,7 @@ const GoogleSheetsSync: React.FC<GoogleSheetsSyncProps> = ({ applications, onSyn
         handleSync();
       }, 1000);
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to create spreadsheet';
+      const errorMessage = error instanceof Error ? error.message : t('sheets.setError');
       showError(errorMessage);
       console.error('Error creating spreadsheet:', error);
     } finally {
@@ -102,13 +104,13 @@ const GoogleSheetsSync: React.FC<GoogleSheetsSyncProps> = ({ applications, onSyn
   const handleSync = useCallback(async () => {
     // Check login status directly instead of using state to avoid unnecessary recreations
     if (!checkLoginStatus()) {
-      showError('Please log in with Google first');
+      showError(t('sheets.loginFirst'));
       return;
     }
 
     const spreadsheetId = getStoredSpreadsheetId();
     if (!spreadsheetId) {
-      showError('No spreadsheet found. Please create one first.');
+      showError(t('sheets.noSpreadsheet'));
       return;
     }
 
@@ -117,20 +119,20 @@ const GoogleSheetsSync: React.FC<GoogleSheetsSyncProps> = ({ applications, onSyn
       // Use ref to get latest applications without dependency on applications prop
       const result = await syncToGoogleSheets(applicationsRef.current, spreadsheetId);
       setSyncStatus(getSyncStatus());
-      showSuccess(`Successfully synced ${result.rowsSynced} application${result.rowsSynced !== 1 ? 's' : ''} to Google Sheets!`);
+      showSuccess(t('sheets.syncSuccess', { count: result.rowsSynced }));
       
       if (onSyncComplete) {
         onSyncComplete();
       }
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to sync data';
+      const errorMessage = error instanceof Error ? error.message : t('sheets.syncError');
       showError(errorMessage);
       console.error('Error syncing to Google Sheets:', error);
       setSyncStatus(getSyncStatus());
     } finally {
       setIsSyncing(false);
     }
-  }, [showError, showSuccess, onSyncComplete]);
+  }, [showError, showSuccess, onSyncComplete, t]);
 
   const handleOpenSheet = () => {
     if (spreadsheetUrl) {
@@ -140,7 +142,7 @@ const GoogleSheetsSync: React.FC<GoogleSheetsSyncProps> = ({ applications, onSyn
 
   const handleSelectExistingSheet = async () => {
     if (!sheetIdInput.trim()) {
-      showError('Please enter a spreadsheet ID or URL');
+      showError(t('sheets.placeholder'));
       return;
     }
 
@@ -150,14 +152,14 @@ const GoogleSheetsSync: React.FC<GoogleSheetsSyncProps> = ({ applications, onSyn
       setSpreadsheetUrl(sheetInfo.spreadsheetUrl);
       setShowSelectSheet(false);
       setSheetIdInput('');
-      showSuccess(`Spreadsheet "${sheetInfo.title}" selected successfully!`);
+      showSuccess(t('sheets.selectSuccess', { title: sheetInfo.title }));
       
       // Auto-sync after selection
       setTimeout(() => {
         handleSync();
       }, 1000);
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to set spreadsheet';
+      const errorMessage = error instanceof Error ? error.message : t('sheets.setError');
       showError(errorMessage);
       console.error('Error setting spreadsheet:', error);
     } finally {
@@ -174,7 +176,9 @@ const GoogleSheetsSync: React.FC<GoogleSheetsSyncProps> = ({ applications, onSyn
     return (
       <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
         <p className="text-sm text-yellow-800">
-          <strong>Google Sheets Sync:</strong> Please log in with Google to enable spreadsheet synchronization.
+          <Trans i18nKey="sheets.loginRequired">
+            <strong>Google Sheets Sync:</strong> Please log in with Google to enable spreadsheet synchronization.
+          </Trans>
         </p>
       </div>
     );
@@ -187,18 +191,18 @@ const GoogleSheetsSync: React.FC<GoogleSheetsSyncProps> = ({ applications, onSyn
     <div className="bg-white border border-gray-200 rounded-lg p-4 mb-4 shadow-sm">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex-1">
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">Google Sheets Integration</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('sheets.title')}</h3>
           
           {hasSpreadsheet ? (
             <div className="space-y-1">
               <p className="text-sm text-gray-600">
-                <span className="font-medium">Status:</span>{' '}
+                <span className="font-medium">{t('sheets.status')}:</span>{' '}
                 {syncStatus.lastSyncError ? (
-                  <span className="text-red-600">Error: {syncStatus.lastSyncError}</span>
+                  <span className="text-red-600">{t('common.status')}: {syncStatus.lastSyncError}</span>
                 ) : syncStatus.lastSyncTime ? (
-                  <span className="text-green-600">Synced {formatLastSyncTime(syncStatus.lastSyncTime)}</span>
+                  <span className="text-green-600">{t('sheets.synced', { time: formatLastSyncTime(syncStatus.lastSyncTime) })}</span>
                 ) : (
-                  <span className="text-gray-500">Not synced yet</span>
+                  <span className="text-gray-500">{t('sheets.notSynced')}</span>
                 )}
               </p>
               {spreadsheetUrl && (
@@ -208,21 +212,21 @@ const GoogleSheetsSync: React.FC<GoogleSheetsSyncProps> = ({ applications, onSyn
                     className="text-sm text-blue-600 hover:text-blue-800 underline"
                     type="button"
                   >
-                    Open Spreadsheet →
+                    {t('sheets.openSheet')}
                   </button>
                   <button
                     onClick={handleChangeSheet}
                     className="text-sm text-gray-600 hover:text-gray-800 underline"
                     type="button"
                   >
-                    Change Sheet
+                    {t('sheets.changeSheet')}
                   </button>
                 </div>
               )}
             </div>
           ) : (
             <p className="text-sm text-gray-600">
-              Create a Google Sheet to sync your job applications.
+              {t('sheets.createSheetDesc')}
             </p>
           )}
         </div>
@@ -240,7 +244,7 @@ const GoogleSheetsSync: React.FC<GoogleSheetsSyncProps> = ({ applications, onSyn
                 }`}
                 type="button"
               >
-                {isCreatingSheet ? 'Creating...' : 'Create Sheet'}
+                {isCreatingSheet ? t('sheets.creating') : t('sheets.createSheet')}
               </button>
               <button
                 onClick={() => setShowSelectSheet(true)}
@@ -252,7 +256,7 @@ const GoogleSheetsSync: React.FC<GoogleSheetsSyncProps> = ({ applications, onSyn
                 }`}
                 type="button"
               >
-                Select Existing
+                {t('sheets.selectExisting')}
               </button>
             </>
           ) : (
@@ -266,7 +270,7 @@ const GoogleSheetsSync: React.FC<GoogleSheetsSyncProps> = ({ applications, onSyn
               }`}
               type="button"
             >
-              {isSyncing ? 'Syncing...' : 'Sync Now'}
+              {isSyncing ? t('sheets.syncing') : t('sheets.syncNow')}
             </button>
           )}
         </div>
@@ -274,16 +278,16 @@ const GoogleSheetsSync: React.FC<GoogleSheetsSyncProps> = ({ applications, onSyn
 
       {showSelectSheet && (
         <div className="mt-4 p-4 bg-gray-50 border border-gray-200 rounded-lg">
-          <h4 className="text-sm font-semibold text-gray-900 mb-2">Select Existing Spreadsheet</h4>
+          <h4 className="text-sm font-semibold text-gray-900 mb-2">{t('sheets.selectTitle')}</h4>
           <p className="text-xs text-gray-600 mb-3">
-            Enter the spreadsheet ID or full URL from Google Sheets
+            {t('sheets.selectDesc')}
           </p>
           <div className="flex gap-2">
             <input
               type="text"
               value={sheetIdInput}
               onChange={(e) => setSheetIdInput(e.target.value)}
-              placeholder="Spreadsheet ID or URL"
+              placeholder={t('sheets.placeholder')}
               className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
@@ -304,7 +308,7 @@ const GoogleSheetsSync: React.FC<GoogleSheetsSyncProps> = ({ applications, onSyn
               }`}
               type="button"
             >
-              {isSettingSheet ? 'Setting...' : 'Set'}
+              {isSettingSheet ? t('sheets.setting') : t('sheets.set')}
             </button>
             <button
               onClick={() => {
@@ -315,7 +319,7 @@ const GoogleSheetsSync: React.FC<GoogleSheetsSyncProps> = ({ applications, onSyn
               className="px-4 py-2 rounded-lg font-medium text-sm bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 transition-colors"
               type="button"
             >
-              Cancel
+              {t('common.cancel')}
             </button>
           </div>
           <p className="text-xs text-gray-500 mt-2">
@@ -328,7 +332,7 @@ const GoogleSheetsSync: React.FC<GoogleSheetsSyncProps> = ({ applications, onSyn
 
       {syncStatus.lastSyncError && (
         <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded text-sm text-red-800">
-          <strong>Sync Error:</strong> {syncStatus.lastSyncError}
+          <strong>{t('sheets.error')}:</strong> {syncStatus.lastSyncError}
         </div>
       )}
     </div>
@@ -366,4 +370,3 @@ export default React.memo(GoogleSheetsSync, (prevProps, nextProps) => {
   // Props are effectively the same, skip re-render
   return true;
 });
-

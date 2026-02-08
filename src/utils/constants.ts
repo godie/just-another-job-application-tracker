@@ -34,4 +34,19 @@ export const DEFAULT_PREFERENCES: UserPreferences = {
   defaultView: 'table',
   dateFormat: 'YYYY-MM-DD',
   customInterviewEvents: [],
+  atsSearch: {
+    roles: '"customer success engineer" OR "customer success" OR "customer support" OR "technical support"',
+    keywords: '"hiring" OR "apply" OR "open role"',
+    location: '"remote" OR "work from home"',
+  },
 };
+
+export const ATS_PLATFORMS = [
+  { id: 'ashby', name: 'Ashby', url: 'jobs.ashbyhq.com' },
+  { id: 'teamtailor', name: 'Teamtailor', url: '*.teamtailor.com' },
+  { id: 'workday', name: 'Workday', url: 'myworkdayjobs.com' },
+  { id: 'greenhouse', name: 'Greenhouse', url: 'boards.greenhouse.io' },
+  { id: 'lever', name: 'Lever', url: 'jobs.lever.co' },
+  { id: 'icims', name: 'iCIMS', url: '*.icims.com' },
+  { id: 'workable', name: 'Workable', url: 'apply.workable.com' },
+];
