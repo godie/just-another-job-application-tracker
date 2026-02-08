@@ -1,6 +1,7 @@
 // src/storage/applications.ts
 import { STORAGE_KEY } from '../utils/constants';
 import { generateId } from '../utils/id';
+import { sanitizeObject } from '../utils/url';
 import type { JobApplication, LegacyJobApplication, InterviewEvent, InterviewStageType } from '../types/applications';
 
 /**
@@ -76,24 +77,31 @@ export const getApplications = (): JobApplication[] => {
     const apps = JSON.parse(data);
     if (!Array.isArray(apps)) return [];
     
-    // Migrate legacy applications if needed
-    const migrated = apps.map((app) => {
+    // Migrate and sanitize applications
+    const processed = apps.map((app) => {
+      let finalApp: JobApplication;
+
       if (isLegacyApplication(app)) {
-        const migratedApp = migrateApplicationData(app);
+        finalApp = migrateApplicationData(app);
         // Save migrated data back
         setTimeout(() => {
           const currentApps = getApplications();
           const updatedApps = currentApps.map((a) => 
-            a.id === migratedApp.id ? migratedApp : a
+            a.id === finalApp.id ? finalApp : a
           );
           saveApplications(updatedApps);
         }, 0);
-        return migratedApp;
+      } else {
+        finalApp = app as JobApplication;
       }
-      return app as JobApplication;
+
+      // ⚡ Bolt: Centralized sanitization on load.
+      // By sanitizing the object once here, we ensure all data in the app state
+      // is safe and we can avoid expensive DOMPurify calls during render.
+      return sanitizeObject(finalApp);
     });
     
-    return migrated;
+    return processed;
   } catch (error) {
     console.error("Error loading data from localStorage:", error);
     return [];

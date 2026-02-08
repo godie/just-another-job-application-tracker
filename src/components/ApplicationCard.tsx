@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next';
 import type { JobApplication } from '../types/applications';
 import type { TableColumn } from '../types/table';
 import { sanitizeUrl } from '../utils/localStorage';
-import DOMPurify from 'dompurify';
 
 interface ApplicationCardProps {
   item: JobApplication;
@@ -26,9 +25,6 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
   getCellValue,
 }) => {
   const { t } = useTranslation();
-  const createMarkup = (htmlContent: string) => {
-    return { __html: DOMPurify.sanitize(htmlContent) };
-  };
 
   const positionValue = getCellValue(item, 'position') || 'No Position';
   const companyValue = getCellValue(item, 'company') || 'No Company';
@@ -82,13 +78,15 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
                   rel="noopener noreferrer"
                   className="flex-1 truncate text-indigo-600 dark:text-indigo-400 hover:underline"
                   onClick={(e) => e.stopPropagation()}
-                  dangerouslySetInnerHTML={createMarkup(value)}
-                />
+                >
+                  {value}
+                </a>
               ) : (
                 <span
                   className="flex-1 truncate"
-                  dangerouslySetInnerHTML={createMarkup(value)}
-                />
+                >
+                  {value}
+                </span>
               )}
             </div>
           );

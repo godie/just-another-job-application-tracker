@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next';
 import type { JobApplication } from '../types/applications';
 import type { TableColumn } from '../types/table';
 import { sanitizeUrl } from '../utils/localStorage';
-import DOMPurify from 'dompurify';
 
 interface ApplicationTableRowProps {
   item: JobApplication;
@@ -34,9 +33,6 @@ const ApplicationTableRow: React.FC<ApplicationTableRowProps> = ({
   getCellValue,
 }) => {
   const { t } = useTranslation();
-  const createMarkup = (htmlContent: string) => {
-    return { __html: DOMPurify.sanitize(htmlContent) };
-  };
 
   return (
     <tr
@@ -65,24 +61,24 @@ const ApplicationTableRow: React.FC<ApplicationTableRowProps> = ({
             truncatedContent = cellContent.substring(0, NOTES_TRUNCATE_LENGTH) + '...';
           }
 
-          const finalContent = hasLineBreaks
-            ? truncatedContent.replace(/\r\n/g, '<br>').replace(/\n/g, '<br>').replace(/\r/g, '<br>')
-            : truncatedContent;
-
           const shouldWrap = hasLineBreaks || originalLength > NOTES_WORD_WRAP_LENGTH;
 
+          // ⚡ Bolt: Using whitespace-pre-line instead of dangerouslySetInnerHTML with <br>.
+          // This allows us to render plain text while still preserving line breaks,
+          // which is faster and more secure as it avoids DOMPurify during render.
           return (
             <td
               key={column.id}
               onClick={() => onEdit(item)}
               className={`px-4 sm:px-6 py-3 text-gray-900 dark:text-gray-100 border-r border-gray-100 dark:border-gray-700 group-hover:bg-indigo-50 dark:group-hover:bg-indigo-900 ${
-                shouldWrap ? 'whitespace-normal' : 'whitespace-nowrap'
+                shouldWrap ? 'whitespace-pre-line' : 'whitespace-nowrap'
               } ${isNotes ? 'max-w-xs' : ''}`}
             >
               <span
                 className={`block ${shouldWrap ? 'break-words' : 'truncate'} ${isNotes ? '' : 'max-w-[180px] sm:max-w-none'}`}
-                dangerouslySetInnerHTML={createMarkup(finalContent)}
-              />
+              >
+                {truncatedContent}
+              </span>
             </td>
           );
         }
@@ -100,14 +96,16 @@ const ApplicationTableRow: React.FC<ApplicationTableRowProps> = ({
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-indigo-600 dark:text-indigo-400 hover:underline"
-                dangerouslySetInnerHTML={createMarkup(cellContent)}
                 onClick={(e) => e.stopPropagation()}
-              />
+              >
+                {cellContent}
+              </a>
             ) : (
               <span
                 className="block truncate max-w-[180px] sm:max-w-none"
-                dangerouslySetInnerHTML={createMarkup(cellContent)}
-              />
+              >
+                {cellContent}
+              </span>
             )}
           </td>
         );
