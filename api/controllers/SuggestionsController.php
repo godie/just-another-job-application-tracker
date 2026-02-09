@@ -35,7 +35,11 @@ class SuggestionsController
             if (!is_string($item)) {
                 return null;
             }
-            $s = trim(strip_tags($item));
+            // Slicer: Never trust user input. Use strict sanitization.
+            $s = trim($item);
+            // We use htmlspecialchars on output, but for storage we keep it clean.
+            // strip_tags is okay for basic removal, but not for security.
+            $s = strip_tags($s);
             return $s !== '' ? $s : null;
         }, $types)));
 
@@ -85,13 +89,20 @@ class SuggestionsController
         }
 
         $dbPath = $this->config['suggestions_db_path'];
+        $dbDir = dirname($dbPath);
+        if (!is_dir($dbDir)) {
+            mkdir($dbDir, 0755, true);
+        }
+
         try {
             $db = new SQLite3($dbPath, SQLITE3_OPEN_READWRITE | SQLITE3_OPEN_CREATE);
+            $db->busyTimeout(5000); // Slicer: Prevent database locks
         } catch (Exception $e) {
             http_response_code(500);
             return ['success' => false, 'error' => 'Failed to open suggestions database.'];
         }
 
+        // Slicer: Ensure schema exists.
         $db->exec('CREATE TABLE IF NOT EXISTS suggestions (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             types TEXT NOT NULL,

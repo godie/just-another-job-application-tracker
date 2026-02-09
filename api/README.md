@@ -31,6 +31,3 @@ Mini framework con router y controladores. Toda la entrada pasa por `index.php`.
 
 El frontend usa `VITE_API_BASE_URL` (p. ej. `/api`); las peticiones son a `/api/auth/cookie`, `/api/captcha`, `/api/suggestions`. El router elimina el prefijo `/api` del URI antes de emparejar.
 
-## Archivos legacy
-
-Los scripts `captcha.php`, `set-auth-cookie.php`, `get-auth-cookie.php`, `clear-auth-cookie.php`, `suggestions.php` y `google-sheets.php` ya no se usan: la lógica está en los controladores. Puedes borrarlos cuando confirmes que las nuevas rutas funcionan.
