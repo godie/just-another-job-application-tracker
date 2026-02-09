@@ -52,6 +52,12 @@ const ApplicationTableRow: React.FC<ApplicationTableRowProps> = ({
           cellContent = t(`statuses.${cellContent.toLowerCase()}`, cellContent);
         } else if (column.id === 'platform' && cellContent) {
           cellContent = t(`form.platforms.${cellContent}`, cellContent);
+        } else if (column.id === 'workType' && cellContent) {
+          const workTypeKey = cellContent === 'on-site' ? 'onSite' : cellContent;
+          cellContent = t(`form.workTypes.${workTypeKey}`, cellContent);
+          if (item.workType === 'hybrid' && typeof item.hybridDaysInOffice === 'number') {
+            cellContent += ` (${t('form.hybridDaysOption', { count: item.hybridDaysInOffice })})`;
+          }
         }
 
         const isNotes = column.id === 'notes';

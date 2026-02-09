@@ -78,7 +78,7 @@ const SupportPage: React.FC = () => {
         return;
       }
 
-      const response = await fetch(`${SUPPORT_API_BASE_URL}/captcha.php`, {
+      const response = await fetch(`${SUPPORT_API_BASE_URL}/captcha`, {
         method: 'GET',
         credentials: 'include',
         headers: {
@@ -140,7 +140,7 @@ const SupportPage: React.FC = () => {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch(`${SUPPORT_API_BASE_URL}/suggestions.php`, {
+      const response = await fetch(`${SUPPORT_API_BASE_URL}/suggestions`, {
         method: 'POST',
         credentials: 'include',
         headers: {

@@ -74,6 +74,48 @@ describe('WebApp Content Script', () => {
       expect(sendResponse).toHaveBeenCalledWith({ success: true });
     });
 
+    it('should handle syncApplication action and save to jobTrackerData', () => {
+      const opportunity = {
+        id: 'app-id-1',
+        position: 'Backend Engineer',
+        company: 'Stripe',
+        link: 'https://boards.greenhouse.io/stripe/jobs/123',
+        description: 'Great role',
+        capturedDate: new Date().toISOString(),
+      };
+
+      const sendResponse = vi.fn();
+      if ((global as any).chromeMessageListener) {
+        (global as any).chromeMessageListener(
+          { action: 'syncApplication', data: opportunity },
+          {},
+          sendResponse
+        );
+      }
+
+      expect(localStorageMock.setItem).toHaveBeenCalled();
+      const setItemCalls = (localStorageMock.setItem as ReturnType<typeof vi.fn>).mock.calls;
+      const jobTrackerCall = setItemCalls.find((c: string[]) => c[0] === 'jobTrackerData');
+      expect(jobTrackerCall).toBeDefined();
+      const savedApps = JSON.parse(jobTrackerCall![1]);
+      expect(savedApps).toHaveLength(1);
+      expect(savedApps[0]).toMatchObject({
+        id: opportunity.id,
+        position: opportunity.position,
+        company: opportunity.company,
+        status: 'applied',
+        link: opportunity.link,
+        notes: opportunity.description,
+      });
+      expect(savedApps[0].applicationDate).toBeDefined();
+      expect(savedApps[0].timeline).toHaveLength(1);
+      expect(savedApps[0].timeline[0].type).toBe('application_submitted');
+      expect(mockDispatchEvent).toHaveBeenCalledWith(
+        expect.objectContaining({ type: 'jobApplicationsUpdated' })
+      );
+      expect(sendResponse).toHaveBeenCalledWith({ success: true });
+    });
+
     it('should handle syncOpportunities action', () => {
       const opportunities = [
         {

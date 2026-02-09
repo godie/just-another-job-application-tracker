@@ -28,6 +28,7 @@ function App() {
   });
 
   const loadApplications = useApplicationsStore((state) => state.loadApplications);
+  const refreshApplications = useApplicationsStore((state) => state.refreshApplications);
 
   useEffect(() => {
     // Save page preference
@@ -38,6 +39,15 @@ function App() {
       loadApplications();
     }
   }, [currentPage, loadApplications]);
+
+  // Listen for applications added from Chrome extension (e.g. "Save as Application")
+  useEffect(() => {
+    const handleApplicationsUpdated = () => {
+      refreshApplications();
+    };
+    window.addEventListener('jobApplicationsUpdated', handleApplicationsUpdated);
+    return () => window.removeEventListener('jobApplicationsUpdated', handleApplicationsUpdated);
+  }, [refreshApplications]);
 
   const renderPage = () => {
     switch (currentPage) {

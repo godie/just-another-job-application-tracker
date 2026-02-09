@@ -582,6 +582,19 @@ export const useAppStore = create<AppState>((set) => ({
 39. ✅ **Chrome Extension - Workable support** with comprehensive extractor implementation
 40. ✅ **Chrome Extension - Lever.co support** with comprehensive extractor implementation and tests
 41. ✅ **Performance optimizations** with React.memo for presentational components (StatCard, ViewSwitcher, BottomNav, Footer, StatusBarChart, InterviewBarChart)
+42. ✅ **Backend API as mini-framework** (Router, controllers, helpers; single entry point `api/index.php`)
+43. ✅ **OAuth authorization-code flow + token refresh** (backend stores refresh token, auto-refreshes access for Sheets/Gmail)
+44. ✅ **JobApplication location, workType, hybridDaysInOffice** (form, table, opportunity conversion)
+45. ✅ **Email Scan (Gmail)** in Settings: preview and apply selected additions/updates; rate-limit handling
+46. ✅ **PWA** (installable app; manifest and service worker)
+47. ✅ **i18n test mock** loads English translation JSON in setupTests (no duplication)
+
+**Polish & maintenance (optional):**
+- [ ] **Remove legacy PHP scripts** in `api/` once all traffic uses the new routes: `captcha.php`, `set-auth-cookie.php`, `get-auth-cookie.php`, `clear-auth-cookie.php`, `suggestions.php`, `google-sheets.php`. Keep only `index.php`, `Router.php`, `config.php`, `controllers/`, `helpers/`.
+- [ ] **CI/CD**: Ensure deployment or GitHub Actions set `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` for the API environment (server-side) when using auth-code flow.
+- [ ] **API README**: Add a short “Deployment” subsection (env vars, rewrite rules) if deploying the API standalone.
+- [ ] **Google Sheets export**: If the sheet template is updated to include Location / Work Type / Hybrid days columns, document the new structure in README and keep sync payload in sync.
+- [ ] **E2E tests**: Consider adding a small E2E suite (e.g. Playwright) for critical flows (login, add application, sync Sheets) to catch regressions.
 
 **Immediate Next Steps:**
 1. **Export/Import Functionality**: Support for exporting data to CSV/JSON and importing from other trackers.

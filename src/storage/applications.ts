@@ -1,7 +1,12 @@
 // src/storage/applications.ts
 import { STORAGE_KEY } from '../utils/constants';
 import { generateId } from '../utils/id';
-import type { JobApplication, LegacyJobApplication, InterviewEvent, InterviewStageType } from '../types/applications';
+import type { JobApplication, LegacyJobApplication, InterviewEvent, InterviewStageType, WorkType } from '../types/applications';
+
+const WORK_TYPES: WorkType[] = ['remote', 'on-site', 'hybrid'];
+
+const toWorkType = (s: string | undefined): WorkType | undefined =>
+  s && WORK_TYPES.includes(s as WorkType) ? (s as WorkType) : undefined;
 
 /**
  * Helper function to map legacy status to interview stage type
@@ -53,6 +58,7 @@ export const migrateApplicationData = (legacyApp: LegacyJobApplication): JobAppl
   // Create new application with timeline
   return {
     ...legacyApp,
+    workType: toWorkType(legacyApp.workType),
     timeline: timeline.length > 0 ? timeline : [
       {
         id: generateId(),

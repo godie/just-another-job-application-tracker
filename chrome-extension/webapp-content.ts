@@ -4,6 +4,7 @@
 /// <reference types="./types.d.ts" />
 
 const OPPORTUNITIES_STORAGE_KEY = 'jobOpportunities';
+const APPLICATIONS_STORAGE_KEY = 'jobTrackerData';
 
 // Store timeout/interval IDs to prevent memory leaks
 let syncTimeoutId: ReturnType<typeof setTimeout> | null = null;
@@ -17,6 +18,10 @@ if (typeof chrome !== 'undefined' && chrome.runtime) {
     if (request.action === 'syncOpportunity') {
       // Single opportunity sync
       syncOpportunityToLocalStorage(request.data);
+      sendResponse({ success: true });
+    } else if (request.action === 'syncApplication') {
+      // Save directly as Application (already applied)
+      syncApplicationToLocalStorage(request.data);
       sendResponse({ success: true });
     } else if (request.action === 'syncOpportunities') {
       // Full sync of all opportunities
@@ -46,6 +51,83 @@ interface Opportunity {
   salary?: string;
   postedDate?: string;
   capturedDate: string;
+}
+
+// Minimal JobApplication shape for localStorage (jobTrackerData)
+interface StoredApplication {
+  id: string;
+  position: string;
+  company: string;
+  status: string;
+  applicationDate: string;
+  timeline: { id: string; type: string; date: string; status: string }[];
+  notes: string;
+  link: string;
+  salary: string;
+  platform: string;
+  contactName: string;
+  followUpDate: string;
+  interviewDate: string;
+  [key: string]: unknown;
+}
+
+function generateId(): string {
+  return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+}
+
+function opportunityToApplication(opportunity: Opportunity): StoredApplication {
+  const today = new Date().toISOString().split('T')[0];
+  return {
+    id: opportunity.id,
+    position: opportunity.position,
+    company: opportunity.company,
+    status: 'applied',
+    applicationDate: today,
+    interviewDate: '',
+    timeline: [
+      {
+        id: generateId(),
+        type: 'application_submitted',
+        date: today,
+        status: 'completed',
+      },
+    ],
+    notes: opportunity.description || '',
+    link: opportunity.link,
+    salary: opportunity.salary || '',
+    platform: opportunity.jobType || '',
+    contactName: '',
+    followUpDate: '',
+  };
+}
+
+function syncApplicationToLocalStorage(opportunity: Opportunity) {
+  try {
+    const app = opportunityToApplication(opportunity);
+    const existing = localStorage.getItem(APPLICATIONS_STORAGE_KEY);
+    const applications: StoredApplication[] = existing ? JSON.parse(existing) : [];
+
+    let updated: StoredApplication[];
+    if (applications.some((a: StoredApplication) => a.id === app.id)) {
+      updated = applications.map((a: StoredApplication) => (a.id === app.id ? app : a));
+    } else {
+      updated = [...applications, app];
+    }
+    localStorage.setItem(APPLICATIONS_STORAGE_KEY, JSON.stringify(updated));
+
+    console.log(`[Job Tracker Extension] Synced application "${app.position}" to Applications`);
+
+    window.dispatchEvent(new StorageEvent('storage', {
+      key: APPLICATIONS_STORAGE_KEY,
+      newValue: JSON.stringify(updated),
+      oldValue: existing,
+    }));
+    window.dispatchEvent(new CustomEvent('jobApplicationsUpdated', {
+      detail: updated,
+    }));
+  } catch (error) {
+    console.error('Error syncing application to localStorage:', error);
+  }
 }
 
 function syncOpportunityToLocalStorage(opportunity: Opportunity) {
@@ -106,13 +188,22 @@ function syncAllOpportunitiesToLocalStorage(opportunities: Opportunity[]) {
 async function syncFromChromeStorage() {
   try {
     if (typeof chrome !== 'undefined' && chrome.storage) {
-      const result = await chrome.storage.local.get(['jobOpportunities']);
+      const result = await chrome.storage.local.get(['jobOpportunities', 'pendingApplications']);
       const opportunities: Opportunity[] = (result.jobOpportunities || []) as Opportunity[];
-      
-      // Always sync, even if empty, to ensure consistency
+
+      // Always sync opportunities, even if empty
       syncAllOpportunitiesToLocalStorage(opportunities);
-      
-      // Debug log (can be removed in production)
+
+      // Process pending applications (saved as "Application" while app was closed)
+      const pending: Opportunity[] = (result.pendingApplications || []) as Opportunity[];
+      if (pending.length > 0) {
+        for (const opp of pending) {
+          syncApplicationToLocalStorage(opp);
+        }
+        await chrome.storage.local.set({ pendingApplications: [] });
+        console.log(`[Job Tracker Extension] Synced ${pending.length} pending application(s) to localStorage`);
+      }
+
       if (opportunities.length > 0) {
         console.log(`[Job Tracker Extension] Synced ${opportunities.length} opportunities to localStorage`);
       }

@@ -59,17 +59,29 @@ export const deleteOpportunity = (id: string): void => {
   saveOpportunities(filtered);
 };
 
+/** Map opportunity jobType (e.g. "Remote", "Hybrid") to JobApplication workType */
+function toWorkType(jobType?: string): JobApplication['workType'] | undefined {
+  if (!jobType) return undefined;
+  const normalized = jobType.toLowerCase().replace(/\s+/g, '-');
+  if (normalized === 'remote') return 'remote';
+  if (normalized === 'on-site' || normalized === 'onsite') return 'on-site';
+  if (normalized === 'hybrid') return 'hybrid';
+  return undefined;
+}
+
 /**
  * Convierte una oportunidad en una aplicación de trabajo.
  * Crea un JobApplication con status "Applied" y fecha actual.
  */
 export const convertOpportunityToApplication = (opportunity: JobOpportunity): JobApplication => {
   const now = new Date().toISOString().split('T')[0];
-  
+
   const application: JobApplication = {
     id: generateId(),
     position: opportunity.position,
     company: opportunity.company,
+    location: opportunity.location,
+    workType: toWorkType(opportunity.jobType),
     salary: opportunity.salary || '',
     status: 'Applied',
     applicationDate: now,
@@ -80,7 +92,7 @@ export const convertOpportunityToApplication = (opportunity: JobOpportunity): Jo
         type: 'application_submitted',
         date: now,
         status: 'completed',
-      }
+      },
     ],
     notes: opportunity.description || '',
     link: opportunity.link,
@@ -88,21 +100,13 @@ export const convertOpportunityToApplication = (opportunity: JobOpportunity): Jo
     contactName: '',
     followUpDate: '',
   };
-  
-  // Agregar información adicional en notes si está disponible
-  if (opportunity.location || opportunity.jobType) {
-    const additionalInfo = [];
-    if (opportunity.location) additionalInfo.push(`Location: ${opportunity.location}`);
-    if (opportunity.jobType) additionalInfo.push(`Type: ${opportunity.jobType}`);
-    if (opportunity.postedDate) additionalInfo.push(`Posted: ${opportunity.postedDate}`);
-    
-    if (application.notes) {
-      application.notes += `\n\n${additionalInfo.join('\n')}`;
-    } else {
-      application.notes = additionalInfo.join('\n');
-    }
+
+  if (opportunity.postedDate) {
+    application.notes = application.notes
+      ? `${application.notes}\n\nPosted: ${opportunity.postedDate}`
+      : `Posted: ${opportunity.postedDate}`;
   }
-  
+
   return application;
 };
 

@@ -34,6 +34,9 @@ jobs:
       - name: Move api/ into dist/
         run: mv api dist/api
 
+      - name: Create config.php from example for deploy
+        run: cp dist/api/config.example.php dist/api/config.php
+
       - name: Upload production-ready build files
         uses: actions/upload-artifact@v4
         with:
@@ -51,6 +54,22 @@ jobs:
         with:
           name: production-files
           path: ./dist
+
+      - name: Inject secrets into api/config.php
+        env:
+          VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
+          VITE_GOOGLE_CLIENT_SECRET: ${{ secrets.VITE_GOOGLE_CLIENT_SECRET }}
+        run: |
+          python3 -c "
+          import os
+          path = 'dist/api/config.php'
+          with open(path) as f:
+              content = f.read()
+          content = content.replace('__VITE_GOOGLE_CLIENT_ID__', os.environ.get('VITE_GOOGLE_CLIENT_ID', ''))
+          content = content.replace('__VITE_GOOGLE_CLIENT_SECRET__', os.environ.get('VITE_GOOGLE_CLIENT_SECRET', ''))
+          with open(path, 'w') as f:
+              f.write(content)
+          "
 
       - name: Write SSH key to file
         run: |

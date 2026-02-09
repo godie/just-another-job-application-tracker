@@ -1,5 +1,8 @@
 // chrome-extension/job-extractors/AshbyhqJobExtractor.ts
 // AshbyHQ-specific job data extractor
+//
+// Note: Content scripts run in an isolated world and cannot access window.__appData
+// set by the page. We prioritize JSON-LD and meta/title (available in the DOM).
 
 import { JobExtractor, JobData } from './JobExtractor';
 
@@ -22,42 +25,160 @@ interface WindowWithAppData extends Window {
   __appData?: AshbyAppData;
 }
 
+type JsonLdJobPosting = Record<string, unknown> & {
+  title?: string;
+  description?: string;
+  datePosted?: string;
+  hiringOrganization?: { name?: string };
+  jobLocation?: { address?: { addressLocality?: string; addressRegion?: string; addressCountry?: string } };
+  jobLocationType?: string;
+  employmentType?: string;
+  baseSalary?: {
+    currency?: string;
+    value?: { minValue?: number; maxValue?: number; unitText?: string };
+  };
+};
+
 export class AshbyhqJobExtractor implements JobExtractor {
   readonly name = 'AshbyHQ';
+
+  /** Cached JSON-LD for the current extraction (content script cannot use window.__appData). */
+  private _cachedJsonLd: JsonLdJobPosting | null | undefined = undefined;
+  /** Cached __appData parsed from script text (fallback when JSON-LD missing e.g. SPA). */
+  private _cachedAppData: AshbyAppData | null | undefined = undefined;
 
   canHandle(url: string): boolean {
     return url.includes('jobs.ashbyhq.com') || url.includes('ashbyhq.com');
   }
 
-  extractJobTitle(): string {
-    // Try to extract from window.__appData (primary source for AshbyHQ)
-    try {
-      const appData = (window as WindowWithAppData).__appData;
-      if (appData?.posting?.title) {
-        return appData.posting.title;
-      }
-    } catch {
-      // Fallback to other methods
+  /**
+   * Get parsed JobPosting from script[type="application/ld+json"].
+   * Tries all JSON-LD scripts (in case the first is not JobPosting).
+   * Uses cache so we only parse once per extract() run.
+   */
+  private getJsonLd(): JsonLdJobPosting | null {
+    if (this._cachedJsonLd !== undefined) {
+      return this._cachedJsonLd;
     }
-
-    // Try JSON-LD structured data
     try {
-      const jsonLdScript = document.querySelector('script[type="application/ld+json"]');
-      if (jsonLdScript) {
-        const jsonLd = JSON.parse(jsonLdScript.textContent || '{}');
-        if (jsonLd.title) {
-          return jsonLd.title;
+      const scripts = document.querySelectorAll('script[type="application/ld+json"]');
+      for (let i = 0; i < scripts.length; i++) {
+        const raw = scripts[i].textContent?.trim();
+        if (!raw) continue;
+        try {
+          const parsed = JSON.parse(raw) as JsonLdJobPosting;
+          if (parsed['@type'] === 'JobPosting') {
+            this._cachedJsonLd = parsed;
+            return this._cachedJsonLd;
+          }
+          const graph = parsed['@graph'] as JsonLdJobPosting[] | undefined;
+          if (Array.isArray(graph)) {
+            const jobPosting = graph.find((item) => item['@type'] === 'JobPosting');
+            if (jobPosting) {
+              this._cachedJsonLd = jobPosting;
+              return this._cachedJsonLd;
+            }
+          }
+        } catch {
+          continue;
+        }
+      }
+      this._cachedJsonLd = null;
+      return null;
+    } catch {
+      this._cachedJsonLd = null;
+      return null;
+    }
+  }
+
+  /**
+   * Fallback: read posting/organization from the inline script that sets window.__appData.
+   * Content scripts cannot read window.__appData, but we can read the script's textContent.
+   */
+  private getAppDataFromScript(): AshbyAppData | null {
+    try {
+      const scripts = document.querySelectorAll('script:not([type="application/ld+json"])');
+      for (let i = 0; i < scripts.length; i++) {
+        const raw = scripts[i].textContent || '';
+        const startMarker = 'window.__appData';
+        const idx = raw.indexOf(startMarker);
+        if (idx === -1 || !raw.includes('"posting"')) continue;
+        const open = raw.indexOf('{', idx);
+        if (open === -1) continue;
+        let depth = 0;
+        let end = -1;
+        let inString = false;
+        let escape = false;
+        let quoteChar = '"';
+        for (let j = open; j < raw.length; j++) {
+          const c = raw[j];
+          if (escape) {
+            escape = false;
+            continue;
+          }
+          if (c === '\\' && inString) {
+            escape = true;
+            continue;
+          }
+          if (!inString) {
+            if (c === '"' || c === "'") {
+              inString = true;
+              quoteChar = c;
+            } else if (c === '{') depth++;
+            else if (c === '}') {
+              depth--;
+              if (depth === 0) {
+                end = j;
+                break;
+              }
+            }
+          } else if (c === quoteChar) {
+            inString = false;
+          }
+        }
+        if (end === -1) continue;
+        const jsonStr = raw.slice(open, end + 1);
+        const parsed = JSON.parse(jsonStr) as AshbyAppData;
+        if (parsed?.posting || parsed?.organization) {
+          return parsed;
         }
       }
     } catch {
-      // Continue to next method
+      // ignore
+    }
+    return null;
+  }
+
+  private getAppData(): AshbyAppData | null {
+    if (this._cachedAppData !== undefined) return this._cachedAppData;
+    try {
+      const fromWindow = (window as WindowWithAppData).__appData;
+      if (fromWindow?.posting || fromWindow?.organization) {
+        this._cachedAppData = fromWindow;
+        return this._cachedAppData;
+      }
+    } catch {
+      // ignore
+    }
+    this._cachedAppData = this.getAppDataFromScript();
+    return this._cachedAppData;
+  }
+
+  extractJobTitle(): string {
+    // 1. JSON-LD (available in DOM in content script)
+    const jsonLd = this.getJsonLd();
+    if (jsonLd?.title) {
+      return String(jsonLd.title).trim();
     }
 
-    // Try title tag
+    // 2. Meta and title
+    const ogTitle = document.querySelector('meta[property="og:title"]') as HTMLMetaElement;
+    if (ogTitle?.content) {
+      return ogTitle.content.trim();
+    }
     const titleElement = document.querySelector('title');
     if (titleElement) {
       const titleText = titleElement.textContent?.trim() || '';
-      // Format: "Job Title @ Company"
       const match = titleText.match(/^(.+?)\s+@/);
       if (match) {
         return match[1].trim();
@@ -65,40 +186,23 @@ export class AshbyhqJobExtractor implements JobExtractor {
       return titleText;
     }
 
-    // Try meta tags
-    const ogTitle = document.querySelector('meta[property="og:title"]') as HTMLMetaElement;
-    if (ogTitle?.content) {
-      return ogTitle.content;
+    // 3. __appData (from script text or window)
+    const appData = this.getAppData();
+    if (appData?.posting?.title) {
+      return String(appData.posting.title);
     }
 
     return '';
   }
 
   extractCompanyName(): string {
-    // Try to extract from window.__appData
-    try {
-      const appData = (window as WindowWithAppData).__appData;
-      if (appData?.organization?.name) {
-        return appData.organization.name;
-      }
-    } catch {
-      // Fallback to other methods
+    // 1. JSON-LD
+    const jsonLd = this.getJsonLd();
+    if (jsonLd?.hiringOrganization?.name) {
+      return String(jsonLd.hiringOrganization.name).trim();
     }
 
-    // Try JSON-LD structured data
-    try {
-      const jsonLdScript = document.querySelector('script[type="application/ld+json"]');
-      if (jsonLdScript) {
-        const jsonLd = JSON.parse(jsonLdScript.textContent || '{}');
-        if (jsonLd.hiringOrganization?.name) {
-          return jsonLd.hiringOrganization.name;
-        }
-      }
-    } catch {
-      // Continue to next method
-    }
-
-    // Try title tag (format: "Job Title @ Company")
+    // 2. Title tag (format: "Job Title @ Company")
     const titleElement = document.querySelector('title');
     if (titleElement) {
       const titleText = titleElement.textContent?.trim() || '';
@@ -108,145 +212,107 @@ export class AshbyhqJobExtractor implements JobExtractor {
       }
     }
 
+    // 3. __appData
+    const appData = this.getAppData();
+    if (appData?.organization?.name) {
+      return String(appData.organization.name);
+    }
+
     return '';
   }
 
   extractLocation(): string {
-    // Try to extract from window.__appData
-    try {
-      const appData = (window as WindowWithAppData).__appData;
-      if (appData?.posting?.locationName) {
-        return appData.posting.locationName;
+    // 1. JSON-LD
+    const jsonLd = this.getJsonLd();
+    if (jsonLd?.jobLocation?.address) {
+      const address = jsonLd.jobLocation.address;
+      const parts = [
+        address.addressLocality,
+        address.addressRegion,
+        address.addressCountry
+      ].filter(Boolean);
+      if (parts.length > 0) {
+        return parts.map(String).join(', ');
       }
-    } catch {
-      // Fallback to other methods
     }
 
-    // Try JSON-LD structured data
-    try {
-      const jsonLdScript = document.querySelector('script[type="application/ld+json"]');
-      if (jsonLdScript) {
-        const jsonLd = JSON.parse(jsonLdScript.textContent || '{}');
-        if (jsonLd.jobLocation?.address) {
-          const address = jsonLd.jobLocation.address;
-          const parts = [
-            address.addressLocality,
-            address.addressRegion,
-            address.addressCountry
-          ].filter(Boolean);
-          if (parts.length > 0) {
-            return parts.join(', ');
-          }
-        }
-      }
-    } catch {
-      // Continue to next method
+    // 2. __appData
+    const appData = this.getAppData();
+    if (appData?.posting?.locationName) {
+      return String(appData.posting.locationName);
     }
 
     return '';
   }
 
   extractJobType(): string {
-    // Try to extract from window.__appData
-    try {
-      const appData = (window as WindowWithAppData).__appData;
-      
-      // Check workplaceType first (Hybrid, Remote, On-site)
-      if (appData?.posting?.workplaceType) {
-        const workplaceType = appData.posting.workplaceType;
-        if (workplaceType === 'Remote' || workplaceType === 'Hybrid') {
-          return workplaceType;
-        }
-        if (workplaceType === 'OnSite') {
-          return 'On-site';
-        }
-      }
-
-      // TypeScript fix: Check isRemote on type-safe object
-      // Some AshbyHQ job postings may use a (not always present) isRemote boolean
-      if (
-        appData &&
-        appData.posting &&
-        appData.posting.isRemote === true
-      ) {
-        return 'Remote';
-      }
-    } catch {
-      // Fallback to other methods
+    // 1. JSON-LD
+    const jsonLd = this.getJsonLd();
+    if (jsonLd?.jobLocationType === 'TELECOMMUTE') {
+      return 'Remote';
+    }
+    if (jsonLd?.employmentType) {
+      const et = String(jsonLd.employmentType);
+      if (et === 'FULL_TIME') return 'Full-time';
+      if (et === 'PART_TIME') return 'Part-time';
+      if (et === 'CONTRACTOR') return 'Contract';
+      if (et === 'INTERN') return 'Internship';
+      return et;
     }
 
-    // Try JSON-LD structured data
-    try {
-      const jsonLdScript = document.querySelector('script[type="application/ld+json"]');
-      if (jsonLdScript) {
-        const jsonLd = JSON.parse(jsonLdScript.textContent || '{}');
-        if (jsonLd.jobLocationType === 'TELECOMMUTE') {
-          return 'Remote';
-        }
-        if (jsonLd.workplaceType) {
-          return jsonLd.workplaceType;
-        }
-      }
-    } catch {
-      // Continue to next method
+    // 2. __appData
+    const appData = this.getAppData();
+    if (appData?.posting?.workplaceType) {
+      const w = String(appData.posting.workplaceType);
+      if (w === 'Remote' || w === 'Hybrid') return w;
+      if (w === 'OnSite') return 'On-site';
+    }
+    if (appData?.posting && (appData.posting as Record<string, unknown>).isRemote === true) {
+      return 'Remote';
     }
 
     return '';
   }
 
   extractJobDescription(): string {
-    // Try to extract from window.__appData (prefer plain text)
-    try {
-      const appData = (window as WindowWithAppData).__appData;
-      if (appData?.posting?.descriptionPlainText) {
-        const text = appData.posting.descriptionPlainText.trim();
-        if (text.length > 100) {
-          const description = text.substring(0, 1000);
-          return text.length > 1000 ? description + '...' : description;
-        }
+    const limit = 1000;
+
+    // 1. JSON-LD (description often contains HTML)
+    const jsonLd = this.getJsonLd();
+    if (jsonLd?.description) {
+      const raw = String(jsonLd.description);
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = raw;
+      const text = tempDiv.textContent?.trim() || '';
+      if (text.length > 0) {
+        const out = text.length > limit ? text.substring(0, limit) + '...' : text;
+        return out;
       }
-      // Fallback to HTML description
-      if (appData?.posting?.descriptionHtml) {
-        // Create a temporary element to extract text
-        const tempDiv = document.createElement('div');
-        tempDiv.innerHTML = appData.posting.descriptionHtml;
-        const text = tempDiv.textContent?.trim() || '';
-        if (text.length > 100) {
-          const description = text.substring(0, 1000);
-          return text.length > 1000 ? description + '...' : description;
-        }
-      }
-    } catch {
-      // Fallback to other methods
     }
 
-    // Try JSON-LD structured data
-    try {
-      const jsonLdScript = document.querySelector('script[type="application/ld+json"]');
-      if (jsonLdScript) {
-        const jsonLd = JSON.parse(jsonLdScript.textContent || '{}');
-        if (jsonLd.description) {
-          // Remove HTML tags from description
-          const tempDiv = document.createElement('div');
-          tempDiv.innerHTML = jsonLd.description;
-          const text = tempDiv.textContent?.trim() || '';
-          if (text.length > 100) {
-            const description = text.substring(0, 1000);
-            return text.length > 1000 ? description + '...' : description;
-          }
-        }
+    // 2. Meta description
+    const metaDesc = document.querySelector('meta[name="description"]') as HTMLMetaElement;
+    if (metaDesc?.content) {
+      const text = metaDesc.content.trim();
+      if (text.length > 0) {
+        return text.length > limit ? text.substring(0, limit) + '...' : text;
       }
-    } catch {
-      // Continue to next method
     }
 
-    // Try meta description
-    const metaDescription = document.querySelector('meta[name="description"]') as HTMLMetaElement;
-    if (metaDescription?.content) {
-      const text = metaDescription.content.trim();
-      if (text.length > 100) {
-        const description = text.substring(0, 1000);
-        return text.length > 1000 ? description + '...' : description;
+    // 3. __appData
+    const appData = this.getAppData();
+    if (appData?.posting?.descriptionPlainText) {
+      const text = String(appData.posting.descriptionPlainText).trim();
+      if (text.length > 0) {
+        return text.length > limit ? text.substring(0, limit) + '...' : text;
+      }
+    }
+    if (appData?.posting?.descriptionHtml) {
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = String(appData.posting.descriptionHtml);
+      const text = tempDiv.textContent?.trim() || '';
+      if (text.length > 0) {
+        return text.length > limit ? text.substring(0, limit) + '...' : text;
       }
     }
 
@@ -254,60 +320,50 @@ export class AshbyhqJobExtractor implements JobExtractor {
   }
 
   extractSalary(): string {
-    // Try to extract from window.__appData
-    try {
-      const appData = (window as WindowWithAppData).__appData;
-      if (appData?.posting?.compensationTierSummary) {
-        return appData.posting.compensationTierSummary;
+    // 1. JSON-LD
+    const jsonLd = this.getJsonLd();
+    if (jsonLd?.baseSalary) {
+      const salary = jsonLd.baseSalary;
+      const currency = salary.currency || '';
+      const val = salary.value;
+      const minValue = val?.minValue;
+      const maxValue = val?.maxValue;
+      const unitText = (val?.unitText || '').toUpperCase();
+      if (minValue != null && maxValue != null) {
+        const a = typeof minValue === 'number' ? minValue.toLocaleString() : minValue;
+        const b = typeof maxValue === 'number' ? maxValue.toLocaleString() : maxValue;
+        return `${currency}${a} – ${currency}${b} ${unitText}`.trim();
       }
-      // Try compensationTiers array (defensively access any possible appData.posting shape)
-      const compensationTiers = (appData?.posting as Record<string, unknown> & { compensationTiers?: unknown }).compensationTiers;
-      if (Array.isArray(compensationTiers) && compensationTiers.length > 0) {
-        const tier = compensationTiers[0] as { tierSummary?: string };
-        if (tier?.tierSummary) {
-          return tier.tierSummary;
-        }
+      if (minValue != null) {
+        const a = typeof minValue === 'number' ? minValue.toLocaleString() : minValue;
+        return `${currency}${a} ${unitText}`.trim();
       }
-      
-      // Try scrapeableCompensationSalarySummary
-      if (appData?.posting?.scrapeableCompensationSalarySummary) {
-        return appData.posting.scrapeableCompensationSalarySummary as string;
-      }
-    } catch {
-      // Fallback to other methods
     }
 
-    // Try JSON-LD structured data
-    try {
-      const jsonLdScript = document.querySelector('script[type="application/ld+json"]');
-      if (jsonLdScript) {
-        const jsonLd = JSON.parse(jsonLdScript.textContent || '{}');
-        if (jsonLd.baseSalary) {
-          const salary = jsonLd.baseSalary;
-          const currency = salary.currency || '';
-          const minValue = salary.value?.minValue;
-          const maxValue = salary.value?.maxValue;
-          const unitText = salary.value?.unitText || '';
-          
-          if (minValue && maxValue) {
-            return `${currency}${minValue.toLocaleString()} – ${currency}${maxValue.toLocaleString()} ${unitText}`.trim();
-          } else if (minValue) {
-            return `${currency}${minValue.toLocaleString()} ${unitText}`.trim();
-          }
-        }
-      }
-    } catch {
-      // Continue to next method
+    // 2. __appData
+    const appData = this.getAppData();
+    if (appData?.posting?.compensationTierSummary) {
+      return String(appData.posting.compensationTierSummary);
+    }
+    const tiers = (appData?.posting as Record<string, unknown>)?.compensationTiers;
+    if (Array.isArray(tiers) && tiers.length > 0) {
+      const tier = tiers[0] as { tierSummary?: string };
+      if (tier?.tierSummary) return tier.tierSummary;
+    }
+    const scrapeable = (appData?.posting as Record<string, unknown>)?.scrapeableCompensationSalarySummary;
+    if (scrapeable) {
+      return String(scrapeable);
     }
 
     return '';
   }
 
   extract(): JobData {
+    this._cachedJsonLd = undefined;
+    this._cachedAppData = undefined;
     const data: JobData = {};
 
     try {
-      // Use individual extractor methods - only add to data if value is not empty
       const position = this.extractJobTitle();
       if (position) data.position = position;
 
@@ -326,52 +382,32 @@ export class AshbyhqJobExtractor implements JobExtractor {
       const salary = this.extractSalary();
       if (salary) data.salary = salary;
 
-      // Extract posted date from window.__appData or JSON-LD
+      // Posted date: JSON-LD first (available in content script), then __appData
       try {
-        const appData = (window as WindowWithAppData).__appData;
-        if (appData?.posting?.publishedDate) {
-          // Parse date string (format: "YYYY-MM-DD")
-          const date = new Date(appData.posting.publishedDate);
+        const jsonLd = this.getJsonLd();
+        if (jsonLd?.datePosted) {
+          const date = new Date(String(jsonLd.datePosted));
           if (!isNaN(date.getTime())) {
             data.postedDate = date.toISOString().split('T')[0];
           }
         } else {
-          // If __appData doesn't have publishedDate, try JSON-LD fallback
-          try {
-            const jsonLdScript = document.querySelector('script[type="application/ld+json"]');
-            if (jsonLdScript) {
-              const jsonLd = JSON.parse(jsonLdScript.textContent || '{}');
-              if (jsonLd.datePosted) {
-                const date = new Date(jsonLd.datePosted);
-                if (!isNaN(date.getTime())) {
-                  data.postedDate = date.toISOString().split('T')[0];
-                }
-              }
+          const appData = this.getAppData();
+          const publishedDate = appData?.posting?.publishedDate;
+          if (publishedDate) {
+            const date = new Date(String(publishedDate));
+            if (!isNaN(date.getTime())) {
+              data.postedDate = date.toISOString().split('T')[0];
             }
-          } catch {
-            // Date extraction failed
           }
         }
       } catch {
-        // Try JSON-LD fallback if there was an exception
-        try {
-          const jsonLdScript = document.querySelector('script[type="application/ld+json"]');
-          if (jsonLdScript) {
-            const jsonLd = JSON.parse(jsonLdScript.textContent || '{}');
-            if (jsonLd.datePosted) {
-              const date = new Date(jsonLd.datePosted);
-              if (!isNaN(date.getTime())) {
-                data.postedDate = date.toISOString().split('T')[0];
-              }
-            }
-          }
-        } catch {
-          // Date extraction failed
-        }
+        // ignore
       }
-
     } catch (error) {
       console.error('Error extracting job data from AshbyHQ:', error);
+    } finally {
+      this._cachedJsonLd = undefined;
+      this._cachedAppData = undefined;
     }
 
     return data;

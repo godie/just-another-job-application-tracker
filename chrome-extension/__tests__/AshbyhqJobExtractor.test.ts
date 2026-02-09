@@ -5,28 +5,26 @@ import { AshbyhqJobExtractor } from '../job-extractors/AshbyhqJobExtractor';
 const mockQuerySelector = vi.fn();
 const mockQuerySelectorAll = vi.fn();
 
-beforeEach(() => {
-  vi.clearAllMocks();
-  mockQuerySelector.mockReturnValue(null);
-  mockQuerySelectorAll.mockReturnValue([]);
-  
-  // Clear window.__appData
-
-  Object.defineProperty(global, 'window', { value: { __appData: undefined } });
-  
-  
-  global.document = {
-    querySelector: mockQuerySelector,
-    querySelectorAll: mockQuerySelectorAll,
-    createElement: vi.fn(() => ({
-      textContent: '',
-      innerHTML: '',
-    })),
-  } as unknown as Document;
-});
-
 describe('AshbyhqJobExtractor', () => {
   const extractor = new AshbyhqJobExtractor();
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockQuerySelector.mockReturnValue(null);
+    mockQuerySelectorAll.mockReturnValue([]);
+    Object.defineProperty(global, 'window', { value: { __appData: undefined } });
+    global.document = {
+      querySelector: mockQuerySelector,
+      querySelectorAll: mockQuerySelectorAll,
+      createElement: vi.fn(() => ({
+        textContent: '',
+        innerHTML: '',
+      })),
+    } as unknown as Document;
+    const ext = extractor as unknown as { _cachedJsonLd: unknown; _cachedAppData: unknown };
+    ext._cachedJsonLd = undefined;
+    ext._cachedAppData = undefined;
+  });
 
   describe('canHandle', () => {
     it('should return true for AshbyHQ job URLs', () => {
@@ -62,40 +60,27 @@ describe('AshbyhqJobExtractor', () => {
         '@type': 'JobPosting',
         title: 'Full Stack Developer',
       };
-      
-      const mockScriptElement = {
-        textContent: JSON.stringify(jsonLdContent),
-      };
-      
-      mockQuerySelector.mockReturnValueOnce(mockScriptElement);
-      
+      const mockScriptElement = { textContent: JSON.stringify(jsonLdContent) };
+      mockQuerySelectorAll.mockImplementation((selector: string) =>
+        selector === 'script[type="application/ld+json"]' ? [mockScriptElement] : []
+      );
       const result = extractor.extractJobTitle();
       expect(result).toBe('Full Stack Developer');
     });
 
     it('should extract title from title tag', () => {
-      const mockTitleElement = {
-        textContent: 'Senior Engineer @ Company Name',
-      };
-      
+      const mockTitleElement = { textContent: 'Senior Engineer @ Company Name' };
+      // getJsonLd uses querySelectorAll; then og:title, then title
       mockQuerySelector
-        .mockReturnValueOnce(null) // JSON-LD script
-        .mockReturnValueOnce(mockTitleElement); // title tag
-      
+        .mockReturnValueOnce(null) // og:title
+        .mockReturnValueOnce(mockTitleElement); // title
       const result = extractor.extractJobTitle();
       expect(result).toBe('Senior Engineer');
     });
 
     it('should extract title from og:title meta tag', () => {
-      const mockMetaElement = {
-        content: 'Software Engineer Position',
-      } as HTMLMetaElement;
-      
-      mockQuerySelector
-        .mockReturnValueOnce(null) // JSON-LD script
-        .mockReturnValueOnce(null) // title tag
-        .mockReturnValueOnce(mockMetaElement); // og:title
-      
+      const mockMetaElement = { content: 'Software Engineer Position' } as HTMLMetaElement;
+      mockQuerySelector.mockReturnValueOnce(mockMetaElement); // og:title
       const result = extractor.extractJobTitle();
       expect(result).toBe('Software Engineer Position');
     });
@@ -117,30 +102,20 @@ describe('AshbyhqJobExtractor', () => {
 
     it('should extract company from JSON-LD', () => {
       const jsonLdContent = {
-        hiringOrganization: {
-          name: 'Test Company',
-        },
+        '@type': 'JobPosting',
+        hiringOrganization: { name: 'Test Company' },
       };
-      
-      const mockScriptElement = {
-        textContent: JSON.stringify(jsonLdContent),
-      };
-      
-      mockQuerySelector.mockReturnValueOnce(mockScriptElement);
-      
+      const mockScriptElement = { textContent: JSON.stringify(jsonLdContent) };
+      mockQuerySelectorAll.mockImplementation((selector: string) =>
+        selector === 'script[type="application/ld+json"]' ? [mockScriptElement] : []
+      );
       const result = extractor.extractCompanyName();
       expect(result).toBe('Test Company');
     });
 
     it('should extract company from title tag format', () => {
-      const mockTitleElement = {
-        textContent: 'Software Engineer @ Google',
-      };
-      
-      mockQuerySelector
-        .mockReturnValueOnce(null) // JSON-LD script
-        .mockReturnValueOnce(mockTitleElement); // title tag
-      
+      const mockTitleElement = { textContent: 'Software Engineer @ Google' };
+      mockQuerySelector.mockReturnValueOnce(mockTitleElement); // title
       const result = extractor.extractCompanyName();
       expect(result).toBe('Google');
     });
@@ -162,6 +137,7 @@ describe('AshbyhqJobExtractor', () => {
 
     it('should extract location from JSON-LD address', () => {
       const jsonLdContent = {
+        '@type': 'JobPosting',
         jobLocation: {
           address: {
             addressLocality: 'Toronto',
@@ -170,32 +146,23 @@ describe('AshbyhqJobExtractor', () => {
           },
         },
       };
-      
-      const mockScriptElement = {
-        textContent: JSON.stringify(jsonLdContent),
-      };
-      
-      mockQuerySelector.mockReturnValueOnce(mockScriptElement);
-      
+      const mockScriptElement = { textContent: JSON.stringify(jsonLdContent) };
+      mockQuerySelectorAll.mockImplementation((selector: string) =>
+        selector === 'script[type="application/ld+json"]' ? [mockScriptElement] : []
+      );
       const result = extractor.extractLocation();
       expect(result).toBe('Toronto, Ontario, Canada');
     });
 
     it('should handle partial address in JSON-LD', () => {
       const jsonLdContent = {
-        jobLocation: {
-          address: {
-            addressLocality: 'San Francisco',
-          },
-        },
+        '@type': 'JobPosting',
+        jobLocation: { address: { addressLocality: 'San Francisco' } },
       };
-      
-      const mockScriptElement = {
-        textContent: JSON.stringify(jsonLdContent),
-      };
-      
-      mockQuerySelector.mockReturnValueOnce(mockScriptElement);
-      
+      const mockScriptElement = { textContent: JSON.stringify(jsonLdContent) };
+      mockQuerySelectorAll.mockImplementation((selector: string) =>
+        selector === 'script[type="application/ld+json"]' ? [mockScriptElement] : []
+      );
       const result = extractor.extractLocation();
       expect(result).toBe('San Francisco');
     });
@@ -241,16 +208,11 @@ describe('AshbyhqJobExtractor', () => {
     });
 
     it('should detect Remote from JSON-LD jobLocationType', () => {
-      const jsonLdContent = {
-        jobLocationType: 'TELECOMMUTE',
-      };
-      
-      const mockScriptElement = {
-        textContent: JSON.stringify(jsonLdContent),
-      };
-      
-      mockQuerySelector.mockReturnValueOnce(mockScriptElement);
-      
+      const jsonLdContent = { '@type': 'JobPosting', jobLocationType: 'TELECOMMUTE' };
+      const mockScriptElement = { textContent: JSON.stringify(jsonLdContent) };
+      mockQuerySelectorAll.mockImplementation((selector: string) =>
+        selector === 'script[type="application/ld+json"]' ? [mockScriptElement] : []
+      );
       const result = extractor.extractJobType();
       expect(result).toBe('Remote');
     });
@@ -325,15 +287,13 @@ describe('AshbyhqJobExtractor', () => {
 
     it('should extract description from JSON-LD', () => {
       const jsonLdContent = {
+        '@type': 'JobPosting',
         description: '<p>This is a job description. This is a comprehensive job description that includes all the necessary details about the position, requirements, and responsibilities. It needs to be at least 100 characters long to be extracted by the extractor.</p>',
       };
-      
-      const mockScriptElement = {
-        textContent: JSON.stringify(jsonLdContent),
-      };
-      
-      mockQuerySelector.mockReturnValueOnce(mockScriptElement);
-      
+      const mockScriptElement = { textContent: JSON.stringify(jsonLdContent) };
+      mockQuerySelectorAll.mockImplementation((selector: string) =>
+        selector === 'script[type="application/ld+json"]' ? [mockScriptElement] : []
+      );
       (global.document.createElement as unknown) = vi.fn(() => {
         const div: { _innerHTML: string; _textContent: string } = {
           _innerHTML: '',
@@ -342,7 +302,6 @@ describe('AshbyhqJobExtractor', () => {
         Object.defineProperty(div, 'innerHTML', {
           set(value: string) {
             div._innerHTML = value;
-            // Extract text from HTML
             const textMatch = value.replace(/<[^>]*>/g, '').trim();
             div._textContent = textMatch;
           },
@@ -357,21 +316,14 @@ describe('AshbyhqJobExtractor', () => {
         });
         return div;
       });
-      
       const result = extractor.extractJobDescription();
       expect(result.length).toBeGreaterThan(100);
       expect(result).toContain('This is a job description');
     });
 
     it('should extract description from meta description tag', () => {
-      const mockMetaElement = {
-        content: 'A'.repeat(500),
-      } as HTMLMetaElement;
-      
-      mockQuerySelector
-        .mockReturnValueOnce(null) // JSON-LD script
-        .mockReturnValueOnce(mockMetaElement); // meta description
-      
+      const mockMetaElement = { content: 'A'.repeat(500) } as HTMLMetaElement;
+      mockQuerySelector.mockReturnValueOnce(mockMetaElement); // meta[name="description"]
       const result = extractor.extractJobDescription();
       expect(result).toBe('A'.repeat(500));
     });
@@ -438,22 +390,16 @@ describe('AshbyhqJobExtractor', () => {
 
     it('should extract salary from JSON-LD baseSalary', () => {
       const jsonLdContent = {
+        '@type': 'JobPosting',
         baseSalary: {
           currency: 'CAD',
-          value: {
-            minValue: 175000,
-            maxValue: 200000,
-            unitText: 'YEAR',
-          },
+          value: { minValue: 175000, maxValue: 200000, unitText: 'YEAR' },
         },
       };
-      
-      const mockScriptElement = {
-        textContent: JSON.stringify(jsonLdContent),
-      };
-      
-      mockQuerySelector.mockReturnValueOnce(mockScriptElement);
-      
+      const mockScriptElement = { textContent: JSON.stringify(jsonLdContent) };
+      mockQuerySelectorAll.mockImplementation((selector: string) =>
+        selector === 'script[type="application/ld+json"]' ? [mockScriptElement] : []
+      );
       const result = extractor.extractSalary();
       expect(result).toContain('CAD');
       expect(result).toContain('175,000');
@@ -462,21 +408,13 @@ describe('AshbyhqJobExtractor', () => {
 
     it('should handle salary with only minValue', () => {
       const jsonLdContent = {
-        baseSalary: {
-          currency: 'USD',
-          value: {
-            minValue: 120000,
-            unitText: 'YEAR',
-          },
-        },
+        '@type': 'JobPosting',
+        baseSalary: { currency: 'USD', value: { minValue: 120000, unitText: 'YEAR' } },
       };
-      
-      const mockScriptElement = {
-        textContent: JSON.stringify(jsonLdContent),
-      };
-      
-      mockQuerySelector.mockReturnValueOnce(mockScriptElement);
-      
+      const mockScriptElement = { textContent: JSON.stringify(jsonLdContent) };
+      mockQuerySelectorAll.mockImplementation((selector: string) =>
+        selector === 'script[type="application/ld+json"]' ? [mockScriptElement] : []
+      );
       const result = extractor.extractSalary();
       expect(result).toContain('USD');
       expect(result).toContain('120,000');
@@ -527,37 +465,14 @@ describe('AshbyhqJobExtractor', () => {
     });
 
     it('should extract posted date from JSON-LD when __appData not available', () => {
-      const jsonLdContent = {
-        datePosted: '2025-11-21',
-      };
-      
-      const mockScriptElement = {
-        textContent: JSON.stringify(jsonLdContent),
-      };
-      
-      // Ensure window.__appData doesn't have publishedDate
-      // The code will try JSON-LD if publishedDate doesn't exist
+      const jsonLdContent = { '@type': 'JobPosting', datePosted: '2025-11-21' };
+      const mockScriptElement = { textContent: JSON.stringify(jsonLdContent) };
       Object.defineProperty(global, 'window', { value: { __appData: { posting: {} } } });
-      
-      // Mock all querySelector calls: title (4), company (3), location (2), jobType (2), description (2), salary (1), date (1)
-      let jsonLdCallCount = 0;
-      mockQuerySelector.mockImplementation((selector: string) => {
-        // Count calls to JSON-LD script selector
-        if (selector === 'script[type="application/ld+json"]') {
-          jsonLdCallCount++;
-          // Return the script only for date extraction (the last call, after all other extractions)
-          if (jsonLdCallCount === 7) { // After title (1), company (1), location (1), jobType (1), description (1), salary (1)
-            return mockScriptElement as unknown as HTMLScriptElement;
-          }
-          return null;
-        }
-        // For all other selectors, return null
-        return null;
-      });
-      
+      mockQuerySelectorAll.mockImplementation((selector: string) =>
+        selector === 'script[type="application/ld+json"]' ? [mockScriptElement] : []
+      );
       const result = extractor.extract();
-      expect(result.postedDate).toBeDefined();
-      expect(result.postedDate).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+      expect(result.postedDate).toBe('2025-11-21');
     });
 
     it('should handle missing window.__appData gracefully', () => {

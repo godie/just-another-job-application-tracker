@@ -1,0 +1,7 @@
+RewriteEngine On
+# Evita que se apliquen reglas si el archivo o carpeta real existe
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_COND_PATH} !-d
+
+# Manda todo lo que no exista a index.php dentro de /api
+RewriteRule ^(.*)$ index.php [L,QSA]

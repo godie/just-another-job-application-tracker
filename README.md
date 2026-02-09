@@ -1,28 +1,32 @@
 # Job Application Tracker
+
 # Project Overview
+
 This is a modern Job Application Tracker built using React, TypeScript, and Tailwind CSS. The project follows Test-Driven Development (TDD) principles, utilizing Vitest and React Testing Library for comprehensive unit and component testing.The application manages job applications locally, with an architecture designed for seamless integration with external services like Google Sheets.
 
 # Project Status
+
 **Completion: 95%**
 
-This project is feature-complete for its core functionality. Based on the project [recommendations](./RECOMMENDATIONS.md), 41 out of 41 planned features have been implemented and are fully tested. Recent additions include state management with Zustand, full internationalization, and a community support system.
+This project is feature-complete for its core functionality. Based on the project [recommendations](./RECOMMENDATIONS.md), 41 out of 41 planned features have been implemented and are fully tested. The test suite has 400+ tests (39 test files) with Vitest and React Testing Library.
 
 ## Recent Updates
-- **Zustand State Management**: Migrated from prop-drilling to a robust state management system using Zustand stores for applications, opportunities, preferences, and authentication.
-- **Full Internationalization (i18n)**: Implementation of `i18next` providing a completely bilingual experience (English/Spanish) across the entire application, including dynamic translations for statuses and field types.
-- **Support & Suggestions System**: Added a new Support page featuring a community suggestion form backed by a lightweight PHP + SQLite backend with numeric CAPTCHA protection.
-- **Direct ATS Search**: New feature on the Opportunities page that generates targeted Google search queries for major Applicant Tracking Systems (Ashby, Greenhouse, Lever, Workable, Workday, etc.).
-- **Insights Page Improvements**: Fixed interview event detection logic and added new "Interviews by Type" chart
-  - Correctly identifies all interview event types (screener_call, technical_interview, hiring_manager, etc.)
-  - Added comprehensive interview type breakdown visualization
-- **Mobile-First Responsive Design**: Complete mobile optimization with card-based views, compact metrics, and responsive header
-  - Header adapts by screen size: logo icon (< 768px), "JAJAT" text (768-1023px), full title (≥ 1024px)
-  - Login button shows Google "G" icon on mobile for space efficiency
-  - Metrics summary displays 3 cards in a single row on mobile with compact styling
-  - Application table switches to card view on mobile (< 768px) and table view on desktop
-- **Test Infrastructure**: Achieved 100% test pass rate (366 tests passing) with migration to `happy-dom`.
+
+- **Backend API as Mini-Framework**: The PHP API (`/api`) is now a small framework with a single entry point (`index.php`), router, controllers, and helpers. All endpoints are under `/api/*` (auth, captcha, suggestions, google-sheets). See [api/README.md](./api/README.md) for routes and structure.
+- **OAuth Authorization Code + Token Refresh**: Login uses the authorization-code flow; the backend exchanges the code for access and refresh tokens and stores them in HTTP-only cookies. When the access token expires, the backend refreshes it automatically (Sheets proxy and GET `/api/auth/cookie` use a valid token). Requires `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` on the server.
+- **Application Fields: Location, Work Type, Hybrid Days**: `JobApplication` now includes optional `location`, `workType` (remote / on-site / hybrid), and when hybrid, `hybridDaysInOffice` (1–5 days per week). Form, table, and opportunity-to-application conversion support these fields.
+- **Email Scan (Gmail)**: In Settings, scan Gmail for application-related emails; preview proposed additions and updates, then apply selected items to the tracker. Handles rate limits with a clear message and chunked fetching.
+- **PWA**: The app is installable as a Progressive Web App (manifest, service worker). Install from the browser on desktop and mobile when served over HTTPS.
+- **i18n Test Mock**: Test setup loads the English translation JSON and flattens it for the `react-i18next` mock, avoiding duplicated translation strings in tests.
+- **Zustand State Management**: Global state with Zustand stores for applications, opportunities, preferences, and authentication.
+- **Full Internationalization (i18n)**: Bilingual experience (English/Spanish) with `i18next` across the app.
+- **Support & Suggestions System**: Support page with suggestion form, PHP + SQLite backend, and numeric CAPTCHA.
+- **Direct ATS Search**: Opportunities page generates targeted Google search queries for major ATS (Ashby, Greenhouse, Lever, Workable, Workday, etc.).
+- **Mobile-First Responsive Design**: Card-based table on mobile, compact metrics, adaptive header and login button.
+- **Test Infrastructure**: 400+ tests passing with Vitest and happy-dom.
 
 ## Next Steps
+
 - AI-Assisted job matching and resume optimization
 - Browser notifications for interviews and follow-ups
 - Export to PDF/CSV and enhanced data import
@@ -30,71 +34,108 @@ This project is feature-complete for its core functionality. Based on the projec
 For a detailed feature breakdown, please see the [recommendations document](./RECOMMENDATIONS.md).
 
 # Technology Stack
+
 The project is built on the following modern technologies:
 
-| Category | Technology | Purpose |
-|----------|-----------|----------|
-| Frontend | React 19 (Hooks & Functional Components) | User Interface |
-| State Management | Zustand | Lightweight and Scalable State Management |
-| Internationalization | i18next & react-i18next | Full Multi-language Support (EN/ES) |
-| Language | TypeScript 5.9+ | Strong Typing and Scalability |
-| Styling | Tailwind CSS 4 | Modern Utility-First CSS Framework |
-| Tooling | Vite 7 | High-performance Frontend Build Tool |
-| Testing | Vitest & React Testing Library | Test Runner and Component Testing (TDD) |
-| Authentication | @react-oauth/google | Google OAuth Integration |
+
+| Category             | Technology                               | Purpose                                   |
+| -------------------- | ---------------------------------------- | ----------------------------------------- |
+| Frontend             | React 19 (Hooks & Functional Components) | User Interface                            |
+| State Management     | Zustand                                  | Lightweight and Scalable State Management |
+| Internationalization | i18next & react-i18next                  | Full Multi-language Support (EN/ES)       |
+| Language             | TypeScript 5.9+                          | Strong Typing and Scalability             |
+| Styling              | Tailwind CSS 4                           | Modern Utility-First CSS Framework        |
+| Tooling              | Vite 7                                   | High-performance Frontend Build Tool      |
+| Testing              | Vitest & React Testing Library           | Test Runner and Component Testing (TDD)   |
+| Authentication       | @react-oauth/google                      | Google OAuth Integration                  |
+
 
 # Getting Started: Local Setup
+
 Follow these instructions to get a copy of the project up and running on your local machine.
+
 ## Prerequisites
+
 - Node.js (v22 recommended) and npm (Node Package Manager)
 - PHP 7.4+ (for backend cookie handling)
+
 ## Installation
+
 1. Clone the repository:
+
 ```shell
 git clone https://github.com/godie/JAJAT.git job-application-tracker
 ```
-2. Enter folder
+
+1. Enter folder
+
 ```shell
 cd job-application-tracker
 ```
 
-3. Install project dependencies:
-```shell 
+1. Install project dependencies:
+
+```shell
 npm install
 ```
 
-4. Setup Git pre-commit hook (optional but recommended):
+1. Setup Git pre-commit hook (optional but recommended):
+
 ```shell
 ./setup-hook.sh
 ```
+
 This will install a pre-commit hook that runs ESLint before each commit to ensure code quality and prevent build errors.
 
-5. Configure Environment Variables:
-Create a file named `.env.local` in the project root and add your Google OAuth Client ID. This is required for the login functionality.
+1. Configure Environment Variables:
 
-### .env.local
+Create a file named `.env` or `.env.local` in the project root (see `.env.example`). Required for the frontend:
+
+### Frontend (.env / .env.local)
+
 ```bash
-# Google OAuth Configuration
+# Google OAuth – same Client ID as in Google Cloud Console (Web application)
 VITE_GOOGLE_CLIENT_ID="YOUR_GOOGLE_CLIENT_ID_HERE.apps.googleusercontent.com"
 
-# API Base URL (optional - defaults to /api)
-# For production, set this to your full API URL
-VITE_API_BASE_URL="/api"
+# API base path (defaults to /api if omitted)
+VITE_API_BASE_URL=/api
 ```
 
-> **Note:** The `.env.local` file is gitignored and will not be committed to version control.
+For **token refresh** and Gmail/Sheets to work without re-login, the **backend** must use the authorization-code flow. Set these in the **server environment** (or in a `.env` loaded by PHP), not in the frontend:
+
+```bash
+GOOGLE_CLIENT_ID=your_client_id.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=your_client_secret
+```
+
+Add your frontend origin (e.g. `http://localhost:5173`, `https://yourdomain.com`) to **Authorized redirect URIs** in the Google Cloud Console for that OAuth client.
+
+> **Note:** `.env` and `.env.local` are gitignored. Never commit `GOOGLE_CLIENT_SECRET`.
+
 # Available Scripts
+
 In the project directory, you can run:
+
 - `npm run dev`
-    - Runs the app in development mode using Vite. Open http://localhost:5173 to view it in the browser. The page will reload upon edits.
+  - Runs the app in development mode using Vite. Open [http://localhost:5173](http://localhost:5173) to view it in the browser. The page will reload upon edits.
 - `npm test`
-    - Runs all unit and component tests via Vitest in one pass.
+  - Runs all unit and component tests via Vitest in one pass.
 - `npm run test:watch`
-    - Starts the Vitest test runner in watch mode (recommended for TDD).
+  - Starts the Vitest test runner in watch mode (recommended for TDD).
 - `npm run build`
-    - Builds the application for production to the dist folder.
+  - Builds the application for production to the dist folder.
 - `npm run build:extension`
-    - Builds the Chrome extension to the chrome-extension/dist folder.
+  - Builds the Chrome extension to the chrome-extension/dist folder.
+
+## Install as PWA (Progressive Web App)
+
+The app is installable as a PWA. After deploying the production build (`npm run build`) over **HTTPS**:
+
+- **Chrome / Edge (desktop)**: Use the install icon in the address bar or menu → "Install JAJAT…".
+- **Android (Chrome)**: Menu → "Add to Home screen" or the install banner when supported.
+- **iOS (Safari)**: Share → "Add to Home Screen".
+
+Requirements: the site must be served over HTTPS (or `localhost` for testing). The build generates a web app manifest and a service worker for offline caching and installability. Icon and theme use `public/jajat-logo.png`; for best results on all devices you can add dedicated `pwa-192x192.png` and `pwa-512x512.png` to `public/` and reference them in `vite.config.ts` (VitePWA `manifest.icons`).
 
 # Key Features
 
@@ -108,6 +149,7 @@ In the project directory, you can run:
 - Vite Environment Variables: Secure management of the Google Client ID using VITE_ prefixed environment variables
 
 ## Data Management & Persistence
+
 - Local Storage Persistence: All job application data is persisted locally in the browser's localStorage for simple, quick data retention.
 - Full CRUD Functionality: Supports:
   - Create (Add New Entry)
@@ -116,11 +158,13 @@ In the project directory, you can run:
   - Soft Delete (Mark as deleted with confirmation dialog)
 - Advanced Data Model: Hybrid approach supporting:
   - **Timeline-based tracking**: Full interview process with multiple stages (Screener, Technical, System Design, Hiring Manager, etc.)
+  - **Location & work type**: Optional `location`, `workType` (remote / on-site / hybrid), and when hybrid, `hybridDaysInOffice` (days per week in office)
   - **Legacy compatibility**: Automatic migration from simple status fields
   - **Custom fields**: User-defined fields for flexible data tracking
   - **Event status**: Complete interview tracking with scheduled, completed, cancelled, and pending states
 
 ## User Interface & Interactivity
+
 - **Multiple View Modes**: Switch between different visualizations:
   - **Table View**: Enhanced table with all job application data
   - **Timeline View**: Chronological visualization of interview process with status indicators
@@ -146,10 +190,11 @@ In the project directory, you can run:
 - **Manual Opportunity Creation**: Add opportunities directly from the web app with a full-featured form.
 - **Bidirectional Extension Sync**: Real-time synchronization between Chrome extension and web app.
 - **Configurable Settings Page**: Comprehensive settings with multiple sections:
-  - **Table Fields Configuration**: Show/hide and reorder columns in the applications table
+  - **Table Fields Configuration**: Show/hide and reorder columns (including Location, Work Type) in the applications table
   - **Default View Selection**: Choose your preferred view (Table, Timeline, Kanban, Calendar) when opening the app
   - **Date Format Preferences**: Select date format (DD/MM/YYYY, MM/DD/YYYY, YYYY-MM-DD) for consistent display
   - **Custom Fields Management**: Create, edit, and delete custom fields with support for multiple field types (text, date, number, select, checkbox, URL)
+  - **Email Scan (Gmail)**: Scan Gmail for application-related emails; preview proposed additions/updates and apply selected items to the tracker (requires login with Gmail scope; rate-limit handling included)
 - Keyboard Accessibility: Implements a custom hook (useKeyboardEscape) to allow users to close the modal form by pressing the Escape key
 - Footer: Displays version information, attribution, and links to Terms of Service and Privacy Policy
 - **Legal Pages**: Bilingual Terms of Service and Privacy Policy pages with language switcher (English/Spanish, default: English)
@@ -180,11 +225,12 @@ The application features a sophisticated timeline system for tracking the comple
 Supported interview stages include: Application Submitted, Screener Call, First Contact, Technical Interview, Code Challenge, Live Coding, Hiring Manager, System Design, Cultural Fit, Final Round, Offer, Rejected, Withdrawn, and Custom.
 
 ## Security & Authentication
-- Secure Cookie Storage: Google OAuth tokens are stored in secure, HTTP-only cookies managed by PHP backend.
-- OAuth 2.0 Flow: Full OAuth 2.0 implementation with access token management.
-- **Backend Integration**: PHP endpoints for secure cookie handling and community suggestions.
-- Google Sheets API Scope: OAuth includes Google Sheets API scope for spreadsheet synchronization.
-- **Legal Compliance**: Complete Terms of Service and Privacy Policy pages required for Google OAuth verification and production deployment.
+
+- **Secure Cookie Storage**: Google OAuth access and refresh tokens are stored in HTTP-only, Secure, SameSite cookies managed by the PHP backend.
+- **OAuth 2.0 Authorization Code Flow**: Frontend uses `@react-oauth/google` with `flow: 'auth-code'`; backend exchanges the code for access and refresh tokens. This allows the backend to refresh the access token when it expires so users stay logged in for Sheets and Gmail without re-authenticating.
+- **Backend API**: PHP mini-framework (`api/`) handles auth cookies, captcha, suggestions, and Google Sheets proxy; see [api/README.md](./api/README.md).
+- **Scopes**: OAuth includes Google Sheets and Gmail read scope for sync and email scan.
+- **Legal Compliance**: Terms of Service and Privacy Policy (bilingual) for Google OAuth verification and production deployment.
 
 For more details on the security measures implemented in this project, please see the [SECURITY.md](./SECURITY.md) file.
 
@@ -206,6 +252,7 @@ These pages are accessible from the footer and are required for Google Cloud Con
 The project includes a Chrome extension for capturing job opportunities from multiple job boards. Currently supports LinkedIn, Greenhouse, AshbyHQ, Workable, and Lever.co, with more platforms coming soon.
 
 ### Supported Job Boards
+
 - **LinkedIn**: Full support for LinkedIn job postings
 - **Greenhouse**: Complete extraction from Greenhouse job boards
 - **AshbyHQ**: Full support for AshbyHQ job postings
@@ -213,6 +260,7 @@ The project includes a Chrome extension for capturing job opportunities from mul
 - **Lever.co**: Full support for Lever.co job postings
 
 ### Features
+
 - **One-click capture**: Automatically extracts job details from supported job boards
 - **Smart extraction**: Uses multiple data sources (embedded JSON, JSON-LD, HTML, meta tags) for reliable data extraction
 - **Editable form**: Review and edit captured data before saving
@@ -224,12 +272,14 @@ The project includes a Chrome extension for capturing job opportunities from mul
 - **Advanced filtering**: Filter opportunities by status with inclusion/exclusion options
 
 ### Quick Start
+
 1. Build the extension: `npm run build:extension`
 2. Load it in Chrome: Go to `chrome://extensions/`, enable Developer mode, and load the `chrome-extension/dist` folder
 3. Visit a job posting on LinkedIn, Greenhouse, AshbyHQ, Workable, or Lever.co and click the extension icon to capture it
 4. Or add opportunities manually from the Opportunities page in the web app
 
 ### Supported URLs
+
 - LinkedIn: `https://www.linkedin.com/jobs/view/*`
 - Greenhouse: `https://boards.greenhouse.io/*`, `https://job-boards.greenhouse.io/*`
 - AshbyHQ: `https://jobs.ashbyhq.com/*`, `https://*.ashbyhq.com/*`
@@ -237,7 +287,9 @@ The project includes a Chrome extension for capturing job opportunities from mul
 - Lever.co: `https://jobs.lever.co/*`, `https://*.lever.co/*`, `https://lever.co/*`
 
 ### Manual Opportunity Creation
+
 You don't need the extension to add opportunities! Simply:
+
 1. Navigate to the Opportunities page in the web app
 2. Click "+ Add Opportunity"
 3. Fill in the job details
@@ -250,6 +302,7 @@ For detailed installation and usage instructions, see [CHROME_EXTENSION.md](./CH
 The application includes full Google Sheets integration for syncing job application data:
 
 ### Features
+
 - **One-Way Sync**: Sync all job applications from the app to Google Sheets
 - **Automatic Spreadsheet Creation**: Create a new Google Sheet with predefined structure
 - **Sync Status Tracking**: Real-time sync status with last sync time and error handling
@@ -257,71 +310,50 @@ The application includes full Google Sheets integration for syncing job applicat
 - **Timeline Events Export**: Complete interview timeline events are formatted and exported to Sheets
 
 ### How to Use
+
 1. **Login with Google**: Ensure you're logged in with Google (includes Sheets API scope)
 2. **Create Spreadsheet**: Click "Create Sheet" to create a new Google Sheet
 3. **Sync Data**: Click "Sync Now" to sync all your job applications to the spreadsheet
 4. **Open Spreadsheet**: Click "Open Spreadsheet →" to view your data in Google Sheets
 
 ### Spreadsheet Structure
+
 The created spreadsheet includes the following columns:
-- ID, Position, Company, Salary, Status
+
+- ID, Position, Company, Location, Work Type, Salary, Status
 - Application Date, Interview Date, Platform
 - Contact Name, Follow-up Date, Link, Notes
 - Timeline Events (formatted with all interview stages, dates, statuses, and notes)
 
-# Backend API Endpoints
-The project includes PHP endpoints for secure cookie management. These endpoints must be deployed to a PHP server with HTTPS enabled.
+# Backend API (PHP Mini-Framework)
 
-## Authentication Endpoints
+The `/api` directory is a small PHP API with a single entry point, router, and controllers. All requests go through `index.php`; the frontend uses the base URL from `VITE_API_BASE_URL` (e.g. `/api`).
 
-### Set Auth Cookie
-- **Endpoint:** `POST /api/set-auth-cookie.php`
-- **Purpose:** Store Google OAuth access token in a secure, HTTP-only cookie
-- **Request Body:** JSON with `access_token` field
-- **Response:** JSON with success status
-- **Security:** Cookie is set with `HttpOnly`, `Secure`, and `SameSite=Strict` flags
+## Overview
 
-### Get Auth Cookie
-- **Endpoint:** `GET /api/get-auth-cookie.php`
-- **Purpose:** Retrieve the stored OAuth access token from the secure cookie
-- **Response:** JSON with `access_token` field or error message
-- **Security:** Only accessible server-side; JavaScript cannot read HTTP-only cookies
+- **Entry point:** `api/index.php` — CORS, session, and routing.
+- **Router:** `api/Router.php` — matches method and path to controller actions.
+- **Controllers:** `api/controllers/` — AuthController, CaptchaController, SuggestionsController, GoogleSheetsController, etc.
+- **Helpers:** `api/helpers/cors.php`, `api/helpers/auth.php` — CORS headers and OAuth token resolution (including refresh).
+- **Config:** `api/config.php` — allowed origins, cookie names, OAuth client id/secret (from env), paths.
 
-### Clear Auth Cookie (Logout)
-- **Endpoint:** `POST /api/clear-auth-cookie.php`
-- **Purpose:** Remove the authentication cookie when user logs out
-- **Response:** JSON with success status
-- **Security:** Cookie is deleted by setting expiry to past time
+## Main Routes
 
-## Google Sheets Endpoints
+| Method   | Path           | Purpose |
+|----------|----------------|---------|
+| GET      | /api/auth/cookie    | Return current access token (refreshes from refresh_token if expired). |
+| POST     | /api/auth/cookie    | Store token: body `{ "access_token" }` (legacy) or `{ "code", "redirect_uri" }` (auth-code flow). |
+| DELETE   | /api/auth/cookie    | Clear auth cookies (logout). |
+| GET      | /api/captcha        | Generate numeric CAPTCHA challenge (session). |
+| POST     | /api/suggestions    | Submit suggestion (validates CAPTCHA, stores in SQLite). |
+| POST     | /api/google-sheets  | Proxy: `create_sheet`, `sync_data`, `get_sheet_info` (uses resolved token from cookies). |
 
-### Create Spreadsheet
-- **Endpoint:** `POST /api/google-sheets.php`
-- **Action:** `create_sheet`
-- **Purpose:** Create a new Google Sheet with predefined structure for job applications
-- **Request Body:** JSON with `action: "create_sheet"` and optional `title` field
-- **Response:** JSON with `spreadsheetId`, `spreadsheetUrl`, and success status
-- **Security:** Uses OAuth token from secure HTTP-only cookie
+The backend resolves a valid Google access token (refreshing when needed) for Sheets and for GET `/api/auth/cookie`, so the frontend and Sheets sync keep working after the access token expires.
 
-### Sync Data to Spreadsheet
-- **Endpoint:** `POST /api/google-sheets.php`
-- **Action:** `sync_data`
-- **Purpose:** Sync job applications data to an existing Google Sheet
-- **Request Body:** JSON with `action: "sync_data"`, `spreadsheetId`, and `applications` array
-- **Response:** JSON with `rowsSynced` count and success status
-- **Security:** Uses OAuth token from secure HTTP-only cookie
-
-### Get Spreadsheet Info
-- **Endpoint:** `POST /api/google-sheets.php`
-- **Action:** `get_sheet_info`
-- **Purpose:** Retrieve information about a Google Sheet
-- **Request Body:** JSON with `action: "get_sheet_info"` and `spreadsheetId`
-- **Response:** JSON with spreadsheet metadata
-- **Security:** Uses OAuth token from secure HTTP-only cookie
-
-> **Note:** Due to browser security restrictions, JavaScript cannot read HTTP-only cookies. The backend PHP endpoints handle all cookie operations securely and act as a proxy for Google Sheets API calls.
+For full route list, controller responsibilities, and server env vars (`GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`), see **[api/README.md](./api/README.md)**.
 
 # File Structure
+
 The project maintains a clean, scalable folder structure based on functional concerns:
 
 ```
@@ -377,6 +409,8 @@ job-application-tracker/
 │   ├── hooks/
 │   │   ├── useKeyboardKey.ts    // Generic hook for listening to any key press.
 │   │   └── useKeyboardEscape.ts // Semantic wrapper for closing modals on 'Escape' key.
+│   ├── mails/                   // Gmail scan: types, adapter, scan service, useEmailScan hook, providers
+│   ├── client/                  // Gmail API client used by mails
 │   ├── adapters/
 │   │   ├── IAdapter.ts          // Target interface for external data services (Adapter Pattern).
 │   │   └── GoogleSheetAdapter.ts// [Future] Adapter implementation for Google Sheets API.
@@ -401,11 +435,13 @@ job-application-tracker/
 │   │   └── DarkModeIntegration.test.tsx // Integration tests for dark mode functionality.
 │   ├── App.tsx                  // Main app component with GoogleOAuthProvider wrapper.
 │   └── main.tsx
-├── api/                         // PHP backend endpoints
-│   ├── set-auth-cookie.php      // Secure cookie setting for OAuth tokens
-│   ├── get-auth-cookie.php      // Secure cookie retrieval for OAuth tokens
-│   ├── clear-auth-cookie.php    // Secure cookie deletion for logout
-│   └── google-sheets.php        // Google Sheets API proxy for secure operations
+├── api/                         // PHP backend (mini-framework; see api/README.md)
+│   ├── index.php                // Single entry: CORS, session, router
+│   ├── Router.php               // Method + path → controller action
+│   ├── config.php               // CORS origins, cookie names, OAuth env
+│   ├── controllers/             // AuthController, CaptchaController, SuggestionsController, GoogleSheetsController
+│   ├── helpers/                 // cors.php, auth.php (token resolve + refresh)
+│   └── ...                      // Legacy .php scripts can be removed once new routes are confirmed
 ├── chrome-extension/            // Chrome extension for multi-platform job capture
 │   ├── manifest.json            // Extension manifest
 │   ├── popup.html               // Popup HTML container
@@ -440,60 +476,61 @@ This project uses GitHub Actions for automated deployment. To configure the work
 
 #### Required Secrets:
 
-| Secret Name | Description | Example |
-|-------------|-------------|---------|
+
+| Secret Name             | Description                           | Example                                     |
+| ----------------------- | ------------------------------------- | ------------------------------------------- |
 | `VITE_GOOGLE_CLIENT_ID` | Google OAuth Client ID for production | `YOUR_CLIENT_ID.apps.googleusercontent.com` |
-| `VITE_API_BASE_URL` | API base URL for production | `/api` or `https://yourdomain.com/api` |
-| `SSH_PRIVATE_KEY` | Private SSH key for deployment | Your SSH private key content |
-| `REMOTE_USER` | SSH username for deployment | `username` |
-| `REMOTE_HOST` | Server hostname/IP | `example.com` or `192.168.1.100` |
-| `REMOTE_PORT` | SSH port | `22` or `2022` |
-| `REMOTE_TARGET` | Deployment path on server | `/var/www/html` or `/home/user/public_html` |
+| `VITE_API_BASE_URL`     | API base URL for production           | `/api` or `https://yourdomain.com/api`      |
+| `SSH_PRIVATE_KEY`       | Private SSH key for deployment        | Your SSH private key content                |
+| `REMOTE_USER`           | SSH username for deployment           | `username`                                  |
+| `REMOTE_HOST`           | Server hostname/IP                    | `example.com` or `192.168.1.100`            |
+| `REMOTE_PORT`           | SSH port                              | `22` or `2022`                              |
+| `REMOTE_TARGET`         | Deployment path on server             | `/var/www/html` or `/home/user/public_html` |
+
 
 > **Security Note:** Never commit these secrets to version control. They are only stored in GitHub Secrets.
 
 ### PHP Backend Configuration
 
-1. Deploy PHP files to your web server:
-   - Ensure the `/api` directory is accessible via HTTPS
-   - PHP version 7.4+ required
-   - PHP must have cookie and JSON support enabled
-
-2. Configure CORS (if needed):
-   - Update `Access-Control-Allow-Origin` headers in PHP files if frontend and backend are on different domains
-   - Adjust CORS settings in the PHP files as needed for your deployment
-
-3. Test the endpoints:
+1. Deploy the `api/` directory to your web server so that all requests to `/api/*` are handled by `api/index.php` (e.g. via Apache `RewriteRule` or nginx `try_files`). The repo includes `api/.htaccess` for Apache.
+2. **PHP**: 7.4+ with cookie and JSON support.
+3. **Environment (server-side)** for auth-code flow and token refresh:
+   - `GOOGLE_CLIENT_ID` — same as the frontend OAuth client (Web application type).
+   - `GOOGLE_CLIENT_SECRET` — from Google Cloud Console (never expose in frontend).
+4. **CORS**: Allowed origins are in `api/config.php`; add your frontend origin (e.g. production URL).
+5. Test the API (replace host with your own):
    ```bash
-   # Test set cookie
-   curl -X POST https://jajat.godieboy.com/api/set-auth-cookie.php \
+   # Health / demo
+   curl https://your-domain.com/api/hello
+
+   # Auth: set cookie (legacy with access_token)
+   curl -X POST https://your-domain.com/api/auth/cookie \
      -H "Content-Type: application/json" \
      -d '{"access_token": "test_token"}'
-   
-   # Test get cookie
-   curl -X GET https://jajat.godieboy.com/api/get-auth-cookie.php \
-     --cookie "google_auth_token=test_token"
+
+   # Auth: get cookie (returns token; backend refreshes if expired when refresh_token is stored)
+   curl -X GET https://your-domain.com/api/auth/cookie --cookie "google_auth_token=..."
    ```
 
 ### Frontend Integration
 
-The React app automatically calls these endpoints when:
-- User logs in: Token is stored in secure cookie via `setAuthCookie()`
-- User logs out: Cookie is cleared via `clearAuthCookie()`
-- App needs token: Backend can retrieve it using `getAuthCookie()`
+- **Login:** Frontend uses OAuth authorization-code flow and sends `code` + `redirect_uri` to `POST /api/auth/cookie`. Backend exchanges the code for access and refresh tokens and sets HTTP-only cookies.
+- **Logout:** `DELETE /api/auth/cookie` clears auth cookies.
+- **Token usage:** Gmail scan and Sheets use the token from cookies; the backend resolves a valid token (refreshing when needed) so the app keeps working after the access token expires.
 
-> **Important:** The cookie is HTTP-only and secure, so JavaScript cannot read it directly. This protects against XSS attacks.
+> **Important:** Cookies are HTTP-only and secure. JavaScript cannot read them; the backend handles token storage and refresh.
 
 ## Testing
 
 The project includes comprehensive test coverage:
 
 ```
-Test Files: 34 passed (34)
-Tests: 366 passed (366)
+Test Files: 39 passed (39)
+Tests: 401 passed (401)
 ```
 
 ### Test Coverage Includes:
+
 - Component rendering and interactions
 - User interface functionality
 - Data persistence and CRUD operations
@@ -512,6 +549,7 @@ Tests: 366 passed (366)
 - **Theme integration tests** for localStorage and document class management
 
 ### Testing Infrastructure:
+
 - **Test Runner**: Vitest with happy-dom environment (optimized for React component testing)
 - **Component Testing**: React Testing Library for user-centric tests
 - **Mocking**: Comprehensive mocks for localStorage, Google OAuth, and API endpoints
@@ -524,6 +562,7 @@ This project is optimized for collaboration with AI agents. We include an [AGENT
 ## Git Pre-Commit Hook
 
 This project includes a pre-commit hook that automatically runs ESLint before each commit. This ensures:
+
 - Code quality is maintained
 - Build errors are caught early
 - Consistent code style across the project
@@ -531,6 +570,7 @@ This project includes a pre-commit hook that automatically runs ESLint before ea
 ### Installation
 
 Run the setup script:
+
 ```bash
 ./setup-hook.sh
 ```
@@ -538,6 +578,7 @@ Run the setup script:
 ### How It Works
 
 When you attempt to commit code:
+
 1. The hook automatically runs `npm run lint`
 2. If linting passes: commit proceeds normally
 3. If linting fails: commit is blocked with error details
@@ -545,6 +586,7 @@ When you attempt to commit code:
 ### Bypassing the Hook (Not Recommended)
 
 If you need to bypass the hook for a specific commit (e.g., WIP commits):
+
 ```bash
 git commit --no-verify -m "your message"
 ```
@@ -554,6 +596,7 @@ git commit --no-verify -m "your message"
 ### Manual Linting
 
 You can manually run linting at any time:
+
 ```bash
 npm run lint          # Check for errors
 npm run lint:fix      # Automatically fix fixable issues
@@ -569,6 +612,6 @@ This project follows Test-Driven Development (TDD) principles. All new features 
 2. Run linter: `npm run lint` (or let the pre-commit hook do it)
 3. Ensure build passes: `npm run build`
 
-## License 
+## License
 
 [MIT LICENSE](LICENSE)

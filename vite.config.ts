@@ -2,14 +2,56 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
+import { VitePWA } from 'vite-plugin-pwa'
 import { resolve } from 'path'
 import { copyFileSync, mkdirSync, existsSync } from 'fs'
+
+const isExtensionBuild = process.env.BUILD_EXTENSION === 'true'
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
-    react(), 
+    react(),
     tailwindcss(),
+    // PWA: manifest + service worker (only for web app build, not extension)
+    ...(isExtensionBuild
+      ? []
+      : [
+          VitePWA({
+            registerType: 'autoUpdate',
+            includeAssets: ['jajat-logo.png', 'vite.svg'],
+            manifest: {
+              name: 'JAJAT - Job Application Tracker',
+              short_name: 'JAJAT',
+              description: 'Track and manage your job applications with timeline views, calendar, and Google Sheets sync.',
+              theme_color: '#4f46e5',
+              background_color: '#ffffff',
+              display: 'standalone',
+              start_url: '/',
+              icons: [
+                {
+                  src: '/jajat-logo.png',
+                  sizes: '192x192',
+                  type: 'image/png',
+                  purpose: 'any',
+                },
+                {
+                  src: '/jajat-logo.png',
+                  sizes: '512x512',
+                  type: 'image/png',
+                  purpose: 'any maskable',
+                },
+              ],
+            },
+            workbox: {
+              globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+              navigateFallback: '/index.html',
+            },
+            devOptions: {
+              enabled: false,
+            },
+          }),
+        ]),
     // Plugin to copy extension files after build
     {
       name: 'copy-extension-files',
@@ -85,5 +127,14 @@ export default defineConfig({
     setupFiles: './src/setupTests.ts', // File to set up testing library extensions
     // Specify where tests are located
     include: ['**/*.test.{ts,tsx}'],
+  },
+  server: {
+    proxy: {
+      '/api': {
+          target: 'http://localhost:8000',
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/api/, '/api'),
+      },
+    },
   },
 })

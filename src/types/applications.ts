@@ -34,6 +34,9 @@ export interface InterviewEvent {
   interviewerName?: string; // Name of the interviewer
 }
 
+/** Work arrangement: remote, on-site, or hybrid */
+export type WorkType = 'remote' | 'on-site' | 'hybrid';
+
 /**
  * Job Application - Hybrid approach combining timeline, status, and flexibility
  */
@@ -42,23 +45,29 @@ export interface JobApplication {
   id: string;
   position: string;
   company: string;
-  
+
+  // Location and work arrangement
+  location?: string;
+  workType?: WorkType;
+  /** When workType is 'hybrid': days per week in office (1–5). */
+  hybridDaysInOffice?: number;
+
   // Quick reference fields (legacy support)
   salary: string;
   status: string; // Quick status reference
   applicationDate: string;
   interviewDate: string;
-  
+
   // New timeline-based tracking
   timeline: InterviewEvent[];
-  
+
   // Additional fields
   notes: string;
   link: string;
   platform: string;
   contactName: string;
   followUpDate: string;
-  
+
   // User-defined custom fields
   customFields?: Record<string, string>;
 }
@@ -70,6 +79,9 @@ export interface LegacyJobApplication {
   id: string;
   position: string;
   company: string;
+  location?: string;
+  workType?: string;
+  hybridDaysInOffice?: number;
   salary: string;
   status: string;
   applicationDate: string;

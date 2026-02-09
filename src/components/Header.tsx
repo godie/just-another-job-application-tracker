@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useGoogleLogin } from '@react-oauth/google';
 import { checkLoginStatus, setLoginStatus } from '../utils/localStorage';
-import { setAuthCookie, clearAuthCookie } from '../utils/api';
+import { setAuthCookieWithCode, clearAuthCookie } from '../utils/api';
 import { useAlert } from './AlertProvider';
 
 interface HeaderProps {
@@ -65,21 +65,21 @@ const Header: React.FC<HeaderProps> = ({ onToggleSidebar }) => {
   };
 
   const googleLogin = useGoogleLogin({
-    scope: 'openid email profile https://www.googleapis.com/auth/spreadsheets',
-    onSuccess: async (tokenResponse) => {
+    flow: 'auth-code',
+    scope: 'openid email profile https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/gmail.readonly',
+    onSuccess: async (codeResponse) => {
       setIsLoading(true);
-      
       try {
-        // Store token in secure cookie via PHP backend
-        await setAuthCookie(tokenResponse.access_token);
-        
-        // Also store login status in localStorage for UI state
+        const redirectUri = window.location.origin;
+        await setAuthCookieWithCode(codeResponse.code, redirectUri);
         setLoginStatus(true);
         setIsLoggedIn(true);
         showSuccess("Successful Login with Google!");
       } catch (error) {
         console.error("Error storing auth cookie:", error);
-        showError("Login successful but failed to store credentials securely.");
+        showError(
+          error instanceof Error ? error.message : "Login successful but failed to store credentials securely."
+        );
       } finally {
         setIsLoading(false);
       }
