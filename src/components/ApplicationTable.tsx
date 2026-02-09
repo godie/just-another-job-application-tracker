@@ -19,6 +19,8 @@ interface ApplicationTableProps {
 const columnToKeyMap: Record<string, keyof JobApplication> = {
   'position': 'position',
   'company': 'company',
+  'location': 'location',
+  'worktype': 'workType',
   'salary': 'salary',
   'status': 'status',
   'applicationdate': 'applicationDate',

@@ -15,6 +15,9 @@ interface AddJobFormProps {
 const initialFormData: Omit<JobApplication, 'id'> = {
   position: '',
   company: '',
+  location: '',
+  workType: undefined,
+  hybridDaysInOffice: undefined,
   salary: '',
   status: 'Applied',
   applicationDate: new Date().toLocaleDateString('en-CA'), // Fecha de hoy por defecto (YYYY-MM-DD)
@@ -93,6 +96,11 @@ const AddJobForm: React.FC<AddJobFormProps> = ({ onSave, onCancel, initialData }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
+    if (name === 'hybridDaysInOffice') {
+      const num = value === '' ? undefined : parseInt(value, 10);
+      setFormData(prev => ({ ...prev, hybridDaysInOffice: num }));
+      return;
+    }
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
@@ -111,7 +119,20 @@ const AddJobForm: React.FC<AddJobFormProps> = ({ onSave, onCancel, initialData }
       timeline = buildTimeline(dataWithStatus);
     }
     
-    const finalData = { ...dataWithStatus, timeline };
+    const workType = dataWithStatus.workType;
+    const validWorkType =
+      workType === 'remote' || workType === 'on-site' || workType === 'hybrid' ? workType : undefined;
+    const hybridDaysInOffice =
+      validWorkType === 'hybrid' && typeof dataWithStatus.hybridDaysInOffice === 'number'
+        ? dataWithStatus.hybridDaysInOffice
+        : undefined;
+    const finalData = {
+      ...dataWithStatus,
+      timeline,
+      location: dataWithStatus.location || undefined,
+      workType: validWorkType,
+      hybridDaysInOffice,
+    };
     onSave(finalData);
   };
 
@@ -154,6 +175,55 @@ const AddJobForm: React.FC<AddJobFormProps> = ({ onSave, onCancel, initialData }
                 data-testid="form-company"
               />
             </label>
+
+            <label className="block">
+              <span className="text-gray-700 font-medium">{t('form.location')}</span>
+              <input
+                type="text"
+                name="location"
+                value={formData.location ?? ''}
+                onChange={handleChange}
+                placeholder="e.g. Remote, San Francisco"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border"
+                data-testid="form-location"
+              />
+            </label>
+
+            <label className="block">
+              <span className="text-gray-700 font-medium">{t('form.workType')}</span>
+              <select
+                name="workType"
+                value={formData.workType ?? ''}
+                onChange={handleChange}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border bg-white"
+                data-testid="form-work-type"
+              >
+                <option value="">{t('form.workTypeNone')}</option>
+                <option value="remote">{t('form.workTypes.remote')}</option>
+                <option value="on-site">{t('form.workTypes.onSite')}</option>
+                <option value="hybrid">{t('form.workTypes.hybrid')}</option>
+              </select>
+            </label>
+
+            {formData.workType === 'hybrid' && (
+              <label className="block">
+                <span className="text-gray-700 font-medium">{t('form.hybridDaysInOffice')}</span>
+                <select
+                  name="hybridDaysInOffice"
+                  value={formData.hybridDaysInOffice ?? ''}
+                  onChange={handleChange}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border bg-white"
+                  data-testid="form-hybrid-days"
+                >
+                  <option value="">{t('form.hybridDaysNone')}</option>
+                  {[1, 2, 3, 4, 5].map((d) => (
+                    <option key={d} value={d}>
+                      {t('form.hybridDaysOption', { count: d })}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            )}
 
             {/* Group 2: Dates and Status */}
             <div className="col-span-full border-b pb-2 mb-4 mt-4">

@@ -26,6 +26,7 @@ const Popup: React.FC = () => {
     salary: '',
     postedDate: '',
   });
+  const [saveAsApplication, setSaveAsApplication] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error' | 'info'; text: string } | null>(null);
@@ -36,6 +37,7 @@ const Popup: React.FC = () => {
     const jobBoardPatterns = [
       'linkedin.com/jobs',
       'greenhouse.io',
+      'ashbyhq.com',
       'lever.co',
       'workable.com',
       'indeed.com',
@@ -165,57 +167,87 @@ const Popup: React.FC = () => {
     setIsSaving(true);
     setMessage(null);
 
+    const id = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    const capturedDate = new Date().toISOString();
+
     try {
-      // Get existing opportunities
-      const result = await chrome.storage.local.get(['jobOpportunities']);
-      const existing = result.jobOpportunities || [];
+      if (saveAsApplication) {
+        // Save directly as Application (already applied)
+        const applicationPayload = {
+          id,
+          ...opportunity,
+          capturedDate,
+        };
 
-      // Create new opportunity
-      const newOpportunity = {
-        ...opportunity,
-        id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-        capturedDate: new Date().toISOString(),
-      };
+        // Store in pendingApplications so when user opens the app later it will sync
+        const result = await chrome.storage.local.get(['pendingApplications']);
+        const pending = result.pendingApplications || [];
+        pending.push(applicationPayload);
+        await chrome.storage.local.set({ pendingApplications: pending });
 
-      // Add to list
-      existing.push(newOpportunity);
-
-      // Save to chrome.storage.local
-      await chrome.storage.local.set({ jobOpportunities: existing });
-
-      // Also try to sync with web app localStorage if it's open
-      try {
-        chrome.tabs.query({}, (tabs) => {
-          tabs.forEach((tab) => {
-            if (tab.url && isWebAppDomain(tab.url) && tab.id) {
-              // Send individual opportunity first
-              chrome.tabs.sendMessage(tab.id, {
-                action: 'syncOpportunity',
-                data: newOpportunity,
-              }).then(() => {
-                // After individual sync, do a full sync to ensure consistency
-                chrome.tabs.sendMessage(tab.id!, {
-                  action: 'syncFromChromeStorage',
-                }).catch(() => {
-                  // Ignore errors
-                });
-              }).catch(() => {
-                // If individual sync fails, try full sync
-                chrome.tabs.sendMessage(tab.id!, {
-                  action: 'syncFromChromeStorage',
-                }).catch(() => {
-                  // Ignore errors if content script not available
-                });
+        // Sync to web app tabs if open
+        let syncedToTab = false;
+        const tabs = await chrome.tabs.query({});
+        for (const tab of tabs) {
+          if (tab.url && isWebAppDomain(tab.url) && tab.id) {
+            try {
+              await chrome.tabs.sendMessage(tab.id, {
+                action: 'syncApplication',
+                data: applicationPayload,
               });
+              syncedToTab = true;
+            } catch {
+              // Content script may not be ready
             }
+          }
+        }
+
+        // If we synced to a tab, remove from pending (already in app localStorage)
+        if (syncedToTab && pending.length > 0) {
+          const remaining = pending.filter((p: { id: string }) => p.id !== id);
+          await chrome.storage.local.set({ pendingApplications: remaining });
+        }
+
+        setMessage({ type: 'success', text: 'Application saved! It will appear in Applications.' });
+      } else {
+        // Save as Opportunity (existing flow)
+        const result = await chrome.storage.local.get(['jobOpportunities']);
+        const existing = result.jobOpportunities || [];
+
+        const newOpportunity = {
+          ...opportunity,
+          id,
+          capturedDate,
+        };
+        existing.push(newOpportunity);
+        await chrome.storage.local.set({ jobOpportunities: existing });
+
+        try {
+          chrome.tabs.query({}, (tabs) => {
+            tabs.forEach((tab) => {
+              if (tab.url && isWebAppDomain(tab.url) && tab.id) {
+                chrome.tabs.sendMessage(tab.id, {
+                  action: 'syncOpportunity',
+                  data: newOpportunity,
+                }).then(() => {
+                  chrome.tabs.sendMessage(tab.id!, {
+                    action: 'syncFromChromeStorage',
+                  }).catch(() => {});
+                }).catch(() => {
+                  chrome.tabs.sendMessage(tab.id!, {
+                    action: 'syncFromChromeStorage',
+                  }).catch(() => {});
+                });
+              }
+            });
           });
-        });
-      } catch (error) {
-        console.error('Error syncing to web app:', error);
+        } catch (error) {
+          console.error('Error syncing to web app:', error);
+        }
+
+        setMessage({ type: 'success', text: 'Opportunity saved successfully!' });
       }
 
-      setMessage({ type: 'success', text: 'Opportunity saved successfully!' });
-      
       // Clear form after a delay
       setTimeout(() => {
         setOpportunity({
@@ -228,11 +260,12 @@ const Popup: React.FC = () => {
           salary: '',
           postedDate: '',
         });
+        setSaveAsApplication(false);
         setMessage(null);
       }, 1500);
     } catch (error) {
-      console.error('Error saving opportunity:', error);
-      setMessage({ type: 'error', text: 'Failed to save opportunity. Please try again.' });
+      console.error('Error saving:', error);
+      setMessage({ type: 'error', text: 'Failed to save. Please try again.' });
     } finally {
       setIsSaving(false);
     }
@@ -367,6 +400,16 @@ const Popup: React.FC = () => {
             className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
           />
         </div>
+
+        <label className="flex items-center gap-2 cursor-pointer mt-2">
+          <input
+            type="checkbox"
+            checked={saveAsApplication}
+            onChange={(e) => setSaveAsApplication(e.target.checked)}
+            className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+          />
+          <span className="text-sm text-gray-700">Ya apliqué — guardar en Applications</span>
+        </label>
       </div>
 
       <div className="mt-4 space-y-2">
@@ -376,7 +419,7 @@ const Popup: React.FC = () => {
             disabled={isSaving}
             className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-lg transition duration-150 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
           >
-            {isSaving ? 'Saving...' : 'Save to Opportunities'}
+            {isSaving ? 'Saving...' : saveAsApplication ? 'Save as Application' : 'Save to Opportunities'}
           </button>
           <button
             onClick={handleOpenApp}

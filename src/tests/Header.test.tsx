@@ -3,6 +3,7 @@ import { expect, test, describe, beforeEach, vi } from 'vitest';
 import Header from '../components/Header';
 import { AlertProvider } from '../components/AlertProvider';
 import * as localStorageUtils from '../utils/localStorage';
+import * as api from '../utils/api';
 
 
 // =========================================================================
@@ -13,7 +14,7 @@ const localStorageStore: Record<string, string> = {};
 
 // Mock the API module
 vi.mock('../utils/api', () => ({
-  setAuthCookie: vi.fn(() => Promise.resolve({ success: true })),
+  setAuthCookieWithCode: vi.fn(() => Promise.resolve({ success: true })),
   clearAuthCookie: vi.fn(() => Promise.resolve({ success: true })),
   getAuthCookie: vi.fn(),
 }));
@@ -49,10 +50,14 @@ vi.mock('../utils/localStorage', () => {
   };
 });
 
-// Mock the @react-oauth/google hook
+// Mock the @react-oauth/google hook (auth-code flow: onSuccess receives { code })
 const mockGoogleLogin = vi.fn();
 vi.mock('@react-oauth/google', () => ({
-  useGoogleLogin: () => mockGoogleLogin,
+  useGoogleLogin: (opts: { onSuccess?: (res: { code: string }) => void }) => {
+    const loginFn = () => opts?.onSuccess?.({ code: 'mock-auth-code' });
+    mockGoogleLogin.mockImplementation(loginFn);
+    return mockGoogleLogin;
+  },
   GoogleOAuthProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
@@ -174,6 +179,16 @@ describe('Header Component', () => {
     fireEvent.click(loginButton);
     
     expect(mockGoogleLogin).toHaveBeenCalledTimes(1);
+  });
+
+  test('On Google login success should call setAuthCookieWithCode with code and origin', async () => {
+    localStorageStore['isLoggedIn'] = 'false';
+    renderWithProviders(<Header onToggleSidebar={mockToggleSidebar} />);
+    const loginButton = screen.getByTestId('login-button');
+    fireEvent.click(loginButton);
+    await waitFor(() => {
+      expect(api.setAuthCookieWithCode).toHaveBeenCalledWith('mock-auth-code', expect.any(String));
+    });
   });
 
   // --- Responsive Design Tests ---

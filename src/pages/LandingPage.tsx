@@ -84,7 +84,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
               <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mb-6">
                 <svg className="w-6 h-6 text-blue-600 dark:text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" /></svg>
               </div>
-              <h3 className="text-xl font-bold mb-2">{t('landing.feature2Title')}</h3>
+              <h3 className="text-xl font-bold mb-2"><a className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300" href="https://chromewebstore.google.com/detail/job-application-tracker/inlfdhmkpfikjfgjgnininfcgdnlhlcc?pli=1" target="_blank" rel="noopener noreferrer">{t('landing.feature2Title')}</a></h3>
               <p className="text-gray-600 dark:text-gray-300">{t('landing.feature2Desc')}</p>
             </div>
             <div className="p-8 bg-white dark:bg-gray-700 rounded-2xl shadow-md">
@@ -93,6 +93,20 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
               </div>
               <h3 className="text-xl font-bold mb-2">{t('landing.feature4Title')}</h3>
               <p className="text-gray-600 dark:text-gray-300">{t('landing.feature4Desc')}</p>
+            </div>
+            <div className="p-8 bg-white dark:bg-gray-700 rounded-2xl shadow-md">
+              <div className="w-12 h-12 bg-red-100 dark:bg-red-900 rounded-full flex items-center justify-center mb-6">
+                <svg className="w-6 h-6 text-red-600 dark:text-red-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+              </div>
+              <h3 className="text-xl font-bold mb-2">{t('landing.feature5Title')}</h3>
+              <p className="text-gray-600 dark:text-gray-300">{t('landing.feature5Desc')}</p>
+            </div>
+            <div className="p-8 bg-white dark:bg-gray-700 rounded-2xl shadow-md">
+              <div className="w-12 h-12 bg-amber-100 dark:bg-amber-900 rounded-full flex items-center justify-center mb-6">
+                <svg className="w-6 h-6 text-amber-600 dark:text-amber-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>
+              </div>
+              <h3 className="text-xl font-bold mb-2">{t('landing.feature6Title')}</h3>
+              <p className="text-gray-600 dark:text-gray-300">{t('landing.feature6Desc')}</p>
             </div>
           </div>
         </div>

@@ -82,8 +82,16 @@ const OpportunitiesPageContent: React.FC<OpportunitiesPageContentProps> = () => 
       // Add application using store
       addApplication(application);
       
-      // Remove opportunity
+      // Remove opportunity (same as Delete so extension doesn't re-sync it)
       deleteOpportunity(opportunity.id);
+      try {
+        window.postMessage({
+          type: 'DELETE_OPPORTUNITY',
+          opportunityId: opportunity.id,
+        }, window.location.origin);
+      } catch (error) {
+        console.debug('Extension not available for delete sync:', error);
+      }
       
       showSuccess(t('opportunities.success.addedToApps', { position: opportunity.position, company: opportunity.company }));
     } catch (error) {
@@ -185,8 +193,9 @@ const OpportunitiesPageContent: React.FC<OpportunitiesPageContentProps> = () => 
         {opportunities.length === 0 ? (
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8 text-center">
             <p className="text-gray-500 dark:text-gray-400 text-lg mb-2">{t('opportunities.noOpportunities')}</p>
-            <p className="text-gray-400 dark:text-gray-500 text-sm">
+            <p className="text-gray-400 dark:text-gray-500 text-sm"><a href="https://chromewebstore.google.com/detail/job-application-tracker/inlfdhmkpfikjfgjgnininfcgdnlhlcc?pli=1" className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"target="_blank" rel="noopener noreferrer">
               {t('opportunities.noOpportunitiesDesc')}
+              </a>
             </p>
           </div>
         ) : (

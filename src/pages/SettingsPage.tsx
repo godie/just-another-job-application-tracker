@@ -12,6 +12,7 @@ import {
 } from '../utils/localStorage';
 import packageJson from '../../package.json';
 import { usePreferencesStore } from '../stores/preferencesStore';
+import { EmailScanReview } from '../components/EmailScanReview';
 
 import { type PageType } from '../App';
 
@@ -30,7 +31,7 @@ const SettingsPageContent: React.FC<SettingsPageProps> = () => {
   const resetPreferences = usePreferencesStore((state) => state.resetPreferences);
   
   const [hasChanges, setHasChanges] = useState(false);
-  const [activeSection, setActiveSection] = useState<'fields' | 'view' | 'date' | 'custom' | 'interviewing' | 'atsSearch'>('fields');
+  const [activeSection, setActiveSection] = useState<'fields' | 'view' | 'date' | 'custom' | 'interviewing' | 'atsSearch' | 'emailScan'>('fields');
   const [editingCustomField, setEditingCustomField] = useState<FieldDefinition | null>(null);
   const [customFieldForm, setCustomFieldForm] = useState<Partial<FieldDefinition>>({
     label: '',
@@ -215,6 +216,7 @@ const SettingsPageContent: React.FC<SettingsPageProps> = () => {
     { id: 'custom' as const, label: t('settings.sections.custom'), icon: '➕' },
     { id: 'interviewing' as const, label: t('settings.sections.interviewing'), icon: '🎯' },
     { id: 'atsSearch' as const, label: t('opportunities.atsSearch.title'), icon: '🔍' },
+    { id: 'emailScan' as const, label: t('settings.emailScan.section'), icon: '📧' },
   ];
 
   return (
@@ -626,6 +628,9 @@ const SettingsPageContent: React.FC<SettingsPageProps> = () => {
           )}
 
           {/* ATS Search Section */}
+          {activeSection === 'emailScan' && (
+            <EmailScanReview />
+          )}
           {activeSection === 'atsSearch' && (
             <div>
               <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">{t('opportunities.atsSearch.settings')}</h2>

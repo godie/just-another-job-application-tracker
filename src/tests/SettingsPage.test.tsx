@@ -62,6 +62,15 @@ describe('SettingsPage', () => {
       expect(screen.getByText(/Default View/i)).toBeInTheDocument();
       expect(screen.getByText(/Date Format/i)).toBeInTheDocument();
       expect(screen.getByText(/Custom Fields/i)).toBeInTheDocument();
+      expect(screen.getByText(/Email Scan/i)).toBeInTheDocument();
+    });
+
+    test('renders Email Scan section when clicked', async () => {
+      renderWithGoogleProvider(<SettingsPage />);
+      fireEvent.click(screen.getByText(/Email Scan/i));
+      await waitFor(() => {
+        expect(screen.getByText(/Scan Gmail for Applications/i)).toBeInTheDocument();
+      });
     });
 
     test('renders Save Changes and Reset to Default buttons', () => {

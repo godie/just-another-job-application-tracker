@@ -16,6 +16,8 @@ export const VALUE_BY_STATUS: Record<string, string> = {
 export const DEFAULT_FIELDS: FieldDefinition[] = [
   { id: 'position', label: 'Position', type: 'text', required: true },
   { id: 'company', label: 'Company', type: 'text', required: true },
+  { id: 'location', label: 'Location', type: 'text', required: false },
+  { id: 'workType', label: 'Work Type', type: 'text', required: false },
   { id: 'status', label: 'Status', type: 'text', required: false },
   { id: 'applicationDate', label: 'Application Date', type: 'date', required: false },
   { id: 'timeline', label: 'Timeline', type: 'text', required: false },

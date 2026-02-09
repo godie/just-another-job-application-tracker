@@ -33,5 +33,5 @@ PR_MESSAGE.md
 # .git/hooks/pre-commit is tracked and should be committed
 
 # PHP
-# Backend files (uncomment if you don't want to commit PHP files)
-# /api/
+# api/config.php is local only; use config.example.php as template and for deploy
+api/config.php
