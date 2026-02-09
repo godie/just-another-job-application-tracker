@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Card, Input, Select, Button } from './ui';
 
 export interface Filters {
   search: string;
@@ -106,17 +107,16 @@ const FiltersBar: React.FC<FiltersBarProps> = ({ filters, onFiltersChange, avail
   const statusExclude = filters.statusExclude || [];
 
   return (
-    <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm p-4 space-y-3">
+    <Card className="rounded-xl shadow-sm p-4 space-y-3">
       <div className="md:flex md:flex-wrap md:items-end md:gap-4">
         <div className="flex-1 min-w-[180px]">
-          <label htmlFor="search" className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">{t('filters.search')}</label>
-          <input
+          <Input
             id="search"
+            label={t('filters.search')}
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder={t('filters.searchPlaceholder')}
-            className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:border-indigo-500 focus:ring-indigo-500"
           />
         </div>
 
@@ -181,54 +181,52 @@ const FiltersBar: React.FC<FiltersBarProps> = ({ filters, onFiltersChange, avail
         </div>
 
       <div className="min-w-[160px]">
-        <label htmlFor="platform-filter" className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">{t('filters.platform')}</label>
-        <select
+        <Select
           id="platform-filter"
+          label={t('filters.platform')}
           value={filters.platform}
           onChange={handleChange('platform')}
-          className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
         >
           <option value="">{t('filters.all')}</option>
           {availablePlatforms.map((platform) => (
             <option key={platform} value={platform}>{t(`form.platforms.${platform}`, platform)}</option>
           ))}
-        </select>
+        </Select>
       </div>
 
       <div className="flex flex-col sm:flex-row sm:items-end gap-2">
         <div className="min-w-[140px]">
-          <label htmlFor="date-from" className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">{t('filters.from')}</label>
-          <input
+          <Input
             id="date-from"
+            label={t('filters.from')}
             type="date"
             value={filters.dateFrom}
             onChange={handleChange('dateFrom')}
-            className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:border-indigo-500 focus:ring-indigo-500"
           />
         </div>
         <div className="min-w-[140px]">
-          <label htmlFor="date-to" className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">{t('filters.to')}</label>
-          <input
+          <Input
             id="date-to"
+            label={t('filters.to')}
             type="date"
             value={filters.dateTo}
             onChange={handleChange('dateTo')}
-            className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:border-indigo-500 focus:ring-indigo-500"
           />
         </div>
       </div>
 
         <div className="flex items-center gap-2 mt-2 md:mt-0">
-          <button
+          <Button
+            variant="outline"
+            size="sm"
             type="button"
             onClick={onClear}
-            className="px-3 py-2 text-xs font-semibold text-gray-600 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition"
           >
             {t('filters.clear')}
-          </button>
+          </Button>
         </div>
       </div>
-    </div>
+    </Card>
   );
 };
 

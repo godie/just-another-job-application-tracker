@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { usePreferencesStore } from '../stores/preferencesStore';
 import { ATS_PLATFORMS } from '../utils/constants';
+import { Card, Input, Button } from './ui';
 
 const ATSSearch: React.FC = () => {
   const { t } = useTranslation();
@@ -48,7 +49,7 @@ const ATSSearch: React.FC = () => {
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden mb-6 border border-gray-100 dark:border-gray-700">
+    <Card className="overflow-hidden mb-6 border-none shadow-md">
       <div
         className="px-6 py-4 flex justify-between items-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-750 transition-colors"
         onClick={() => setIsExpanded(!isExpanded)}
@@ -68,7 +69,7 @@ const ATSSearch: React.FC = () => {
             </p>
           </div>
         </div>
-        <button className="text-gray-400 focus:outline-none">
+        <Button variant="ghost" size="icon" className="text-gray-400">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             className={`h-5 w-5 transform transition-transform ${isExpanded ? 'rotate-180' : ''}`}
@@ -78,48 +79,33 @@ const ATSSearch: React.FC = () => {
           >
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
           </svg>
-        </button>
+        </Button>
       </div>
 
       {isExpanded && (
         <div className="px-6 pb-6 pt-4 border-t border-gray-100 dark:border-gray-700 bg-gray-50/30 dark:bg-gray-800/50">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            <div>
-              <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
-                {t('opportunities.atsSearch.roles')}
-              </label>
-              <input
-                type="text"
-                value={localFilters.roles}
-                onChange={(e) => handleFilterChange('roles', e.target.value)}
-                placeholder={t('opportunities.atsSearch.placeholderRoles')}
-                className="w-full px-4 py-2.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-shadow shadow-sm"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
-                {t('opportunities.atsSearch.keywords')}
-              </label>
-              <input
-                type="text"
-                value={localFilters.keywords}
-                onChange={(e) => handleFilterChange('keywords', e.target.value)}
-                placeholder={t('opportunities.atsSearch.placeholderKeywords')}
-                className="w-full px-4 py-2.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-shadow shadow-sm"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">
-                {t('opportunities.atsSearch.location')}
-              </label>
-              <input
-                type="text"
-                value={localFilters.location}
-                onChange={(e) => handleFilterChange('location', e.target.value)}
-                placeholder={t('opportunities.atsSearch.placeholderLocation')}
-                className="w-full px-4 py-2.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-shadow shadow-sm"
-              />
-            </div>
+            <Input
+              label={t('opportunities.atsSearch.roles')}
+              type="text"
+              value={localFilters.roles}
+              onChange={(e) => handleFilterChange('roles', e.target.value)}
+              placeholder={t('opportunities.atsSearch.placeholderRoles')}
+            />
+            <Input
+              label={t('opportunities.atsSearch.keywords')}
+              type="text"
+              value={localFilters.keywords}
+              onChange={(e) => handleFilterChange('keywords', e.target.value)}
+              placeholder={t('opportunities.atsSearch.placeholderKeywords')}
+            />
+            <Input
+              label={t('opportunities.atsSearch.location')}
+              type="text"
+              value={localFilters.location}
+              onChange={(e) => handleFilterChange('location', e.target.value)}
+              placeholder={t('opportunities.atsSearch.placeholderLocation')}
+            />
           </div>
 
           <div className="mb-2">
@@ -128,10 +114,11 @@ const ATSSearch: React.FC = () => {
             </label>
             <div className="flex flex-wrap gap-2">
               {ATS_PLATFORMS.map((platform) => (
-                <button
+                <Button
                   key={platform.id}
+                  variant="outline"
                   onClick={() => handleSearch(platform.url)}
-                  className="px-4 py-2 text-sm font-medium bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-lg border border-gray-200 dark:border-gray-600 hover:border-indigo-300 dark:hover:border-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-all flex items-center gap-2 shadow-sm group"
+                  className="px-4 py-2 h-auto text-sm font-medium transition-all flex items-center gap-2 shadow-sm group"
                 >
                   <span className="text-gray-400 group-hover:text-indigo-500 transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -139,22 +126,23 @@ const ATSSearch: React.FC = () => {
                     </svg>
                   </span>
                   {platform.name}
-                </button>
+                </Button>
               ))}
             </div>
           </div>
 
           <div className="flex justify-end mt-6 pt-4 border-t border-gray-100 dark:border-gray-700">
-            <button
+            <Button
+              variant="primary"
               onClick={handleSearchAll}
-              className="px-6 py-2.5 bg-indigo-600 text-white text-sm font-bold rounded-lg hover:bg-indigo-700 focus:ring-4 focus:ring-indigo-500/20 transition-all shadow-md active:transform active:scale-95"
+              className="px-6 py-2.5 shadow-md active:transform active:scale-95"
             >
               {t('opportunities.atsSearch.searchAll')}
-            </button>
+            </Button>
           </div>
         </div>
       )}
-    </div>
+    </Card>
   );
 };
 

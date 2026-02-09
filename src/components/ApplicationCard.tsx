@@ -5,6 +5,7 @@ import type { JobApplication } from '../types/applications';
 import type { TableColumn } from '../types/table';
 import { sanitizeUrl } from '../utils/localStorage';
 import DOMPurify from 'dompurify';
+import { Card, Badge, Button, Separator } from './ui';
 
 interface ApplicationCardProps {
   item: JobApplication;
@@ -38,9 +39,9 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
     : 'N/A';
 
   return (
-    <div
+    <Card
       onClick={() => onEdit(item)}
-      className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md border border-gray-100 dark:border-gray-700 cursor-pointer hover:shadow-lg transition-shadow"
+      className="p-4 cursor-pointer hover:shadow-lg transition-shadow"
       data-testid={`card-${item.id}`}
     >
       {/* Primary Info */}
@@ -54,9 +55,9 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
           </h4>
         </div>
         <div className="ml-3 flex-shrink-0">
-          <span className="inline-block px-2 py-1 text-xs font-medium rounded bg-indigo-100 dark:bg-indigo-900 text-indigo-800 dark:text-indigo-200">
+          <Badge variant="indigo">
             {statusValue}
-          </span>
+          </Badge>
         </div>
       </div>
 
@@ -96,20 +97,23 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
       </div>
 
       {/* Actions */}
-      <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700 flex justify-end">
-        <button
+      <Separator className="my-3" />
+      <div className="flex justify-end">
+        <Button
+          variant="ghost"
+          size="sm"
           onClick={(e) => {
             e.stopPropagation();
             onDeleteRequest(item);
           }}
-          className="text-xs font-semibold text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 px-3 py-1 rounded transition"
+          className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 px-3 py-1 rounded transition"
           aria-label={t('home.deleteConfirm.titleFor', { position: item.position, company: item.company })}
           data-testid={`delete-btn-${item.id}`}
         >
           {t('common.delete')}
-        </button>
+        </Button>
       </div>
-    </div>
+    </Card>
   );
 };
 
