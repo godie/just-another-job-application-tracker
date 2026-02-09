@@ -1,6 +1,7 @@
 // src/storage/applications.ts
 import { STORAGE_KEY } from '../utils/constants';
 import { generateId } from '../utils/id';
+import { sanitizeObject } from '../utils/url';
 import type { JobApplication, LegacyJobApplication, InterviewEvent, InterviewStageType } from '../types/applications';
 
 /**
@@ -76,8 +77,11 @@ export const getApplications = (): JobApplication[] => {
     const apps = JSON.parse(data);
     if (!Array.isArray(apps)) return [];
     
-    // Migrate legacy applications if needed
+    // Migrate legacy applications if needed and sanitize data
+    // ⚡ Bolt: Centralizing sanitization here allows us to remove expensive
+    // DOMPurify calls from the render loop in UI components.
     const migrated = apps.map((app) => {
+      let processedApp = app;
       if (isLegacyApplication(app)) {
         const migratedApp = migrateApplicationData(app);
         // Save migrated data back
@@ -88,9 +92,9 @@ export const getApplications = (): JobApplication[] => {
           );
           saveApplications(updatedApps);
         }, 0);
-        return migratedApp;
+        processedApp = migratedApp;
       }
-      return app as JobApplication;
+      return sanitizeObject(processedApp as unknown as Record<string, unknown>) as JobApplication;
     });
     
     return migrated;
