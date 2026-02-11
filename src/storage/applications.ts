@@ -1,6 +1,7 @@
 // src/storage/applications.ts
 import { STORAGE_KEY } from '../utils/constants';
 import { generateId } from '../utils/id';
+import { sanitizeObject } from '../utils/url';
 import type { JobApplication, LegacyJobApplication, InterviewEvent, InterviewStageType, WorkType } from '../types/applications';
 
 const WORK_TYPES: WorkType[] = ['remote', 'on-site', 'hybrid'];
@@ -79,11 +80,18 @@ export const getApplications = (): JobApplication[] => {
     const data = localStorage.getItem(STORAGE_KEY);
     if (!data) return [];
     
-    const apps = JSON.parse(data);
-    if (!Array.isArray(apps)) return [];
+    const rawApps = JSON.parse(data);
+    if (!Array.isArray(rawApps)) return [];
     
-    // Migrate legacy applications if needed
-    const migrated = apps.map((app) => {
+    // ⚡ Bolt: Centralized sanitization and migration in a single pass (Loop Fusion)
+    // to avoid expensive runtime sanitization in components and minimize iterations.
+    const migrated = rawApps.map((rawApp) => {
+      // 1. Sanitize
+      const app = typeof rawApp === 'object' && rawApp !== null
+        ? sanitizeObject(rawApp as Record<string, unknown>)
+        : rawApp;
+
+      // 2. Migrate legacy applications if needed
       if (isLegacyApplication(app)) {
         const migratedApp = migrateApplicationData(app);
         // Save migrated data back
