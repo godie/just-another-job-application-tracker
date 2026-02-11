@@ -38,12 +38,26 @@ jobs:
 
       - name: Create config.php from example for deploy
         run: cp dist/api/config.example.php dist/api/config.php
+      
+      - name: Verify .htaccess exists before upload
+        run: |
+          echo "Files in dist/api/:"
+          ls -la dist/api/
+          if [ -f dist/api/.htaccess ]; then
+            echo "✓ .htaccess found"
+          else
+            echo "✗ .htaccess NOT found"
+            exit 1
+          fi
+      
+      - name: Create tarball to preserve all files including dotfiles
+        run: tar -czf dist.tar.gz -C dist .
 
       - name: Upload production-ready build files
         uses: actions/upload-artifact@v4
         with:
           name: production-files
-          path: ./dist
+          path: dist.tar.gz
 
   deploy:
     name: Deploy
@@ -55,8 +69,25 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: production-files
-          path: ./dist
-          include-hidden-files: true
+          path: ./
+      
+      - name: Extract tarball
+        run: |
+          mkdir -p dist
+          tar -xzf dist.tar.gz -C dist
+          rm -f dist.tar.gz
+      
+
+      - name: Verify .htaccess exists after extraction
+        run: |
+          echo "Files in dist/api/:"
+          ls -la dist/api/
+          if [ -f dist/api/.htaccess ]; then
+            echo "✓ .htaccess found"
+          else
+            echo "✗ .htaccess NOT found"
+            exit 1
+          fi
 
       - name: Inject secrets into api/config.php
         env:
