@@ -88,6 +88,8 @@ function auth_set_access_cookies(string $accessToken, int $expiresInSeconds, arr
     $name = $config['cookie_name'] ?? 'google_auth_token';
     $expiresName = $config['access_expires_cookie_name'] ?? 'google_auth_expires';
     $expiresAt = time() + $expiresInSeconds;
+
+    // Slicer: Consistent HTTPS detection
     $secure = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on')
         || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https');
 

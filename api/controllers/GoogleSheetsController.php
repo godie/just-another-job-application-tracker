@@ -62,12 +62,9 @@ class GoogleSheetsController
 
     private function sanitizeInput($data)
     {
-        if (is_array($data)) {
-            return array_map([$this, 'sanitizeInput'], $data);
-        }
-        if (is_string($data)) {
-            return htmlspecialchars($data, ENT_QUOTES, 'UTF-8');
-        }
+        // Slicer: Sanitize on output, not on input when sending to an API.
+        // Munging data with htmlspecialchars() here will corrupt data in Google Sheets.
+        // We still ensure types are correct.
         return $data;
     }
 

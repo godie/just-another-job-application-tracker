@@ -16,5 +16,5 @@ return [
     'refresh_cookie_days' => 30,
     'google_client_id' => '__VITE_GOOGLE_CLIENT_ID__',
     'google_client_secret' => '__VITE_GOOGLE_CLIENT_SECRET__',
-    'suggestions_db_path' => __DIR__ . '/suggestions.db',
+    'suggestions_db_path' => __DIR__ . '/data/suggestions.db',
 ];

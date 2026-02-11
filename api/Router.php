@@ -45,7 +45,8 @@ class Router {
             }
         }
 
-        http_response_code(418);
-        echo json_encode(["error" => "418", "message" => "I'm a teapot"]);
+        http_response_code(404);
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode(["error" => "404", "message" => "Route not found"]);
     }
 }

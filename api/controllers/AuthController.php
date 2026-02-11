@@ -44,6 +44,11 @@ class AuthController
 
     private function storeFromCode(array $data): array
     {
+        // Slicer: Validate code format
+        if (!is_string($data['code']) || !preg_match('/^[a-zA-Z0-9\-_.~+\/=]*$/', $data['code'])) {
+            http_response_code(400);
+            return ['success' => false, 'error' => 'Invalid code format'];
+        }
         $code = trim($data['code']);
         $redirectUri = isset($data['redirect_uri']) && is_string($data['redirect_uri'])
             ? trim($data['redirect_uri'])
