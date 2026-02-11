@@ -31,8 +31,10 @@ jobs:
           VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
         run: npm run build
     
-      - name: Move api/ into dist/
-        run: mv api dist/api
+      - name: Copy api/ into dist/ (include dotfiles e.g. .htaccess)
+        run: |
+          cp -r api dist/
+          rm -rf api
 
       - name: Create config.php from example for deploy
         run: cp dist/api/config.example.php dist/api/config.php
