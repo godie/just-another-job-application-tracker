@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useRef } from 'react';
 import { type JobApplication } from '../types/applications';
 import { type Filters } from '../components/FiltersBar';
 import { parseLocalDate } from '../utils/date';
@@ -25,6 +25,15 @@ export interface ApplicationWithMetadata extends JobApplication {
  * @returns Filtered applications and derived application data
  */
 export const useFilteredApplications = (applications: JobApplication[], filters: Filters) => {
+  // ⚡ Bolt: Referral cache for ApplicationWithMetadata.
+  // Since JobApplication objects are immutable in our Zustand store, we can use
+  // their object reference as a key in a Map to cache their calculated metadata.
+  // This ensures that when the `applications` array changes, we only re-calculate
+  // metadata for the applications that actually changed, preserving referential
+  // identity for all others and preventing unnecessary re-renders of memoized
+  // child components like ApplicationTableRow.
+  const metadataCache = useRef(new Map<JobApplication, ApplicationWithMetadata>());
+
   // ⚡ Bolt: Fused Loop for Application Processing
   // Instead of multiple separate loops (one for statuses, one for platforms, one for dates,
   // and one for non-deleted apps), we iterate over the `applications` array once.
@@ -39,6 +48,7 @@ export const useFilteredApplications = (applications: JobApplication[], filters:
     const statusesSet = new Set<string>();
     const platformsSet = new Set<string>();
     const nonDeleted: JobApplication[] = [];
+    const nextCache = new Map<JobApplication, ApplicationWithMetadata>();
 
     const withMetadata: ApplicationWithMetadata[] = applications.map(app => {
       // 1. Collect unique statuses and platforms
@@ -50,7 +60,14 @@ export const useFilteredApplications = (applications: JobApplication[], filters:
         nonDeleted.push(app);
       }
 
-      // 3. Pre-calculate searchable string (Search Metadata)
+      // 3. Check cache for existing metadata to preserve referential identity
+      const cached = metadataCache.current.get(app);
+      if (cached) {
+        nextCache.set(app, cached);
+        return cached;
+      }
+
+      // 4. Pre-calculate searchable string (Search Metadata)
       // This combines all searchable fields into a single lowercase string
       // to avoid expensive mapping and multiple checks during every filter update.
       const timelineStr = app.timeline?.map(event =>
@@ -59,12 +76,19 @@ export const useFilteredApplications = (applications: JobApplication[], filters:
 
       const searchMetadata = `${app.position ?? ''} ${app.company ?? ''} ${app.contactName ?? ''} ${app.notes ?? ''} ${timelineStr}`.toLowerCase();
 
-      return {
+      const result: ApplicationWithMetadata = {
         ...app,
         parsedApplicationDate: app.applicationDate ? parseLocalDate(app.applicationDate) : null,
         searchMetadata,
       };
+
+      // Store in next cache
+      nextCache.set(app, result);
+      return result;
     });
+
+    // Update the ref with the new cache, allowing old entries to be garbage collected
+    metadataCache.current = nextCache;
 
     return {
       applicationsWithMetadata: withMetadata,
