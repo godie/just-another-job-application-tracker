@@ -1,6 +1,7 @@
 // src/storage/applications.ts
 import { STORAGE_KEY } from '../utils/constants';
 import { generateId } from '../utils/id';
+import { sanitizeObject } from '../utils/url';
 import type { JobApplication, LegacyJobApplication, InterviewEvent, InterviewStageType, WorkType } from '../types/applications';
 
 const WORK_TYPES: WorkType[] = ['remote', 'on-site', 'hybrid'];
@@ -82,8 +83,14 @@ export const getApplications = (): JobApplication[] => {
     const apps = JSON.parse(data);
     if (!Array.isArray(apps)) return [];
     
+    // ⚡ Bolt: Sanitize data on load to ensure safety before it reaches the UI.
+    // This allows us to avoid expensive sanitization in the render loop.
+    const sanitizedApps = apps.map((app) =>
+      sanitizeObject(app as unknown as Record<string, unknown>) as unknown as JobApplication | LegacyJobApplication
+    );
+
     // Migrate legacy applications if needed
-    const migrated = apps.map((app) => {
+    const migrated = sanitizedApps.map((app) => {
       if (isLegacyApplication(app)) {
         const migratedApp = migrateApplicationData(app);
         // Save migrated data back
