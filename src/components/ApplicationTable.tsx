@@ -1,18 +1,19 @@
 // src/components/ApplicationTable.tsx
 import React, { useState, memo, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { JobApplication } from '../types/applications';
 import type { TableColumn } from '../types/table';
+import type { JobApplication } from '../types/applications';
 import ConfirmDialog from './ConfirmDialog';
 import ApplicationTableRow from './ApplicationTableRow';
 import ApplicationCard from './ApplicationCard';
 import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell, Card } from './ui';
+import type { ApplicationWithMetadata } from '../hooks/useFilteredApplications';
 
 interface ApplicationTableProps {
     columns: TableColumn[];
-    data: JobApplication[];
-    onEdit: (application: JobApplication) => void;
-    onDelete: (application: JobApplication) => void;
+    data: ApplicationWithMetadata[];
+    onEdit: (application: ApplicationWithMetadata) => void;
+    onDelete: (application: ApplicationWithMetadata) => void;
 }
 
 
@@ -39,8 +40,8 @@ const PRIMARY_COLUMN_IDS = ['position', 'company', 'status'];
 // These functions do not depend on component state or props, so defining them
 // outside prevents them from being recreated on every render. This reduces
 // garbage collection pressure and improves rendering performance.
-const getCellValue = (item: JobApplication, columnId: string): string => {
-  const directValue = item[columnId as keyof JobApplication];
+const getCellValue = (item: ApplicationWithMetadata, columnId: string): string => {
+  const directValue = item[columnId as keyof ApplicationWithMetadata];
   if (typeof directValue === 'string' || typeof directValue === 'number') {
     return directValue ? String(directValue) : '';
   }
@@ -56,8 +57,7 @@ const getCellValue = (item: JobApplication, columnId: string): string => {
 
 const ApplicationTable: React.FC<ApplicationTableProps> = ({ columns, data, onEdit, onDelete }) => {
   const { t } = useTranslation();
-  const [hoveredRowId, setHoveredRowId] = useState<string | null>(null);
-  const [deleteConfirm, setDeleteConfirm] = useState<{ isOpen: boolean; application: JobApplication | null }>({
+  const [deleteConfirm, setDeleteConfirm] = useState<{ isOpen: boolean; application: ApplicationWithMetadata | null }>({
     isOpen: false,
     application: null,
   });
@@ -72,16 +72,8 @@ const ApplicationTable: React.FC<ApplicationTableProps> = ({ columns, data, onEd
     return columns.filter(col => !excluded.has(col.id));
   }, [columns]);
 
-  const handleDeleteRequest = useCallback((application: JobApplication) => {
+  const handleDeleteRequest = useCallback((application: ApplicationWithMetadata) => {
     setDeleteConfirm({ isOpen: true, application });
-  }, []);
-
-  const handleMouseEnter = useCallback((id: string) => {
-    setHoveredRowId(id);
-  }, []);
-
-  const handleMouseLeave = useCallback(() => {
-    setHoveredRowId(null);
   }, []);
 
   return (
@@ -137,11 +129,8 @@ const ApplicationTable: React.FC<ApplicationTableProps> = ({ columns, data, onEd
                   key={item.id}
                   item={item}
                   columns={columns}
-                  isHovered={hoveredRowId === item.id}
                   onEdit={onEdit}
                   onDeleteRequest={handleDeleteRequest}
-                  onMouseEnter={handleMouseEnter}
-                  onMouseLeave={handleMouseLeave}
                   getCellValue={getCellValue}
                 />
               ))

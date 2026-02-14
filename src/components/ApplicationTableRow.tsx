@@ -1,20 +1,17 @@
 // src/components/ApplicationTableRow.tsx
 import React, { memo } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { JobApplication } from '../types/applications';
 import type { TableColumn } from '../types/table';
 import { sanitizeUrl } from '../utils/localStorage';
 import { TableRow, TableCell, Button } from './ui';
+import type { ApplicationWithMetadata } from '../hooks/useFilteredApplications';
 
 interface ApplicationTableRowProps {
-  item: JobApplication;
+  item: ApplicationWithMetadata;
   columns: TableColumn[];
-  isHovered: boolean;
-  onEdit: (application: JobApplication) => void;
-  onDeleteRequest: (application: JobApplication) => void;
-  onMouseEnter: (id: string) => void;
-  onMouseLeave: () => void;
-  getCellValue: (item: JobApplication, columnId: string) => string;
+  onEdit: (application: ApplicationWithMetadata) => void;
+  onDeleteRequest: (application: ApplicationWithMetadata) => void;
+  getCellValue: (item: ApplicationWithMetadata, columnId: string) => string;
 }
 
 const NOTES_TRUNCATE_LENGTH = 100;
@@ -26,11 +23,8 @@ const NOTES_WORD_WRAP_LENGTH = 50;
 const ApplicationTableRow: React.FC<ApplicationTableRowProps> = ({
   item,
   columns,
-  isHovered,
   onEdit,
   onDeleteRequest,
-  onMouseEnter,
-  onMouseLeave,
   getCellValue,
 }) => {
   const { t } = useTranslation();
@@ -38,23 +32,21 @@ const ApplicationTableRow: React.FC<ApplicationTableRowProps> = ({
   return (
     <TableRow
       className="cursor-pointer group"
-      onMouseEnter={() => onMouseEnter(item.id)}
-      onMouseLeave={onMouseLeave}
       data-testid={`row-${item.id}`}
     >
       {columns.map((column) => {
         let cellContent = getCellValue(item, column.id);
 
-        if (column.id === 'status' && cellContent) {
-          cellContent = t(`statuses.${cellContent.toLowerCase()}`, cellContent);
-        } else if (column.id === 'platform' && cellContent) {
-          cellContent = t(`form.platforms.${cellContent}`, cellContent);
-        } else if (column.id === 'workType' && cellContent) {
-          const workTypeKey = cellContent === 'on-site' ? 'onSite' : cellContent;
-          cellContent = t(`form.workTypes.${workTypeKey}`, cellContent);
-          if (item.workType === 'hybrid' && typeof item.hybridDaysInOffice === 'number') {
-            cellContent += ` (${t('form.hybridDaysOption', { count: item.hybridDaysInOffice })})`;
-          }
+        // ⚡ Bolt: Use pre-calculated translated values from item metadata.
+        // This avoids calling t() and running translation logic for status,
+        // platform, and workType on every render of every row, which is a
+        // significant saving for large lists.
+        if (column.id === 'status') {
+          cellContent = item.translatedStatus || cellContent;
+        } else if (column.id === 'platform') {
+          cellContent = item.translatedPlatform || cellContent;
+        } else if (column.id === 'workType') {
+          cellContent = item.translatedWorkType || cellContent;
         }
 
         const isNotes = column.id === 'notes';
@@ -114,21 +106,23 @@ const ApplicationTableRow: React.FC<ApplicationTableRowProps> = ({
       })}
 
       <TableCell className="px-4 sm:px-6 py-3 whitespace-nowrap text-right text-sm font-medium w-1">
-        {isHovered && (
-          <Button
-            variant="danger"
-            size="sm"
-            onClick={(e) => {
-              e.stopPropagation();
-              onDeleteRequest(item);
-            }}
-            className="inline-flex items-center gap-1 text-xs px-3 py-1 rounded-full transition"
-            aria-label={t('home.deleteConfirm.titleFor', { position: item.position, company: item.company })}
-            data-testid={`delete-btn-${item.id}`}
-          >
-            <span>{t('common.delete')}</span>
-          </Button>
-        )}
+        {/* ⚡ Bolt: Use CSS for hover visibility instead of JS state.
+            This eliminates 2 row re-renders on every hover change across the table.
+            We use opacity-0 group-hover:opacity-100 focus-within:opacity-100 to ensure
+            it's also accessible via keyboard/screen reader focus. */}
+        <Button
+          variant="danger"
+          size="sm"
+          onClick={(e) => {
+            e.stopPropagation();
+            onDeleteRequest(item);
+          }}
+          className="opacity-0 group-hover:opacity-100 focus-within:opacity-100 inline-flex items-center gap-1 text-xs px-3 py-1 rounded-full transition-opacity duration-150"
+          aria-label={t('home.deleteConfirm.titleFor', { position: item.position, company: item.company })}
+          data-testid={`delete-btn-${item.id}`}
+        >
+          <span>{t('common.delete')}</span>
+        </Button>
       </TableCell>
     </TableRow>
   );

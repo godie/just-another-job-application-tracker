@@ -2,8 +2,8 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import ApplicationCard from './ApplicationCard';
-import type { JobApplication } from '../types/applications';
 import type { TableColumn } from '../types/table';
+import type { ApplicationWithMetadata } from '../hooks/useFilteredApplications';
 
 vi.mock('dompurify', () => ({
   default: { sanitize: (html: string) => html },
@@ -13,7 +13,7 @@ vi.mock('../utils/localStorage', () => ({
   sanitizeUrl: (url: string) => url,
 }));
 
-const columnToKeyMap: Record<string, keyof JobApplication> = {
+const columnToKeyMap: Record<string, keyof ApplicationWithMetadata> = {
   position: 'position',
   company: 'company',
   salary: 'salary',
@@ -27,13 +27,13 @@ const columnToKeyMap: Record<string, keyof JobApplication> = {
   link: 'link',
 };
 
-const getCellValue = (item: JobApplication, columnId: string): string => {
+const getCellValue = (item: ApplicationWithMetadata, columnId: string): string => {
   const normalized = columnId.toLowerCase().replace(/ /g, '').replace(/-/g, '');
   const key = columnToKeyMap[normalized];
   return key ? String(item[key] ?? '') : '';
 };
 
-const mockApplication: JobApplication = {
+const mockApplication: ApplicationWithMetadata = {
   id: '1',
   position: 'Software Engineer',
   company: 'Tech Corp',
@@ -47,6 +47,11 @@ const mockApplication: JobApplication = {
   notes: 'Test notes',
   link: 'https://example.com/job',
   timeline: [],
+  parsedApplicationDate: new Date('2024-01-01'),
+  searchMetadata: 'software engineer tech corp applied linkedin test notes',
+  translatedStatus: 'Applied',
+  translatedPlatform: 'LinkedIn',
+  translatedWorkType: '',
 };
 
 describe('ApplicationCard', () => {
@@ -146,12 +151,13 @@ describe('ApplicationCard', () => {
   });
 
   it('displays fallbacks for missing position, company, status', () => {
-    const emptyApp: JobApplication = {
+    const emptyApp: ApplicationWithMetadata = {
       ...mockApplication,
       id: '2',
       position: '',
       company: '',
       status: '',
+      translatedStatus: '',
     };
 
     render(

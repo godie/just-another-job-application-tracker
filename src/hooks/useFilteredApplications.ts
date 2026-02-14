@@ -1,4 +1,5 @@
 import { useMemo, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { type JobApplication } from '../types/applications';
 import { type Filters } from '../components/FiltersBar';
 import { parseLocalDate } from '../utils/date';
@@ -10,6 +11,9 @@ import { parseLocalDate } from '../utils/date';
 export interface ApplicationWithMetadata extends JobApplication {
   parsedApplicationDate: Date | null;
   searchMetadata: string;
+  translatedStatus: string;
+  translatedPlatform: string;
+  translatedWorkType: string;
 }
 
 /**
@@ -25,12 +29,22 @@ export interface ApplicationWithMetadata extends JobApplication {
  * @returns Filtered applications and derived application data
  */
 export const useFilteredApplications = (applications: JobApplication[], filters: Filters) => {
+  const { t, i18n } = useTranslation();
+
   // ⚡ Bolt: Referential cache for ApplicationWithMetadata objects.
   // By storing previously calculated metadata objects and associating them with
   // the original JobApplication reference, we can preserve object identity across
   // renders. This is crucial for preventing unnecessary re-renders of memoized
   // components like ApplicationTableRow and ApplicationCard.
   const cacheRef = useRef<Map<JobApplication, ApplicationWithMetadata>>(new Map());
+  const lastLanguageRef = useRef(i18n.language);
+
+  // ⚡ Bolt: Invalidate cache when language changes to ensure
+  // translated metadata is updated.
+  if (i18n.language !== lastLanguageRef.current) {
+    cacheRef.current.clear();
+    lastLanguageRef.current = i18n.language;
+  }
 
   // ⚡ Bolt: Fused Loop for Application Processing
   // Instead of multiple separate loops (one for statuses, one for platforms, one for dates,
@@ -74,12 +88,28 @@ export const useFilteredApplications = (applications: JobApplication[], filters:
         `${event.notes ?? ''} ${event.customTypeName ?? ''} ${event.interviewerName ?? ''}`
       ).join(' ') || '';
 
-      const searchMetadata = `${app.position ?? ''} ${app.company ?? ''} ${app.contactName ?? ''} ${app.notes ?? ''} ${timelineStr}`.toLowerCase();
+      // 5. Pre-calculate translated values
+      const translatedStatus = app.status ? t(`statuses.${app.status.toLowerCase()}`, app.status) : '';
+      const translatedPlatform = app.platform ? t(`form.platforms.${app.platform}`, app.platform) : '';
+
+      let translatedWorkType = '';
+      if (app.workType) {
+        const workTypeKey = app.workType === 'on-site' ? 'onSite' : app.workType;
+        translatedWorkType = t(`form.workTypes.${workTypeKey}`, app.workType);
+        if (app.workType === 'hybrid' && typeof app.hybridDaysInOffice === 'number') {
+          translatedWorkType += ` (${t('form.hybridDaysOption', { count: app.hybridDaysInOffice })})`;
+        }
+      }
+
+      const searchMetadata = `${app.position ?? ''} ${app.company ?? ''} ${app.contactName ?? ''} ${app.notes ?? ''} ${translatedStatus} ${translatedPlatform} ${translatedWorkType} ${timelineStr}`.toLowerCase();
 
       const result: ApplicationWithMetadata = {
         ...app,
         parsedApplicationDate: app.applicationDate ? parseLocalDate(app.applicationDate) : null,
         searchMetadata,
+        translatedStatus,
+        translatedPlatform,
+        translatedWorkType,
       };
 
       newCache.set(app, result);
@@ -95,7 +125,7 @@ export const useFilteredApplications = (applications: JobApplication[], filters:
       availablePlatforms: Array.from(platformsSet).sort((a, b) => a.localeCompare(b)),
       nonDeletedApplications: nonDeleted,
     };
-  }, [applications]);
+  }, [applications, t]);
 
   const filteredApplications = useMemo(() => {
     const normalizedSearch = filters.search.trim().toLowerCase();

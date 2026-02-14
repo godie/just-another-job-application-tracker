@@ -2,8 +2,8 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import ApplicationTable from './ApplicationTable';
-import type { JobApplication } from '../utils/localStorage';
 import type { TableColumn } from '../types/table';
+import type { ApplicationWithMetadata } from '../hooks/useFilteredApplications';
 
 // Mock DOMPurify
 vi.mock('dompurify', () => ({
@@ -14,7 +14,7 @@ vi.mock('dompurify', () => ({
 
 const toColumn = (id: string, label: string): TableColumn => ({ id, label });
 
-const mockApplication: JobApplication = {
+const mockApplication: ApplicationWithMetadata = {
   id: '1',
   position: 'Software Engineer',
   company: 'Tech Corp',
@@ -28,6 +28,11 @@ const mockApplication: JobApplication = {
   notes: 'Test notes',
   link: 'https://example.com/job',
   timeline: [],
+  parsedApplicationDate: new Date('2024-01-01'),
+  searchMetadata: 'software engineer tech corp applied linkedin test notes',
+  translatedStatus: 'Applied',
+  translatedPlatform: 'LinkedIn',
+  translatedWorkType: '',
 };
 
 describe('ApplicationTable', () => {
@@ -142,7 +147,7 @@ describe('ApplicationTable', () => {
     }
   });
 
-  it('shows delete button on hover for desktop table', async () => {
+  it('renders delete button for desktop table (CSS handles visibility)', async () => {
     render(
       <ApplicationTable
         columns={defaultColumns}
@@ -152,13 +157,15 @@ describe('ApplicationTable', () => {
       />
     );
 
-    const row = screen.getByTestId('row-1');
-    fireEvent.mouseEnter(row);
-
     await waitFor(() => {
-      // Delete button may appear in both mobile and desktop, so check it exists
+      // Delete button should always be in the DOM now
       const deleteButtons = screen.getAllByTestId('delete-btn-1');
       expect(deleteButtons.length).toBeGreaterThan(0);
+
+      // Check that it has the opacity-0 class for desktop
+      const desktopRow = screen.getByTestId('row-1');
+      const desktopDeleteBtn = desktopRow.querySelector('[data-testid="delete-btn-1"]');
+      expect(desktopDeleteBtn).toHaveClass('opacity-0');
     });
   });
 
@@ -259,7 +266,7 @@ describe('ApplicationTable', () => {
   });
 
   it('handles multiple applications correctly', () => {
-    const applications: JobApplication[] = [
+    const applications: ApplicationWithMetadata[] = [
       mockApplication,
       {
         ...mockApplication,
@@ -267,6 +274,7 @@ describe('ApplicationTable', () => {
         position: 'Product Manager',
         company: 'Another Corp',
         status: 'Interviewing',
+        translatedStatus: 'Interviewing',
       },
     ];
 
@@ -287,7 +295,7 @@ describe('ApplicationTable', () => {
   });
 
   it('handles empty string values gracefully', () => {
-    const emptyApplication: JobApplication = {
+    const emptyApplication: ApplicationWithMetadata = {
       ...mockApplication,
       salary: '',
       notes: '',

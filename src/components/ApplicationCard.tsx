@@ -1,17 +1,17 @@
 // src/components/ApplicationCard.tsx
 import React, { memo } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { JobApplication } from '../types/applications';
 import type { TableColumn } from '../types/table';
 import { sanitizeUrl } from '../utils/localStorage';
 import { Card, Badge, Button, Separator } from './ui';
+import type { ApplicationWithMetadata } from '../hooks/useFilteredApplications';
 
 interface ApplicationCardProps {
-  item: JobApplication;
+  item: ApplicationWithMetadata;
   otherColumns: TableColumn[];
-  onEdit: (application: JobApplication) => void;
-  onDeleteRequest: (application: JobApplication) => void;
-  getCellValue: (item: JobApplication, columnId: string) => string;
+  onEdit: (application: ApplicationWithMetadata) => void;
+  onDeleteRequest: (application: ApplicationWithMetadata) => void;
+  getCellValue: (item: ApplicationWithMetadata, columnId: string) => string;
 }
 
 // This is a memoized component. It will only re-render if its props change.
@@ -29,10 +29,9 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
 
   const positionValue = getCellValue(item, 'position') || 'No Position';
   const companyValue = getCellValue(item, 'company') || 'No Company';
-  const rawStatus = getCellValue(item, 'status');
-  const statusValue = rawStatus
-    ? t(`statuses.${rawStatus.toLowerCase()}`, rawStatus)
-    : 'N/A';
+
+  // ⚡ Bolt: Use pre-calculated translated values from item metadata.
+  const statusValue = item.translatedStatus || 'N/A';
 
   return (
     <Card
@@ -61,9 +60,14 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
       <div className="space-y-2 text-xs text-gray-600 dark:text-gray-400">
         {otherColumns.slice(0, 3).map((column) => {
           let value = getCellValue(item, column.id);
+
+          // ⚡ Bolt: Use pre-calculated translated values from item metadata.
           if (column.id === 'platform') {
-            value = t(`form.platforms.${value}`, value);
+            value = item.translatedPlatform || value;
+          } else if (column.id === 'workType') {
+            value = item.translatedWorkType || value;
           }
+
           if (!value) return null;
           const isLink = column.id === 'link';
 
