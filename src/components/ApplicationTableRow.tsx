@@ -9,11 +9,8 @@ import { TableRow, TableCell, Button } from './ui';
 interface ApplicationTableRowProps {
   item: JobApplication;
   columns: TableColumn[];
-  isHovered: boolean;
   onEdit: (application: JobApplication) => void;
   onDeleteRequest: (application: JobApplication) => void;
-  onMouseEnter: (id: string) => void;
-  onMouseLeave: () => void;
   getCellValue: (item: JobApplication, columnId: string) => string;
 }
 
@@ -26,11 +23,8 @@ const NOTES_WORD_WRAP_LENGTH = 50;
 const ApplicationTableRow: React.FC<ApplicationTableRowProps> = ({
   item,
   columns,
-  isHovered,
   onEdit,
   onDeleteRequest,
-  onMouseEnter,
-  onMouseLeave,
   getCellValue,
 }) => {
   const { t } = useTranslation();
@@ -38,8 +32,6 @@ const ApplicationTableRow: React.FC<ApplicationTableRowProps> = ({
   return (
     <TableRow
       className="cursor-pointer group"
-      onMouseEnter={() => onMouseEnter(item.id)}
-      onMouseLeave={onMouseLeave}
       data-testid={`row-${item.id}`}
     >
       {columns.map((column) => {
@@ -114,7 +106,11 @@ const ApplicationTableRow: React.FC<ApplicationTableRowProps> = ({
       })}
 
       <TableCell className="px-4 sm:px-6 py-3 whitespace-nowrap text-right text-sm font-medium w-1">
-        {isHovered && (
+        {/* ⚡ Bolt: CSS-based hover effect for the delete button.
+            Using Tailwind's group-hover classes avoids triggering React re-renders
+            for the entire table during mouse movements, significantly improving
+            performance for large lists. */}
+        <div className="opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-opacity duration-200">
           <Button
             variant="danger"
             size="sm"
@@ -128,7 +124,7 @@ const ApplicationTableRow: React.FC<ApplicationTableRowProps> = ({
           >
             <span>{t('common.delete')}</span>
           </Button>
-        )}
+        </div>
       </TableCell>
     </TableRow>
   );

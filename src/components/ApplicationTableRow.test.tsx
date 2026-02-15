@@ -52,8 +52,6 @@ const mockApplication: JobApplication = {
 describe('ApplicationTableRow', () => {
   const mockOnEdit = vi.fn();
   const mockOnDeleteRequest = vi.fn();
-  const mockOnMouseEnter = vi.fn();
-  const mockOnMouseLeave = vi.fn();
   const columns: TableColumn[] = [
     { id: 'position', label: 'Position' },
     { id: 'company', label: 'Company' },
@@ -72,11 +70,8 @@ describe('ApplicationTableRow', () => {
           <ApplicationTableRow
             item={mockApplication}
             columns={columns}
-            isHovered={false}
             onEdit={mockOnEdit}
             onDeleteRequest={mockOnDeleteRequest}
-            onMouseEnter={mockOnMouseEnter}
-            onMouseLeave={mockOnMouseLeave}
             getCellValue={getCellValue}
           />
         </tbody>
@@ -91,55 +86,6 @@ describe('ApplicationTableRow', () => {
     expect(link).toHaveAttribute('href', 'https://example.com/job');
   });
 
-  it('calls onMouseEnter with item id when row is hovered', () => {
-    render(
-      <table>
-        <tbody>
-          <ApplicationTableRow
-            item={mockApplication}
-            columns={columns}
-            isHovered={false}
-            onEdit={mockOnEdit}
-            onDeleteRequest={mockOnDeleteRequest}
-            onMouseEnter={mockOnMouseEnter}
-            onMouseLeave={mockOnMouseLeave}
-            getCellValue={getCellValue}
-          />
-        </tbody>
-      </table>
-    );
-
-    const row = screen.getByTestId('row-1');
-    fireEvent.mouseEnter(row);
-
-    expect(mockOnMouseEnter).toHaveBeenCalledTimes(1);
-    expect(mockOnMouseEnter).toHaveBeenCalledWith('1');
-  });
-
-  it('calls onMouseLeave when mouse leaves row', () => {
-    render(
-      <table>
-        <tbody>
-          <ApplicationTableRow
-            item={mockApplication}
-            columns={columns}
-            isHovered={false}
-            onEdit={mockOnEdit}
-            onDeleteRequest={mockOnDeleteRequest}
-            onMouseEnter={mockOnMouseEnter}
-            onMouseLeave={mockOnMouseLeave}
-            getCellValue={getCellValue}
-          />
-        </tbody>
-      </table>
-    );
-
-    const row = screen.getByTestId('row-1');
-    fireEvent.mouseLeave(row);
-
-    expect(mockOnMouseLeave).toHaveBeenCalledTimes(1);
-  });
-
   it('calls onEdit when a cell is clicked', () => {
     render(
       <table>
@@ -147,11 +93,8 @@ describe('ApplicationTableRow', () => {
           <ApplicationTableRow
             item={mockApplication}
             columns={columns}
-            isHovered={false}
             onEdit={mockOnEdit}
             onDeleteRequest={mockOnDeleteRequest}
-            onMouseEnter={mockOnMouseEnter}
-            onMouseLeave={mockOnMouseLeave}
             getCellValue={getCellValue}
           />
         </tbody>
@@ -166,37 +109,15 @@ describe('ApplicationTableRow', () => {
     }
   });
 
-  it('shows delete button only when isHovered', () => {
-    const { rerender } = render(
+  it('has delete button in the document (visible on hover via CSS)', () => {
+    render(
       <table>
         <tbody>
           <ApplicationTableRow
             item={mockApplication}
             columns={columns}
-            isHovered={false}
             onEdit={mockOnEdit}
             onDeleteRequest={mockOnDeleteRequest}
-            onMouseEnter={mockOnMouseEnter}
-            onMouseLeave={mockOnMouseLeave}
-            getCellValue={getCellValue}
-          />
-        </tbody>
-      </table>
-    );
-
-    expect(screen.queryByTestId('delete-btn-1')).not.toBeInTheDocument();
-
-    rerender(
-      <table>
-        <tbody>
-          <ApplicationTableRow
-            item={mockApplication}
-            columns={columns}
-            isHovered={true}
-            onEdit={mockOnEdit}
-            onDeleteRequest={mockOnDeleteRequest}
-            onMouseEnter={mockOnMouseEnter}
-            onMouseLeave={mockOnMouseLeave}
             getCellValue={getCellValue}
           />
         </tbody>
@@ -213,11 +134,8 @@ describe('ApplicationTableRow', () => {
           <ApplicationTableRow
             item={mockApplication}
             columns={columns}
-            isHovered={true}
             onEdit={mockOnEdit}
             onDeleteRequest={mockOnDeleteRequest}
-            onMouseEnter={mockOnMouseEnter}
-            onMouseLeave={mockOnMouseLeave}
             getCellValue={getCellValue}
           />
         </tbody>
@@ -237,11 +155,8 @@ describe('ApplicationTableRow', () => {
           <ApplicationTableRow
             item={mockApplication}
             columns={[{ id: 'link', label: 'Link' }]}
-            isHovered={false}
             onEdit={mockOnEdit}
             onDeleteRequest={mockOnDeleteRequest}
-            onMouseEnter={mockOnMouseEnter}
-            onMouseLeave={mockOnMouseLeave}
             getCellValue={getCellValue}
           />
         </tbody>
@@ -260,11 +175,8 @@ describe('ApplicationTableRow', () => {
           <ApplicationTableRow
             item={mockApplication}
             columns={columns}
-            isHovered={true}
             onEdit={mockOnEdit}
             onDeleteRequest={mockOnDeleteRequest}
-            onMouseEnter={mockOnMouseEnter}
-            onMouseLeave={mockOnMouseLeave}
             getCellValue={getCellValue}
           />
         </tbody>

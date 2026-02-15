@@ -56,7 +56,6 @@ const getCellValue = (item: JobApplication, columnId: string): string => {
 
 const ApplicationTable: React.FC<ApplicationTableProps> = ({ columns, data, onEdit, onDelete }) => {
   const { t } = useTranslation();
-  const [hoveredRowId, setHoveredRowId] = useState<string | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<{ isOpen: boolean; application: JobApplication | null }>({
     isOpen: false,
     application: null,
@@ -74,14 +73,6 @@ const ApplicationTable: React.FC<ApplicationTableProps> = ({ columns, data, onEd
 
   const handleDeleteRequest = useCallback((application: JobApplication) => {
     setDeleteConfirm({ isOpen: true, application });
-  }, []);
-
-  const handleMouseEnter = useCallback((id: string) => {
-    setHoveredRowId(id);
-  }, []);
-
-  const handleMouseLeave = useCallback(() => {
-    setHoveredRowId(null);
   }, []);
 
   return (
@@ -137,11 +128,8 @@ const ApplicationTable: React.FC<ApplicationTableProps> = ({ columns, data, onEd
                   key={item.id}
                   item={item}
                   columns={columns}
-                  isHovered={hoveredRowId === item.id}
                   onEdit={onEdit}
                   onDeleteRequest={handleDeleteRequest}
-                  onMouseEnter={handleMouseEnter}
-                  onMouseLeave={handleMouseLeave}
                   getCellValue={getCellValue}
                 />
               ))
