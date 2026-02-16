@@ -32,6 +32,15 @@ export const useFilteredApplications = (applications: JobApplication[], filters:
   // components like ApplicationTableRow and ApplicationCard.
   const cacheRef = useRef<Map<JobApplication, ApplicationWithMetadata>>(new Map());
 
+  // ⚡ Bolt: Stability refs for derived data.
+  // These refs allow us to maintain referential identity for arrays like
+  // availableStatuses and availablePlatforms even when their contents haven't
+  // changed, preventing unnecessary re-renders of downstream components
+  // like FiltersBar and GoogleSheetsSync.
+  const availableStatusesRef = useRef<string[]>([]);
+  const availablePlatformsRef = useRef<string[]>([]);
+  const nonDeletedApplicationsRef = useRef<JobApplication[]>([]);
+
   // ⚡ Bolt: Fused Loop for Application Processing
   // Instead of multiple separate loops (one for statuses, one for platforms, one for dates,
   // and one for non-deleted apps), we iterate over the `applications` array once.
@@ -89,11 +98,34 @@ export const useFilteredApplications = (applications: JobApplication[], filters:
     // Update the ref with the new cache to keep it fresh for the next calculation
     cacheRef.current = newCache;
 
+    // ⚡ Bolt: Referential stability check for filter options.
+    // By checking if the new sets of statuses/platforms are the same as before,
+    // we can reuse the previous array reference and avoid re-rendering FiltersBar.
+    const sortedStatuses = Array.from(statusesSet).sort((a, b) => a.localeCompare(b));
+    if (sortedStatuses.join('|') !== availableStatusesRef.current.join('|')) {
+      availableStatusesRef.current = sortedStatuses;
+    }
+
+    const sortedPlatforms = Array.from(platformsSet).sort((a, b) => a.localeCompare(b));
+    if (sortedPlatforms.join('|') !== availablePlatformsRef.current.join('|')) {
+      availablePlatformsRef.current = sortedPlatforms;
+    }
+
+    // ⚡ Bolt: Referential stability check for non-deleted applications.
+    // This allows memoized components like GoogleSheetsSync to skip deep
+    // comparisons if the contents of the array are referentially identical.
+    const nonDeletedChanged = nonDeleted.length !== nonDeletedApplicationsRef.current.length ||
+      nonDeleted.some((app, i) => app !== nonDeletedApplicationsRef.current[i]);
+
+    if (nonDeletedChanged) {
+      nonDeletedApplicationsRef.current = nonDeleted;
+    }
+
     return {
       applicationsWithMetadata: withMetadata,
-      availableStatuses: Array.from(statusesSet).sort((a, b) => a.localeCompare(b)),
-      availablePlatforms: Array.from(platformsSet).sort((a, b) => a.localeCompare(b)),
-      nonDeletedApplications: nonDeleted,
+      availableStatuses: availableStatusesRef.current,
+      availablePlatforms: availablePlatformsRef.current,
+      nonDeletedApplications: nonDeletedApplicationsRef.current,
     };
   }, [applications]);
 
@@ -101,6 +133,14 @@ export const useFilteredApplications = (applications: JobApplication[], filters:
     const normalizedSearch = filters.search.trim().toLowerCase();
     const fromDate = filters.dateFrom ? parseLocalDate(filters.dateFrom) : null;
     const toDate = filters.dateTo ? parseLocalDate(filters.dateTo) : null;
+
+    // ⚡ Bolt: Optimized filter preparation.
+    // Creating Sets outside the loop ensures O(1) lookups during iteration,
+    // significantly improving performance for complex inclusion/exclusion logic.
+    const statusIncludeSet = new Set(filters.statusInclude || []);
+    const statusExcludeSet = new Set(filters.statusExclude || []);
+    const hasStatusInclude = statusIncludeSet.size > 0;
+    const hasStatusExclude = statusExcludeSet.size > 0;
 
     return applicationsWithMetadata.filter(app => {
       // Exclude deleted applications by default
@@ -117,20 +157,18 @@ export const useFilteredApplications = (applications: JobApplication[], filters:
 
       // Advanced status filtering with include/exclude
       let matchesStatus = true;
-      const statusInclude = filters.statusInclude || [];
-      const statusExclude = filters.statusExclude || [];
 
       // If using legacy single status filter
-      if (filters.status && statusInclude.length === 0 && statusExclude.length === 0) {
+      if (filters.status && !hasStatusInclude && !hasStatusExclude) {
         matchesStatus = app.status === filters.status;
       } else {
         // New advanced filtering
         // If there are included statuses, app must be in that list
-        if (statusInclude.length > 0) {
-          matchesStatus = statusInclude.includes(app.status);
+        if (hasStatusInclude) {
+          matchesStatus = statusIncludeSet.has(app.status);
         }
         // Excluded statuses always take precedence
-        if (statusExclude.length > 0 && statusExclude.includes(app.status)) {
+        if (hasStatusExclude && statusExcludeSet.has(app.status)) {
           matchesStatus = false;
         }
       }

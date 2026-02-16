@@ -20,7 +20,11 @@ interface FiltersBarProps {
   onClear: () => void;
 }
 
-const FiltersBar: React.FC<FiltersBarProps> = ({ filters, onFiltersChange, availableStatuses, availablePlatforms, onClear }) => {
+// ⚡ Bolt: Memoize component to prevent re-renders when HomePage re-renders
+// but filters and available options haven't changed. This is especially
+// effective when combined with the referential stability optimizations in
+// useFilteredApplications for availableStatuses and availablePlatforms.
+const FiltersBar: React.FC<FiltersBarProps> = React.memo(({ filters, onFiltersChange, availableStatuses, availablePlatforms, onClear }) => {
   const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState(filters.search);
   
@@ -228,6 +232,6 @@ const FiltersBar: React.FC<FiltersBarProps> = ({ filters, onFiltersChange, avail
       </div>
     </Card>
   );
-};
+});
 
 export default FiltersBar;

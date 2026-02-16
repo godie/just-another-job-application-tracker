@@ -13,3 +13,7 @@ This journal is for CRITICAL learnings only.
 ## 2026-02-15 - CSS-based Hover for Table Performance
 **Learning:** Using React state to track row hover in a large table triggers re-renders of the entire table component on every mouse movement. This is a common bottleneck that can be easily solved by using CSS `group-hover` logic.
 **Action:** Replace React-managed hover states for UI-only effects (like showing action buttons) with Tailwind's `group` and `group-hover` classes to eliminate unnecessary render cycles.
+
+## 2026-02-16 - Referential Stability for Derived Arrays
+**Learning:** Derived arrays calculated inside `useMemo` (like unique statuses or platforms) create new references on every dependency change, even if the content is identical. This triggers unnecessary re-renders in memoized child components.
+**Action:** Use `useRef` to store and stabilize references for derived arrays by performing a content check (e.g., `join('|')`) before updating the ref and returning it from the hook. This ensures that downstream `React.memo` components truly skip re-renders.
