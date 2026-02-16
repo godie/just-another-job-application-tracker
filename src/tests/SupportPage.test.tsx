@@ -60,4 +60,20 @@ describe('SupportPage', () => {
       expect(screen.getByPlaceholderText('Tell us more about your idea or the problem you found...')).toHaveValue('');
     });
   });
+
+  it('calls onNavigate when View Suggestions is clicked', async () => {
+    const onNavigate = vi.fn();
+    render(
+      <AlertProvider>
+        <SupportPage onNavigate={onNavigate} />
+      </AlertProvider>
+    );
+
+    await screen.findByText('12345');
+
+    const viewSuggestionsBtn = screen.getByText('View suggestions');
+    fireEvent.click(viewSuggestionsBtn);
+
+    expect(onNavigate).toHaveBeenCalledWith('suggestions');
+  });
 });

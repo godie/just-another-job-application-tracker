@@ -40,6 +40,7 @@
     "delete": "Delete",
     "edit": "Edit",
     "add": "Add",
+    "refresh": "Refresh",
     "actions": "Actions",
     "status": "Status",
     "company": "Company",
@@ -133,6 +134,12 @@
     "captchaError": "We couldn't generate the captcha. Refresh and try again.",
     "explanationRequired": "Please describe your idea before sending it.",
     "errorGeneric": "Something went wrong. Please try again later.",
+    "viewSuggestions": "View suggestions",
+    "suggestionsViewer": {
+      "title": "Suggestions Viewer",
+      "back": "Back to Support",
+      "noSuggestions": "No suggestions yet."
+    },
     "howItWorks": "How does it work?",
     "howItWorksDesc": "We now store suggestions in a lightweight server queue. Each submission uses a short <strong>numeric captcha</strong> to keep bots away so the server doesn't get flooded.",
     "types": {
