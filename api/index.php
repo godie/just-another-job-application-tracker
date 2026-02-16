@@ -51,6 +51,7 @@ $router->add('GET', '/captcha', 'CaptchaController@index');
 
 // Suggestions (support form)
 $router->add('POST', '/suggestions', 'SuggestionsController@store');
+$router->add('GET', '/suggestions', 'SuggestionsController@index');
 
 // Google Sheets proxy (create, sync, get info)
 $router->add('POST', '/google-sheets', 'GoogleSheetsController@index');

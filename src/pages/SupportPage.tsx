@@ -3,6 +3,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import { FaCoffee, FaHeart, FaClipboard } from 'react-icons/fa';
 import { useAlert } from '../components/AlertProvider';
 import { Card, Button, Input } from '../components/ui';
+import { type PageType } from '../App';
 
 const SUPPORT_API_BASE_URL =
   import.meta.env.VITE_SUPPORT_API_BASE_URL ||
@@ -18,7 +19,11 @@ const isTestingEnvironment =
   (typeof process !== 'undefined' && process.env?.VITEST === 'true') ||
   (typeof globalThis !== 'undefined' && Boolean((globalThis as GlobalWithTestFlag).__TEST__));
 
-const SupportPage: React.FC = () => {
+interface SupportPageProps {
+  onNavigate?: (page: PageType) => void;
+}
+
+const SupportPage: React.FC<SupportPageProps> = ({ onNavigate }) => {
   const { t } = useTranslation();
   const { showSuccess, showError } = useAlert();
   const showErrorRef = useRef(showError);
@@ -207,11 +212,22 @@ const SupportPage: React.FC = () => {
         </Card>
 
         <Card className="p-6 border-none shadow-md">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="p-2 bg-indigo-100 dark:bg-indigo-900 rounded-lg text-indigo-600 dark:text-indigo-300">
-              <FaClipboard size={24} />
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-indigo-100 dark:bg-indigo-900 rounded-lg text-indigo-600 dark:text-indigo-300">
+                <FaClipboard size={24} />
+              </div>
+              <h2 className="text-xl font-bold text-gray-800 dark:text-white">{t('support.suggestions')}</h2>
             </div>
-            <h2 className="text-xl font-bold text-gray-800 dark:text-white">{t('support.suggestions')}</h2>
+            {onNavigate && (
+              <button
+                type="button"
+                onClick={() => onNavigate('suggestions')}
+                className="text-sm text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer"
+              >
+                {t('support.viewSuggestions')}
+              </button>
+            )}
           </div>
           <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
             {t('support.suggestionsDesc')}

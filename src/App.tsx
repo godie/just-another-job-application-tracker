@@ -7,6 +7,7 @@ import OpportunitiesPage from './pages/OpportunitiesPage';
 import SettingsPage from './pages/SettingsPage';
 import InsightsPage from './pages/InsightsPage';
 import SupportPage from './pages/SupportPage';
+import SuggestionsViewerPage from './pages/SuggestionsViewerPage';
 import LandingPage from './pages/LandingPage';
 import MainLayout from './layouts/MainLayout';
 import { useApplicationsStore } from './stores/applicationsStore';
@@ -14,12 +15,20 @@ import { useApplicationsStore } from './stores/applicationsStore';
 // ⚡ Bolt: Provide a dummy client ID if not present to prevent crash in dev/test environments
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || 'dummy-client-id.apps.googleusercontent.com';
 
-export type PageType = 'landing' | 'applications' | 'opportunities' | 'settings' | 'insights' | 'support';
+export type PageType = 'landing' | 'applications' | 'opportunities' | 'settings' | 'insights' | 'support' | 'suggestions';
 
 function App() {
   const [currentPage, setCurrentPage] = useState<PageType>(() => {
-    // Load page preference from localStorage
+    // Load page preference from query param or localStorage
     if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const pageParam = urlParams.get('page') as PageType | null;
+      const validPages: PageType[] = ['landing', 'applications', 'opportunities', 'settings', 'insights', 'support', 'suggestions'];
+
+      if (pageParam && validPages.includes(pageParam)) {
+        return pageParam;
+      }
+
       const savedPage = localStorage.getItem('currentPage') as PageType | null;
       // If first time visiting, show landing page
       return savedPage || 'landing';
@@ -60,7 +69,9 @@ function App() {
       case 'insights':
         return <InsightsPage />;
       case 'support':
-        return <SupportPage />;
+        return <SupportPage onNavigate={setCurrentPage} />;
+      case 'suggestions':
+        return <SuggestionsViewerPage onNavigate={setCurrentPage} />;
       case 'landing':
         return <LandingPage onNavigate={setCurrentPage} />;
       default:

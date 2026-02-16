@@ -40,6 +40,7 @@
     "delete": "Eliminar",
     "edit": "Editar",
     "add": "Añadir",
+    "refresh": "Actualizar",
     "actions": "Acciones",
     "status": "Estado",
     "company": "Empresa",
@@ -133,6 +134,12 @@
     "captchaError": "No pudimos generar el captcha. Recarga e intenta de nuevo.",
     "explanationRequired": "Describe tu idea antes de enviarla.",
     "errorGeneric": "Ocurrió un error. Intenta nuevamente más tarde.",
+    "viewSuggestions": "Ver sugerencias",
+    "suggestionsViewer": {
+      "title": "Visor de Sugerencias",
+      "back": "Volver a Soporte",
+      "noSuggestions": "No hay sugerencias todavía."
+    },
     "howItWorks": "¿Cómo funciona?",
     "howItWorksDesc": "Ahora guardamos las sugerencias en una cola ligera del servidor. Cada envío usa un <strong>captcha numérico</strong> para evitar bots y que no saturen el servidor.",
     "types": {

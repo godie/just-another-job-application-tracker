@@ -12,6 +12,39 @@ class SuggestionsController
         $this->config = require __DIR__ . '/../config.php';
     }
 
+    /** GET /suggestions - List all suggestions */
+    public function index(): array
+    {
+        $dbPath = $this->config['suggestions_db_path'];
+        if (!file_exists($dbPath)) {
+            return ['success' => true, 'suggestions' => []];
+        }
+
+        try {
+            $db = new SQLite3($dbPath, SQLITE3_OPEN_READONLY);
+            $db->busyTimeout(5000);
+        } catch (Exception $e) {
+            http_response_code(500);
+            return ['success' => false, 'error' => 'Failed to open suggestions database.'];
+        }
+
+        $results = $db->query('SELECT * FROM suggestions ORDER BY created_at DESC');
+        $suggestions = [];
+        if ($results) {
+            while ($row = $results->fetchArray(SQLITE3_ASSOC)) {
+                $row['types'] = json_decode($row['types'] ?: '[]', true);
+                $suggestions[] = $row;
+            }
+        }
+
+        $db->close();
+
+        return [
+            'success' => true,
+            'suggestions' => $suggestions,
+        ];
+    }
+
     /** POST /suggestions - Validate captcha and store suggestion */
     public function store(): array
     {
@@ -139,9 +172,35 @@ class SuggestionsController
         $stmt->close();
         $db->close();
 
+        // Send email notification
+        $this->notifyByEmail($explanation);
+
         return [
             'success' => true,
             'message' => 'Suggestion stored successfully.',
         ];
+    }
+
+    /** Helper to send email notification */
+    private function notifyByEmail(string $explanation): void
+    {
+        $to = 'godie.mendoza@gmail.com';
+        $subject = 'New JAJAT - Sugerencia';
+
+        $protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ? 'https' : 'http';
+        $host = $_SERVER['HTTP_HOST'] ?? 'jajat.godieboy.com';
+        // Direct link to the suggestions page using the ?page=suggestions parameter we will add to App.tsx
+        $appUrl = "$protocol://$host?page=suggestions";
+
+        $message = "Has recibido una nueva sugerencia en JAJAT.\n\n";
+        $message .= "Explicación:\n$explanation\n\n";
+        $message .= "Puedes ver todas las sugerencias aquí: $appUrl\n";
+
+        $headers = "From: JAJAT <no-reply@$host>\r\n";
+        $headers .= "Reply-To: no-reply@$host\r\n";
+        $headers .= "X-Mailer: PHP/" . phpversion();
+
+        // Use @ to suppress potential errors if mail() is not configured
+        @mail($to, $subject, $message, $headers);
     }
 }
