@@ -1,5 +1,6 @@
 // src/utils/constants.ts
 import type { UserPreferences, FieldDefinition } from "../types/preferences";
+import type { InterviewStageType } from "../types/applications";
 
 export const STORAGE_KEY = 'jobTrackerData';
 export const OPPORTUNITIES_STORAGE_KEY = 'jobOpportunities';
@@ -52,3 +53,15 @@ export const ATS_PLATFORMS = [
   { id: 'icims', name: 'iCIMS', url: '*.icims.com' },
   { id: 'workable', name: 'Workable', url: 'apply.workable.com' },
 ];
+
+export const INTERVIEW_TYPES = new Set<InterviewStageType>([
+  'screener_call',
+  'first_contact',
+  'technical_interview',
+  'code_challenge',
+  'live_coding',
+  'hiring_manager',
+  'system_design',
+  'cultural_fit',
+  'final_round',
+]);
