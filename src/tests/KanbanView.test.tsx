@@ -2,8 +2,9 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, expect, test, vi } from 'vitest';
 import KanbanView from '../components/KanbanView';
 import type { JobApplication } from '../utils/localStorage';
+import type { ApplicationWithMetadata } from '../hooks/useFilteredApplications';
 
-const makeApplication = (overrides: Partial<JobApplication>): JobApplication => ({
+const makeApplication = (overrides: Partial<ApplicationWithMetadata>): ApplicationWithMetadata => ({
   id: overrides.id ?? 'id-1',
   position: overrides.position ?? 'Frontend Developer',
   company: overrides.company ?? 'Tech Corp',
@@ -18,6 +19,12 @@ const makeApplication = (overrides: Partial<JobApplication>): JobApplication => 
   salary: overrides.salary ?? '',
   timeline: overrides.timeline ?? [],
   customFields: overrides.customFields,
+  parsedApplicationDate: null,
+  searchMetadata: '',
+  translatedStatus: overrides.status ?? 'Applied',
+  translatedPlatform: overrides.platform ?? '',
+  translatedWorkType: '',
+  interviewingSubStatus: overrides.interviewingSubStatus ?? null,
 });
 
 describe('KanbanView', () => {
@@ -81,11 +88,12 @@ describe('KanbanView', () => {
     const pastDate = new Date(today);
     pastDate.setDate(pastDate.getDate() - 5);
 
-    const applications: JobApplication[] = [
+    const applications: ApplicationWithMetadata[] = [
       makeApplication({
         id: '1',
         status: 'Interviewing',
         position: 'Frontend Dev',
+        interviewingSubStatus: 'First Contact',
         timeline: [
           {
             id: 'event-1',
@@ -99,6 +107,7 @@ describe('KanbanView', () => {
         id: '2',
         status: 'Interviewing',
         position: 'Backend Dev',
+        interviewingSubStatus: 'Code Challenge',
         timeline: [
           {
             id: 'event-2',
@@ -112,6 +121,7 @@ describe('KanbanView', () => {
         id: '3',
         status: 'Interviewing',
         position: 'Fullstack Dev',
+        interviewingSubStatus: 'Technical Interview',
         timeline: [
           {
             id: 'event-3',

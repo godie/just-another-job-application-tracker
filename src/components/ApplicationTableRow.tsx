@@ -2,12 +2,13 @@
 import React, { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { JobApplication } from '../types/applications';
+import type { ApplicationWithMetadata } from '../hooks/useFilteredApplications';
 import type { TableColumn } from '../types/table';
 import { sanitizeUrl } from '../utils/localStorage';
 import { TableRow, TableCell, Button } from './ui';
 
 interface ApplicationTableRowProps {
-  item: JobApplication;
+  item: ApplicationWithMetadata;
   columns: TableColumn[];
   onEdit: (application: JobApplication) => void;
   onDeleteRequest: (application: JobApplication) => void;
@@ -37,16 +38,13 @@ const ApplicationTableRow: React.FC<ApplicationTableRowProps> = ({
       {columns.map((column) => {
         let cellContent = getCellValue(item, column.id);
 
-        if (column.id === 'status' && cellContent) {
-          cellContent = t(`statuses.${cellContent.toLowerCase()}`, cellContent);
-        } else if (column.id === 'platform' && cellContent) {
-          cellContent = t(`form.platforms.${cellContent}`, cellContent);
-        } else if (column.id === 'workType' && cellContent) {
-          const workTypeKey = cellContent === 'on-site' ? 'onSite' : cellContent;
-          cellContent = t(`form.workTypes.${workTypeKey}`, cellContent);
-          if (item.workType === 'hybrid' && typeof item.hybridDaysInOffice === 'number') {
-            cellContent += ` (${t('form.hybridDaysOption', { count: item.hybridDaysInOffice })})`;
-          }
+        // ⚡ Bolt: Use pre-calculated translations for better performance
+        if (column.id === 'status' && item.translatedStatus) {
+          cellContent = item.translatedStatus;
+        } else if (column.id === 'platform' && item.translatedPlatform) {
+          cellContent = item.translatedPlatform;
+        } else if (column.id === 'workType' && item.translatedWorkType) {
+          cellContent = item.translatedWorkType;
         }
 
         const isNotes = column.id === 'notes';

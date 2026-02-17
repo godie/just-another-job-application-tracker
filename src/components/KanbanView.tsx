@@ -1,16 +1,14 @@
 import React, { useMemo, useState, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { JobApplication } from '../utils/localStorage';
+import type { ApplicationWithMetadata } from '../hooks/useFilteredApplications';
 import ConfirmDialog from './ConfirmDialog';
-import { parseLocalDate } from '../utils/date';
 
 interface KanbanViewProps {
-  applications: JobApplication[];
+  applications: ApplicationWithMetadata[];
   onEdit?: (application: JobApplication) => void;
   onDelete?: (application: JobApplication) => void;
 }
-
-type TranslateFn = (key: string, options?: Record<string, unknown>) => string;
 
 const DEFAULT_STATUS_ORDER = [
   'Applied',
@@ -20,46 +18,6 @@ const DEFAULT_STATUS_ORDER = [
   'Withdrawn',
   'Hold',
 ];
-
-// Determine the current interview stage for applications in "Interviewing" status
-const getInterviewingSubStatus = (app: JobApplication, t: TranslateFn): string | null => {
-  if (app.status !== 'Interviewing' || !app.timeline || app.timeline.length === 0) {
-    return null;
-  }
-
-  // Sort timeline events by date (ascending - earliest first)
-  const sortedEvents = [...app.timeline].sort((a, b) =>
-    parseLocalDate(a.date).getTime() - parseLocalDate(b.date).getTime()
-  );
-
-  // First, look for the next active event (scheduled or pending) - the upcoming step
-  const activeEvent = sortedEvents.find(
-    (event) => (event.status === 'scheduled' || event.status === 'pending') &&
-               parseLocalDate(event.date) >= new Date()
-  );
-
-  const getDisplayName = (type: string, customName?: string) => {
-      if (type === 'custom' && customName) return customName;
-      //type = type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-      return t(`insights.interviewTypes.${type}`);
-  };
-
-  if (activeEvent) {
-    return getDisplayName(activeEvent.type, activeEvent.customTypeName);
-  }
-
-  // If no upcoming active event, use the most recent completed event
-  // Sort by date descending to get the most recent
-  const completedEvents = sortedEvents
-    .filter((event) => event.status === 'completed')
-    .sort((a, b) => parseLocalDate(b.date).getTime() - parseLocalDate(a.date).getTime());
-
-  if (completedEvents.length > 0) {
-    return getDisplayName(completedEvents[0].type, completedEvents[0].customTypeName);
-  }
-
-  return null;
-};
 
 // Memoized to prevent re-renders when filteredApplications reference changes but content is the same
 const KanbanView: React.FC<KanbanViewProps> = ({ applications, onEdit, onDelete }) => {
@@ -76,12 +34,11 @@ const KanbanView: React.FC<KanbanViewProps> = ({ applications, onEdit, onDelete 
     applications.forEach((app) => {
       let statusKey = app.status || 'Unknown';
 
-      // For "Interviewing" status, check if we should create a sub-status based on timeline
-      if (app.status === 'Interviewing') {
-        const subStatus = getInterviewingSubStatus(app, t);
-        if (subStatus) {
-          statusKey = `Interviewing - ${subStatus}`;
-        }
+      // ⚡ Bolt: Use pre-calculated interviewing sub-status.
+      // This avoids redundant timeline sorting and complex logic on every render,
+      // significantly improving performance when many applications are in interviewing state.
+      if (app.status === 'Interviewing' && app.interviewingSubStatus) {
+        statusKey = `Interviewing - ${app.interviewingSubStatus}`;
       }
 
       statuses.add(statusKey);
@@ -132,7 +89,7 @@ const KanbanView: React.FC<KanbanViewProps> = ({ applications, onEdit, onDelete 
       status,
       items: byStatus.get(status) ?? [],
     }));
-  }, [applications, t]);
+  }, [applications]);
 
   if (applications.length === 0) {
     return (
@@ -178,8 +135,8 @@ const KanbanView: React.FC<KanbanViewProps> = ({ applications, onEdit, onDelete 
                       <p className="text-sm text-gray-600">{application.company}</p>
                     </div>
                     <div className="flex items-center text-xs text-gray-500 flex-wrap gap-1">
-                      {application.platform && (
-                        <span className="bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full">{t(`form.platforms.${application.platform}`, application.platform)}</span>
+                      {application.translatedPlatform && (
+                        <span className="bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full">{application.translatedPlatform}</span>
                       )}
                       {application.applicationDate && (
                         <span className="text-gray-500">{t('kanban.applied', { date: application.applicationDate })}</span>
