@@ -33,7 +33,9 @@ const getCellValue = (item: JobApplication, columnId: string): string => {
   return key ? String(item[key] ?? '') : '';
 };
 
-const mockApplication: JobApplication = {
+import type { ApplicationWithMetadata } from '../hooks/useFilteredApplications';
+
+const mockApplication: ApplicationWithMetadata = {
   id: '1',
   position: 'Software Engineer',
   company: 'Tech Corp',
@@ -47,6 +49,12 @@ const mockApplication: JobApplication = {
   notes: 'Test notes',
   link: 'https://example.com/job',
   timeline: [],
+  parsedApplicationDate: new Date('2024-01-01'),
+  searchMetadata: '',
+  translatedStatus: 'Applied',
+  translatedPlatform: 'LinkedIn',
+  translatedWorkType: '',
+  interviewingSubStatus: null,
 };
 
 describe('ApplicationCard', () => {
@@ -146,12 +154,13 @@ describe('ApplicationCard', () => {
   });
 
   it('displays fallbacks for missing position, company, status', () => {
-    const emptyApp: JobApplication = {
+    const emptyApp: ApplicationWithMetadata = {
       ...mockApplication,
       id: '2',
       position: '',
       company: '',
       status: '',
+      translatedStatus: '',
     };
 
     render(

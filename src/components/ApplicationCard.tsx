@@ -2,12 +2,13 @@
 import React, { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { JobApplication } from '../types/applications';
+import type { ApplicationWithMetadata } from '../hooks/useFilteredApplications';
 import type { TableColumn } from '../types/table';
 import { sanitizeUrl } from '../utils/localStorage';
 import { Card, Badge, Button, Separator } from './ui';
 
 interface ApplicationCardProps {
-  item: JobApplication;
+  item: ApplicationWithMetadata;
   otherColumns: TableColumn[];
   onEdit: (application: JobApplication) => void;
   onDeleteRequest: (application: JobApplication) => void;
@@ -29,10 +30,8 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
 
   const positionValue = getCellValue(item, 'position') || 'No Position';
   const companyValue = getCellValue(item, 'company') || 'No Company';
-  const rawStatus = getCellValue(item, 'status');
-  const statusValue = rawStatus
-    ? t(`statuses.${rawStatus.toLowerCase()}`, rawStatus)
-    : 'N/A';
+  // ⚡ Bolt: Use pre-calculated status translation
+  const statusValue = item.translatedStatus || 'N/A';
 
   return (
     <Card
@@ -61,8 +60,11 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
       <div className="space-y-2 text-xs text-gray-600 dark:text-gray-400">
         {otherColumns.slice(0, 3).map((column) => {
           let value = getCellValue(item, column.id);
-          if (column.id === 'platform') {
-            value = t(`form.platforms.${value}`, value);
+          // ⚡ Bolt: Use pre-calculated translations
+          if (column.id === 'platform' && item.translatedPlatform) {
+            value = item.translatedPlatform;
+          } else if (column.id === 'workType' && item.translatedWorkType) {
+            value = item.translatedWorkType;
           }
           if (!value) return null;
           const isLink = column.id === 'link';

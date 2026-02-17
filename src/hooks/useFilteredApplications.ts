@@ -1,4 +1,5 @@
 import { useMemo, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { type JobApplication } from '../types/applications';
 import { type Filters } from '../components/FiltersBar';
 import { parseLocalDate } from '../utils/date';
@@ -10,6 +11,10 @@ import { parseLocalDate } from '../utils/date';
 export interface ApplicationWithMetadata extends JobApplication {
   parsedApplicationDate: Date | null;
   searchMetadata: string;
+  translatedStatus: string;
+  translatedPlatform: string;
+  translatedWorkType: string;
+  interviewingSubStatus: string | null;
 }
 
 /**
@@ -25,6 +30,8 @@ export interface ApplicationWithMetadata extends JobApplication {
  * @returns Filtered applications and derived application data
  */
 export const useFilteredApplications = (applications: JobApplication[], filters: Filters) => {
+  const { t, i18n } = useTranslation();
+
   // ⚡ Bolt: Referential cache for ApplicationWithMetadata objects.
   // By storing previously calculated metadata objects and associating them with
   // the original JobApplication reference, we can preserve object identity across
@@ -40,6 +47,15 @@ export const useFilteredApplications = (applications: JobApplication[], filters:
   const availableStatusesRef = useRef<string[]>([]);
   const availablePlatformsRef = useRef<string[]>([]);
   const nonDeletedApplicationsRef = useRef<JobApplication[]>([]);
+  const lastLanguageRef = useRef(i18n.language);
+
+  // ⚡ Bolt: Language-aware cache invalidation.
+  // If the language changes, we must clear the cache to ensure all translated
+  // fields are re-calculated correctly for the new locale.
+  if (lastLanguageRef.current !== i18n.language) {
+    cacheRef.current.clear();
+    lastLanguageRef.current = i18n.language;
+  }
 
   // ⚡ Bolt: Fused Loop for Application Processing
   // Instead of multiple separate loops (one for statuses, one for platforms, one for dates,
@@ -77,18 +93,60 @@ export const useFilteredApplications = (applications: JobApplication[], filters:
       }
 
       // 4. Pre-calculate searchable string (Search Metadata)
-      // This combines all searchable fields into a single lowercase string
-      // to avoid expensive mapping and multiple checks during every filter update.
       const timelineStr = app.timeline?.map(event =>
         `${event.notes ?? ''} ${event.customTypeName ?? ''} ${event.interviewerName ?? ''}`
       ).join(' ') || '';
 
-      const searchMetadata = `${app.position ?? ''} ${app.company ?? ''} ${app.contactName ?? ''} ${app.notes ?? ''} ${timelineStr}`.toLowerCase();
+      // 5. Pre-calculate translations and sub-status
+      // ⚡ Bolt: Moving translations and expensive logic (like timeline sorting)
+      // into this pre-calculation step ensures they only run once per change,
+      // significantly improving rendering performance for large lists and Kanban boards.
+      const translatedStatus = app.status ? t(`statuses.${app.status.toLowerCase()}`, app.status) : '';
+      const translatedPlatform = app.platform ? t(`form.platforms.${app.platform}`, app.platform) : '';
+
+      let translatedWorkType = '';
+      if (app.workType) {
+        const workTypeKey = app.workType === 'on-site' ? 'onSite' : app.workType;
+        translatedWorkType = t(`form.workTypes.${workTypeKey}`, app.workType);
+        if (app.workType === 'hybrid' && typeof app.hybridDaysInOffice === 'number') {
+          translatedWorkType += ` (${t('form.hybridDaysOption', { count: app.hybridDaysInOffice })})`;
+        }
+      }
+
+      // Calculate Interviewing Sub-status (Logic moved from KanbanView for performance)
+      let interviewingSubStatus: string | null = null;
+      if (app.status === 'Interviewing' && app.timeline?.length > 0) {
+        const sortedEvents = [...app.timeline].sort((a, b) =>
+          parseLocalDate(a.date).getTime() - parseLocalDate(b.date).getTime()
+        );
+        const activeEvent = sortedEvents.find(e =>
+          (e.status === 'scheduled' || e.status === 'pending') && parseLocalDate(e.date) >= new Date()
+        );
+
+        const formatType = (type: string) => t(`insights.interviewTypes.${type}`, type.replace(/_/g, ' '));
+
+        if (activeEvent) {
+          interviewingSubStatus = activeEvent.type === 'custom' && activeEvent.customTypeName
+            ? activeEvent.customTypeName : formatType(activeEvent.type);
+        } else {
+          const completed = sortedEvents.filter(e => e.status === 'completed').reverse();
+          if (completed.length > 0) {
+            interviewingSubStatus = completed[0].type === 'custom' && completed[0].customTypeName
+              ? completed[0].customTypeName : formatType(completed[0].type);
+          }
+        }
+      }
+
+      const searchMetadata = `${app.position ?? ''} ${app.company ?? ''} ${app.contactName ?? ''} ${app.notes ?? ''} ${translatedStatus} ${translatedPlatform} ${timelineStr}`.toLowerCase();
 
       const result: ApplicationWithMetadata = {
         ...app,
         parsedApplicationDate: app.applicationDate ? parseLocalDate(app.applicationDate) : null,
         searchMetadata,
+        translatedStatus,
+        translatedPlatform,
+        translatedWorkType,
+        interviewingSubStatus,
       };
 
       newCache.set(app, result);
@@ -127,7 +185,7 @@ export const useFilteredApplications = (applications: JobApplication[], filters:
       availablePlatforms: availablePlatformsRef.current,
       nonDeletedApplications: nonDeletedApplicationsRef.current,
     };
-  }, [applications]);
+  }, [applications, t]);
 
   const filteredApplications = useMemo(() => {
     const normalizedSearch = filters.search.trim().toLowerCase();
