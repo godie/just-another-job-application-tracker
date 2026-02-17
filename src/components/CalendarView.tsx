@@ -1,17 +1,18 @@
 import React, { useMemo, useState, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { JobApplication, InterviewEvent } from '../utils/localStorage';
+import type { ApplicationWithMetadata } from '../hooks/useFilteredApplications';
 import { parseLocalDate } from '../utils/date';
 
 interface CalendarViewProps {
-  applications: JobApplication[];
+  applications: ApplicationWithMetadata[];
   onEdit?: (application: JobApplication) => void;
 }
 
 interface CalendarDay {
   date: Date;
   isCurrentMonth: boolean;
-  events: { application: JobApplication; event: InterviewEvent }[];
+  events: { application: ApplicationWithMetadata; event: InterviewEvent }[];
 }
 
 const WEEKDAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];

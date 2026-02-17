@@ -30,10 +30,10 @@ beforeEach(() => {
   vi.clearAllMocks();
   global.localStorage = localStorageMock as unknown as Storage;
   global.window = mockWindow as unknown as Window & typeof globalThis;
-  
+
   // Default localStorage.getItem to return empty array
   (localStorageMock.getItem as ReturnType<typeof vi.fn>).mockReturnValue('[]');
-  
+
   // Mock setTimeout and setInterval
   vi.useFakeTimers();
 });
@@ -103,7 +103,7 @@ describe('WebApp Content Script', () => {
         id: opportunity.id,
         position: opportunity.position,
         company: opportunity.company,
-        status: 'applied',
+        status: 'Applied',
         link: opportunity.link,
         notes: opportunity.description,
       });
@@ -175,7 +175,7 @@ describe('WebApp Content Script', () => {
           {},
           sendResponse
         );
-        
+
         await vi.runAllTimersAsync();
         await new Promise(resolve => {
           setTimeout(resolve, 200);
@@ -343,10 +343,10 @@ describe('WebApp Content Script', () => {
       // we need to check if it was called during the import phase or trigger it manually.
       // For this test, we'll verify the sync function works by calling it directly
       // via the message handler, which is the main entry point.
-      
+
       // Clear any calls from import
       vi.clearAllMocks();
-      
+
       // Trigger sync manually via message handler to verify it works
       const sendResponse = vi.fn();
       if ((global as any).chromeMessageListener) {
@@ -380,12 +380,12 @@ describe('WebApp Content Script', () => {
 
       // Clear any calls from previous tests
       vi.clearAllMocks();
-      
+
       // The setInterval is set up on import, but we need to wait for it to fire
       // Since we can't easily test the setInterval that was set up on import,
       // we'll verify the sync function works and that the interval mechanism
       // is in place by checking that multiple syncs can be triggered.
-      
+
       // Trigger sync multiple times to simulate interval behavior
       const sendResponse = vi.fn();
       if ((global as any).chromeMessageListener) {
@@ -396,7 +396,7 @@ describe('WebApp Content Script', () => {
           sendResponse
         );
         await vi.runAllTimersAsync();
-        
+
         // Clear and trigger again (simulating interval)
         vi.clearAllMocks();
         await (global as any).chromeMessageListener(
@@ -415,7 +415,7 @@ describe('WebApp Content Script', () => {
   describe('Error handling', () => {
     it('should handle localStorage errors gracefully', () => {
       const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-      
+
       (localStorageMock.setItem as ReturnType<typeof vi.fn>).mockImplementation(() => {
         throw new Error('Storage quota exceeded');
       });
@@ -462,4 +462,3 @@ describe('WebApp Content Script', () => {
     });
   });
 });
-

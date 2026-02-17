@@ -28,7 +28,7 @@ const KanbanView: React.FC<KanbanViewProps> = ({ applications, onEdit, onDelete 
   });
 
   const grouped = useMemo(() => {
-    const byStatus = new Map<string, JobApplication[]>();
+    const byStatus = new Map<string, ApplicationWithMetadata[]>();
     const statuses = new Set<string>();
 
     applications.forEach((app) => {

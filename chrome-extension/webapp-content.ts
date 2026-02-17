@@ -81,7 +81,7 @@ function opportunityToApplication(opportunity: Opportunity): StoredApplication {
     id: opportunity.id,
     position: opportunity.position,
     company: opportunity.company,
-    status: 'applied',
+    status: 'Applied',
     applicationDate: today,
     interviewDate: '',
     timeline: [

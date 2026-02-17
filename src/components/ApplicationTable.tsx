@@ -2,6 +2,7 @@
 import React, { useState, memo, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { JobApplication } from '../types/applications';
+import type { ApplicationWithMetadata } from '../hooks/useFilteredApplications';
 import type { TableColumn } from '../types/table';
 import ConfirmDialog from './ConfirmDialog';
 import ApplicationTableRow from './ApplicationTableRow';
@@ -10,7 +11,7 @@ import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell, Card } f
 
 interface ApplicationTableProps {
     columns: TableColumn[];
-    data: JobApplication[];
+    data: ApplicationWithMetadata[];
     onEdit: (application: JobApplication) => void;
     onDelete: (application: JobApplication) => void;
 }

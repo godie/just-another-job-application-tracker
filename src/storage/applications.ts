@@ -35,7 +35,7 @@ const isLegacyApplication = (app: unknown): app is LegacyJobApplication => {
  */
 export const migrateApplicationData = (legacyApp: LegacyJobApplication): JobApplication => {
   const timeline: InterviewEvent[] = [];
-  
+
   // Add application submitted event if date exists
   if (legacyApp.applicationDate) {
     timeline.push({
@@ -45,7 +45,7 @@ export const migrateApplicationData = (legacyApp: LegacyJobApplication): JobAppl
       status: 'completed',
     });
   }
-  
+
   // Add interview event if date exists
   if (legacyApp.interviewDate) {
     timeline.push({
@@ -55,7 +55,7 @@ export const migrateApplicationData = (legacyApp: LegacyJobApplication): JobAppl
       status: 'scheduled',
     });
   }
-  
+
   // Create new application with timeline
   return {
     ...legacyApp,
@@ -79,10 +79,10 @@ export const getApplications = (): JobApplication[] => {
   try {
     const data = localStorage.getItem(STORAGE_KEY);
     if (!data) return [];
-    
+
     const rawApps = JSON.parse(data);
     if (!Array.isArray(rawApps)) return [];
-    
+
     // ⚡ Bolt: Centralized sanitization and migration in a single pass (Loop Fusion)
     // to avoid expensive runtime sanitization in components and minimize iterations.
     const migrated = rawApps.map((rawApp) => {
@@ -91,13 +91,22 @@ export const getApplications = (): JobApplication[] => {
         ? sanitizeObject(rawApp as Record<string, unknown>)
         : rawApp;
 
+      // ⚡ Bolt: Normalize status to Capitalized format (e.g., 'applied' -> 'Applied')
+      // to ensure consistency and prevent duplicate filter options.
+      if (app && typeof app === 'object' && 'status' in app && typeof app.status === 'string') {
+        const s = app.status;
+        if (s && /^[a-z]/.test(s)) {
+          (app as JobApplication).status = s.charAt(0).toUpperCase() + s.slice(1);
+        }
+      }
+
       // 2. Migrate legacy applications if needed
       if (isLegacyApplication(app)) {
         const migratedApp = migrateApplicationData(app);
         // Save migrated data back
         setTimeout(() => {
           const currentApps = getApplications();
-          const updatedApps = currentApps.map((a) => 
+          const updatedApps = currentApps.map((a) =>
             a.id === migratedApp.id ? migratedApp : a
           );
           saveApplications(updatedApps);
@@ -106,7 +115,7 @@ export const getApplications = (): JobApplication[] => {
       }
       return app as JobApplication;
     });
-    
+
     return migrated;
   } catch (error) {
     console.error("Error loading data from localStorage:", error);
@@ -124,4 +133,3 @@ export const saveApplications = (applications: JobApplication[]): void => {
     console.error("Error saving data to localStorage:", error);
   }
 };
-
