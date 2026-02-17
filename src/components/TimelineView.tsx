@@ -2,11 +2,14 @@
 import React, { useState, useMemo, useEffect, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { JobApplication, InterviewEvent } from '../utils/localStorage';
+import type { ApplicationWithMetadata } from '../hooks/useFilteredApplications';
 import ConfirmDialog from './ConfirmDialog';
+import { Badge } from './ui';
 import { parseLocalDate } from '../utils/date';
+import { getBadgeVariantForStatus } from '../utils/status';
 
 interface TimelineViewProps {
-  applications: JobApplication[];
+  applications: ApplicationWithMetadata[];
   onEdit?: (application: JobApplication) => void;
   onDelete?: (application: JobApplication) => void;
 }
@@ -38,6 +41,7 @@ const TimelineView: React.FC<TimelineViewProps> = ({ applications, onEdit, onDel
     };
     return colors[status] || 'bg-gray-400';
   };
+
 
   const formatDate = (dateString: string): string => {
     try {
@@ -120,7 +124,12 @@ const TimelineView: React.FC<TimelineViewProps> = ({ applications, onEdit, onDel
                   <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-3">
                     <div className="space-y-1 flex-1 min-w-0">
                       <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white truncate">{app.position}</h3>
-                      <p className="text-gray-600 dark:text-gray-300 font-medium text-sm sm:text-base truncate">{app.company}</p>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <p className="text-gray-600 dark:text-gray-300 font-medium text-sm sm:text-base truncate">{app.company}</p>
+                        <Badge variant={getBadgeVariantForStatus(app.status)}>
+                          {app.translatedStatus || app.status}
+                        </Badge>
+                      </div>
                     </div>
                     {nextEvent && !isExpanded && (
                       <div className="flex items-center gap-2 bg-white dark:bg-gray-700 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg shadow-sm border border-gray-200 dark:border-gray-600 flex-shrink-0">

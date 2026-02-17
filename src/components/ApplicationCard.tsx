@@ -6,6 +6,7 @@ import type { ApplicationWithMetadata } from '../hooks/useFilteredApplications';
 import type { TableColumn } from '../types/table';
 import { sanitizeUrl } from '../utils/localStorage';
 import { Card, Badge, Button, Separator } from './ui';
+import { getBadgeVariantForStatus } from '../utils/status';
 
 interface ApplicationCardProps {
   item: ApplicationWithMetadata;
@@ -33,6 +34,7 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
   // ⚡ Bolt: Use pre-calculated status translation
   const statusValue = item.translatedStatus || 'N/A';
 
+
   return (
     <Card
       onClick={() => onEdit(item)}
@@ -50,7 +52,7 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
           </h4>
         </div>
         <div className="ml-3 flex-shrink-0">
-          <Badge variant="indigo">
+          <Badge variant={getBadgeVariantForStatus(item.status)}>
             {statusValue}
           </Badge>
         </div>

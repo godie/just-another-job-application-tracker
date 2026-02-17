@@ -91,6 +91,15 @@ export const getApplications = (): JobApplication[] => {
         ? sanitizeObject(rawApp as Record<string, unknown>)
         : rawApp;
 
+      // ⚡ Bolt: Normalize status to Capitalized format (e.g., 'applied' -> 'Applied')
+      // to ensure consistency and prevent duplicate filter options.
+      if (app && typeof app === 'object' && 'status' in app && typeof app.status === 'string') {
+        const s = app.status;
+        if (s && /^[a-z]/.test(s)) {
+          (app as any).status = s.charAt(0).toUpperCase() + s.slice(1);
+        }
+      }
+
       // 2. Migrate legacy applications if needed
       if (isLegacyApplication(app)) {
         const migratedApp = migrateApplicationData(app);

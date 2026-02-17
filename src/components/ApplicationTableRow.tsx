@@ -5,7 +5,8 @@ import type { JobApplication } from '../types/applications';
 import type { ApplicationWithMetadata } from '../hooks/useFilteredApplications';
 import type { TableColumn } from '../types/table';
 import { sanitizeUrl } from '../utils/localStorage';
-import { TableRow, TableCell, Button } from './ui';
+import { TableRow, TableCell, Button, Badge } from './ui';
+import { getBadgeVariantForStatus } from '../utils/status';
 
 interface ApplicationTableRowProps {
   item: ApplicationWithMetadata;
@@ -30,6 +31,7 @@ const ApplicationTableRow: React.FC<ApplicationTableRowProps> = ({
 }) => {
   const { t } = useTranslation();
 
+
   return (
     <TableRow
       className="cursor-pointer group"
@@ -48,6 +50,21 @@ const ApplicationTableRow: React.FC<ApplicationTableRowProps> = ({
         }
 
         const isNotes = column.id === 'notes';
+        const isStatus = column.id === 'status';
+
+        if (isStatus) {
+          return (
+            <TableCell
+              key={column.id}
+              onClick={() => onEdit(item)}
+              className="px-4 sm:px-6 py-3 text-gray-900 dark:text-gray-100 border-r border-gray-100 dark:border-gray-700 group-hover:bg-indigo-50 dark:group-hover:bg-indigo-900 whitespace-nowrap"
+            >
+              <Badge variant={getBadgeVariantForStatus(item.status)}>
+                {cellContent}
+              </Badge>
+            </TableCell>
+          );
+        }
 
         if (isNotes) {
           const originalLength = cellContent.length;

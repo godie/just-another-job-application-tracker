@@ -74,8 +74,15 @@ export const useFilteredApplications = (applications: JobApplication[], filters:
     const newCache = new Map<JobApplication, ApplicationWithMetadata>();
 
     const withMetadata: ApplicationWithMetadata[] = applications.map(app => {
+      // ⚡ Bolt: Normalize status to Capitalized format to prevent duplicates in filters.
+      // We use a local variable to avoid mutating the original JobApplication object.
+      let currentStatus = app.status;
+      if (currentStatus && /^[a-z]/.test(currentStatus)) {
+        currentStatus = currentStatus.charAt(0).toUpperCase() + currentStatus.slice(1);
+      }
+
       // 1. Collect unique statuses and platforms
-      if (app.status) statusesSet.add(app.status);
+      if (currentStatus) statusesSet.add(currentStatus);
       if (app.platform) platformsSet.add(app.platform);
 
       // 2. Identify non-deleted applications
@@ -101,7 +108,7 @@ export const useFilteredApplications = (applications: JobApplication[], filters:
       // ⚡ Bolt: Moving translations and expensive logic (like timeline sorting)
       // into this pre-calculation step ensures they only run once per change,
       // significantly improving rendering performance for large lists and Kanban boards.
-      const translatedStatus = app.status ? t(`statuses.${app.status.toLowerCase()}`, app.status) : '';
+      const translatedStatus = currentStatus ? t(`statuses.${currentStatus.toLowerCase()}`, currentStatus) : '';
       const translatedPlatform = app.platform ? t(`form.platforms.${app.platform}`, app.platform) : '';
 
       let translatedWorkType = '';
@@ -141,6 +148,7 @@ export const useFilteredApplications = (applications: JobApplication[], filters:
 
       const result: ApplicationWithMetadata = {
         ...app,
+        status: currentStatus,
         parsedApplicationDate: app.applicationDate ? parseLocalDate(app.applicationDate) : null,
         searchMetadata,
         translatedStatus,
