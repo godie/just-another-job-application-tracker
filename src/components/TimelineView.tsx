@@ -1,11 +1,10 @@
 // src/components/TimelineView.tsx
 import React, { useState, useMemo, useEffect, memo } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { JobApplication, InterviewEvent } from '../utils/localStorage';
+import type { JobApplication } from '../utils/localStorage';
 import type { ApplicationWithMetadata } from '../hooks/useFilteredApplications';
 import ConfirmDialog from './ConfirmDialog';
 import { Badge } from './ui';
-import { parseLocalDate } from '../utils/date';
 import { getBadgeVariantForStatus } from '../utils/status';
 
 interface TimelineViewProps {
@@ -50,17 +49,6 @@ const TimelineView: React.FC<TimelineViewProps> = ({ applications, onEdit, onDel
     } catch {
       return dateString;
     }
-  };
-
-  const sortEvents = (events: InterviewEvent[]): InterviewEvent[] => {
-    return [...events].sort((a, b) => parseLocalDate(a.date).getTime() - parseLocalDate(b.date).getTime());
-  };
-
-  const getNextEvent = (events: InterviewEvent[]): InterviewEvent | null => {
-    const sorted = sortEvents(events);
-    const now = new Date();
-    const upcoming = sorted.find((event) => parseLocalDate(event.date) >= now && event.status === 'scheduled');
-    return upcoming || null;
   };
 
   const toggleExpanded = (appId: string) => {
@@ -109,8 +97,10 @@ const TimelineView: React.FC<TimelineViewProps> = ({ applications, onEdit, onDel
     <div className="space-y-5">
       {paginatedApplications.map((app) => {
         const isExpanded = expandedApps.has(app.id);
-        const sortedEvents = sortEvents(app.timeline || []);
-        const nextEvent = getNextEvent(app.timeline || []);
+        // ⚡ Bolt: Using pre-calculated sortedTimeline and nextEvent from useFilteredApplications
+        // to avoid expensive sorting and finding operations on every render cycle.
+        const sortedEvents = app.sortedTimeline || [];
+        const nextEvent = app.nextEvent;
         
         return (
           <div

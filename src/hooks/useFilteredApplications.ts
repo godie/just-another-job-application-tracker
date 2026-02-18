@@ -15,6 +15,8 @@ export interface ApplicationWithMetadata extends JobApplication {
   translatedPlatform: string;
   translatedWorkType: string;
   interviewingSubStatus: string | null;
+  sortedTimeline: import('../types/applications').InterviewEvent[];
+  nextEvent: import('../types/applications').InterviewEvent | null;
 }
 
 /**
@@ -120,23 +122,30 @@ export const useFilteredApplications = (applications: JobApplication[], filters:
         }
       }
 
+      // ⚡ Bolt: Pre-calculating sorted timeline and next event here ensures
+      // O(n log n) operations run only once per change, benefiting Kanban,
+      // Timeline, and Table views.
+      const sortedTimeline = app.timeline?.length > 0
+        ? [...app.timeline].sort((a, b) =>
+            parseLocalDate(a.date).getTime() - parseLocalDate(b.date).getTime()
+          )
+        : [];
+
+      const now = new Date();
+      const nextEvent = sortedTimeline.find(e =>
+        (e.status === 'scheduled' || e.status === 'pending') && parseLocalDate(e.date) >= now
+      ) || null;
+
       // Calculate Interviewing Sub-status (Logic moved from KanbanView for performance)
       let interviewingSubStatus: string | null = null;
-      if (app.status === 'Interviewing' && app.timeline?.length > 0) {
-        const sortedEvents = [...app.timeline].sort((a, b) =>
-          parseLocalDate(a.date).getTime() - parseLocalDate(b.date).getTime()
-        );
-        const activeEvent = sortedEvents.find(e =>
-          (e.status === 'scheduled' || e.status === 'pending') && parseLocalDate(e.date) >= new Date()
-        );
-
+      if (app.status === 'Interviewing' && sortedTimeline.length > 0) {
         const formatType = (type: string) => t(`insights.interviewTypes.${type}`, type.replace(/_/g, ' '));
 
-        if (activeEvent) {
-          interviewingSubStatus = activeEvent.type === 'custom' && activeEvent.customTypeName
-            ? activeEvent.customTypeName : formatType(activeEvent.type);
+        if (nextEvent) {
+          interviewingSubStatus = nextEvent.type === 'custom' && nextEvent.customTypeName
+            ? nextEvent.customTypeName : formatType(nextEvent.type);
         } else {
-          const completed = sortedEvents.filter(e => e.status === 'completed').reverse();
+          const completed = sortedTimeline.filter(e => e.status === 'completed').reverse();
           if (completed.length > 0) {
             interviewingSubStatus = completed[0].type === 'custom' && completed[0].customTypeName
               ? completed[0].customTypeName : formatType(completed[0].type);
@@ -155,6 +164,8 @@ export const useFilteredApplications = (applications: JobApplication[], filters:
         translatedPlatform,
         translatedWorkType,
         interviewingSubStatus,
+        sortedTimeline,
+        nextEvent,
       };
 
       newCache.set(app, result);

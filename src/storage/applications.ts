@@ -26,7 +26,7 @@ const mapStatusToStageType = (status: string): InterviewStageType => {
 /**
  * Check if an application is in legacy format
  */
-const isLegacyApplication = (app: unknown): app is LegacyJobApplication => {
+export const isLegacyApplication = (app: unknown): app is LegacyJobApplication => {
   return typeof app === 'object' && app !== null && !('timeline' in app);
 };
 
@@ -101,17 +101,11 @@ export const getApplications = (): JobApplication[] => {
       }
 
       // 2. Migrate legacy applications if needed
+      // ⚡ Bolt: Removed redundant setTimeout migration to avoid redundant localStorage
+      // operations and potential race conditions. Migration is now handled
+      // efficiently by the store during initial load.
       if (isLegacyApplication(app)) {
-        const migratedApp = migrateApplicationData(app);
-        // Save migrated data back
-        setTimeout(() => {
-          const currentApps = getApplications();
-          const updatedApps = currentApps.map((a) =>
-            a.id === migratedApp.id ? migratedApp : a
-          );
-          saveApplications(updatedApps);
-        }, 0);
-        return migratedApp;
+        return migrateApplicationData(app);
       }
       return app as JobApplication;
     });
