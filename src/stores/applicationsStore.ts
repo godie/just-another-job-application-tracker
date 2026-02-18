@@ -1,8 +1,9 @@
 // src/stores/applicationsStore.ts
 import { create } from 'zustand';
-import type { JobApplication, LegacyJobApplication } from '../types/applications';
+import type { JobApplication } from '../types/applications';
 import { generateId } from '../utils/id';
-import { getApplications, saveApplications, migrateApplicationData } from '../storage/applications';
+import { getApplications, saveApplications } from '../storage/applications';
+import { STORAGE_KEY } from '../utils/constants';
 
 interface ApplicationsState {
   applications: JobApplication[];
@@ -18,13 +19,6 @@ interface ApplicationsState {
 }
 
 /**
- * Check if an application is in legacy format
- */
-const isLegacyApplication = (app: unknown): app is LegacyJobApplication => {
-  return typeof app === 'object' && app !== null && !('timeline' in app);
-};
-
-/**
  * Zustand store for managing job applications.
  * Persistence is handled by the storage layer (src/storage/applications.ts)
  */
@@ -35,22 +29,20 @@ export const useApplicationsStore = create<ApplicationsState>()((set) => ({
   loadApplications: () => {
     set({ isLoading: true });
     try {
+      // ⚡ Bolt: getApplications() already performs migration in-memory.
+      // We just need to check if any migration occurred to persist it once.
       const apps = getApplications();
-      // Migrate legacy applications if needed
-      const migrated = apps.map((app) => {
-        if (isLegacyApplication(app)) {
-          return migrateApplicationData(app);
-        }
-        return app as JobApplication;
-      });
       
-      // Save migrated data back if any migration occurred
-      const hasLegacy = apps.some((app) => isLegacyApplication(app));
-      if (hasLegacy) {
-        saveApplications(migrated);
+      // ⚡ Bolt: Check if migration is needed by looking for legacy format in storage.
+      // This is a one-time operation during loadApplications.
+      const rawData = localStorage.getItem(STORAGE_KEY);
+      const needsMigration = rawData && !rawData.includes('"timeline":');
+
+      if (needsMigration) {
+        saveApplications(apps);
       }
       
-      set({ applications: migrated, isLoading: false });
+      set({ applications: apps, isLoading: false });
     } catch (error) {
       console.error('Error loading applications:', error);
       set({ applications: [], isLoading: false });
