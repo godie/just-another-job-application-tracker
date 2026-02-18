@@ -17,3 +17,7 @@ This journal is for CRITICAL learnings only.
 ## 2026-02-16 - Referential Stability for Derived Arrays
 **Learning:** Derived arrays calculated inside `useMemo` (like unique statuses or platforms) create new references on every dependency change, even if the content is identical. This triggers unnecessary re-renders in memoized child components.
 **Action:** Use `useRef` to store and stabilize references for derived arrays by performing a content check (e.g., `join('|')`) before updating the ref and returning it from the hook. This ensures that downstream `React.memo` components truly skip re-renders.
+
+## 2026-02-18 - Efficient Storage Migration
+**Learning:** Using `setTimeout` to persist migrated data in a storage getter creates a redundant and potentially explosive chain of operations. Moving migration persistence to a single-pass check during the initial load in the store is much more efficient.
+**Action:** Always separate data retrieval/transformation from persistence. Ensure migration happens in-memory during retrieval but is persisted once by the application's lifecycle manager (like a Zustand store).

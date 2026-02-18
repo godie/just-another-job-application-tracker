@@ -31,6 +31,78 @@ const isSameDay = (a: Date, b: Date) =>
 
 const isToday = (date: Date) => isSameDay(date, new Date());
 
+/**
+ * Maps an application status to Tailwind color classes for the calendar.
+ * Distinguishes events based on status:
+ * - Applied: blue
+ * - Interviewing: emerald (leaf)
+ * - Rejected: red
+ * - Hold: yellow
+ * - Offer: green
+ */
+const getEventStyles = (status: string, isPast: boolean) => {
+  const s = status.toLowerCase();
+  const baseClasses = 'w-full text-left text-[10px] sm:text-[11px] px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-sm border-l-2 transition';
+
+  // Status to colors mapping with full Tailwind classes to prevent purging during production builds.
+  // ⚡ Bolt: Tailwind scans for full class names in the source code.
+  const statusStyles: Record<string, { button: string; time: string; borderPast: string }> = {
+    applied: {
+      button: 'bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-500',
+      time: 'text-blue-600 font-medium',
+      borderPast: 'border-blue-300',
+    },
+    interviewing: {
+      button: 'bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border-emerald-500',
+      time: 'text-emerald-600 font-medium',
+      borderPast: 'border-emerald-300',
+    },
+    rejected: {
+      button: 'bg-red-50 hover:bg-red-100 text-red-700 border-red-500',
+      time: 'text-red-600 font-medium',
+      borderPast: 'border-red-300',
+    },
+    hold: {
+      button: 'bg-yellow-50 hover:bg-yellow-100 text-yellow-700 border-yellow-500',
+      time: 'text-yellow-600 font-medium',
+      borderPast: 'border-yellow-300',
+    },
+    offer: {
+      button: 'bg-green-50 hover:bg-green-100 text-green-700 border-green-500',
+      time: 'text-green-600 font-medium',
+      borderPast: 'border-green-300',
+    },
+    withdrawn: {
+      button: 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-500',
+      time: 'text-slate-600 font-medium',
+      borderPast: 'border-slate-300',
+    },
+    ghosted: {
+      button: 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-500',
+      time: 'text-slate-600 font-medium',
+      borderPast: 'border-slate-300',
+    },
+  };
+
+  const config = statusStyles[s] || {
+    button: 'bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border-indigo-500',
+    time: 'text-indigo-600 font-medium',
+    borderPast: 'border-indigo-300',
+  };
+
+  if (isPast) {
+    return {
+      button: `${baseClasses} bg-gray-100 hover:bg-gray-200 text-gray-700 ${config.borderPast}`,
+      time: 'text-gray-500',
+    };
+  }
+
+  return {
+    button: `${baseClasses} ${config.button}`,
+    time: config.time,
+  };
+};
+
 // Calculate days difference between two dates
 const getDaysDifference = (eventDate: Date): number => {
   const today = new Date();
@@ -172,16 +244,14 @@ const CalendarView: React.FC<CalendarViewProps> = ({ applications, onEdit }) => 
                   const daysDiff = getDaysDifference(eventDate);
                   const isPast = daysDiff < 0;
                   
+                  const styles = getEventStyles(application.status, isPast);
+
                   return (
                     <li key={event.id}>
                       <button
                         type="button"
                         onClick={() => onEdit?.(application)}
-                        className={`w-full text-left text-[10px] sm:text-[11px] px-1.5 sm:px-2 py-0.5 sm:py-1 rounded transition ${
-                          isPast
-                            ? 'bg-gray-100 hover:bg-gray-200 text-gray-700'
-                            : 'bg-indigo-50 hover:bg-indigo-100 text-indigo-700'
-                        }`}
+                        className={styles.button}
                       >
                         <span className="font-semibold block truncate">{application.position}</span>
                         <span className="block truncate capitalize">
@@ -189,11 +259,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({ applications, onEdit }) => 
                             ? event.customTypeName
                             : t(`insights.interviewTypes.${event.type}`, event.type.replace(/_/g, ' '))}
                         </span>
-                        <span
-                          className={`block truncate text-[9px] sm:text-[10px] mt-0.5 ${
-                            isPast ? 'text-gray-500' : 'text-indigo-600 font-medium'
-                          }`}
-                        >
+                        <span className={`block truncate text-[9px] sm:text-[10px] mt-0.5 ${styles.time}`}>
                           {relativeTime}
                         </span>
                       </button>

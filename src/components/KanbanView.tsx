@@ -151,11 +151,13 @@ const KanbanView: React.FC<KanbanViewProps> = ({ applications, onEdit, onDelete 
                         <span className="text-gray-500">{t('kanban.applied', { date: application.applicationDate })}</span>
                       )}
                     </div>
-                    {application.timeline && application.timeline.length > 0 && (
+                    {application.sortedTimeline && application.sortedTimeline.length > 0 && (
                       <div className="bg-indigo-50 border border-indigo-100 rounded-lg p-2">
                         <p className="text-xs text-indigo-700 font-semibold">{t('kanban.timeline')}</p>
                         <ul className="mt-1 space-y-1 text-xs text-indigo-600">
-                          {application.timeline.slice(0, 2).map((event) => (
+                          {/* ⚡ Bolt: Using pre-calculated sortedTimeline to ensure chronological order
+                              and better performance in the Kanban view. */}
+                          {application.sortedTimeline.slice(0, 2).map((event) => (
                             <li key={event.id} className="flex items-center gap-1">
                               <span className="w-2 h-2 bg-indigo-400 rounded-full"></span>
                               <span className="font-medium">
