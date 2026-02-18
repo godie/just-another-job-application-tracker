@@ -2,10 +2,11 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useGoogleLogin } from '@react-oauth/google';
-import { checkLoginStatus, setLoginStatus } from '../utils/localStorage';
+import { setLoginStatus } from '../utils/localStorage';
 import { setAuthCookieWithCode, clearAuthCookie } from '../utils/api';
 import { useAlert } from './AlertProvider';
 import { Button } from './ui';
+import { useIsLoggedIn } from '../hooks/useIsLoggedIn';
 
 interface HeaderProps {
   onToggleSidebar: () => void;
@@ -13,7 +14,7 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ onToggleSidebar }) => {
   const { t, i18n } = useTranslation();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const isLoggedIn = useIsLoggedIn();
   const [isLoading, setIsLoading] = useState(false);
   const [theme, setTheme] = useState<'light' | 'dark'>(() => {
     if (typeof window !== 'undefined') {
@@ -24,10 +25,6 @@ const Header: React.FC<HeaderProps> = ({ onToggleSidebar }) => {
   });
   const [mounted, setMounted] = useState(false);
   const { showSuccess, showError } = useAlert();
-
-  useEffect(() => {
-    setIsLoggedIn(checkLoginStatus());
-  }, []);
 
   // Initialize theme on mount - sync with what was applied by the inline script
   useEffect(() => {
@@ -74,7 +71,7 @@ const Header: React.FC<HeaderProps> = ({ onToggleSidebar }) => {
         const redirectUri = window.location.origin;
         await setAuthCookieWithCode(codeResponse.code, redirectUri);
         setLoginStatus(true);
-        setIsLoggedIn(true);
+        window.dispatchEvent(new Event('storage'));
         showSuccess("Successful Login with Google!");
       } catch (error) {
         console.error("Error storing auth cookie:", error);
@@ -101,13 +98,13 @@ const Header: React.FC<HeaderProps> = ({ onToggleSidebar }) => {
         
         // Clear localStorage
         setLoginStatus(false);
-        setIsLoggedIn(false);
+        window.dispatchEvent(new Event('storage'));
         showSuccess("Logged out successfully!");
       } catch (error) {
         console.error("Error clearing auth cookie:", error);
         // Still clear localStorage even if backend call fails
         setLoginStatus(false);
-        setIsLoggedIn(false);
+        window.dispatchEvent(new Event('storage'));
         showError("Logged out (some credentials may remain on server).");
       } finally {
         setIsLoading(false);
@@ -209,6 +206,7 @@ const Header: React.FC<HeaderProps> = ({ onToggleSidebar }) => {
             aria-checked={theme === 'dark'}
             aria-label="Toggle theme"
             data-testid="theme-toggle"
+            suppressHydrationWarning
           >
             <span
               className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${

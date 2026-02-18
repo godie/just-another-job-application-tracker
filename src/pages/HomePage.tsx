@@ -2,10 +2,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import Footer from '../components/Footer';
-import ApplicationTable from '../components/ApplicationTable';
-import TimelineView from '../components/TimelineView';
-import KanbanView from '../components/KanbanView';
-import CalendarView from '../components/CalendarView';
 import ViewSwitcher, { type ViewType } from '../components/ViewSwitcher';
 import FiltersBar, { type Filters } from '../components/FiltersBar';
 import MetricsSummary from '../components/MetricsSummary';
@@ -21,6 +17,7 @@ import packageJson from '../../package.json';
 import { useApplicationsStore } from '../stores/applicationsStore';
 import { usePreferencesStore } from '../stores/preferencesStore';
 import { useFilteredApplications } from '../hooks/useFilteredApplications';
+import CurrentViewRenderer from '../components/CurrentViewRenderer';
 
 const VIEW_STORAGE_KEY = 'preferredView';
 const FILTERS_STORAGE_KEY = 'applicationFilters';
@@ -70,7 +67,6 @@ const HomePageContent: React.FC<HomePageContentProps> = () => {
     const handleMessage = (event: MessageEvent) => {
       if (event.data && event.data.type === 'JOB_OPPORTUNITY_SYNC') {
         // New opportunity added from extension
-        // Refresh applications count in header will be handled automatically
         showSuccess(t('home.success.captured'));
       }
     };
@@ -149,11 +145,6 @@ const HomePageContent: React.FC<HomePageContentProps> = () => {
     deleteApplication(appToDelete.id);
     
     // Show success message
-    // ⚡ Bolt: By passing the full application object from the child component,
-    // we avoid searching the `applications` array here. This allows us to remove
-    // `applications` from the useCallback dependency array, stabilizing this
-    // function and preventing unnecessary re-renders of child components like
-    // ApplicationTable, KanbanView, and TimelineView.
     showSuccess(t('home.success.deleted', { position: appToDelete.position, company: appToDelete.company }));
   }, [deleteApplication, showSuccess, t]);
 
@@ -167,8 +158,6 @@ const HomePageContent: React.FC<HomePageContentProps> = () => {
   const handleCancel = () => {
     setCurrentApplication(null);
   }
-
-  //useKeyboardEscape(handleCancel, isFormOpen);
 
   const {
     filteredApplications,
@@ -202,43 +191,6 @@ const HomePageContent: React.FC<HomePageContentProps> = () => {
       .map((id) => fieldById.get(id))
       .filter((column): column is TableColumn => Boolean(column));
   }, [preferences, t]);
-
-  const renderCurrentView = () => {
-    switch (currentView) {
-      case 'timeline':
-        return (
-          <TimelineView
-            applications={filteredApplications}
-            onEdit={handleEdit}
-            onDelete={handleDeleteEntry}
-          />
-        );
-      case 'kanban':
-        return (
-          <KanbanView
-            applications={filteredApplications}
-            onEdit={handleEdit}
-            onDelete={handleDeleteEntry}
-          />
-        );
-      case 'calendar':
-        return (
-          <CalendarView
-            applications={filteredApplications}
-            onEdit={handleEdit}
-          />
-        );
-      case 'table':
-      default:
-        return (
-          <ApplicationTable
-            columns={tableColumns} 
-            data={filteredApplications}
-            onEdit={handleEdit}
-            onDelete={handleDeleteEntry} />
-        );
-    }
-  };
 
   return (
     <div className="max-w-7xl mx-auto">
@@ -291,7 +243,13 @@ const HomePageContent: React.FC<HomePageContentProps> = () => {
           </div>
           
           {/* Current View */}
-          {renderCurrentView()}
+          <CurrentViewRenderer
+            currentView={currentView}
+            filteredApplications={filteredApplications}
+            tableColumns={tableColumns}
+            onEdit={handleEdit}
+            onDelete={handleDeleteEntry}
+          />
         <Footer version={packageJson.version} />
         {isFormOpen && (
           <AddJobForm 

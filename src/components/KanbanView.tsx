@@ -128,6 +128,15 @@ const KanbanView: React.FC<KanbanViewProps> = ({ applications, onEdit, onDelete 
                   key={application.id}
                   className="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition cursor-pointer"
                   onClick={() => onEdit?.(application)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      onEdit?.(application);
+                    }
+                  }}
+                  role="button"
+                  tabIndex={0}
+                  aria-label={t('kanban.editApp', { position: application.position, company: application.company })}
                 >
                   <div className="p-4 space-y-2">
                     <div>
