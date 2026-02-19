@@ -141,23 +141,40 @@ const CalendarView: React.FC<CalendarViewProps> = ({ applications, onEdit }) => 
     const startDay = new Date(start);
     startDay.setDate(start.getDate() - start.getDay());
 
+    // ⚡ Bolt: Pre-group events by date to avoid O(N*M) complexity in the calendar loop.
+    // This reduces the complexity from O(42 * total_events) to O(total_events + 42)
+    // and eliminates thousands of redundant parseLocalDate/isSameDay calls.
+    const eventsByDate = new Map<string, { application: ApplicationWithMetadata; event: InterviewEvent }[]>();
+
+    applications.forEach((application) => {
+      // Using pre-calculated sortedTimeline from useFilteredApplications for consistency.
+      const timeline = application.sortedTimeline || application.timeline || [];
+      timeline.forEach((event) => {
+        if (!event.date) return;
+
+        // Normalize the event date to a YYYY-MM-DD key for the Map.
+        // We use parseLocalDate to handle various date formats correctly.
+        const d = parseLocalDate(event.date);
+        if (isNaN(d.getTime())) return;
+
+        const dateKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+
+        if (!eventsByDate.has(dateKey)) {
+          eventsByDate.set(dateKey, []);
+        }
+        eventsByDate.get(dateKey)!.push({ application, event });
+      });
+    });
+
     const days: CalendarDay[] = [];
 
     for (let i = 0; i < 42; i += 1) {
       const current = new Date(startDay);
       current.setDate(startDay.getDate() + i);
 
-      const eventsForDay: CalendarDay['events'] = [];
-
-      applications.forEach((application) => {
-        application.timeline?.forEach((event) => {
-          if (!event.date) return;
-          const eventDate = parseLocalDate(event.date);
-          if (isSameDay(eventDate, current)) {
-            eventsForDay.push({ application, event });
-          }
-        });
-      });
+      // Generate the same YYYY-MM-DD key format for O(1) Map lookup.
+      const dateKey = `${current.getFullYear()}-${String(current.getMonth() + 1).padStart(2, '0')}-${String(current.getDate()).padStart(2, '0')}`;
+      const eventsForDay = eventsByDate.get(dateKey) || [];
 
       days.push({
         date: current,

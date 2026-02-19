@@ -21,3 +21,7 @@ This journal is for CRITICAL learnings only.
 ## 2026-02-18 - Efficient Storage Migration
 **Learning:** Using `setTimeout` to persist migrated data in a storage getter creates a redundant and potentially explosive chain of operations. Moving migration persistence to a single-pass check during the initial load in the store is much more efficient.
 **Action:** Always separate data retrieval/transformation from persistence. Ensure migration happens in-memory during retrieval but is persisted once by the application's lifecycle manager (like a Zustand store).
+
+## 2026-02-19 - Calendar Event Indexing
+**Learning:** The CalendarView was performing redundant O(N*M) lookups inside a 42-iteration loop (for the 42 days in the grid). By pre-grouping events into a Map keyed by date strings, we reduced complexity to O(N*M + 42).
+**Action:** Always look for nested iterations in UI components that render time-based grids or lists (Calendar, Gantt charts, etc.) and use pre-calculated Maps for O(1) lookups during the render phase.
