@@ -117,7 +117,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
         <h2 className="text-3xl font-bold text-center mb-16">{t('landing.roadmap')}</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {roadmapItems.map((item, i) => (
-            <div key={i} className="border border-indigo-100 dark:border-gray-700 p-6 rounded-xl bg-indigo-50/30 dark:bg-gray-800/50">
+            <div key={item} className="border border-indigo-100 dark:border-gray-700 p-6 rounded-xl bg-indigo-50/30 dark:bg-gray-800/50">
               <div className="text-indigo-600 dark:text-indigo-400 font-bold mb-2">0{i+1}</div>
               <p className="font-medium">{item}</p>
             </div>

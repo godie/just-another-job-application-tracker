@@ -90,7 +90,7 @@ const AddJobForm: React.FC<AddJobFormProps> = ({ onSave, onCancel, initialData }
   };
   
   const [formData, setFormData] = useState<Omit<JobApplication, 'id'> | JobApplication>(
-    getInitialFormData()
+    () => getInitialFormData()
   );
   
   useKeyboardEscape(onCancel, true);

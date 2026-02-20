@@ -1,6 +1,6 @@
 // src/components/GoogleSheetsSync.tsx
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useReducer, useEffect, useCallback, useRef } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import { useAlert } from './AlertProvider';
 import { checkLoginStatus } from '../utils/localStorage';
@@ -9,44 +9,91 @@ import {
   syncToGoogleSheets,
   getSyncStatus,
   getStoredSpreadsheetId,
-  formatLastSyncTime,
   setSpreadsheetId,
   type SyncStatus,
 } from '../utils/googleSheets';
 import type { JobApplication } from '../utils/localStorage';
+import SyncStatusInfo from './SyncStatusInfo';
+import SyncActions from './SyncActions';
 
 interface GoogleSheetsSyncProps {
   applications: JobApplication[];
   onSyncComplete?: () => void;
 }
 
+interface GoogleSheetsSyncState {
+  isLoggedIn: boolean;
+  syncStatus: SyncStatus;
+  isCreatingSheet: boolean;
+  isSyncing: boolean;
+  spreadsheetUrl: string | null;
+  showSelectSheet: boolean;
+  sheetIdInput: string;
+  isSettingSheet: boolean;
+}
+
+type GoogleSheetsSyncAction =
+  | { type: 'SET_FIELD'; field: keyof GoogleSheetsSyncState; value: boolean | string | SyncStatus | null }
+  | { type: 'UPDATE_STATUS'; isLoggedIn: boolean; syncStatus: SyncStatus; spreadsheetUrl: string | null };
+
+const googleSheetsSyncReducer = (state: GoogleSheetsSyncState, action: GoogleSheetsSyncAction): GoogleSheetsSyncState => {
+  switch (action.type) {
+    case 'SET_FIELD':
+      return { ...state, [action.field]: action.value };
+    case 'UPDATE_STATUS':
+      return {
+        ...state,
+        isLoggedIn: action.isLoggedIn,
+        syncStatus: action.syncStatus,
+        spreadsheetUrl: action.spreadsheetUrl,
+      };
+    default:
+      return state;
+  }
+};
+
 const GoogleSheetsSync: React.FC<GoogleSheetsSyncProps> = ({ applications, onSyncComplete }) => {
   const { t } = useTranslation();
   // ⚡ Bolt: Use ref to store the latest applications without causing re-renders
-  // This allows handleSync to always use the most recent data without
-  // the component needing to re-render when applications array reference changes
   const applicationsRef = useRef(applications);
   applicationsRef.current = applications;
   const { showSuccess, showError } = useAlert();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [syncStatus, setSyncStatus] = useState<SyncStatus>(getSyncStatus());
-  const [isCreatingSheet, setIsCreatingSheet] = useState(false);
-  const [isSyncing, setIsSyncing] = useState(false);
-  const [spreadsheetUrl, setSpreadsheetUrl] = useState<string | null>(null);
-  const [showSelectSheet, setShowSelectSheet] = useState(false);
-  const [sheetIdInput, setSheetIdInput] = useState('');
-  const [isSettingSheet, setIsSettingSheet] = useState(false);
+
+  const [state, dispatch] = useReducer(googleSheetsSyncReducer, undefined, () => ({
+    isLoggedIn: false,
+    syncStatus: getSyncStatus(),
+    isCreatingSheet: false,
+    isSyncing: false,
+    spreadsheetUrl: null,
+    showSelectSheet: false,
+    sheetIdInput: '',
+    isSettingSheet: false,
+  }));
+
+  const {
+    isLoggedIn,
+    syncStatus,
+    isCreatingSheet,
+    isSyncing,
+    spreadsheetUrl,
+    showSelectSheet,
+    sheetIdInput,
+    isSettingSheet,
+  } = state;
 
   useEffect(() => {
     const updateStatus = () => {
-      setIsLoggedIn(checkLoginStatus());
-      setSyncStatus(getSyncStatus());
-      
-      // Load spreadsheet URL if ID exists
+      const loggedIn = checkLoginStatus();
+      const status = getSyncStatus();
       const spreadsheetId = getStoredSpreadsheetId();
-      if (spreadsheetId) {
-        setSpreadsheetUrl(`https://docs.google.com/spreadsheets/d/${spreadsheetId}`);
-      }
+      const url = spreadsheetId ? `https://docs.google.com/spreadsheets/d/${spreadsheetId}` : null;
+
+      dispatch({
+        type: 'UPDATE_STATUS',
+        isLoggedIn: loggedIn,
+        syncStatus: status,
+        spreadsheetUrl: url,
+      });
     };
 
     updateStatus();
@@ -69,38 +116,6 @@ const GoogleSheetsSync: React.FC<GoogleSheetsSyncProps> = ({ applications, onSyn
     };
   }, []);
 
-  const handleCreateSheet = async () => {
-    if (!isLoggedIn) {
-      showError(t('sheets.loginFirst'));
-      return;
-    }
-
-    setIsCreatingSheet(true);
-    try {
-      const sheetInfo = await createSpreadsheet('Job Application Tracker');
-      setSpreadsheetUrl(sheetInfo.spreadsheetUrl);
-      showSuccess(t('sheets.spreadsheetCreated'));
-      
-      // Open spreadsheet in new tab
-      window.open(sheetInfo.spreadsheetUrl, '_blank');
-      
-      // Auto-sync after creation
-      setTimeout(() => {
-        handleSync();
-      }, 1000);
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : t('sheets.setError');
-      showError(errorMessage);
-      console.error('Error creating spreadsheet:', error);
-    } finally {
-      setIsCreatingSheet(false);
-    }
-  };
-
-  // ⚡ Bolt: Memoize handleSync to prevent recreation on every render
-  // Use applicationsRef.current to always get the latest applications without
-  // causing re-renders when the applications prop changes
-  // Read isLoggedIn directly from checkLoginStatus() to avoid dependency on state
   const handleSync = useCallback(async () => {
     // Check login status directly instead of using state to avoid unnecessary recreations
     if (!checkLoginStatus()) {
@@ -114,11 +129,11 @@ const GoogleSheetsSync: React.FC<GoogleSheetsSyncProps> = ({ applications, onSyn
       return;
     }
 
-    setIsSyncing(true);
+    dispatch({ type: 'SET_FIELD', field: 'isSyncing', value: true });
     try {
       // Use ref to get latest applications without dependency on applications prop
       const result = await syncToGoogleSheets(applicationsRef.current, spreadsheetId);
-      setSyncStatus(getSyncStatus());
+      dispatch({ type: 'SET_FIELD', field: 'syncStatus', value: getSyncStatus() });
       showSuccess(t('sheets.syncSuccess', { count: result.rowsSynced }));
       
       if (onSyncComplete) {
@@ -128,11 +143,39 @@ const GoogleSheetsSync: React.FC<GoogleSheetsSyncProps> = ({ applications, onSyn
       const errorMessage = error instanceof Error ? error.message : t('sheets.syncError');
       showError(errorMessage);
       console.error('Error syncing to Google Sheets:', error);
-      setSyncStatus(getSyncStatus());
+      dispatch({ type: 'SET_FIELD', field: 'syncStatus', value: getSyncStatus() });
     } finally {
-      setIsSyncing(false);
+      dispatch({ type: 'SET_FIELD', field: 'isSyncing', value: false });
     }
   }, [showError, showSuccess, onSyncComplete, t]);
+
+  const handleCreateSheet = async () => {
+    if (!checkLoginStatus()) {
+      showError(t('sheets.loginFirst'));
+      return;
+    }
+
+    dispatch({ type: 'SET_FIELD', field: 'isCreatingSheet', value: true });
+    try {
+      const sheetInfo = await createSpreadsheet('Job Application Tracker');
+      dispatch({ type: 'SET_FIELD', field: 'spreadsheetUrl', value: sheetInfo.spreadsheetUrl });
+      showSuccess(t('sheets.spreadsheetCreated'));
+
+      // Open spreadsheet in new tab
+      window.open(sheetInfo.spreadsheetUrl, '_blank');
+
+      // Auto-sync after creation
+      setTimeout(() => {
+        handleSync();
+      }, 1000);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : t('sheets.setError');
+      showError(errorMessage);
+      console.error('Error creating spreadsheet:', error);
+    } finally {
+      dispatch({ type: 'SET_FIELD', field: 'isCreatingSheet', value: false });
+    }
+  };
 
   const handleOpenSheet = () => {
     if (spreadsheetUrl) {
@@ -146,12 +189,12 @@ const GoogleSheetsSync: React.FC<GoogleSheetsSyncProps> = ({ applications, onSyn
       return;
     }
 
-    setIsSettingSheet(true);
+    dispatch({ type: 'SET_FIELD', field: 'isSettingSheet', value: true });
     try {
       const sheetInfo = await setSpreadsheetId(sheetIdInput);
-      setSpreadsheetUrl(sheetInfo.spreadsheetUrl);
-      setShowSelectSheet(false);
-      setSheetIdInput('');
+      dispatch({ type: 'SET_FIELD', field: 'spreadsheetUrl', value: sheetInfo.spreadsheetUrl });
+      dispatch({ type: 'SET_FIELD', field: 'showSelectSheet', value: false });
+      dispatch({ type: 'SET_FIELD', field: 'sheetIdInput', value: '' });
       showSuccess(t('sheets.selectSuccess', { title: sheetInfo.title }));
       
       // Auto-sync after selection
@@ -163,13 +206,13 @@ const GoogleSheetsSync: React.FC<GoogleSheetsSyncProps> = ({ applications, onSyn
       showError(errorMessage);
       console.error('Error setting spreadsheet:', error);
     } finally {
-      setIsSettingSheet(false);
+      dispatch({ type: 'SET_FIELD', field: 'isSettingSheet', value: false });
     }
   };
 
   const handleChangeSheet = () => {
-    setShowSelectSheet(true);
-    setSheetIdInput('');
+    dispatch({ type: 'SET_FIELD', field: 'showSelectSheet', value: true });
+    dispatch({ type: 'SET_FIELD', field: 'sheetIdInput', value: '' });
   };
 
   if (!isLoggedIn) {
@@ -188,113 +231,50 @@ const GoogleSheetsSync: React.FC<GoogleSheetsSyncProps> = ({ applications, onSyn
   const isLoading = isCreatingSheet || isSyncing || isSettingSheet;
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg p-4 mb-4 shadow-sm">
+    <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 mb-4 shadow-sm">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex-1">
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('sheets.title')}</h3>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">{t('sheets.title')}</h3>
           
-          {hasSpreadsheet ? (
-            <div className="space-y-1">
-              <p className="text-sm text-gray-600">
-                <span className="font-medium">{t('sheets.status')}:</span>{' '}
-                {syncStatus.lastSyncError ? (
-                  <span className="text-red-600">{t('common.status')}: {syncStatus.lastSyncError}</span>
-                ) : syncStatus.lastSyncTime ? (
-                  <span className="text-green-600">{t('sheets.synced', { time: formatLastSyncTime(syncStatus.lastSyncTime) })}</span>
-                ) : (
-                  <span className="text-gray-500">{t('sheets.notSynced')}</span>
-                )}
-              </p>
-              {spreadsheetUrl && (
-                <div className="flex gap-3 items-center">
-                  <button
-                    onClick={handleOpenSheet}
-                    className="text-sm text-blue-600 hover:text-blue-800 underline"
-                    type="button"
-                  >
-                    {t('sheets.openSheet')}
-                  </button>
-                  <button
-                    onClick={handleChangeSheet}
-                    className="text-sm text-gray-600 hover:text-gray-800 underline"
-                    type="button"
-                  >
-                    {t('sheets.changeSheet')}
-                  </button>
-                </div>
-              )}
-            </div>
-          ) : (
-            <p className="text-sm text-gray-600">
-              {t('sheets.createSheetDesc')}
-            </p>
-          )}
+          <SyncStatusInfo
+            hasSpreadsheet={hasSpreadsheet}
+            syncStatus={syncStatus}
+            spreadsheetUrl={spreadsheetUrl}
+            onOpenSheet={handleOpenSheet}
+            onChangeSheet={handleChangeSheet}
+          />
         </div>
 
-        <div className="flex gap-2">
-          {!hasSpreadsheet ? (
-            <>
-              <button
-                onClick={handleCreateSheet}
-                disabled={isLoading}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                  isLoading
-                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                    : 'bg-green-600 hover:bg-green-700 text-white'
-                }`}
-                type="button"
-              >
-                {isCreatingSheet ? t('sheets.creating') : t('sheets.createSheet')}
-              </button>
-              <button
-                onClick={() => setShowSelectSheet(true)}
-                disabled={isLoading}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors border ${
-                  isLoading
-                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed border-gray-300'
-                    : 'bg-white hover:bg-gray-50 text-gray-700 border-gray-300'
-                }`}
-                type="button"
-              >
-                {t('sheets.selectExisting')}
-              </button>
-            </>
-          ) : (
-            <button
-              onClick={handleSync}
-              disabled={isLoading}
-              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                isLoading
-                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                  : 'bg-blue-600 hover:bg-blue-700 text-white'
-              }`}
-              type="button"
-            >
-              {isSyncing ? t('sheets.syncing') : t('sheets.syncNow')}
-            </button>
-          )}
-        </div>
+        <SyncActions
+          hasSpreadsheet={hasSpreadsheet}
+          isLoading={isLoading}
+          isCreatingSheet={isCreatingSheet}
+          isSyncing={isSyncing}
+          onCreateSheet={handleCreateSheet}
+          onSelectExisting={() => dispatch({ type: 'SET_FIELD', field: 'showSelectSheet', value: true })}
+          onSync={handleSync}
+        />
       </div>
 
       {showSelectSheet && (
-        <div className="mt-4 p-4 bg-gray-50 border border-gray-200 rounded-lg">
-          <h4 className="text-sm font-semibold text-gray-900 mb-2">{t('sheets.selectTitle')}</h4>
-          <p className="text-xs text-gray-600 mb-3">
+        <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg">
+          <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-2">{t('sheets.selectTitle')}</h4>
+          <p className="text-xs text-gray-600 dark:text-gray-400 mb-3">
             {t('sheets.selectDesc')}
           </p>
           <div className="flex gap-2">
             <input
               type="text"
               value={sheetIdInput}
-              onChange={(e) => setSheetIdInput(e.target.value)}
+              onChange={(e) => dispatch({ type: 'SET_FIELD', field: 'sheetIdInput', value: e.target.value })}
               placeholder={t('sheets.placeholder')}
-              className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
                   handleSelectExistingSheet();
                 } else if (e.key === 'Escape') {
-                  setShowSelectSheet(false);
-                  setSheetIdInput('');
+                  dispatch({ type: 'SET_FIELD', field: 'showSelectSheet', value: false });
+                  dispatch({ type: 'SET_FIELD', field: 'sheetIdInput', value: '' });
                 }
               }}
             />
@@ -312,26 +292,26 @@ const GoogleSheetsSync: React.FC<GoogleSheetsSyncProps> = ({ applications, onSyn
             </button>
             <button
               onClick={() => {
-                setShowSelectSheet(false);
-                setSheetIdInput('');
+                dispatch({ type: 'SET_FIELD', field: 'showSelectSheet', value: false });
+                dispatch({ type: 'SET_FIELD', field: 'sheetIdInput', value: '' });
               }}
               disabled={isSettingSheet}
-              className="px-4 py-2 rounded-lg font-medium text-sm bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 transition-colors"
+              className="px-4 py-2 rounded-lg font-medium text-sm bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 transition-colors"
               type="button"
             >
               {t('common.cancel')}
             </button>
           </div>
-          <p className="text-xs text-gray-500 mt-2">
-            Example: <code className="bg-gray-200 px-1 rounded">1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms</code>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+            Example: <code className="bg-gray-200 dark:bg-gray-600 px-1 rounded">1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms</code>
             <br />
-            Or: <code className="bg-gray-200 px-1 rounded">https://docs.google.com/spreadsheets/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms</code>
+            Or: <code className="bg-gray-200 dark:bg-gray-600 px-1 rounded">https://docs.google.com/spreadsheets/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms</code>
           </p>
         </div>
       )}
 
       {syncStatus.lastSyncError && (
-        <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded text-sm text-red-800">
+        <div className="mt-3 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded text-sm text-red-800 dark:text-red-300">
           <strong>{t('sheets.error')}:</strong> {syncStatus.lastSyncError}
         </div>
       )}
@@ -339,8 +319,6 @@ const GoogleSheetsSync: React.FC<GoogleSheetsSyncProps> = ({ applications, onSyn
   );
 };
 
-// ⚡ Bolt: Memoize component to prevent re-renders when applications array reference changes
-// but content is the same. Only re-render if applications length or IDs change.
 export default React.memo(GoogleSheetsSync, (prevProps, nextProps) => {
   // Re-render if applications count changed
   if (prevProps.applications.length !== nextProps.applications.length) {

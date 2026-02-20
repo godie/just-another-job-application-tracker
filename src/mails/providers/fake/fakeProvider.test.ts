@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import FakeEmailProvider from './fakeProvider';
+import { FakeEmailProvider } from './fakeProvider';
 import { FAKE_MESSAGES } from './fakeData';
 
 describe('FakeEmailProvider', () => {

@@ -1,5 +1,5 @@
 // src/components/TimelineEditor.tsx
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useReducer } from 'react';
 import type { InterviewEvent, InterviewStageType, EventStatus } from '../utils/localStorage';
 import { generateId } from '../utils/localStorage';
 import { parseLocalDate } from '../utils/date';
@@ -194,46 +194,73 @@ interface EventFormProps {
   onCancel: () => void;
 }
 
-const EventForm: React.FC<EventFormProps> = ({ event, stageOptions, statusOptions, onSave, onCancel }) => {
-  // Initialize state: if event has customTypeName, find matching custom event option
-  const getInitialType = (): InterviewStageType | string => {
-    if (event?.customTypeName) {
-      const customOption = stageOptions.find(opt => opt.isCustom && opt.label === event.customTypeName);
-      if (customOption) {
-        return customOption.value;
-      }
-    }
-    return event?.type || 'application_submitted';
-  };
+interface EventFormState {
+  type: InterviewStageType | string;
+  date: string;
+  status: EventStatus;
+  notes: string;
+  customType: string;
+  interviewerName: string;
+}
 
-  const [type, setType] = useState<InterviewStageType | string>(getInitialType());
-  const [date, setDate] = useState(event?.date || '');
-  const [status, setStatus] = useState<EventStatus>(event?.status || 'scheduled');
-  const [notes, setNotes] = useState(event?.notes || '');
-  const [customType, setCustomType] = useState(event?.customTypeName || '');
-  const [interviewerName, setInterviewerName] = useState(event?.interviewerName || '');
+type EventFormAction =
+  | { type: 'SET_FIELD'; field: keyof EventFormState; value: string | EventStatus }
+  | { type: 'SET_TYPE'; value: string; customLabel?: string };
+
+const eventFormReducer = (state: EventFormState, action: EventFormAction): EventFormState => {
+  switch (action.type) {
+    case 'SET_FIELD':
+      return { ...state, [action.field]: action.value };
+    case 'SET_TYPE':
+      return { ...state, type: action.value, customType: action.customLabel ?? (action.value === 'custom' ? state.customType : '') };
+    default:
+      return state;
+  }
+};
+
+const EventForm: React.FC<EventFormProps> = ({ event, stageOptions, statusOptions, onSave, onCancel }) => {
+  const [state, dispatch] = useReducer(eventFormReducer, undefined, () => {
+    const getInitialType = (): InterviewStageType | string => {
+      if (event?.customTypeName) {
+        const customOption = stageOptions.find(opt => opt.isCustom && opt.label === event.customTypeName);
+        if (customOption) {
+          return customOption.value;
+        }
+      }
+      return event?.type || 'application_submitted';
+    };
+
+    return {
+      type: getInitialType(),
+      date: event?.date || '',
+      status: event?.status || 'scheduled',
+      notes: event?.notes || '',
+      customType: event?.customTypeName || '',
+      interviewerName: event?.interviewerName || '',
+    };
+  });
+
+  const { type, date, status, notes, customType, interviewerName } = state;
 
   // Handle type change: if it's a custom event (custom:${id}), extract the label
   const handleTypeChange = (newTypeValue: string) => {
-    setType(newTypeValue);
+    let customLabel: string | undefined;
     
     if (newTypeValue.startsWith('custom:')) {
-      // It's a custom event from user preferences
       const customOption = stageOptions.find(opt => opt.value === newTypeValue);
       if (customOption) {
-        setCustomType(customOption.label);
+        customLabel = customOption.label;
       }
     } else if (newTypeValue === 'custom') {
-      // It's the generic 'custom' option, keep customType as is (or empty)
-      // Don't clear it in case user wants to edit an existing custom event
+      customLabel = state.customType;
     } else {
-      // It's a standard event type, clear customType
-      setCustomType('');
+      customLabel = '';
     }
+
+    dispatch({ type: 'SET_TYPE', value: newTypeValue, customLabel });
   };
 
   const handleSave = () => {
-    // If type is a custom event (custom:${id}), use 'custom' as the type and the label as customTypeName
     const finalType: InterviewStageType = type.startsWith('custom:') ? 'custom' : (type as InterviewStageType);
     const finalCustomType = type.startsWith('custom:') || type === 'custom' ? customType : undefined;
     onSave(finalType, date, status, notes, interviewerName, finalCustomType);
@@ -264,7 +291,7 @@ const EventForm: React.FC<EventFormProps> = ({ event, stageOptions, statusOption
             id="event-date"
             type="date"
             value={date}
-            onChange={(e) => setDate(e.target.value)}
+            onChange={(e) => dispatch({ type: 'SET_FIELD', field: 'date', value: e.target.value })}
             required
             className="w-full text-sm rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border"
           />
@@ -275,7 +302,7 @@ const EventForm: React.FC<EventFormProps> = ({ event, stageOptions, statusOption
           <select
             id="event-status"
             value={status}
-            onChange={(e) => setStatus(e.target.value as EventStatus)}
+            onChange={(e) => dispatch({ type: 'SET_FIELD', field: 'status', value: e.target.value as EventStatus })}
             className="w-full text-sm rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border"
           >
             {statusOptions.map(opt => (
@@ -294,7 +321,7 @@ const EventForm: React.FC<EventFormProps> = ({ event, stageOptions, statusOption
             id="custom-type-name"
             type="text"
             value={customType}
-            onChange={(e) => setCustomType(e.target.value)}
+            onChange={(e) => dispatch({ type: 'SET_FIELD', field: 'customType', value: e.target.value })}
             placeholder="Enter custom event name"
             disabled={type.startsWith('custom:')}
             className={`w-full text-sm rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border ${
@@ -314,7 +341,7 @@ const EventForm: React.FC<EventFormProps> = ({ event, stageOptions, statusOption
         <textarea
           id="event-notes"
           value={notes}
-          onChange={(e) => setNotes(e.target.value)}
+          onChange={(e) => dispatch({ type: 'SET_FIELD', field: 'notes', value: e.target.value })}
           rows={2}
           className="w-full text-sm rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border"
         />
@@ -326,7 +353,7 @@ const EventForm: React.FC<EventFormProps> = ({ event, stageOptions, statusOption
           id="interviewer-name"
           type="text"
           value={interviewerName}
-          onChange={(e) => setInterviewerName(e.target.value)}
+          onChange={(e) => dispatch({ type: 'SET_FIELD', field: 'interviewerName', value: e.target.value })}
           placeholder="John Doe"
           className="w-full text-sm rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border"
         />

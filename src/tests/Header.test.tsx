@@ -4,6 +4,7 @@ import Header from '../components/Header';
 import { AlertProvider } from '../components/AlertProvider';
 import * as localStorageUtils from '../utils/localStorage';
 import * as api from '../utils/api';
+import { useIsLoggedIn } from '../hooks/useIsLoggedIn';
 
 
 // =========================================================================
@@ -26,6 +27,10 @@ const renderWithProviders = (ui: React.ReactElement) => {
 
 // Mock function for sidebar toggle
 const mockToggleSidebar = vi.fn();
+
+vi.mock('../hooks/useIsLoggedIn', () => ({
+  useIsLoggedIn: vi.fn(),
+}));
 
 // Mock the module that provides the utility functions
 vi.mock('../utils/localStorage', () => {
@@ -72,6 +77,7 @@ describe('Header Component', () => {
     vi.clearAllMocks();
     Object.keys(localStorageStore).forEach(key => delete localStorageStore[key]);
     localStorageStore['isLoggedIn'] = 'false'; // Default to logged out
+    vi.mocked(useIsLoggedIn).mockReturnValue(false);
     mockGoogleLogin.mockClear();
     mockToggleSidebar.mockClear();
     // Reset theme in localStorage
@@ -150,6 +156,7 @@ describe('Header Component', () => {
 
   test('should render Logout button when initially logged in', () => {
     localStorageStore['isLoggedIn'] = 'true';
+    vi.mocked(useIsLoggedIn).mockReturnValue(true);
     renderWithProviders(<Header onToggleSidebar={mockToggleSidebar} />);
     const logoutButton = screen.getByTestId('login-button');
     expect(logoutButton).toHaveTextContent('Logout');
@@ -160,6 +167,7 @@ describe('Header Component', () => {
 
   test('Logout action should call setLoginStatus(false)', async () => {
     localStorageStore['isLoggedIn'] = 'true';
+    vi.mocked(useIsLoggedIn).mockReturnValue(true);
     renderWithProviders(<Header onToggleSidebar={mockToggleSidebar} />);
     
     const logoutButton = screen.getByTestId('login-button');

@@ -1,6 +1,6 @@
 // src/pages/InsightsPage.test.tsx
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import InsightsPage from './InsightsPage';
 import type { JobApplication } from '../types/applications';
@@ -71,6 +71,14 @@ vi.mock('recharts', async () => {
   };
 });
 
+vi.mock('../components/StatusBarChart', () => ({
+  default: () => <div>Applications by Status</div>
+}));
+
+vi.mock('../components/InterviewBarChart', () => ({
+  default: ({ title }: { title: string }) => <div>{title}</div>
+}));
+
 describe('InsightsPage', () => {
   afterEach(() => {
     vi.clearAllMocks();
@@ -96,15 +104,19 @@ describe('InsightsPage', () => {
     expect(rejectionPercentageTitle.nextElementSibling).toHaveTextContent('33.33%');
   });
 
-  it('renders both charts', () => {
+  it('renders both charts', async () => {
     render(<InsightsPage />);
-    expect(screen.getByText('Applications by Status')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText('Applications by Status')).toBeInTheDocument();
+    });
     expect(screen.getByText('Interviews by Application Status')).toBeInTheDocument();
   });
 
-  it('renders interviews by type chart when interview events exist', () => {
+  it('renders interviews by type chart when interview events exist', async () => {
     render(<InsightsPage />);
     // The "Interviews by Type" chart should appear when there are interview events
-    expect(screen.getByText('Interviews by Type')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText('Interviews by Type')).toBeInTheDocument();
+    });
   });
 });
