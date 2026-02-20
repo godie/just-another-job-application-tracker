@@ -32,6 +32,12 @@ const isSameDay = (a: Date, b: Date) =>
 const isToday = (date: Date) => isSameDay(date, new Date());
 
 /**
+ * Formats a Date object into a YYYY-MM-DD string for map keying.
+ */
+const formatDateKey = (date: Date): string =>
+  `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+
+/**
  * Maps an application status to Tailwind color classes for the calendar.
  * Distinguishes events based on status:
  * - Applied: blue
@@ -143,26 +149,38 @@ const CalendarView: React.FC<CalendarViewProps> = ({ applications, onEdit }) => 
 
     const days: CalendarDay[] = [];
 
+    // ⚡ Bolt: Pre-group events by date string (YYYY-MM-DD) for O(1) lookup.
+    // This optimization replaces a nested loop (O(42 * Apps * Events)) with a
+    // single pass over all events (O(Apps * Events)) plus a flat grid loop (O(42)).
+    // It significantly improves performance for users with many applications.
+    const eventsByDate = new Map<string, { application: ApplicationWithMetadata; event: InterviewEvent }[]>();
+
+    applications.forEach((application) => {
+      application.timeline?.forEach((event) => {
+        if (!event.date) return;
+
+        // ⚡ Bolt: Normalize date using parseLocalDate for robustness, then format as YYYY-MM-DD
+        const dateObj = parseLocalDate(event.date);
+        const dateKey = formatDateKey(dateObj);
+
+        if (!eventsByDate.has(dateKey)) {
+          eventsByDate.set(dateKey, []);
+        }
+        eventsByDate.get(dateKey)!.push({ application, event });
+      });
+    });
+
     for (let i = 0; i < 42; i += 1) {
       const current = new Date(startDay);
       current.setDate(startDay.getDate() + i);
 
-      const eventsForDay: CalendarDay['events'] = [];
-
-      applications.forEach((application) => {
-        application.timeline?.forEach((event) => {
-          if (!event.date) return;
-          const eventDate = parseLocalDate(event.date);
-          if (isSameDay(eventDate, current)) {
-            eventsForDay.push({ application, event });
-          }
-        });
-      });
+      // ⚡ Bolt: Use the same helper for grid date formatting
+      const dateKey = formatDateKey(current);
 
       days.push({
         date: current,
         isCurrentMonth: current.getMonth() === focusMonth.getMonth(),
-        events: eventsForDay,
+        events: eventsByDate.get(dateKey) ?? [],
       });
     }
 
