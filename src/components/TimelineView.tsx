@@ -4,10 +4,7 @@ import { useTranslation } from 'react-i18next';
 import type { JobApplication } from '../utils/localStorage';
 import type { ApplicationWithMetadata } from '../hooks/useFilteredApplications';
 import ConfirmDialog from './ConfirmDialog';
-import { parseLocalDate } from '../utils/date';
 import ApplicationTimelineCard from './ApplicationTimelineCard';
-import { Badge } from './ui';
-import { getBadgeVariantForStatus } from '../utils/status';
 
 interface TimelineViewProps {
   applications: ApplicationWithMetadata[];
@@ -103,7 +100,7 @@ const TimelineView: React.FC<TimelineViewProps> = ({ applications, onEdit, onDel
         // to avoid expensive sorting and finding operations on every render cycle.
         const sortedEvents = app.sortedTimeline || [];
         const nextEvent = app.nextEvent;
-        
+
         return (
           <ApplicationTimelineCard
             key={app.id}
@@ -132,7 +129,7 @@ const TimelineView: React.FC<TimelineViewProps> = ({ applications, onEdit, onDel
           >
             {t('common.previous')}
           </button>
-          
+
           <div className="flex items-center gap-1">
             {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
               <button
