@@ -118,9 +118,9 @@ const ATSSearch: React.FC = () => {
           </div>
 
           <div className="mb-2">
-            <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">
+            <p className="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">
               {t('opportunities.atsSearch.search')}
-            </label>
+            </p>
             <div className="flex flex-wrap gap-2">
               {ATS_PLATFORMS.map((platform) => (
                 <Button

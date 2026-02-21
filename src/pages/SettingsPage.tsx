@@ -273,79 +273,6 @@ const SettingsPageContent: React.FC<SettingsPageProps> = () => {
     { id: 'emailScan' as const, label: t('settings.emailScan.section'), icon: '📧' },
   ];
 
-  const renderSection = () => {
-    switch (activeSection) {
-      case 'fields':
-        return (
-          <FieldsSettings
-            orderedFields={orderedFields}
-            enabledFields={preferences.enabledFields}
-            defaultFields={DEFAULT_FIELDS}
-            onToggleField={handleToggleField}
-            onMoveField={handleMoveField}
-          />
-        );
-      case 'view':
-        return (
-          <ViewSettings
-            defaultView={preferences.defaultView}
-            onDefaultViewChange={handleDefaultViewChange}
-          />
-        );
-      case 'date':
-        return (
-          <DateFormatSettings
-            currentFormat={preferences.dateFormat}
-            onDateFormatChange={handleDateFormatChange}
-          />
-        );
-      case 'custom':
-        return (
-          <CustomFieldsSettings
-            customFields={preferences.customFields || []}
-            editingCustomField={editingCustomField}
-            customFieldForm={customFieldForm}
-            setCustomFieldForm={(value) => dispatch({ type: 'SET_CUSTOM_FIELD_FORM', value })}
-            onAddCustomField={handleAddCustomField}
-            onEditCustomField={handleEditCustomField}
-            onUpdateCustomField={handleUpdateCustomField}
-            onDeleteCustomField={handleDeleteCustomField}
-            onCancelEdit={() => dispatch({ type: 'RESET_FORMS' })}
-          />
-        );
-      case 'atsSearch':
-        return (
-          <ATSSearchSettings
-            atsSearch={preferences.atsSearch}
-            onAtsSearchChange={(key, value) => {
-              updatePreferences({
-                atsSearch: { ...preferences.atsSearch!, [key]: value }
-              });
-              dispatch({ type: 'SET_FIELD', field: 'hasChanges', value: true });
-            }}
-          />
-        );
-      case 'interviewing':
-        return (
-          <InterviewingSettings
-            customInterviewEvents={preferences.customInterviewEvents || []}
-            editingInterviewEvent={editingInterviewEvent}
-            interviewEventForm={interviewEventForm}
-            setInterviewEventForm={(value) => dispatch({ type: 'SET_INTERVIEW_EVENT_FORM', value })}
-            onAddInterviewEvent={handleAddInterviewEvent}
-            onEditInterviewEvent={handleEditInterviewEvent}
-            onUpdateInterviewEvent={handleUpdateInterviewEvent}
-            onDeleteInterviewEvent={handleDeleteInterviewEvent}
-            onCancelEdit={() => dispatch({ type: 'RESET_FORMS' })}
-          />
-        );
-      case 'emailScan':
-        return <EmailScanReview />;
-      default:
-        return null;
-    }
-  };
-
   return (
     <div className="max-w-5xl mx-auto">
         <div className="mb-6">
@@ -406,11 +333,152 @@ const SettingsPageContent: React.FC<SettingsPageProps> = () => {
 
         {/* Section Content */}
         <div className="bg-white dark:bg-gray-800 shadow-lg rounded-xl p-6 sm:p-8">
-          {renderSection()}
+          <SettingsSectionContent
+            activeSection={activeSection}
+            orderedFields={orderedFields}
+            preferences={preferences}
+            editingCustomField={editingCustomField}
+            customFieldForm={customFieldForm}
+            editingInterviewEvent={editingInterviewEvent}
+            interviewEventForm={interviewEventForm}
+            onToggleField={handleToggleField}
+            onMoveField={handleMoveField}
+            onDefaultViewChange={handleDefaultViewChange}
+            onDateFormatChange={handleDateFormatChange}
+            onAddCustomField={handleAddCustomField}
+            onEditCustomField={handleEditCustomField}
+            onUpdateCustomField={handleUpdateCustomField}
+            onDeleteCustomField={handleDeleteCustomField}
+            onAddInterviewEvent={handleAddInterviewEvent}
+            onEditInterviewEvent={handleEditInterviewEvent}
+            onUpdateInterviewEvent={handleUpdateInterviewEvent}
+            onDeleteInterviewEvent={handleDeleteInterviewEvent}
+            updatePreferences={updatePreferences}
+            dispatch={dispatch}
+          />
         </div>
       <Footer version={packageJson.version} />
     </div>
   );
+};
+
+interface SettingsSectionContentProps {
+  activeSection: string;
+  orderedFields: FieldDefinition[];
+  preferences: ReturnType<typeof usePreferencesStore>['preferences'];
+  editingCustomField: FieldDefinition | null;
+  customFieldForm: Partial<FieldDefinition>;
+  editingInterviewEvent: CustomInterviewEvent | null;
+  interviewEventForm: Partial<CustomInterviewEvent>;
+  onToggleField: (fieldId: string) => void;
+  onMoveField: (fieldId: string, direction: 'up' | 'down') => void;
+  onDefaultViewChange: (view: ViewType) => void;
+  onDateFormatChange: (format: DateFormat) => void;
+  onAddCustomField: () => void;
+  onEditCustomField: (field: FieldDefinition) => void;
+  onUpdateCustomField: () => void;
+  onDeleteCustomField: (fieldId: string) => void;
+  onAddInterviewEvent: () => void;
+  onEditInterviewEvent: (event: CustomInterviewEvent) => void;
+  onUpdateInterviewEvent: () => void;
+  onDeleteInterviewEvent: (eventId: string) => void;
+  updatePreferences: (prefs: Partial<ReturnType<typeof usePreferencesStore>['preferences']>) => void;
+  dispatch: React.Dispatch<SettingsPageAction>;
+}
+
+const SettingsSectionContent: React.FC<SettingsSectionContentProps> = ({
+  activeSection,
+  orderedFields,
+  preferences,
+  editingCustomField,
+  customFieldForm,
+  editingInterviewEvent,
+  interviewEventForm,
+  onToggleField,
+  onMoveField,
+  onDefaultViewChange,
+  onDateFormatChange,
+  onAddCustomField,
+  onEditCustomField,
+  onUpdateCustomField,
+  onDeleteCustomField,
+  onAddInterviewEvent,
+  onEditInterviewEvent,
+  onUpdateInterviewEvent,
+  onDeleteInterviewEvent,
+  updatePreferences,
+  dispatch,
+}) => {
+  switch (activeSection) {
+    case 'fields':
+      return (
+        <FieldsSettings
+          orderedFields={orderedFields}
+          enabledFields={preferences.enabledFields}
+          defaultFields={DEFAULT_FIELDS}
+          onToggleField={onToggleField}
+          onMoveField={onMoveField}
+        />
+      );
+    case 'view':
+      return (
+        <ViewSettings
+          defaultView={preferences.defaultView}
+          onDefaultViewChange={onDefaultViewChange}
+        />
+      );
+    case 'date':
+      return (
+        <DateFormatSettings
+          currentFormat={preferences.dateFormat}
+          onDateFormatChange={onDateFormatChange}
+        />
+      );
+    case 'custom':
+      return (
+        <CustomFieldsSettings
+          customFields={preferences.customFields || []}
+          editingCustomField={editingCustomField}
+          customFieldForm={customFieldForm}
+          setCustomFieldForm={(value) => dispatch({ type: 'SET_CUSTOM_FIELD_FORM', value })}
+          onAddCustomField={onAddCustomField}
+          onEditCustomField={onEditCustomField}
+          onUpdateCustomField={onUpdateCustomField}
+          onDeleteCustomField={onDeleteCustomField}
+          onCancelEdit={() => dispatch({ type: 'RESET_FORMS' })}
+        />
+      );
+    case 'atsSearch':
+      return (
+        <ATSSearchSettings
+          atsSearch={preferences.atsSearch}
+          onAtsSearchChange={(key, value) => {
+            updatePreferences({
+              atsSearch: { ...preferences.atsSearch!, [key]: value }
+            });
+            dispatch({ type: 'SET_FIELD', field: 'hasChanges', value: true });
+          }}
+        />
+      );
+    case 'interviewing':
+      return (
+        <InterviewingSettings
+          customInterviewEvents={preferences.customInterviewEvents || []}
+          editingInterviewEvent={editingInterviewEvent}
+          interviewEventForm={interviewEventForm}
+          setInterviewEventForm={(value) => dispatch({ type: 'SET_INTERVIEW_EVENT_FORM', value })}
+          onAddInterviewEvent={onAddInterviewEvent}
+          onEditInterviewEvent={onEditInterviewEvent}
+          onUpdateInterviewEvent={onUpdateInterviewEvent}
+          onDeleteInterviewEvent={onDeleteInterviewEvent}
+          onCancelEdit={() => dispatch({ type: 'RESET_FORMS' })}
+        />
+      );
+    case 'emailScan':
+      return <EmailScanReview />;
+    default:
+      return null;
+  }
 };
 
 const SettingsPage: React.FC<SettingsPageProps> = ({ onNavigate }) => {

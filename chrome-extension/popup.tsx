@@ -1,22 +1,33 @@
 // chrome-extension/popup.tsx
 /* eslint-disable react-refresh/only-export-components */
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useReducer } from 'react';
 import { createRoot } from 'react-dom/client';
 import './popup.css';
+import PopupHeader from './components/PopupHeader';
+import PopupMessage from './components/PopupMessage';
+import PopupLoader from './components/PopupLoader';
+import PopupForm, { type JobOpportunity } from './components/PopupForm';
 
-interface JobOpportunity {
-  position: string;
-  company: string;
-  link: string;
-  description?: string;
-  location?: string;
-  jobType?: string;
-  salary?: string;
-  postedDate?: string;
+interface State {
+  opportunity: JobOpportunity;
+  saveAsApplication: boolean;
+  isLoading: boolean;
+  isSaving: boolean;
+  message: { type: 'success' | 'error' | 'info'; text: string } | null;
 }
 
-const Popup: React.FC = () => {
-  const [opportunity, setOpportunity] = useState<JobOpportunity>({
+type Action =
+  | { type: 'SET_OPPORTUNITY'; payload: Partial<JobOpportunity> }
+  | { type: 'MERGE_OPPORTUNITY'; payload: Partial<JobOpportunity> }
+  | { type: 'SET_SAVE_AS_APPLICATION'; payload: boolean }
+  | { type: 'SET_LOADING'; payload: boolean }
+  | { type: 'SET_SAVING'; payload: boolean }
+  | { type: 'SET_MESSAGE'; payload: { type: 'success' | 'error' | 'info'; text: string } | null }
+  | { type: 'SET_DATA_EXTRACTED'; payload: Partial<JobOpportunity> }
+  | { type: 'RESET_FORM' };
+
+const initialState: State = {
+  opportunity: {
     position: '',
     company: '',
     link: '',
@@ -25,11 +36,64 @@ const Popup: React.FC = () => {
     jobType: '',
     salary: '',
     postedDate: '',
-  });
-  const [saveAsApplication, setSaveAsApplication] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isSaving, setIsSaving] = useState(false);
-  const [message, setMessage] = useState<{ type: 'success' | 'error' | 'info'; text: string } | null>(null);
+  },
+  saveAsApplication: false,
+  isLoading: true,
+  isSaving: false,
+  message: null,
+};
+
+function reducer(state: State, action: Action): State {
+  switch (action.type) {
+    case 'SET_OPPORTUNITY':
+      return { ...state, opportunity: { ...state.opportunity, ...action.payload } };
+    case 'MERGE_OPPORTUNITY':
+      return {
+        ...state,
+        opportunity: {
+          ...state.opportunity,
+          position: action.payload.position || state.opportunity.position,
+          company: action.payload.company || state.opportunity.company,
+          description: action.payload.description || state.opportunity.description,
+          location: action.payload.location || state.opportunity.location,
+          jobType: action.payload.jobType || state.opportunity.jobType,
+          salary: action.payload.salary || state.opportunity.salary,
+          postedDate: action.payload.postedDate || state.opportunity.postedDate,
+          link: action.payload.link || state.opportunity.link,
+        },
+      };
+    case 'SET_SAVE_AS_APPLICATION':
+      return { ...state, saveAsApplication: action.payload };
+    case 'SET_LOADING':
+      return { ...state, isLoading: action.payload };
+    case 'SET_SAVING':
+      return { ...state, isSaving: action.payload };
+    case 'SET_MESSAGE':
+      return { ...state, message: action.payload };
+    case 'SET_DATA_EXTRACTED':
+      return {
+        ...state,
+        isLoading: false,
+        opportunity: { ...state.opportunity, ...action.payload },
+        message: (action.payload.position || action.payload.company)
+          ? { type: 'success', text: 'Job data extracted automatically!' }
+          : state.message,
+      };
+    case 'RESET_FORM':
+      return {
+        ...state,
+        opportunity: initialState.opportunity,
+        saveAsApplication: false,
+        message: null,
+      };
+    default:
+      return state;
+  }
+}
+
+const Popup: React.FC = () => {
+  const [state, dispatch] = useReducer(reducer, initialState);
+  const { opportunity, saveAsApplication, isLoading, isSaving, message } = state;
 
   // Helper function to check if we're on a job board domain
   const isJobBoardDomain = (url: string | undefined): boolean => {
@@ -66,126 +130,101 @@ const Popup: React.FC = () => {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       const currentTab = tabs[0];
       if (currentTab?.url) {
-        setOpportunity(prev => ({ ...prev, link: currentTab.url || '' }));
+        dispatch({ type: 'SET_OPPORTUNITY', payload: { link: currentTab.url || '' } });
       }
 
-      // Only try to extract data if we're on a job board domain
       const isJobBoard = isJobBoardDomain(currentTab?.url);
       const isWebApp = isWebAppDomain(currentTab?.url);
       
-      // Try to extract data from content script only on job board domains
       if (currentTab?.id && isJobBoard && !isWebApp) {
         chrome.tabs.sendMessage(currentTab.id, { action: 'getJobData' }, (response) => {
           if (chrome.runtime.lastError) {
-            // Content script might not be ready yet, try again after a short delay
             if (chrome.runtime.lastError.message?.includes('Could not establish connection')) {
               setTimeout(() => {
                 chrome.tabs.sendMessage(currentTab.id!, { action: 'getJobData' }, (retryResponse) => {
                   if (!chrome.runtime.lastError && retryResponse?.data) {
                     const hasData = retryResponse.data.position || retryResponse.data.company;
-                    setOpportunity(prev => ({
-                      ...prev,
-                      position: retryResponse.data.position || prev.position,
-                      company: retryResponse.data.company || prev.company,
-                      description: retryResponse.data.description || prev.description,
-                      location: retryResponse.data.location || prev.location,
-                      jobType: retryResponse.data.jobType || prev.jobType,
-                      salary: retryResponse.data.salary || prev.salary,
-                      postedDate: retryResponse.data.postedDate || prev.postedDate,
-                    }));
+                    dispatch({
+                      type: 'SET_DATA_EXTRACTED',
+                      payload: retryResponse.data
+                    });
                     
-                    // Show success message if data was extracted
                     if (hasData) {
-                      setMessage({ type: 'success', text: 'Job data extracted automatically!' });
-                      setTimeout(() => setMessage(null), 3000);
+                      setTimeout(() => dispatch({ type: 'SET_MESSAGE', payload: null }), 3000);
                     }
+                  } else {
+                    dispatch({ type: 'SET_LOADING', payload: false });
                   }
-                  setIsLoading(false);
                 });
               }, 500);
               return;
             }
             console.error('Error getting job data:', chrome.runtime.lastError);
-            setIsLoading(false);
+            dispatch({ type: 'SET_LOADING', payload: false });
             return;
           }
 
           if (response && response.data) {
             const hasData = response.data.position || response.data.company;
-            setOpportunity(prev => ({
-              ...prev,
-              position: response.data.position || prev.position,
-              company: response.data.company || prev.company,
-              description: response.data.description || prev.description,
-              location: response.data.location || prev.location,
-              jobType: response.data.jobType || prev.jobType,
-              salary: response.data.salary || prev.salary,
-              postedDate: response.data.postedDate || prev.postedDate,
-            }));
+            dispatch({
+              type: 'SET_DATA_EXTRACTED',
+              payload: response.data
+            });
             
-            // Show success message if data was extracted
             if (hasData) {
-              setMessage({ type: 'success', text: 'Job data extracted automatically!' });
-              setTimeout(() => setMessage(null), 3000);
+              setTimeout(() => dispatch({ type: 'SET_MESSAGE', payload: null }), 3000);
             }
+          } else {
+            dispatch({ type: 'SET_LOADING', payload: false });
           }
-          setIsLoading(false);
         });
       } else {
-        setIsLoading(false);
-        // If we're on the web app, try to sync opportunities from chrome.storage.local
+        dispatch({ type: 'SET_LOADING', payload: false });
         if (isWebApp && currentTab?.id) {
-          // Sync opportunities to the web app
           chrome.tabs.sendMessage(currentTab.id, {
             action: 'syncFromChromeStorage',
-          }).catch(() => {
-            // Ignore errors if content script not available
-          });
+          }).catch(() => {});
         } else if (!isJobBoard && currentTab?.url) {
-          setMessage({ 
-            type: 'info', 
-            text: 'Navigate to a job posting page (LinkedIn, Greenhouse, etc.) to auto-fill the form.' 
+          dispatch({
+            type: 'SET_MESSAGE',
+            payload: { type: 'info', text: 'Navigate to a job posting page (LinkedIn, Greenhouse, etc.) to auto-fill the form.' }
           });
-          setTimeout(() => setMessage(null), 3000);
+          setTimeout(() => dispatch({ type: 'SET_MESSAGE', payload: null }), 3000);
         }
       }
     });
   }, []);
 
   const handleInputChange = (field: keyof JobOpportunity, value: string) => {
-    setOpportunity(prev => ({ ...prev, [field]: value }));
-    setMessage(null);
+    dispatch({ type: 'SET_OPPORTUNITY', payload: { [field]: value } });
+    dispatch({ type: 'SET_MESSAGE', payload: null });
   };
 
   const handleSave = async () => {
-    // Validate required fields
     if (!opportunity.position.trim() || !opportunity.company.trim() || !opportunity.link.trim()) {
-      setMessage({ type: 'error', text: 'Please fill in Position, Company, and Link fields' });
+      dispatch({ type: 'SET_MESSAGE', payload: { type: 'error', text: 'Please fill in Position, Company, and Link fields' } });
       return;
     }
 
-    setIsSaving(true);
-    setMessage(null);
+    dispatch({ type: 'SET_SAVING', payload: true });
+    dispatch({ type: 'SET_MESSAGE', payload: null });
 
     const id = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     const capturedDate = new Date().toISOString();
 
     try {
       if (saveAsApplication) {
-        // Save directly as Application (already applied)
         const applicationPayload = {
           id,
           ...opportunity,
           capturedDate,
         };
 
-        // Store in pendingApplications so when user opens the app later it will sync
         const result = await chrome.storage.local.get(['pendingApplications']);
         const pending = result.pendingApplications || [];
         pending.push(applicationPayload);
         await chrome.storage.local.set({ pendingApplications: pending });
 
-        // Sync to web app tabs if open
         let syncedToTab = false;
         const tabs = await chrome.tabs.query({});
         for (const tab of tabs) {
@@ -202,15 +241,13 @@ const Popup: React.FC = () => {
           }
         }
 
-        // If we synced to a tab, remove from pending (already in app localStorage)
         if (syncedToTab && pending.length > 0) {
           const remaining = pending.filter((p: { id: string }) => p.id !== id);
           await chrome.storage.local.set({ pendingApplications: remaining });
         }
 
-        setMessage({ type: 'success', text: 'Application saved! It will appear in Applications.' });
+        dispatch({ type: 'SET_MESSAGE', payload: { type: 'success', text: 'Application saved! It will appear in Applications.' } });
       } else {
-        // Save as Opportunity (existing flow)
         const result = await chrome.storage.local.get(['jobOpportunities']);
         const existing = result.jobOpportunities || [];
 
@@ -230,13 +267,9 @@ const Popup: React.FC = () => {
                   action: 'syncOpportunity',
                   data: newOpportunity,
                 }).then(() => {
-                  chrome.tabs.sendMessage(tab.id!, {
-                    action: 'syncFromChromeStorage',
-                  }).catch(() => {});
+                  chrome.tabs.sendMessage(tab.id!, { action: 'syncFromChromeStorage' }).catch(() => {});
                 }).catch(() => {
-                  chrome.tabs.sendMessage(tab.id!, {
-                    action: 'syncFromChromeStorage',
-                  }).catch(() => {});
+                  chrome.tabs.sendMessage(tab.id!, { action: 'syncFromChromeStorage' }).catch(() => {});
                 });
               }
             });
@@ -245,29 +278,17 @@ const Popup: React.FC = () => {
           console.error('Error syncing to web app:', error);
         }
 
-        setMessage({ type: 'success', text: 'Opportunity saved successfully!' });
+        dispatch({ type: 'SET_MESSAGE', payload: { type: 'success', text: 'Opportunity saved successfully!' } });
       }
 
-      // Clear form after a delay
       setTimeout(() => {
-        setOpportunity({
-          position: '',
-          company: '',
-          link: '',
-          description: '',
-          location: '',
-          jobType: '',
-          salary: '',
-          postedDate: '',
-        });
-        setSaveAsApplication(false);
-        setMessage(null);
+        dispatch({ type: 'RESET_FORM' });
       }, 1500);
     } catch (error) {
       console.error('Error saving:', error);
-      setMessage({ type: 'error', text: 'Failed to save. Please try again.' });
+      dispatch({ type: 'SET_MESSAGE', payload: { type: 'error', text: 'Failed to save. Please try again.' } });
     } finally {
-      setIsSaving(false);
+      dispatch({ type: 'SET_SAVING', payload: false });
     }
   };
 
@@ -276,168 +297,26 @@ const Popup: React.FC = () => {
   };
 
   if (isLoading) {
-    return (
-      <div className="p-4">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mx-auto"></div>
-          <p className="mt-2 text-sm text-gray-600">Loading job data...</p>
-        </div>
-      </div>
-    );
+    return <PopupLoader />;
   }
 
   return (
     <div className="p-4 bg-gray-50 min-h-[400px]">
-      <div className="mb-4">
-        <h2 className="text-lg font-bold text-gray-800 mb-1">Capture Job Opportunity</h2>
-        <p className="text-xs text-gray-500">Fill in the details and save to your tracker</p>
-      </div>
-
-      {message && (
-        <div className={`mb-4 p-3 rounded-lg text-sm ${
-          message.type === 'success' 
-            ? 'bg-green-100 text-green-800' 
-            : message.type === 'error'
-            ? 'bg-red-100 text-red-800'
-            : 'bg-blue-100 text-blue-800'
-        }`}>
-          {message.text}
-        </div>
-      )}
-
-      <div className="space-y-3">
-        <div>
-          <label className="block text-xs font-medium text-gray-700 mb-1">
-            Position <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="text"
-            value={opportunity.position}
-            onChange={(e) => handleInputChange('position', e.target.value)}
-            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-            placeholder="e.g., Software Engineer"
-          />
-        </div>
-
-        <div>
-          <label className="block text-xs font-medium text-gray-700 mb-1">
-            Company <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="text"
-            value={opportunity.company}
-            onChange={(e) => handleInputChange('company', e.target.value)}
-            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-            placeholder="e.g., Google"
-          />
-        </div>
-
-        <div>
-          <label className="block text-xs font-medium text-gray-700 mb-1">
-            Link <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="url"
-            value={opportunity.link}
-            onChange={(e) => handleInputChange('link', e.target.value)}
-            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-            placeholder="https://linkedin.com/jobs/view/..."
-          />
-        </div>
-
-        <div className="grid grid-cols-2 gap-2">
-          <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Location</label>
-            <input
-              type="text"
-              value={opportunity.location}
-              onChange={(e) => handleInputChange('location', e.target.value)}
-              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-              placeholder="e.g., Remote"
-            />
-          </div>
-
-          <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">Job Type</label>
-            <input
-              type="text"
-              value={opportunity.jobType}
-              onChange={(e) => handleInputChange('jobType', e.target.value)}
-              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-              placeholder="Remote/Hybrid/On-site"
-            />
-          </div>
-        </div>
-
-        <div>
-          <label className="block text-xs font-medium text-gray-700 mb-1">Salary</label>
-          <input
-            type="text"
-            value={opportunity.salary}
-            onChange={(e) => handleInputChange('salary', e.target.value)}
-            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-            placeholder="e.g., $120k - $150k"
-          />
-        </div>
-
-        <div>
-          <label className="block text-xs font-medium text-gray-700 mb-1">Description</label>
-          <textarea
-            value={opportunity.description}
-            onChange={(e) => handleInputChange('description', e.target.value)}
-            rows={4}
-            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none"
-            placeholder="Job description or notes..."
-          />
-        </div>
-
-        <div>
-          <label className="block text-xs font-medium text-gray-700 mb-1">Posted Date</label>
-          <input
-            type="date"
-            value={opportunity.postedDate}
-            onChange={(e) => handleInputChange('postedDate', e.target.value)}
-            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-          />
-        </div>
-
-        <label className="flex items-center gap-2 cursor-pointer mt-2">
-          <input
-            type="checkbox"
-            checked={saveAsApplication}
-            onChange={(e) => setSaveAsApplication(e.target.checked)}
-            className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-          />
-          <span className="text-sm text-gray-700">Ya apliqué — guardar en Applications</span>
-        </label>
-      </div>
-
-      <div className="mt-4 space-y-2">
-        <div className="flex gap-2">
-          <button
-            onClick={handleSave}
-            disabled={isSaving}
-            className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-lg transition duration-150 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
-          >
-            {isSaving ? 'Saving...' : saveAsApplication ? 'Save as Application' : 'Save to Opportunities'}
-          </button>
-          <button
-            onClick={handleOpenApp}
-            className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium rounded-lg transition duration-150 text-sm"
-            title="Open Job Application Tracker in new tab"
-          >
-            Open App
-          </button>
-        </div>
-        <p className="text-xs text-gray-500 text-center">
-          💡 Tip: Right-click the extension icon and select "Inspect popup" to keep it open while copying/pasting
-        </p>
-      </div>
+      <PopupHeader />
+      <PopupMessage message={message} />
+      <PopupForm
+        opportunity={opportunity}
+        saveAsApplication={saveAsApplication}
+        isSaving={isSaving}
+        onInputChange={handleInputChange}
+        onSaveAsApplicationChange={(checked) => dispatch({ type: 'SET_SAVE_AS_APPLICATION', payload: checked })}
+        onSave={handleSave}
+        onOpenApp={handleOpenApp}
+      />
     </div>
   );
 };
 
-// Initialize React app
 const container = document.getElementById('root');
 if (container) {
   const root = createRoot(container);
@@ -447,4 +326,3 @@ if (container) {
     </React.StrictMode>
   );
 }
-

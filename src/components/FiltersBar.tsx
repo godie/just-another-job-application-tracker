@@ -135,7 +135,11 @@ const FiltersBar: React.FC<FiltersBarProps> = React.memo(({ filters, onFiltersCh
                 </summary>
                 <div className="absolute mt-1 max-h-48 overflow-y-auto border border-gray-200 dark:border-gray-700 rounded-lg p-2 bg-white dark:bg-gray-800 shadow-lg z-20 w-48">
                   {availableStatuses.map((status) => (
-                    <label key={status} className="flex items-center gap-2 py-1.5 px-2 cursor-pointer hover:bg-indigo-50 dark:hover:bg-indigo-900 rounded">
+                    <label
+                      key={status}
+                      htmlFor={`status-include-${status}`}
+                      className="flex items-center gap-2 py-1.5 px-2 cursor-pointer hover:bg-indigo-50 dark:hover:bg-indigo-900 rounded"
+                    >
                       <input
                         id={`status-include-${status}`}
                         name={`status-include-${status}`}
@@ -157,7 +161,11 @@ const FiltersBar: React.FC<FiltersBarProps> = React.memo(({ filters, onFiltersCh
                 </summary>
                 <div className="absolute mt-1 max-h-48 overflow-y-auto border border-gray-200 dark:border-gray-700 rounded-lg p-2 bg-white dark:bg-gray-800 shadow-lg z-20 w-48">
                   {availableStatuses.map((status) => (
-                    <label key={status} className="flex items-center gap-2 py-1.5 px-2 cursor-pointer hover:bg-red-50 dark:hover:bg-red-900 rounded">
+                    <label
+                      key={status}
+                      htmlFor={`status-exclude-${status}`}
+                      className="flex items-center gap-2 py-1.5 px-2 cursor-pointer hover:bg-red-50 dark:hover:bg-red-900 rounded"
+                    >
                       <input
                         id={`status-exclude-${status}`}
                         name={`status-exclude-${status}`}

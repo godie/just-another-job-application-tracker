@@ -171,9 +171,10 @@ const AddJobForm: React.FC<AddJobFormProps> = ({ onSave, onCancel, initialData }
               data-testid="form-company"
             />
 
-            <label className="block">
-              <span className="text-gray-700 font-medium">{t('form.location')}</span>
+            <div className="block">
+              <label htmlFor="location-input" className="text-gray-700 font-medium">{t('form.location')}</label>
               <input
+                id="location-input"
                 type="text"
                 name="location"
                 value={formData.location ?? ''}
@@ -182,11 +183,12 @@ const AddJobForm: React.FC<AddJobFormProps> = ({ onSave, onCancel, initialData }
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border"
                 data-testid="form-location"
               />
-            </label>
+            </div>
 
-            <label className="block">
-              <span className="text-gray-700 font-medium">{t('form.workType')}</span>
+            <div className="block">
+              <label htmlFor="work-type-select" className="text-gray-700 font-medium">{t('form.workType')}</label>
               <select
+                id="work-type-select"
                 name="workType"
                 value={formData.workType ?? ''}
                 onChange={handleChange}
@@ -198,12 +200,13 @@ const AddJobForm: React.FC<AddJobFormProps> = ({ onSave, onCancel, initialData }
                 <option value="on-site">{t('form.workTypes.onSite')}</option>
                 <option value="hybrid">{t('form.workTypes.hybrid')}</option>
               </select>
-            </label>
+            </div>
 
             {formData.workType === 'hybrid' && (
-              <label className="block">
-                <span className="text-gray-700 font-medium">{t('form.hybridDaysInOffice')}</span>
+              <div className="block">
+                <label htmlFor="hybrid-days-select" className="text-gray-700 font-medium">{t('form.hybridDaysInOffice')}</label>
                 <select
+                  id="hybrid-days-select"
                   name="hybridDaysInOffice"
                   value={formData.hybridDaysInOffice ?? ''}
                   onChange={handleChange}
@@ -217,7 +220,7 @@ const AddJobForm: React.FC<AddJobFormProps> = ({ onSave, onCancel, initialData }
                     </option>
                   ))}
                 </select>
-              </label>
+              </div>
             )}
 
             {/* Group 2: Dates and Status */}
@@ -307,10 +310,11 @@ const AddJobForm: React.FC<AddJobFormProps> = ({ onSave, onCancel, initialData }
             />
             
             <div className="col-span-full">
-              <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">
+              <label htmlFor="notes-textarea" className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">
                 {t('form.notes')}
               </label>
               <textarea
+                id="notes-textarea"
                 name="notes"
                 value={formData.notes}
                 onChange={handleChange}

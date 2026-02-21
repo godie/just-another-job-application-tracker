@@ -246,9 +246,9 @@ const SuggestionForm: React.FC<SuggestionFormProps> = ({ onNavigate }) => {
 
       <form onSubmit={handleSubmit} className="space-y-5">
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <p className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             {t('support.suggestionType')}
-          </label>
+          </p>
           <div className="flex flex-wrap gap-3">
             {suggestionTypes.map((type) => {
               const inputId = `suggestion-type-${type.id}`;
@@ -294,9 +294,9 @@ const SuggestionForm: React.FC<SuggestionFormProps> = ({ onNavigate }) => {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <p className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             {t('support.captchaLabel')}
-          </label>
+          </p>
           <p className="text-xs text-gray-500 dark:text-gray-400">{t('support.captchaDesc')}</p>
           <div className="flex flex-col sm:flex-row gap-3 mt-2">
             <div className="flex-1 flex items-center justify-center px-4 py-3 bg-gray-100 dark:bg-gray-900 rounded-xl border border-dashed border-gray-300 dark:border-gray-600 text-2xl font-bold tracking-[0.3em] text-gray-800 dark:text-gray-100">
