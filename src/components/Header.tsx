@@ -117,12 +117,12 @@ const Header: React.FC<HeaderProps> = ({ onToggleSidebar }) => {
   return (
     <header className="flex items-center justify-between p-4 border-b border-gray-200 bg-white shadow-sm dark:bg-gray-800 dark:border-gray-700 fixed top-0 left-0 right-0 z-50 h-16">
       <div className="flex items-center gap-4">
-        {/* Hamburger menu button */}
+        {/* Hamburger menu button - Hidden on mobile, visible on desktop */}
         <Button
           variant="ghost"
           size="icon"
           onClick={onToggleSidebar}
-          className="hidden md:flex"
+          className="!hidden md:!flex"
           aria-label="Toggle sidebar"
           data-testid="sidebar-toggle"
         >
