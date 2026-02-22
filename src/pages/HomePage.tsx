@@ -1,5 +1,5 @@
 // src/pages/HomePage.tsx
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import Footer from '../components/Footer';
 import ViewSwitcher, { type ViewType } from '../components/ViewSwitcher';
@@ -7,16 +7,15 @@ import FiltersBar, { type Filters } from '../components/FiltersBar';
 import MetricsSummary from '../components/MetricsSummary';
 import { useAlert } from '../components/AlertProvider';
 import {
-  DEFAULT_FIELDS,
   type JobApplication,
 } from '../utils/localStorage';
-import type { TableColumn } from '../types/table';
 import AddJobForm from '../components/AddJobComponent';
 import GoogleSheetsSync from '../components/GoogleSheetsSync';
 import packageJson from '../../package.json';
 import { useApplicationsStore } from '../stores/applicationsStore';
 import { usePreferencesStore } from '../stores/preferencesStore';
 import { useFilteredApplications } from '../hooks/useFilteredApplications';
+import { useTableColumns } from '../hooks/useTableColumns';
 import CurrentViewRenderer from '../components/CurrentViewRenderer';
 
 const VIEW_STORAGE_KEY = 'preferredView';
@@ -166,31 +165,7 @@ const HomePageContent: React.FC<HomePageContentProps> = () => {
     nonDeletedApplications
   } = useFilteredApplications(applications, filters);
 
-  const tableColumns: TableColumn[] = useMemo(() => {
-    const buildColumn = (id: string, fallbackLabel: string): TableColumn => ({
-      id,
-      label: t(`fields.${id}`, fallbackLabel),
-    });
-
-    if (!preferences) {
-      return DEFAULT_FIELDS.map((field) => buildColumn(field.id, field.label));
-    }
-
-    const enabledSet = new Set(preferences.enabledFields);
-
-    const fieldById = new Map<string, TableColumn>();
-    DEFAULT_FIELDS.forEach((field) => {
-      fieldById.set(field.id, buildColumn(field.id, field.label));
-    });
-    preferences.customFields.forEach((field) => {
-      fieldById.set(field.id, { id: field.id, label: field.label });
-    });
-
-    return preferences.columnOrder
-      .filter((id) => enabledSet.has(id))
-      .map((id) => fieldById.get(id))
-      .filter((column): column is TableColumn => Boolean(column));
-  }, [preferences, t]);
+  const tableColumns = useTableColumns(preferences);
 
   return (
     <div className="max-w-7xl mx-auto">
