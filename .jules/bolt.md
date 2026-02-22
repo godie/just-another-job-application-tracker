@@ -21,3 +21,7 @@ This journal is for CRITICAL learnings only.
 ## 2026-02-18 - Efficient Storage Migration
 **Learning:** Using `setTimeout` to persist migrated data in a storage getter creates a redundant and potentially explosive chain of operations. Moving migration persistence to a single-pass check during the initial load in the store is much more efficient.
 **Action:** Always separate data retrieval/transformation from persistence. Ensure migration happens in-memory during retrieval but is persisted once by the application's lifecycle manager (like a Zustand store).
+
+## 2025-02-22 - Data Transformation in Custom Hooks
+**Learning:** Moving data transformation and translation logic (e.g., chart data formatting) from presenter components into custom hooks wrapped in `useMemo` significantly reduces rendering overhead. It eliminates redundant loops and expensive hook calls (like `useTranslation`) during every component re-render.
+**Action:** Always centralize data preparation and internationalization for visualization components within a specialized hook to keep UI components as pure presenters.

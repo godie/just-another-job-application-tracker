@@ -2,31 +2,33 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useApplicationsStore } from '../stores/applicationsStore';
 import { INTERVIEW_TYPES } from '../utils/constants';
-import type { InterviewEvent } from '../types/applications';
 
 /**
  * Custom hook to calculate application and interview metrics for the Insights page.
  *
- * Uses "loop fusion" to process applications in a single pass for efficiency.
- * Returns both raw metrics and formatted data for charts.
+ * ⚡ Bolt: Optimized with Loop Fusion and Memory Efficiency.
+ * - Processes all metrics and chart data in a single pass over the applications list.
+ * - Replaces large arrays with simple counters to minimize memory footprint.
+ * - Pre-calculates and translates chart data labels to simplify UI components.
  */
 export const useInsightsData = () => {
   const { t } = useTranslation();
   const applications = useApplicationsStore((state) => state.applications);
 
-  const metrics = useMemo(() => {
-    const interviewEvents: InterviewEvent[] = [];
+  return useMemo(() => {
+    let totalInterviews = 0;
+    let rejectedApplicationsCount = 0;
     const statusMap: Record<string, number> = {};
     const interviewStatusMap: Record<string, number> = {};
     const interviewTypeMap: Record<string, number> = {};
-    let rejectedCount = 0;
 
     applications.forEach(app => {
+      // ⚡ Bolt: Normalize status to lowercase for consistent map keys
       const status = app.status.toLowerCase();
 
       // 1. Status metrics
       statusMap[status] = (statusMap[status] || 0) + 1;
-      if (status === 'rejected') rejectedCount++;
+      if (status === 'rejected') rejectedApplicationsCount++;
 
       // 2. Interview metrics from timeline
       if (app.timeline && app.timeline.length > 0) {
@@ -34,7 +36,8 @@ export const useInsightsData = () => {
 
         app.timeline.forEach(event => {
           if (INTERVIEW_TYPES.has(event.type)) {
-            interviewEvents.push(event);
+            // ⚡ Bolt: Using a counter instead of an array (totalInterviews) saves memory
+            totalInterviews++;
             appInterviewCount++;
 
             // Track interview type frequency
@@ -49,47 +52,38 @@ export const useInsightsData = () => {
       }
     });
 
-    return {
-      allInterviewEvents: interviewEvents,
-      statusData: statusMap,
-      interviewStatusData: interviewStatusMap,
-      interviewTypeData: interviewTypeMap,
-      rejectedApplicationsCount: rejectedCount,
-      totalApplications: applications.length
-    };
-  }, [applications]);
+    const totalApplications = applications.length;
 
-  // Memoize chart data to prevent unnecessary re-renders of chart components.
-  const statusChartData = useMemo(() =>
-    Object.keys(metrics.statusData).map(key => ({
-      name: key,
-      value: metrics.statusData[key],
-    })), [metrics.statusData]);
+    // ⚡ Bolt: Pre-calculate chart data with translations to avoid extra loops/logic in components.
+    const statusChartData = Object.entries(statusMap).map(([key, value]) => ({
+      name: t(`statuses.${key}`, key),
+      value,
+    }));
 
-  const interviewChartData = useMemo(() =>
-    Object.keys(metrics.interviewStatusData).map(key => ({
-      name: key,
-      value: metrics.interviewStatusData[key],
-    })), [metrics.interviewStatusData]);
+    const interviewChartData = Object.entries(interviewStatusMap).map(([key, value]) => ({
+      name: t(`statuses.${key}`, key),
+      value,
+    }));
 
-  const interviewTypeChartData = useMemo(() =>
-    Object.keys(metrics.interviewTypeData)
-      .map(key => ({
+    const interviewTypeChartData = Object.entries(interviewTypeMap)
+      .map(([key, value]) => ({
         name: t(`insights.interviewTypes.${key}`, key),
-        value: metrics.interviewTypeData[key],
+        value,
       }))
-      .sort((a, b) => b.value - a.value), [metrics.interviewTypeData, t]);
+      .sort((a, b) => b.value - a.value);
 
-  const rejectionPercentage = metrics.totalApplications > 0
-    ? ((metrics.rejectedApplicationsCount / metrics.totalApplications) * 100).toFixed(2) + '%'
-    : '0%';
+    const rejectionPercentage = totalApplications > 0
+      ? ((rejectedApplicationsCount / totalApplications) * 100).toFixed(2) + '%'
+      : '0%';
 
-  return {
-    ...metrics,
-    statusChartData,
-    interviewChartData,
-    interviewTypeChartData,
-    rejectionPercentage,
-    totalInterviews: metrics.allInterviewEvents.length
-  };
+    return {
+      totalApplications,
+      totalInterviews,
+      rejectedApplicationsCount,
+      rejectionPercentage,
+      statusChartData,
+      interviewChartData,
+      interviewTypeChartData
+    };
+  }, [applications, t]);
 };
