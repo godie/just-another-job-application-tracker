@@ -216,7 +216,7 @@ const HomePageContent: React.FC<HomePageContentProps> = () => {
               onClear={handleClearFilters}
             />
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-              <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
+              <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
                 <Trans
                   i18nKey="home.showing"
                   values={{ count: filteredApplications.length, total: applications.length }}
@@ -229,11 +229,11 @@ const HomePageContent: React.FC<HomePageContentProps> = () => {
           {/* View Switcher, Header and Add Button */}
           <div className="flex flex-col gap-4 mb-6 mt-6 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between lg:flex-1">
-              <h2 className="text-2xl font-bold text-gray-800 dark:text-white">{t('home.pipeline')}</h2>
+              <h1 className="text-2xl font-bold text-gray-800 dark:text-white">{t('home.pipeline')}</h1>
               <ViewSwitcher currentView={currentView} onViewChange={handleViewChange} />
             </div>
             <button 
-              className="self-start sm:self-auto bg-green-600 hover:bg-green-700 text-white font-bold py-2.5 px-6 rounded-full shadow-lg transition duration-150 transform hover:scale-[1.02]"
+              className="self-start sm:self-auto bg-green-700 hover:bg-green-800 text-white font-bold py-2.5 px-6 rounded-full shadow-lg transition duration-150 transform hover:scale-[1.02]"
               onClick={handleCreateNew}
               aria-label={t('home.addEntry')}
               data-testid="add-entry-button"

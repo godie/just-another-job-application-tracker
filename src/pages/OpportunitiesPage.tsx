@@ -175,7 +175,7 @@ const OpportunitiesPageContent: React.FC<OpportunitiesPageContentProps> = () => 
 
         <div className="mb-6 flex justify-between items-start">
           <div>
-            <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">{t('opportunities.title')}</h2>
+            <h1 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">{t('opportunities.title')}</h1>
             <p className="text-sm text-gray-600 dark:text-gray-400">
               {t('opportunities.subtitle')}
             </p>

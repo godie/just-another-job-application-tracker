@@ -17,14 +17,14 @@ const Footer: React.FC<FooterProps> = ({ version }) => {
               i18nKey="common.footer.vibecoded"
               values={{ version, year: currentYear }}
               components={{
-                link: <a className="text-blue-500 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300" href="https://github.com/godie" target="_blank" rel="noopener noreferrer" />
+                link: <a className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 font-medium" href="https://github.com/godie" target="_blank" rel="noopener noreferrer" aria-label="Github godie" />
               }}
             />
         </p>
-        <p className="text-center text-xs text-gray-500 dark:text-gray-400 mt-2">
-          <a className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300" href="/terms.html" target="_blank" rel="noopener noreferrer">{t('common.footer.terms')}</a>
+        <p className="text-center text-xs text-gray-600 dark:text-gray-400 mt-2">
+          <a className="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200" href="/terms.html" target="_blank" rel="noopener noreferrer">{t('common.footer.terms')}</a>
           {' | '}
-          <a className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300" href="/privacy.html" target="_blank" rel="noopener noreferrer">{t('common.footer.privacy')}</a>
+          <a className="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200" href="/privacy.html" target="_blank" rel="noopener noreferrer">{t('common.footer.privacy')}</a>
         </p>
       </div>
     </footer>
