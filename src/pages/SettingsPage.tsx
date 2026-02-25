@@ -12,6 +12,7 @@ import {
 } from '../utils/localStorage';
 import packageJson from '../../package.json';
 import { usePreferencesStore } from '../stores/preferencesStore';
+import { useAuthStore } from '../stores/authStore';
 import { EmailScanReview } from '../components/EmailScanReview';
 
 import FieldsSettings from '../components/settings/FieldsSettings';
@@ -29,7 +30,7 @@ interface SettingsPageProps {
 
 interface SettingsPageState {
   hasChanges: boolean;
-  activeSection: 'fields' | 'view' | 'date' | 'custom' | 'interviewing' | 'atsSearch' | 'emailScan';
+  activeSection: 'fields' | 'view' | 'date' | 'custom' | 'interviewing' | 'atsSearch' | 'emailScan' | 'cloud';
   editingCustomField: FieldDefinition | null;
   customFieldForm: Partial<FieldDefinition>;
   editingInterviewEvent: CustomInterviewEvent | null;
@@ -63,11 +64,12 @@ const settingsPageReducer = (state: SettingsPageState, action: SettingsPageActio
   }
 };
 
-const SettingsPageContent: React.FC<SettingsPageProps> = () => {
+const SettingsPageContent: React.FC<SettingsPageProps> = ({ onNavigate }) => {
   const { t } = useTranslation();
   const { showSuccess } = useAlert();
   
-  // Use Zustand store
+  // Use Zustand stores
+  const { user, isAuthenticated, logout } = useAuthStore();
   const preferences = usePreferencesStore((state) => state.preferences);
   const loadPreferences = usePreferencesStore((state) => state.loadPreferences);
   const updatePreferences = usePreferencesStore((state) => state.updatePreferences);
@@ -271,6 +273,7 @@ const SettingsPageContent: React.FC<SettingsPageProps> = () => {
     { id: 'interviewing' as const, label: t('settings.sections.interviewing'), icon: '🎯' },
     { id: 'atsSearch' as const, label: t('opportunities.atsSearch.title'), icon: '🔍' },
     { id: 'emailScan' as const, label: t('settings.emailScan.section'), icon: '📧' },
+    { id: 'cloud' as const, label: 'Cloud Sync', icon: '☁️' },
   ];
 
   const renderSection = () => {
@@ -341,6 +344,54 @@ const SettingsPageContent: React.FC<SettingsPageProps> = () => {
         );
       case 'emailScan':
         return <EmailScanReview />;
+      case 'cloud':
+        return (
+          <div className="space-y-6">
+            <h3 className="text-lg font-medium text-gray-900 dark:text-white">Cloud Synchronization</h3>
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              Keep your applications and opportunities in sync across all your devices.
+            </p>
+
+            <div className="bg-gray-50 dark:bg-gray-700/50 p-6 rounded-lg border border-gray-200 dark:border-gray-600">
+              {isAuthenticated ? (
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div>
+                    <p className="text-sm font-semibold text-gray-900 dark:text-white">Logged in as</p>
+                    <p className="text-sm text-indigo-600 dark:text-indigo-400 font-medium">{user?.email}</p>
+                    <p className="text-xs text-gray-500 mt-1">✓ Your data is being synchronized automatically.</p>
+                  </div>
+                  <button
+                    onClick={() => {
+                      logout();
+                      showSuccess('Logged out successfully');
+                    }}
+                    className="px-4 py-2 bg-white dark:bg-gray-800 border border-red-300 text-red-600 rounded-md text-sm font-medium hover:bg-red-50 dark:hover:bg-red-900/20"
+                  >
+                    Logout
+                  </button>
+                </div>
+              ) : (
+                <div className="text-center py-4">
+                  <p className="text-gray-600 dark:text-gray-300 mb-4">Sync is currently disabled. Log in to enable cloud features.</p>
+                  <div className="flex justify-center gap-3">
+                    <button
+                      onClick={() => onNavigate?.('login' as any)}
+                      className="px-6 py-2 bg-indigo-600 text-white rounded-md text-sm font-medium hover:bg-indigo-700 shadow-sm"
+                    >
+                      Login
+                    </button>
+                    <button
+                      onClick={() => onNavigate?.('register' as any)}
+                      className="px-6 py-2 bg-white dark:bg-gray-800 border border-gray-300 text-gray-700 dark:text-gray-200 rounded-md text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700"
+                    >
+                      Create Account
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        );
       default:
         return null;
     }
@@ -350,7 +401,7 @@ const SettingsPageContent: React.FC<SettingsPageProps> = () => {
     <div className="max-w-5xl mx-auto">
         <div className="mb-6">
           <h1 className="text-3xl font-bold text-gray-800 dark:text-white mb-2">{t('settings.title')}</h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
+          <p className="text-sm text-gray-600 dark:text-gray-400">
             {t('settings.subtitle')}
           </p>
         </div>

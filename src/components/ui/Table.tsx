@@ -4,7 +4,12 @@ export const Table = React.forwardRef<
   HTMLTableElement,
   React.HTMLAttributes<HTMLTableElement>
 >(({ className = '', ...props }, ref) => (
-  <div className="relative w-full overflow-auto">
+  <div
+    className="relative w-full overflow-auto focus:outline-none"
+    tabIndex={0}
+    role="region"
+    aria-label="Data Table"
+  >
     <table
       ref={ref}
       className={`w-full caption-bottom text-sm ${className}`}
@@ -64,7 +69,7 @@ export const TableHead = React.forwardRef<
 >(({ className = '', ...props }, ref) => (
   <th
     ref={ref}
-    className={`h-12 px-4 text-left align-middle font-medium text-gray-500 dark:text-gray-400 [&:has([role=checkbox])]:pr-0 ${className}`}
+    className={`h-12 px-4 text-left align-middle font-semibold text-gray-700 dark:text-gray-300 [&:has([role=checkbox])]:pr-0 ${className}`}
     {...props}
   />
 ));
