@@ -38,7 +38,7 @@ describe('EmailScanReview', () => {
   it('renders title and subtitle', () => {
     renderWithAlert();
     expect(screen.getByText(/Scan Gmail for Applications/i)).toBeInTheDocument();
-    expect(screen.getByText(/Review the results below/i)).toBeInTheDocument();
+    expect(screen.getByText(/Find confirmations, rejections and next steps in your Gmail to automate your tracker/i)).toBeInTheDocument();
   });
 
   it('renders Scan Gmail button', () => {

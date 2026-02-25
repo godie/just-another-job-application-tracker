@@ -100,7 +100,7 @@ export async function scanEmails(provider: EmailProvider): Promise<ScanPreview> 
     }
   }
 
-  return { proposedAdditions, proposedUpdates };
+  return { proposedAdditions, proposedUpdates, emails };
 }
 
 /**
