@@ -13,7 +13,6 @@ import {
 import packageJson from '../../package.json';
 import { usePreferencesStore } from '../stores/preferencesStore';
 import { useAuthStore } from '../stores/authStore';
-import { EmailScanReview } from '../components/EmailScanReview';
 
 import FieldsSettings from '../components/settings/FieldsSettings';
 import ViewSettings from '../components/settings/ViewSettings';
@@ -30,7 +29,7 @@ interface SettingsPageProps {
 
 interface SettingsPageState {
   hasChanges: boolean;
-  activeSection: 'fields' | 'view' | 'date' | 'custom' | 'interviewing' | 'atsSearch' | 'emailScan' | 'cloud';
+  activeSection: 'fields' | 'view' | 'date' | 'custom' | 'interviewing' | 'atsSearch' | 'cloud';
   editingCustomField: FieldDefinition | null;
   customFieldForm: Partial<FieldDefinition>;
   editingInterviewEvent: CustomInterviewEvent | null;
@@ -272,7 +271,6 @@ const SettingsPageContent: React.FC<SettingsPageProps> = ({ onNavigate }) => {
     { id: 'custom' as const, label: t('settings.sections.custom'), icon: '➕' },
     { id: 'interviewing' as const, label: t('settings.sections.interviewing'), icon: '🎯' },
     { id: 'atsSearch' as const, label: t('opportunities.atsSearch.title'), icon: '🔍' },
-    { id: 'emailScan' as const, label: t('settings.emailScan.section'), icon: '📧' },
     { id: 'cloud' as const, label: 'Cloud Sync', icon: '☁️' },
   ];
 
@@ -342,8 +340,6 @@ const SettingsPageContent: React.FC<SettingsPageProps> = ({ onNavigate }) => {
             onCancelEdit={() => dispatch({ type: 'RESET_FORMS' })}
           />
         );
-      case 'emailScan':
-        return <EmailScanReview />;
       case 'cloud':
         return (
           <div className="space-y-6">

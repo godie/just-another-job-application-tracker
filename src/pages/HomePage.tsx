@@ -37,7 +37,7 @@ interface HomePageContentProps {
   onNavigate?: (page: PageType) => void;
 }
 
-const HomePageContent: React.FC<HomePageContentProps> = () => {
+const HomePageContent: React.FC<HomePageContentProps> = ({ onNavigate }) => {
   const { t } = useTranslation();
   const { showSuccess } = useAlert();
   
@@ -181,6 +181,19 @@ const HomePageContent: React.FC<HomePageContentProps> = () => {
               refreshApplications();
             }}
           />
+
+          {/* Gmail Scan Link */}
+          <div className="mb-6 flex justify-end">
+            <button
+              onClick={() => onNavigate?.('gmail-scan')}
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition-colors border border-indigo-100 dark:border-indigo-800"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+              {t('settings.emailScan.scanGmail')}
+            </button>
+          </div>
 
           <div className="space-y-4">
             <FiltersBar

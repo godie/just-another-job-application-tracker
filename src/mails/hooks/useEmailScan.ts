@@ -42,6 +42,7 @@ export function useEmailScan() {
         setPreview((prev) => {
           if (!prev) return null;
           return {
+            ...prev,
             proposedAdditions: prev.proposedAdditions.filter(
               (a) => !additions.some((x) => x.id === a.id)
             ),
@@ -67,6 +68,6 @@ export function useEmailScan() {
     setError(null);
   }, []);
 
-  return { scan, applySelected, loading, applying, error, preview, clearPreview };
+  return { scan, applySelected, loading, applying, error, preview, setPreview, clearPreview };
 }
   

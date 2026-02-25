@@ -8,6 +8,7 @@ import SettingsPage from './pages/SettingsPage';
 import InsightsPage from './pages/InsightsPage';
 import SupportPage from './pages/SupportPage';
 import SuggestionsViewerPage from './pages/SuggestionsViewerPage';
+import GmailScanPage from './pages/GmailScanPage';
 import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
@@ -20,7 +21,7 @@ import { useCloudSync } from './hooks/useCloudSync';
 // ⚡ Bolt: Provide a dummy client ID if not present to prevent crash in dev/test environments
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || 'dummy-client-id.apps.googleusercontent.com';
 
-export type PageType = 'landing' | 'applications' | 'opportunities' | 'settings' | 'insights' | 'support' | 'suggestions' | 'login' | 'register';
+export type PageType = 'landing' | 'applications' | 'opportunities' | 'settings' | 'insights' | 'support' | 'suggestions' | 'login' | 'register' | 'gmail-scan';
 
 function App() {
   const { checkAuth } = useAuthStore();
@@ -31,7 +32,7 @@ function App() {
     if (typeof window !== 'undefined') {
       const urlParams = new URLSearchParams(window.location.search);
       const pageParam = urlParams.get('page') as PageType | null;
-      const validPages: PageType[] = ['landing', 'applications', 'opportunities', 'settings', 'insights', 'support', 'suggestions', 'login', 'register'];
+      const validPages: PageType[] = ['landing', 'applications', 'opportunities', 'settings', 'insights', 'support', 'suggestions', 'login', 'register', 'gmail-scan'];
 
       if (pageParam && validPages.includes(pageParam)) {
         return pageParam;
@@ -86,6 +87,8 @@ function App() {
         return <SupportPage onNavigate={setCurrentPage} />;
       case 'suggestions':
         return <SuggestionsViewerPage onNavigate={setCurrentPage} />;
+      case 'gmail-scan':
+        return <GmailScanPage onNavigate={setCurrentPage} />;
       case 'landing':
         return <LandingPage onNavigate={setCurrentPage} />;
       case 'login':

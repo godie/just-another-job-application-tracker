@@ -2,11 +2,7 @@ import React from 'react';
 import { useRegisterSW } from 'virtual:pwa-register/react';
 
 const PWAReloadPrompt: React.FC = () => {
-  const {
-    offlineReady: [offlineReady, setOfflineReady],
-    needUpdate: [needUpdate, setNeedUpdate],
-    updateServiceWorker,
-  } = useRegisterSW({
+  const sw = useRegisterSW({
     onRegistered(r: ServiceWorkerRegistration | undefined) {
       console.log('SW Registered: ' + r);
     },
@@ -14,6 +10,14 @@ const PWAReloadPrompt: React.FC = () => {
       console.log('SW registration error', error);
     },
   });
+
+  if (!sw || !sw.offlineReady || !sw.needUpdate) return null;
+
+  const {
+    offlineReady: [offlineReady, setOfflineReady],
+    needUpdate: [needUpdate, setNeedUpdate],
+    updateServiceWorker,
+  } = sw;
 
   const close = () => {
     setOfflineReady(false);
