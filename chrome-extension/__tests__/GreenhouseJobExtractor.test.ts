@@ -11,7 +11,7 @@ beforeEach(() => {
   mockQuerySelectorAll.mockReturnValue([]);
   
   // Clear window.__remixContext
-  Object.defineProperty(global, 'window', { value: { __remixContext: undefined } });
+  Object.defineProperty(global, 'window', { value: { __remixContext: undefined }, writable: true });
   
   global.document = {
     querySelector: mockQuerySelector,
@@ -37,8 +37,11 @@ describe('GreenhouseJobExtractor', () => {
 
   describe('extract', () => {
     it('should extract position from DOM', () => {
-      const mockElement = { textContent: 'Senior Software Engineer' };
-      mockQuerySelector.mockReturnValueOnce(mockElement);
+      const mockElement = { textContent: 'Senior Software Engineer', tagName: 'H1' };
+      mockQuerySelector.mockImplementation((selector) => {
+        if (selector === '.job__title h1') return mockElement;
+        return null;
+      });
       
       const result = extractor.extract();
       expect(result.position).toBe('Senior Software Engineer');
@@ -57,7 +60,7 @@ describe('GreenhouseJobExtractor', () => {
         },
       };
       
-      Object.defineProperty(global, 'window', { value: { __remixContext: mockRemixContext } });
+      Object.defineProperty(global, 'window', { value: { __remixContext: mockRemixContext }, writable: true });
       
       mockQuerySelector.mockReturnValue(null);
       
@@ -66,26 +69,12 @@ describe('GreenhouseJobExtractor', () => {
     });
 
     it('should extract company name from meta tag if React state not available', () => {
-      const mockMetaElement = { content: 'Test Company' } as HTMLMetaElement;
+      const mockMetaElement = { content: 'Test Company', tagName: 'META' } as unknown as HTMLMetaElement;
       
-      mockQuerySelector
-        .mockReturnValueOnce(null) // title 1
-        .mockReturnValueOnce(null) // title 2
-        .mockReturnValueOnce(null) // title 3
-        .mockReturnValueOnce(null) // title 4
-        .mockReturnValueOnce(null) // title 5
-        .mockReturnValueOnce(mockMetaElement) // company meta 1 (found!)
-        .mockReturnValueOnce(null) // company meta 2
-        .mockReturnValueOnce(null) // logo
-        .mockReturnValueOnce(null) // location 1
-        .mockReturnValueOnce(null) // location 2
-        .mockReturnValueOnce(null) // location 3
-        .mockReturnValueOnce(null) // jobType 1
-        .mockReturnValueOnce(null) // jobType 2
-        .mockReturnValueOnce(null) // jobType 3
-        .mockReturnValueOnce(null) // description 1
-        .mockReturnValueOnce(null) // description 2
-        .mockReturnValueOnce(null); // description 3
+      mockQuerySelector.mockImplementation((selector) => {
+        if (selector === 'meta[property="og:site_name"]') return mockMetaElement;
+        return null;
+      });
       
       const result = extractor.extract();
       expect(result.company).toBe('Test Company');
@@ -94,26 +83,15 @@ describe('GreenhouseJobExtractor', () => {
     it('should extract location and job type from location element', () => {
       const mockLocationElement = {
         textContent: 'Remote - Canada',
+        tagName: 'DIV'
       };
       
-      mockQuerySelector
-        .mockReturnValueOnce(null) // title 1
-        .mockReturnValueOnce(null) // title 2
-        .mockReturnValueOnce(null) // title 3
-        .mockReturnValueOnce(null) // title 4
-        .mockReturnValueOnce(null) // title 5
-        .mockReturnValueOnce(null) // company meta
-        .mockReturnValueOnce(null) // company meta 2
-        .mockReturnValueOnce(null) // logo
-        .mockReturnValueOnce(mockLocationElement) // location 1 (found!)
-        .mockReturnValueOnce(null) // location 2
-        .mockReturnValueOnce(null) // location 3
-        .mockReturnValueOnce(mockLocationElement) // jobType 1 (found! - uses same selectors)
-        .mockReturnValueOnce(null) // jobType 2
-        .mockReturnValueOnce(null); // jobType 3
+      mockQuerySelector.mockImplementation((selector) => {
+        if (selector === '.job__location div') return mockLocationElement;
+        return null;
+      });
       
       const result = extractor.extract();
-      // extractLocation returns first part before dash, so "Remote - Canada" -> "Remote"
       expect(result.location).toBe('Remote');
       expect(result.jobType).toBe('Remote');
     });
@@ -121,23 +99,13 @@ describe('GreenhouseJobExtractor', () => {
     it('should detect Hybrid job type', () => {
       const mockLocationElement = {
         textContent: 'Hybrid - New York, NY',
+        tagName: 'DIV'
       };
       
-      mockQuerySelector
-        .mockReturnValueOnce(null) // title 1
-        .mockReturnValueOnce(null) // title 2
-        .mockReturnValueOnce(null) // title 3
-        .mockReturnValueOnce(null) // title 4
-        .mockReturnValueOnce(null) // title 5
-        .mockReturnValueOnce(null) // company meta
-        .mockReturnValueOnce(null) // company meta 2
-        .mockReturnValueOnce(null) // logo
-        .mockReturnValueOnce(mockLocationElement) // location 1 (found!)
-        .mockReturnValueOnce(null) // location 2
-        .mockReturnValueOnce(null) // location 3
-        .mockReturnValueOnce(mockLocationElement) // jobType 1 (found! - uses same selectors)
-        .mockReturnValueOnce(null) // jobType 2
-        .mockReturnValueOnce(null); // jobType 3
+      mockQuerySelector.mockImplementation((selector) => {
+        if (selector === '.job__location div') return mockLocationElement;
+        return null;
+      });
       
       const result = extractor.extract();
       expect(result.jobType).toBe('Hybrid');
@@ -145,26 +113,12 @@ describe('GreenhouseJobExtractor', () => {
 
     it('should extract description and limit to 1000 characters', () => {
       const longDescription = 'A'.repeat(1500);
-      const mockDescriptionElement = { textContent: longDescription };
+      const mockDescriptionElement = { textContent: longDescription, tagName: 'DIV' };
       
-      mockQuerySelector
-        .mockReturnValueOnce(null) // title 1
-        .mockReturnValueOnce(null) // title 2
-        .mockReturnValueOnce(null) // title 3
-        .mockReturnValueOnce(null) // title 4
-        .mockReturnValueOnce(null) // title 5
-        .mockReturnValueOnce(null) // company meta
-        .mockReturnValueOnce(null) // company meta 2
-        .mockReturnValueOnce(null) // logo
-        .mockReturnValueOnce(null) // location 1
-        .mockReturnValueOnce(null) // location 2
-        .mockReturnValueOnce(null) // location 3
-        .mockReturnValueOnce(null) // jobType 1 (uses same selectors as location)
-        .mockReturnValueOnce(null) // jobType 2
-        .mockReturnValueOnce(null) // jobType 3
-        .mockReturnValueOnce(null) // description 1
-        .mockReturnValueOnce(null) // description 2
-        .mockReturnValueOnce(mockDescriptionElement); // description 3 (found!)
+      mockQuerySelector.mockImplementation((selector) => {
+        if (selector === '.job__description') return mockDescriptionElement;
+        return null;
+      });
       
       const result = extractor.extract();
       expect(result.description?.length).toBeLessThanOrEqual(1003);
@@ -172,19 +126,43 @@ describe('GreenhouseJobExtractor', () => {
     });
 
     it('should extract salary from pay ranges section', () => {
-      const mockSalaryElement = { textContent: '$180,000 - $230,000 CAD' };
-      const mockSalaryElements = [mockSalaryElement];
+      const mockSalaryElement = { textContent: '$180,000 - $230,000 CAD', tagName: 'DIV' };
       
-      mockQuerySelectorAll.mockReturnValueOnce(mockSalaryElements);
-      
-      mockQuerySelector
-        .mockReturnValueOnce(null) // title
-        .mockReturnValueOnce(null) // location
-        .mockReturnValueOnce(null) // description
-        .mockReturnValueOnce(null); // salary selector
+      mockQuerySelectorAll.mockImplementation((selector) => {
+        if (selector === '.job__pay-ranges .body') return [mockSalaryElement];
+        return [];
+      });
       
       const result = extractor.extract();
       expect(result.salary).toBe('$180,000 - $230,000 CAD');
+    });
+
+    it('should extract salary from description if not in dedicated section', () => {
+      const mockDescriptionElement = { textContent: 'The compensation for this role is $150k - $200k per year.' + 'A'.repeat(100), tagName: 'DIV' };
+
+      mockQuerySelectorAll.mockReturnValue([]); // No salary in dedicated section
+      mockQuerySelector.mockImplementation((selector) => {
+        if (selector === '.job__description') return mockDescriptionElement;
+        return null;
+      });
+
+      const result = extractor.extract();
+      expect(result.salary).toContain('$150k');
+    });
+
+    it('should extract company name from logo alt text (v2)', () => {
+      const mockLogoElement = {
+        alt: 'Acme Corp Logo',
+        tagName: 'IMG'
+      } as unknown as HTMLImageElement;
+
+      mockQuerySelector.mockImplementation((selector) => {
+        if (selector === '.logo img') return mockLogoElement;
+        return null;
+      });
+
+      const result = extractor.extractCompanyName();
+      expect(result).toBe('Acme Corp');
     });
 
     it('should extract posted date from React state', () => {
@@ -200,15 +178,13 @@ describe('GreenhouseJobExtractor', () => {
         },
       };
       
-      Object.defineProperty(global, 'window', { value: { __remixContext: mockRemixContext } });
+      Object.defineProperty(global, 'window', { value: { __remixContext: mockRemixContext }, writable: true });
       
       mockQuerySelector.mockReturnValue(null);
       
       const result = extractor.extract();
       expect(result.postedDate).toBeDefined();
       expect(result.postedDate).toMatch(/^\d{4}-\d{2}-\d{2}$/);
-      // The date is converted to ISO and then split, so it uses local timezone conversion
-      // '2025-01-15T19:34:31-04:00' in UTC is '2025-01-15T23:34:31Z', so date is 2025-01-15
       expect(result.postedDate).toBe('2025-01-15');
     });
 
@@ -238,26 +214,13 @@ describe('GreenhouseJobExtractor', () => {
     it('should extract company name from logo alt text', () => {
       const mockLogoElement = {
         alt: 'Narvar Logo',
-      } as HTMLImageElement;
+        tagName: 'IMG'
+      } as unknown as HTMLImageElement;
       
-      mockQuerySelector
-        .mockReturnValueOnce(null) // title 1
-        .mockReturnValueOnce(null) // title 2
-        .mockReturnValueOnce(null) // title 3
-        .mockReturnValueOnce(null) // title 4
-        .mockReturnValueOnce(null) // title 5
-        .mockReturnValueOnce(null) // company meta 1
-        .mockReturnValueOnce(null) // company meta 2
-        .mockReturnValueOnce(mockLogoElement) // logo (found!)
-        .mockReturnValueOnce(null) // location 1
-        .mockReturnValueOnce(null) // location 2
-        .mockReturnValueOnce(null) // location 3
-        .mockReturnValueOnce(null) // jobType 1
-        .mockReturnValueOnce(null) // jobType 2
-        .mockReturnValueOnce(null) // jobType 3
-        .mockReturnValueOnce(null) // description 1
-        .mockReturnValueOnce(null) // description 2
-        .mockReturnValueOnce(null); // description 3
+      mockQuerySelector.mockImplementation((selector) => {
+        if (selector === '.logo img') return mockLogoElement;
+        return null;
+      });
       
       const result = extractor.extract();
       expect(result.company).toBe('Narvar');
@@ -266,28 +229,16 @@ describe('GreenhouseJobExtractor', () => {
     it('should extract full location text including country', () => {
       const mockLocationElement = {
         textContent: 'Remote - Canada',
+        tagName: 'DIV'
       };
       
-      mockQuerySelector
-        .mockReturnValueOnce(null) // title 1
-        .mockReturnValueOnce(null) // title 2
-        .mockReturnValueOnce(null) // title 3
-        .mockReturnValueOnce(null) // title 4
-        .mockReturnValueOnce(null) // title 5
-        .mockReturnValueOnce(null) // company meta
-        .mockReturnValueOnce(null) // company meta 2
-        .mockReturnValueOnce(null) // logo
-        .mockReturnValueOnce(mockLocationElement) // location 1 (found!)
-        .mockReturnValueOnce(null) // location 2
-        .mockReturnValueOnce(null) // location 3
-        .mockReturnValueOnce(mockLocationElement) // jobType 1 (found!)
-        .mockReturnValueOnce(null) // jobType 2
-        .mockReturnValueOnce(null); // jobType 3
+      mockQuerySelector.mockImplementation((selector) => {
+        if (selector === '.job__location div') return mockLocationElement;
+        return null;
+      });
       
       const result = extractor.extract();
-      // extractLocation returns first part before dash, so "Remote - Canada" -> "Remote"
       expect(result.location).toBe('Remote');
     });
   });
 });
-
