@@ -7,6 +7,7 @@ import { GreenhouseJobExtractor } from './GreenhouseJobExtractor';
 import { AshbyhqJobExtractor } from './AshbyhqJobExtractor';
 import { WorkableJobExtractor } from './WorkableJobExtractor';
 import { LeverJobExtractor } from './LeverJobExtractor';
+import { IndeedJobExtractor } from './IndeedJobExtractor';
 
 /**
  * Registry of all available job extractors
@@ -17,6 +18,7 @@ const extractors: JobExtractor[] = [
   new AshbyhqJobExtractor(),
   new WorkableJobExtractor(),
   new LeverJobExtractor(),
+  new IndeedJobExtractor(),
 ];
 
 /**
@@ -67,4 +69,5 @@ export { GreenhouseJobExtractor };
 export { AshbyhqJobExtractor };
 export { WorkableJobExtractor };
 export { LeverJobExtractor };
+export { IndeedJobExtractor };
 
