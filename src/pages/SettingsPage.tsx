@@ -23,6 +23,9 @@ import InterviewingSettings from '../components/settings/InterviewingSettings';
 import EmailScanSettings from '../components/settings/EmailScanSettings';
 
 import { type PageType } from '../App';
+import SettingsHeader from '../components/settings/layout/SettingsHeader';
+import SettingsNavigation from '../components/settings/layout/SettingsNavigation';
+import SettingsActions from '../components/settings/layout/SettingsActions';
 
 interface SettingsPageProps {
   onNavigate?: (page: PageType) => void;
@@ -37,8 +40,8 @@ interface SettingsPageState {
   interviewEventForm: Partial<CustomInterviewEvent>;
 }
 
-type SettingsPageAction =
-  | { type: 'SET_FIELD'; field: keyof SettingsPageState; value: boolean | string | FieldDefinition | CustomInterviewEvent | Partial<FieldDefinition> | Partial<CustomInterviewEvent> | null }
+export type SettingsPageAction =
+  | { type: 'SET_FIELD'; field: keyof SettingsPageState; value: string | boolean | FieldDefinition | CustomInterviewEvent | Partial<FieldDefinition> | Partial<CustomInterviewEvent> | null }
   | { type: 'SET_CUSTOM_FIELD_FORM'; value: Partial<FieldDefinition> }
   | { type: 'SET_INTERVIEW_EVENT_FORM'; value: Partial<CustomInterviewEvent> }
   | { type: 'RESET_FORMS' };
@@ -278,61 +281,19 @@ const SettingsPageContent: React.FC<SettingsPageProps> = ({ onNavigate }) => {
 
   return (
     <div className="max-w-5xl mx-auto">
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-800 dark:text-white mb-2">{t('settings.title')}</h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            {t('settings.subtitle')}
-          </p>
-        </div>
+        <SettingsHeader />
 
-        {/* Section Navigation */}
-        <div className="mb-6 flex flex-wrap gap-2 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-2">
-          {sections.map((section) => (
-            <button
-              key={section.id}
-              type="button"
-              onClick={() => dispatch({ type: 'SET_FIELD', field: 'activeSection', value: section.id })}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition ${
-                activeSection === section.id
-                  ? 'bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300'
-                  : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
-              }`}
-            >
-              <span>{section.icon}</span>
-              <span>{section.label}</span>
-            </button>
-          ))}
-        </div>
+        <SettingsNavigation
+          sections={sections}
+          activeSection={activeSection}
+          dispatch={dispatch}
+        />
 
-        {/* Save/Reset Controls */}
-        <div className="mb-6 flex justify-between items-center bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={handleSave}
-              disabled={!hasChanges}
-              className={`px-4 py-2 rounded-full text-sm font-semibold shadow-sm transition ${
-                hasChanges
-                  ? 'bg-indigo-600 text-white hover:bg-indigo-700'
-                  : 'bg-gray-200 text-gray-500 dark:text-gray-400 cursor-not-allowed'
-              }`}
-            >
-              {t('settings.saveChanges')}
-            </button>
-            <button
-              type="button"
-              onClick={handleReset}
-              className="px-4 py-2 rounded-full text-sm font-semibold border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700 transition"
-            >
-              {t('settings.resetDefault')}
-            </button>
-          </div>
-          {hasChanges && (
-            <span className="text-xs text-amber-600 font-medium">
-              {t('settings.unsavedChanges')}
-            </span>
-          )}
-        </div>
+        <SettingsActions
+          hasChanges={hasChanges}
+          onSave={handleSave}
+          onReset={handleReset}
+        />
 
         {/* Section Content */}
         <div className="bg-white dark:bg-gray-800 shadow-lg rounded-xl p-6 sm:p-8">
@@ -370,10 +331,12 @@ const SettingsPageContent: React.FC<SettingsPageProps> = ({ onNavigate }) => {
   );
 };
 
+import type { UserPreferences } from '../types/preferences';
+
 interface SettingsSectionContentProps {
   activeSection: string;
   orderedFields: FieldDefinition[];
-  preferences: ReturnType<typeof usePreferencesStore>["preferences"];
+  preferences: UserPreferences;
   editingCustomField: FieldDefinition | null;
   customFieldForm: Partial<FieldDefinition>;
   editingInterviewEvent: CustomInterviewEvent | null;
@@ -390,10 +353,10 @@ interface SettingsSectionContentProps {
   onEditInterviewEvent: (event: CustomInterviewEvent) => void;
   onUpdateInterviewEvent: () => void;
   onDeleteInterviewEvent: (eventId: string) => void;
-  updatePreferences: (prefs: Partial<ReturnType<typeof usePreferencesStore>["preferences"]>) => void;
+  updatePreferences: (prefs: Partial<UserPreferences>) => void;
   dispatch: React.Dispatch<SettingsPageAction>;
   isAuthenticated: boolean;
-  user: ReturnType<typeof useAuthStore>["user"];
+  user: { id: number; email: string } | null;
   logout: () => void;
   showSuccess: (msg: string) => void;
   onNavigate?: (page: PageType) => void;

@@ -17,14 +17,19 @@ const Alert: React.FC<AlertProps> = ({ type, message, onClose, duration = 5000 }
     if (duration > 0) {
       const timer = setTimeout(() => {
         setIsVisible(false);
-        if (onClose) {
-          setTimeout(onClose, 300); // Wait for fade-out animation
-        }
       }, duration);
 
       return () => clearTimeout(timer);
     }
-  }, [duration, onClose]);
+  }, [duration]);
+
+  // Effect to handle onClose after visibility is lost
+  useEffect(() => {
+    if (!isVisible && onClose) {
+      const timer = setTimeout(onClose, 300); // Wait for fade-out animation
+      return () => clearTimeout(timer);
+    }
+  }, [isVisible, onClose]);
 
   if (!isVisible) return null;
 

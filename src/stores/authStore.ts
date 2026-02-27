@@ -37,8 +37,8 @@ export const useAuthStore = create<AuthState>()((set) => ({
       await fetch('/api/auth/logout', { method: 'DELETE' });
       set({ user: null, isAuthenticated: false });
       setLoginStatus(false);
-    } catch (err) {
-      console.error('Logout failed', err);
+    } catch {
+      // Ignore
     }
   },
 
@@ -59,7 +59,7 @@ export const useAuthStore = create<AuthState>()((set) => ({
         set({ user: null, isAuthenticated: false });
         setLoginStatus(false);
       }
-    } catch (err) {
+    } catch {
       set({ user: null, isAuthenticated: false });
       setLoginStatus(false);
     } finally {
