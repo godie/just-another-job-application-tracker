@@ -167,7 +167,7 @@ describe('Content Script - extractJobData', () => {
       textContent: 'Posted 5 days ago',
     };
     
-    // Mock all selectors: position (4), company (4), location (4), jobType (4), description (4), date (3)
+    // Mock all selectors: position (4), company (7), location (4), jobType (4), description (4), date (5)
     // Note: salary uses querySelectorAll, so it doesn't count for querySelector mocks
     mockQuerySelector
       .mockReturnValueOnce(null) // position selector 1
@@ -178,6 +178,9 @@ describe('Content Script - extractJobData', () => {
       .mockReturnValueOnce(null) // company selector 2
       .mockReturnValueOnce(null) // company selector 3
       .mockReturnValueOnce(null) // company selector 4
+      .mockReturnValueOnce(null) // company selector 5
+      .mockReturnValueOnce(null) // company selector 6
+      .mockReturnValueOnce(null) // company selector 7
       .mockReturnValueOnce(null) // location selector 1
       .mockReturnValueOnce(null) // location selector 2
       .mockReturnValueOnce(null) // location selector 3
@@ -192,7 +195,9 @@ describe('Content Script - extractJobData', () => {
       .mockReturnValueOnce(null) // description selector 4
       .mockReturnValueOnce(null) // date selector 1
       .mockReturnValueOnce(null) // date selector 2
-      .mockReturnValueOnce(mockDateElement); // date selector 3 (found!)
+      .mockReturnValueOnce(null) // date selector 3
+      .mockReturnValueOnce(null) // date selector 4
+      .mockReturnValueOnce(mockDateElement); // date selector 5 (found!)
     
     const result = extractJobData('https://www.linkedin.com/jobs/view/123');
     expect(result.postedDate).toBeDefined();

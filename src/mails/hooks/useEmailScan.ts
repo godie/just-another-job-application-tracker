@@ -13,12 +13,12 @@ export function useEmailScan() {
   const [error, setError] = useState<Error | null>(null);
   const [preview, setPreview] = useState<ScanPreview | null>(null);
 
-  const scan = useCallback(async (provider: EmailProvider) => {
+  const scan = useCallback(async (provider: EmailProvider, daysBack: number = 30) => {
     setLoading(true);
     setError(null);
     setPreview(null);
     try {
-      const result = await scanEmails(provider);
+      const result = await scanEmails(provider, daysBack);
       setPreview(result);
       return result;
     } catch (err) {
@@ -42,6 +42,7 @@ export function useEmailScan() {
         setPreview((prev) => {
           if (!prev) return null;
           return {
+            ...prev,
             proposedAdditions: prev.proposedAdditions.filter(
               (a) => !additions.some((x) => x.id === a.id)
             ),
@@ -67,6 +68,6 @@ export function useEmailScan() {
     setError(null);
   }, []);
 
-  return { scan, applySelected, loading, applying, error, preview, clearPreview };
+  return { scan, applySelected, loading, applying, error, preview, setPreview, clearPreview };
 }
   

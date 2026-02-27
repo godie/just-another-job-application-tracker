@@ -17,8 +17,13 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, currentPage, onNaviga
   // Load sidebar preference from localStorage
   useEffect(() => {
     const savedSidebarState = localStorage.getItem('sidebarOpen');
+    const isMobile = window.innerWidth < 768;
+
     if (savedSidebarState !== null) {
       setIsSidebarOpen(savedSidebarState === 'true');
+    } else if (isMobile) {
+      // Default to closed on mobile
+      setIsSidebarOpen(false);
     }
   }, []);
 
@@ -45,10 +50,11 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, currentPage, onNaviga
             isOpen={isSidebarOpen}
           />
         </div>
-        {/* Overlay for mobile when sidebar is open */}
+        {/* Overlay for mobile when sidebar is open - Only shown if sidebar is not hidden on mobile */}
+        {/* Since sidebar is currently hidden on mobile (md:block), we don't need the overlay */}
         {isSidebarOpen && (
           <div
-            className="fixed inset-0 bg-black bg-opacity-50 z-30 md:hidden mt-16"
+            className="fixed inset-0 bg-black bg-opacity-50 z-30 hidden mt-16"
             onClick={toggleSidebar}
             aria-hidden="true"
           />

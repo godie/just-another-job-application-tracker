@@ -63,28 +63,43 @@ export class GreenhouseJobExtractor implements JobExtractor {
       // Fallback to other methods
     }
 
-    // If not found in state, try meta tags
+    // If not found in state, try meta tags and common selectors
     if (!companyName) {
       const companySelectors = [
         'meta[property="og:site_name"]',
         'meta[name="application-name"]',
+        '.company-name',
+        '[data-testid="company-name"]',
+        '#header .company-name',
       ];
       for (const selector of companySelectors) {
-        const element = document.querySelector(selector) as HTMLMetaElement;
-        if (element?.content) {
-          companyName = element.content;
-          break;
+        if (selector.startsWith('meta')) {
+          const element = document.querySelector(selector) as HTMLMetaElement;
+          if (element?.content) {
+            companyName = element.content;
+            break;
+          }
+        } else {
+          const element = document.querySelector(selector);
+          if (element) {
+            companyName = element.textContent?.trim() || '';
+            break;
+          }
         }
       }
     }
 
     // If still not found, try to extract from logo alt text or URL
     if (!companyName) {
-      const logoElement = document.querySelector('.logo img') as HTMLImageElement;
-      if (logoElement?.alt) {
-        const altMatch = logoElement.alt.match(/(.+?)\s+Logo/i);
-        if (altMatch) {
-          companyName = altMatch[1];
+      const logoSelectors = ['.logo img', '#logo img', '[class*="logo"] img'];
+      for (const selector of logoSelectors) {
+        const logoElement = document.querySelector(selector) as HTMLImageElement;
+        if (logoElement?.alt) {
+          const altMatch = logoElement.alt.match(/(.+?)\s+Logo/i) || [null, logoElement.alt];
+          if (altMatch[1]) {
+            companyName = altMatch[1].trim();
+            break;
+          }
         }
       }
     }
@@ -166,17 +181,31 @@ export class GreenhouseJobExtractor implements JobExtractor {
       '.job__pay-ranges .body',
       '.pay-range .body',
       '.pay-range p.body',
+      '.pay-range',
+      '[data-testid="pay-range"]',
     ];
     for (const selector of salarySelectors) {
       const elements = document.querySelectorAll(selector);
       for (const element of Array.from(elements)) {
         const text = element.textContent?.trim() || '';
-        // Look for salary patterns like "$180,000 - $230,000 CAD"
-        if (text.match(/[$€£]\s*[\d,]+/)) {
+        // Look for salary patterns like "$180,000 - $230,000 CAD" or keywords
+        if (text.match(/[$€£]\s*[\d,]+/) ||
+            text.toLowerCase().includes('salary') ||
+            text.toLowerCase().includes('compensation') ||
+            text.toLowerCase().includes('salario')) {
           return text;
         }
       }
     }
+
+    // Fallback: search in description for salary patterns
+    const description = this.extractJobDescription();
+    const salaryRegex = /([$€£]\s*[\d,]+[.\d]*[kKmM]?\s*[-–—]\s*[$€£]\s*[\d,]+[.\d]*[kKmM]?)|([$€£]\s*[\d,]+[.\d]*[kKmM]?\s*(per|a|\/) (year|month|hour|año|mes|hora))/gi;
+    const match = description.match(salaryRegex);
+    if (match) {
+      return match[0];
+    }
+
     return '';
   }
 
