@@ -20,6 +20,7 @@ import DateFormatSettings from '../components/settings/DateFormatSettings';
 import CustomFieldsSettings from '../components/settings/CustomFieldsSettings';
 import ATSSearchSettings from '../components/settings/ATSSearchSettings';
 import InterviewingSettings from '../components/settings/InterviewingSettings';
+import EmailScanSettings from '../components/settings/EmailScanSettings';
 
 import { type PageType } from '../App';
 
@@ -29,7 +30,7 @@ interface SettingsPageProps {
 
 interface SettingsPageState {
   hasChanges: boolean;
-  activeSection: 'fields' | 'view' | 'date' | 'custom' | 'interviewing' | 'atsSearch' | 'cloud';
+  activeSection: 'fields' | 'view' | 'date' | 'custom' | 'interviewing' | 'atsSearch' | 'emailScan' | 'cloud';
   editingCustomField: FieldDefinition | null;
   customFieldForm: Partial<FieldDefinition>;
   editingInterviewEvent: CustomInterviewEvent | null;
@@ -271,6 +272,7 @@ const SettingsPageContent: React.FC<SettingsPageProps> = ({ onNavigate }) => {
     { id: 'custom' as const, label: t('settings.sections.custom'), icon: '➕' },
     { id: 'interviewing' as const, label: t('settings.sections.interviewing'), icon: '🎯' },
     { id: 'atsSearch' as const, label: t('opportunities.atsSearch.title'), icon: '🔍' },
+    { id: 'emailScan' as const, label: t('settings.emailScan.section'), icon: '📧' },
     { id: 'cloud' as const, label: 'Cloud Sync', icon: '☁️' },
   ];
 
@@ -312,6 +314,25 @@ const SettingsPageContent: React.FC<SettingsPageProps> = ({ onNavigate }) => {
             onUpdateCustomField={handleUpdateCustomField}
             onDeleteCustomField={handleDeleteCustomField}
             onCancelEdit={() => dispatch({ type: 'RESET_FORMS' })}
+          />
+        );
+      case 'emailScan':
+        return (
+          <EmailScanSettings
+            emailScanMonths={preferences.emailScanMonths || 3}
+            enabledChatbots={preferences.enabledChatbots || ['ChatGPT', 'Claude', 'Gemini']}
+            onEmailScanMonthsChange={(months) => {
+              updatePreferences({ emailScanMonths: months });
+              dispatch({ type: 'SET_FIELD', field: 'hasChanges', value: true });
+            }}
+            onChatbotToggle={(chatbotId) => {
+              const current = preferences.enabledChatbots || ['ChatGPT', 'Claude', 'Gemini'];
+              const enabledChatbots = current.includes(chatbotId)
+                ? current.filter(id => id !== chatbotId)
+                : [...current, chatbotId];
+              updatePreferences({ enabledChatbots });
+              dispatch({ type: 'SET_FIELD', field: 'hasChanges', value: true });
+            }}
           />
         );
       case 'atsSearch':

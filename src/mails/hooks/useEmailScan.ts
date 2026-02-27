@@ -13,12 +13,12 @@ export function useEmailScan() {
   const [error, setError] = useState<Error | null>(null);
   const [preview, setPreview] = useState<ScanPreview | null>(null);
 
-  const scan = useCallback(async (provider: EmailProvider) => {
+  const scan = useCallback(async (provider: EmailProvider, daysBack: number = 30) => {
     setLoading(true);
     setError(null);
     setPreview(null);
     try {
-      const result = await scanEmails(provider);
+      const result = await scanEmails(provider, daysBack);
       setPreview(result);
       return result;
     } catch (err) {

@@ -42,7 +42,15 @@ export const DEFAULT_PREFERENCES: UserPreferences = {
     keywords: '"hiring" OR "apply" OR "open role"',
     location: '"remote" OR "work from home"',
   },
+  emailScanMonths: 3,
+  enabledChatbots: ['ChatGPT', 'Claude', 'Gemini'],
 };
+
+export const CHATBOTS = [
+  { id: 'ChatGPT', name: 'ChatGPT', url: 'https://chatgpt.com/' },
+  { id: 'Claude', name: 'Claude', url: 'https://claude.ai/new' },
+  { id: 'Gemini', name: 'Gemini', url: 'https://gemini.google.com/app' },
+];
 
 export const ATS_PLATFORMS = [
   { id: 'ashby', name: 'Ashby', url: 'jobs.ashbyhq.com' },

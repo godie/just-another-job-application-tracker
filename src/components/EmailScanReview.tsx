@@ -8,12 +8,15 @@ import type { ProposedAddition, ProposedUpdate } from '../mails/types';
 import { getAuthCookie } from '../utils/api';
 import { useAlert } from './AlertProvider';
 import { useApplicationsStore } from '../stores/applicationsStore';
+import { usePreferencesStore } from '../stores/preferencesStore';
+import { CHATBOTS } from '../utils/constants';
 import type { InterviewStageType } from '../types/applications';
 
 export function EmailScanReview() {
   const { t } = useTranslation();
   const { showSuccess, showError } = useAlert();
   const applications = useApplicationsStore((state) => state.applications);
+  const preferences = usePreferencesStore((state) => state.preferences);
 
   const {
     scan,
@@ -31,6 +34,7 @@ export function EmailScanReview() {
   const [selectedUpdates, setSelectedUpdates] = useState<Set<string>>(new Set());
 
   // Manual tab states
+  const [scanMonths, setScanMonths] = useState(preferences.emailScanMonths || 3);
   const [snippetLength, setSnippetLength] = useState(200);
   const [selectedEmailIds, setSelectedEmailIds] = useState<Set<string>>(new Set());
   const [pastedJson, setPastedJson] = useState('');
@@ -44,7 +48,8 @@ export function EmailScanReview() {
         return;
       }
       const provider = new GmailEmailClient(res.access_token);
-      const result = await scan(provider);
+      const daysBack = scanMonths * 30;
+      const result = await scan(provider, daysBack);
       setSelectedAdditions(new Set());
       setSelectedUpdates(new Set());
       if (result) {
@@ -151,7 +156,7 @@ export function EmailScanReview() {
     );
   }, [applications]);
 
-  const handleGeneratePrompt = useCallback(() => {
+  const handleGeneratePrompt = useCallback((chatbot?: { id: string; name: string; url: string }) => {
     if (!preview) return;
     const selectedEmails = preview.emails.filter(e => selectedEmailIds.has(e.id));
 
@@ -167,7 +172,13 @@ export function EmailScanReview() {
     });
 
     navigator.clipboard.writeText(prompt);
-    showSuccess(t('settings.emailScan.promptCopied'));
+
+    if (chatbot) {
+      showSuccess(t('settings.emailScan.promptCopiedToOpen', { name: chatbot.name }));
+      window.open(chatbot.url, '_blank');
+    } else {
+      showSuccess(t('settings.emailScan.promptCopied'));
+    }
   }, [preview, selectedEmailIds, snippetLength, showSuccess, t]);
 
   const handleProcessJson = useCallback(() => {
@@ -296,12 +307,29 @@ export function EmailScanReview() {
           </div>
         )}
 
-        <div className="flex flex-wrap gap-2 mb-6">
+        <div className="flex flex-wrap items-end gap-4 mb-6">
+          <div className="flex flex-col gap-1.5">
+            <label className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              {t('settings.emailScan.scanPeriod')}
+            </label>
+            <select
+              value={scanMonths}
+              onChange={(e) => setScanMonths(parseInt(e.target.value))}
+              disabled={loading}
+              className="px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm font-medium focus:ring-2 focus:ring-indigo-500 outline-none disabled:opacity-50 transition-all"
+            >
+              <option value={3}>{t('settings.emailScan.months', { count: 3 })}</option>
+              <option value={6}>{t('settings.emailScan.months', { count: 6 })}</option>
+              <option value={9}>{t('settings.emailScan.months', { count: 9 })}</option>
+              <option value={12}>{t('settings.emailScan.months', { count: 12 })}</option>
+            </select>
+          </div>
+
           <button
             type="button"
             onClick={handleScanGmail}
             disabled={loading}
-            className="px-4 py-2 rounded-lg font-medium bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center gap-2"
+            className="px-4 py-2 rounded-lg font-medium bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition h-[38px] flex items-center gap-2"
           >
             {loading ? (
               <>
@@ -347,26 +375,53 @@ export function EmailScanReview() {
           <div className="space-y-6 animate-in fade-in slide-in-from-top-4 duration-300">
             {preview && (
               <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4 space-y-4 border border-gray-200 dark:border-gray-600">
-                <div className="flex items-center gap-4">
-                  <div className="flex-1">
-                    <label htmlFor="snippetLength" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      {t('settings.emailScan.snippetLength')}
-                    </label>
-                    <input
-                      type="number"
-                      id="snippetLength"
-                      value={snippetLength}
-                      onChange={(e) => setSnippetLength(parseInt(e.target.value) || 200)}
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-sm"
-                    />
+                <div className="flex flex-col gap-4">
+                  <div className="flex items-center gap-4">
+                    <div className="flex-1">
+                      <label htmlFor="snippetLength" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        {t('settings.emailScan.snippetLength')}
+                      </label>
+                      <input
+                        type="number"
+                        id="snippetLength"
+                        value={snippetLength}
+                        onChange={(e) => setSnippetLength(parseInt(e.target.value) || 200)}
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-sm"
+                      />
+                    </div>
                   </div>
-                  <button
-                    onClick={handleGeneratePrompt}
-                    disabled={selectedEmailIds.size === 0}
-                    className="mt-6 px-4 py-2 rounded-lg font-medium bg-indigo-100 text-indigo-700 hover:bg-indigo-200 dark:bg-indigo-900/40 dark:text-indigo-300 transition"
-                  >
-                    {t('settings.emailScan.generatePrompt')}
-                  </button>
+
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                      {t('settings.emailScan.generatePrompt')}
+                    </label>
+                    <div className="flex flex-wrap gap-2">
+                      <button
+                        onClick={() => handleGeneratePrompt()}
+                        disabled={selectedEmailIds.size === 0}
+                        className="px-4 py-2 rounded-lg font-medium border border-indigo-200 text-indigo-700 hover:bg-indigo-50 dark:border-indigo-900/30 dark:text-indigo-300 dark:hover:bg-indigo-900/20 transition flex items-center gap-2"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                        </svg>
+                        {t('common.copy')}
+                      </button>
+
+                      {CHATBOTS.filter(cb => (preferences.enabledChatbots || ['ChatGPT', 'Claude', 'Gemini']).includes(cb.id)).map(chatbot => (
+                        <button
+                          key={chatbot.id}
+                          onClick={() => handleGeneratePrompt(chatbot)}
+                          disabled={selectedEmailIds.size === 0}
+                          className="px-4 py-2 rounded-lg font-medium bg-indigo-600 text-white hover:bg-indigo-700 transition flex items-center gap-2"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                          </svg>
+                          {t('settings.emailScan.copyAndOpen', { name: chatbot.name })}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 </div>
 
                 <div className="space-y-2">

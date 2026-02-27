@@ -49,12 +49,12 @@ export interface ScanResult {
  * Does not modify the store.
  * Fetches messages in chunks to avoid Gmail "Too many concurrent requests" (429).
  */
-export async function scanEmails(provider: EmailProvider): Promise<ScanPreview> {
+export async function scanEmails(provider: EmailProvider, daysBack: number = 30): Promise<ScanPreview> {
   const adapter = new EmailAdapter();
   const { applications } = useApplicationsStore.getState();
 
   const idsByQuery = await Promise.all(
-    Object.values(QUERIES).map((q) => provider.search(q(30) as string))
+    Object.values(QUERIES).map((q) => provider.search(q(daysBack) as string))
   );
   const uniqueIds = [...new Set(idsByQuery.flat())];
 
