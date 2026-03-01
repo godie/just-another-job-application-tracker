@@ -11,6 +11,7 @@ import { useApplicationsStore } from '../stores/applicationsStore';
 import { usePreferencesStore } from '../stores/preferencesStore';
 import { CHATBOTS } from '../utils/constants';
 import type { InterviewStageType } from '../types/applications';
+import { isApplicationDuplicate } from '../utils/applications';
 
 export function EmailScanReview() {
   const { t } = useTranslation();
@@ -147,14 +148,6 @@ export function EmailScanReview() {
       return dateStr;
     }
   };
-
-  const isDuplicate = useCallback((company: string, position: string) => {
-    return applications.some(app =>
-      app.company.toLowerCase().trim() === company.toLowerCase().trim() &&
-      app.position.toLowerCase().trim() === position.toLowerCase().trim() &&
-      app.status !== 'Deleted'
-    );
-  }, [applications]);
 
   const handleGeneratePrompt = useCallback((chatbot?: { id: string; name: string; url: string }) => {
     if (!preview) return;
@@ -497,14 +490,14 @@ export function EmailScanReview() {
                   </button>
                 </div>
                 <ul className="grid gap-3">
-                  {preview.proposedAdditions.map((item: ProposedAddition) => {
-                    const duplicate = isDuplicate(item.data.company, item.data.position);
-                    const isForced = forceAddIds.has(item.id);
+                  {preview.proposedAdditions.map((addition: ProposedAddition) => {
+                    const duplicate = isApplicationDuplicate(applications, addition.data.company, addition.data.position);
+                    const isForced = forceAddIds.has(addition.id);
                     const disabled = duplicate && !isForced;
 
                     return (
                       <li
-                        key={item.id}
+                        key={addition.id}
                         className={`group flex items-start gap-4 p-4 rounded-xl border transition-all duration-200 ${
                           duplicate
                             ? 'bg-amber-50/50 border-amber-200 dark:bg-amber-900/10 dark:border-amber-900/30'
@@ -513,19 +506,19 @@ export function EmailScanReview() {
                       >
                         <input
                           type="checkbox"
-                          id={item.id}
-                          checked={selectedAdditions.has(item.id)}
-                          onChange={() => toggleAddition(item.id)}
+                          id={addition.id}
+                          checked={selectedAdditions.has(addition.id)}
+                          onChange={() => toggleAddition(addition.id)}
                           disabled={disabled}
                           className="mt-1 h-5 w-5 text-indigo-600 border-gray-300 dark:border-gray-600 rounded focus:ring-indigo-500 disabled:opacity-30"
                         />
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center justify-between mb-1">
-                            <label htmlFor={item.id} className="font-bold text-gray-900 dark:text-white cursor-pointer group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
-                              {item.data.position} <span className="text-gray-400 font-normal mx-1">@</span> {item.data.company}
+                            <label htmlFor={addition.id} className="font-bold text-gray-900 dark:text-white cursor-pointer group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                              {addition.data.position} <span className="text-gray-400 font-normal mx-1">@</span> {addition.data.company}
                             </label>
                             <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                              {item.data.platform}
+                              {addition.data.platform}
                             </span>
                           </div>
 
@@ -544,8 +537,8 @@ export function EmailScanReview() {
                                   onChange={(e) => {
                                     setForceAddIds(prev => {
                                       const next = new Set(prev);
-                                      if (e.target.checked) next.add(item.id);
-                                      else next.delete(item.id);
+                                      if (e.target.checked) next.add(addition.id);
+                                      else next.delete(addition.id);
                                       return next;
                                     });
                                   }}
@@ -558,10 +551,10 @@ export function EmailScanReview() {
 
                           <div className="flex items-center gap-3 mt-1">
                             <p className="text-xs text-gray-500 dark:text-gray-400 truncate flex-1">
-                              {item.source.subject}
+                              {addition.source.subject}
                             </p>
                             <span className="text-xs text-gray-400 dark:text-gray-500 whitespace-nowrap">
-                              {formatDate(item.source.date)}
+                              {formatDate(addition.source.date)}
                             </span>
                           </div>
                         </div>
@@ -592,33 +585,33 @@ export function EmailScanReview() {
                   </button>
                 </div>
                 <ul className="grid gap-3">
-                  {preview.proposedUpdates.map((item: ProposedUpdate) => (
+                  {preview.proposedUpdates.map((update: ProposedUpdate) => (
                     <li
-                      key={item.id}
+                      key={update.id}
                       className="group flex items-start gap-4 p-4 rounded-xl border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-green-300 dark:hover:border-green-500/50 shadow-sm transition-all duration-200"
                     >
                       <input
                         type="checkbox"
-                        id={item.id}
-                        checked={selectedUpdates.has(item.id)}
-                        onChange={() => toggleUpdate(item.id)}
+                        id={update.id}
+                        checked={selectedUpdates.has(update.id)}
+                        onChange={() => toggleUpdate(update.id)}
                         className="mt-1 h-5 w-5 text-green-600 border-gray-300 dark:border-gray-600 rounded focus:ring-green-500"
                       />
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
-                          <label htmlFor={item.id} className="font-bold text-gray-900 dark:text-white cursor-pointer group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors">
-                            {item.position} <span className="text-gray-400 font-normal mx-1">@</span> {item.company}
+                          <label htmlFor={update.id} className="font-bold text-gray-900 dark:text-white cursor-pointer group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors">
+                            {update.position} <span className="text-gray-400 font-normal mx-1">@</span> {update.company}
                           </label>
                           <span className="px-2 py-0.5 rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-[10px] font-bold uppercase tracking-wider">
-                            +{t(`insights.interviewTypes.${item.newEvent.type}`)}
+                            +{t(`insights.interviewTypes.${update.newEvent.type}`)}
                           </span>
                         </div>
                         <div className="flex items-center gap-3 mt-1">
                           <p className="text-xs text-gray-500 dark:text-gray-400 truncate flex-1">
-                            {item.source.subject}
+                            {update.source.subject}
                           </p>
                           <span className="text-xs text-gray-400 dark:text-gray-500 whitespace-nowrap">
-                            {formatDate(item.source.date)}
+                            {formatDate(update.source.date)}
                           </span>
                         </div>
                       </div>
