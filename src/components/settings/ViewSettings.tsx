@@ -10,33 +10,50 @@ interface ViewSettingsProps {
 const ViewSettings: React.FC<ViewSettingsProps> = ({ defaultView, onDefaultViewChange }) => {
   const { t } = useTranslation();
 
-  return (
-    <div>
-      <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">{t('settings.view.title')}</h2>
-      <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
-        {t('settings.view.desc')}
-      </p>
+  const views: ViewType[] = ['table', 'timeline', 'kanban', 'calendar'];
 
+  const getViewIcon = (view: ViewType) => {
+    switch (view) {
+      case 'table': return '📊';
+      case 'timeline': return '⏳';
+      case 'kanban': return '📋';
+      case 'calendar': return '📅';
+      default: return '👁️';
+    }
+  };
+
+  return (
+    <div className="space-y-4">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {(['table', 'timeline', 'kanban', 'calendar'] as ViewType[]).map((view) => (
-          <button
-            key={view}
-            type="button"
-            onClick={() => onDefaultViewChange(view)}
-            className={`p-4 rounded-lg border-2 transition ${
-              defaultView === view
-                ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20'
-                : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 bg-white dark:bg-gray-800'
-            }`}
-          >
-            <div className="text-left">
-              <div className="font-semibold text-gray-800 dark:text-white capitalize mb-1">{t(`views.${view}`)}</div>
-              <div className="text-xs text-gray-500 dark:text-gray-400">
-                {t(`settings.view.${view}`)}
+        {views.map((view) => {
+          const isActive = defaultView === view;
+          return (
+            <button
+              key={view}
+              onClick={() => onDefaultViewChange(view)}
+              className={`flex flex-col p-5 rounded-xl border-2 transition-all text-left group ${
+                isActive
+                  ? 'border-indigo-600 bg-indigo-50/50 dark:bg-indigo-900/20'
+                  : 'border-gray-100 dark:border-gray-700 hover:border-indigo-200 dark:hover:border-indigo-900/30 bg-white dark:bg-gray-800'
+              }`}
+            >
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-3xl group-hover:scale-110 transition-transform">{getViewIcon(view)}</span>
+                <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${isActive ? 'border-indigo-600' : 'border-gray-300 dark:border-gray-600'}`}>
+                  {isActive && <div className="w-2.5 h-2.5 rounded-full bg-indigo-600" />}
+                </div>
               </div>
-            </div>
-          </button>
-        ))}
+              <div>
+                <div className="font-bold text-gray-900 dark:text-white capitalize text-lg">
+                  {t(`views.${view}`)}
+                </div>
+                <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                  {t(`settings.view.${view}`)}
+                </div>
+              </div>
+            </button>
+          );
+        })}
       </div>
     </div>
   );

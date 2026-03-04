@@ -155,7 +155,22 @@
   "settings": {
     "title": "Ajustes",
     "subtitle": "Personaliza tu experiencia de seguimiento de aplicaciones. Todos los cambios se guardan localmente en tu navegador.",
+    "categories": {
+      "general": "General",
+      "customization": "Personalización",
+      "integrations": "Integraciones",
+      "account": "Cuenta"
+    },
     "sections": {
+      "fieldsDesc": "Gestiona qué campos estándar son visibles en tus formularios y tablas.",
+      "viewDesc": "Elige tu diseño preferido para navegar por tus aplicaciones de empleo.",
+      "dateDesc": "Establece tu formato de fecha preferido para que coincida con tu región.",
+      "customDesc": "Añade campos especializados como 'Teléfono del reclutador' para tu seguimiento.",
+      "interviewingDesc": "Define etapas de entrevista personalizadas que coincidan con tu proceso.",
+      "atsSearchDesc": "Configura filtros para encontrar trabajos rápidamente en plataformas ATS.",
+      "emailScanDesc": "Automatiza tu seguimiento escaneando tu Gmail en busca de confirmaciones.",
+      "cloud": "Sincronización en la Nube",
+      "cloudDesc": "Respalda tus datos de forma segura y sincronízalos entre múltiples dispositivos.",
       "fields": "Campos de Tabla",
       "view": "Vista Predeterminada",
       "date": "Formato de Fecha",
