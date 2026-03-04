@@ -155,7 +155,22 @@
   "settings": {
     "title": "Settings",
     "subtitle": "Customize your application tracking experience. All changes are saved locally in your browser.",
+    "categories": {
+      "general": "General",
+      "customization": "Customization",
+      "integrations": "Integrations",
+      "account": "Account"
+    },
     "sections": {
+      "fieldsDesc": "Manage which standard fields are visible in your application forms and tables.",
+      "viewDesc": "Choose your preferred layout for browsing your job applications.",
+      "dateDesc": "Set your preferred date display format to match your region or preference.",
+      "customDesc": "Add specialized fields like 'Recruiter Phone' or 'Salary Range' to your tracking.",
+      "interviewingDesc": "Define custom interview stages that match your specific recruitment process.",
+      "atsSearchDesc": "Configure search filters to quickly find jobs on company ATS platforms.",
+      "emailScanDesc": "Automate your tracking by scanning your Gmail for application confirmations.",
+      "cloud": "Cloud Sync",
+      "cloudDesc": "Securely back up your data and sync across multiple devices using your account.",
       "fields": "Table Fields",
       "view": "Default View",
       "date": "Date Format",
