@@ -21,7 +21,10 @@ const BottomNav: React.FC<BottomNavProps> = ({ currentPage, onNavigate }) => {
   ];
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-gray-50 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 md:hidden z-50">
+    <nav
+      aria-label="Bottom navigation"
+      className="fixed bottom-0 left-0 right-0 bg-gray-50 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 md:hidden z-50"
+    >
       <div className="flex justify-around items-center h-16">
         {navItems.map((item) => (
           <button
@@ -33,13 +36,14 @@ const BottomNav: React.FC<BottomNavProps> = ({ currentPage, onNavigate }) => {
                 : 'text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400'
             }`}
             aria-label={item.label}
+            aria-current={currentPage === item.page ? 'page' : undefined}
           >
             {item.icon}
             <span className="text-xs mt-1">{item.label}</span>
           </button>
         ))}
       </div>
-    </div>
+    </nav>
   );
 };
 
