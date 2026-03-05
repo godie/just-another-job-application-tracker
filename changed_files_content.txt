@@ -145,3 +145,150 @@ function App() {
 }
 
 export default App;
+// src/components/Sidebar.tsx
+import React, { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+import { type PageType } from '../App';
+import { useOpportunitiesStore } from '../stores/opportunitiesStore';
+import { Button, Badge } from './ui';
+
+interface SidebarProps {
+  currentPage?: PageType;
+  onNavigate?: (page: PageType) => void;
+  isOpen?: boolean;
+}
+
+const Sidebar: React.FC<SidebarProps> = ({ currentPage = 'applications', onNavigate, isOpen = true }) => {
+  const { t } = useTranslation();
+  const opportunities = useOpportunitiesStore((state) => state.opportunities);
+  const loadOpportunities = useOpportunitiesStore((state) => state.loadOpportunities);
+  const refreshOpportunities = useOpportunitiesStore((state) => state.refreshOpportunities);
+  const opportunitiesCount = opportunities.length;
+
+  useEffect(() => {
+    loadOpportunities();
+
+    // Listen for storage changes
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'jobOpportunities' || e.key === null) {
+        refreshOpportunities();
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+
+    // Poll for changes (in case extension uses chrome.storage.local)
+    const interval = setInterval(refreshOpportunities, 2000);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      clearInterval(interval);
+    };
+  }, [loadOpportunities, refreshOpportunities]);
+
+  const handleNavigation = (page: PageType) => {
+    if (onNavigate) {
+      onNavigate(page);
+    }
+  };
+
+  const navItems: { page: PageType; label: string; showBadge?: boolean }[] = [
+    { page: 'applications', label: t('nav.applications') },
+    { page: 'opportunities', label: t('nav.opportunities'), showBadge: true },
+    { page: 'settings', label: t('nav.settings') },
+    { page: 'insights', label: t('nav.insights') },
+    { page: 'support', label: t('nav.support') },
+    { page: 'landing', label: t('nav.about') },
+  ];
+
+  return (
+    <nav
+      aria-label="Sidebar"
+      className={`fixed left-0 top-16 h-[calc(100vh-4rem)] bg-gray-50 dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 p-4 flex flex-col transition-transform duration-300 ease-in-out z-40 ${
+        isOpen ? 'translate-x-0' : '-translate-x-full'
+      } w-64`}
+    >
+      <ul className="flex-1">
+        {navItems.map((item) => (
+          <li key={item.page} className="mb-4">
+            <Button
+              variant={currentPage === item.page ? 'secondary' : 'ghost'}
+              size="lg"
+              onClick={() => handleNavigation(item.page)}
+              aria-current={currentPage === item.page ? 'page' : undefined}
+              className={`w-full justify-start text-lg relative ${
+                currentPage === item.page
+                  ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white'
+                  : ''
+              }`}
+            >
+              {item.label}
+              {item.showBadge && opportunitiesCount > 0 && (
+                <Badge
+                  variant="danger"
+                  className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center rounded-full font-bold"
+                >
+                  {opportunitiesCount > 9 ? '9+' : opportunitiesCount}
+                </Badge>
+              )}
+            </Button>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  );
+};
+
+export default Sidebar;
+// src/components/BottomNav.tsx
+import React, { memo } from 'react';
+import { useTranslation } from 'react-i18next';
+import { FaTable, FaLightbulb, FaCog, FaChartBar, FaInfoCircle, FaHeart } from 'react-icons/fa';
+import { type PageType } from '../App';
+
+interface BottomNavProps {
+  currentPage: PageType;
+  onNavigate: (page: PageType) => void;
+}
+
+const BottomNav: React.FC<BottomNavProps> = ({ currentPage, onNavigate }) => {
+  const { t } = useTranslation();
+  const navItems = [
+    { page: 'applications', label: t('nav.applications'), icon: <FaTable size={24} /> },
+    { page: 'opportunities', label: t('nav.opportunities'), icon: <FaLightbulb size={24} /> },
+    { page: 'settings', label: t('nav.settings'), icon: <FaCog size={24} /> },
+    { page: 'insights', label: t('nav.insights'), icon: <FaChartBar size={24} /> },
+    { page: 'support', label: t('nav.support'), icon: <FaHeart size={24} /> },
+    { page: 'landing', label: t('nav.about'), icon: <FaInfoCircle size={24} /> },
+  ];
+
+  return (
+    <nav
+      aria-label="Bottom navigation"
+      className="fixed bottom-0 left-0 right-0 bg-gray-50 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 md:hidden z-50"
+    >
+      <div className="flex justify-around items-center h-16">
+        {navItems.map((item) => (
+          <button
+            key={item.page}
+            onClick={() => onNavigate(item.page  as PageType)}
+            className={`flex flex-col items-center justify-center w-full h-full transition-colors group relative ${
+              currentPage === item.page
+                ? 'text-indigo-600 dark:text-indigo-400'
+                : 'text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400'
+            }`}
+            aria-label={item.label}
+            aria-current={currentPage === item.page ? 'page' : undefined}
+          >
+            {item.icon}
+            <span className="text-xs mt-1">{item.label}</span>
+          </button>
+        ))}
+      </div>
+    </nav>
+  );
+};
+
+BottomNav.displayName = 'BottomNav';
+
+export default memo(BottomNav);
