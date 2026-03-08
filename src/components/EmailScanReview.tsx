@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useSelection } from '../hooks/useSelection';
 import { useEmailScan } from '../mails/hooks/useEmailScan';
 import { isGmailRateLimitError } from '../mails/errors';
 import { GmailEmailClient } from '../mails/providers/gmail/gmailClient';
@@ -31,15 +32,15 @@ export function EmailScanReview() {
   } = useEmailScan();
 
   const [activeTab, setActiveTab] = useState<'automatic' | 'manual'>('automatic');
-  const [selectedAdditions, setSelectedAdditions] = useState<Set<string>>(new Set());
-  const [selectedUpdates, setSelectedUpdates] = useState<Set<string>>(new Set());
+  const selectedAdditions = useSelection<string>();
+  const selectedUpdates = useSelection<string>();
 
   // Manual tab states
   const [scanMonths, setScanMonths] = useState(preferences.emailScanMonths || 3);
   const [snippetLength, setSnippetLength] = useState(200);
-  const [selectedEmailIds, setSelectedEmailIds] = useState<Set<string>>(new Set());
+  const selectedEmailIds = useSelection<string>();
   const [pastedJson, setPastedJson] = useState('');
-  const [forceAddIds, setForceAddIds] = useState<Set<string>>(new Set());
+  const forceAddIds = useSelection<string>();
 
   const handleScanGmail = useCallback(async () => {
     try {
@@ -51,10 +52,10 @@ export function EmailScanReview() {
       const provider = new GmailEmailClient(res.access_token);
       const daysBack = scanMonths * 30;
       const result = await scan(provider, daysBack);
-      setSelectedAdditions(new Set());
-      setSelectedUpdates(new Set());
+      selectedAdditions.clear();
+      selectedUpdates.clear();
       if (result) {
-        setSelectedEmailIds(new Set(result.emails.map(e => e.id)));
+        selectedEmailIds.selectAll(result.emails.map(e => e.id));
       }
     } catch (err) {
       const message = isGmailRateLimitError(err)
@@ -64,42 +65,24 @@ export function EmailScanReview() {
     }
   }, [scan, showError, t]);
 
-  const toggleAddition = useCallback((id: string) => {
-    setSelectedAdditions((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
-  }, []);
-
-  const toggleUpdate = useCallback((id: string) => {
-    setSelectedUpdates((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
-  }, []);
-
   const selectAllAdditions = useCallback(() => {
     if (!preview) return;
-    setSelectedAdditions(new Set(preview.proposedAdditions.map((a) => a.id)));
-  }, [preview]);
+    selectedAdditions.selectAll(preview.proposedAdditions.map((a) => a.id));
+  }, [preview, selectedAdditions]);
 
   const selectAllUpdates = useCallback(() => {
     if (!preview) return;
-    setSelectedUpdates(new Set(preview.proposedUpdates.map((u) => u.id)));
-  }, [preview]);
+    selectedUpdates.selectAll(preview.proposedUpdates.map((u) => u.id));
+  }, [preview, selectedUpdates]);
 
   const handleApplySelected = useCallback(async () => {
     if (!preview) return;
 
     const additions = preview.proposedAdditions.filter((a) =>
-      selectedAdditions.has(a.id)
+      selectedAdditions.isSelected(a.id)
     );
     const updates = preview.proposedUpdates.filter((u) =>
-      selectedUpdates.has(u.id)
+      selectedUpdates.isSelected(u.id)
     );
 
     if (additions.length === 0 && updates.length === 0) {
@@ -115,16 +98,8 @@ export function EmailScanReview() {
           updated: result.updated,
         })
       );
-      setSelectedAdditions((prev) => {
-        const next = new Set(prev);
-        additions.forEach((a) => next.delete(a.id));
-        return next;
-      });
-      setSelectedUpdates((prev) => {
-        const next = new Set(prev);
-        updates.forEach((u) => next.delete(u.id));
-        return next;
-      });
+      selectedAdditions.removeMultiple(additions.map((a) => a.id));
+      selectedUpdates.removeMultiple(updates.map((u) => u.id));
     } catch (err) {
       showError(err instanceof Error ? err.message : t('settings.emailScan.applyError'));
     }
@@ -151,7 +126,7 @@ export function EmailScanReview() {
 
   const handleGeneratePrompt = useCallback((chatbot?: { id: string; name: string; url: string }) => {
     if (!preview) return;
-    const selectedEmails = preview.emails.filter(e => selectedEmailIds.has(e.id));
+    const selectedEmails = preview.emails.filter(e => selectedEmailIds.isSelected(e.id));
 
     const emailsData = selectedEmails.map(e => ({
       subject: e.subject,
@@ -233,8 +208,8 @@ export function EmailScanReview() {
         emails: prev?.emails || []
       }));
 
-      setSelectedAdditions(new Set(additions.map(a => a.id)));
-      setSelectedUpdates(new Set(updates.map(u => u.id)));
+      selectedAdditions.selectAll(additions.map(a => a.id));
+      selectedUpdates.selectAll(updates.map(u => u.id));
       setPastedJson('');
       showSuccess('JSON procesado correctamente');
     } catch (err) {
@@ -242,18 +217,9 @@ export function EmailScanReview() {
     }
   }, [pastedJson, applications, setPreview, showSuccess, showError, t]);
 
-  const toggleEmailSelection = (id: string) => {
-    setSelectedEmailIds(prev => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
-  };
-
   const selectAllEmails = () => {
     if (!preview) return;
-    setSelectedEmailIds(new Set(preview.emails.map(e => e.id)));
+    selectedEmailIds.selectAll(preview.emails.map(e => e.id));
   };
 
   return (
@@ -431,8 +397,8 @@ export function EmailScanReview() {
                       <div key={email.id} className="flex items-start gap-3 px-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-700/50">
                         <input
                           type="checkbox"
-                          checked={selectedEmailIds.has(email.id)}
-                          onChange={() => toggleEmailSelection(email.id)}
+                          checked={selectedEmailIds.isSelected(email.id)}
+                          onChange={() => selectedEmailIds.toggle(email.id)}
                           className="mt-1"
                         />
                         <div className="min-w-0 flex-1">
@@ -492,7 +458,7 @@ export function EmailScanReview() {
                 <ul className="grid gap-3">
                   {preview.proposedAdditions.map((addition: ProposedAddition) => {
                     const duplicate = isApplicationDuplicate(applications, addition.data.company, addition.data.position);
-                    const isForced = forceAddIds.has(addition.id);
+                    const isForced = forceAddIds.isSelected(addition.id);
                     const disabled = duplicate && !isForced;
 
                     return (
@@ -507,8 +473,8 @@ export function EmailScanReview() {
                         <input
                           type="checkbox"
                           id={addition.id}
-                          checked={selectedAdditions.has(addition.id)}
-                          onChange={() => toggleAddition(addition.id)}
+                          checked={selectedAdditions.isSelected(addition.id)}
+                          onChange={() => selectedAdditions.toggle(addition.id)}
                           disabled={disabled}
                           className="mt-1 h-5 w-5 text-indigo-600 border-gray-300 dark:border-gray-600 rounded focus:ring-indigo-500 disabled:opacity-30"
                         />
@@ -535,12 +501,8 @@ export function EmailScanReview() {
                                   type="checkbox"
                                   checked={isForced}
                                   onChange={(e) => {
-                                    setForceAddIds(prev => {
-                                      const next = new Set(prev);
-                                      if (e.target.checked) next.add(addition.id);
-                                      else next.delete(addition.id);
-                                      return next;
-                                    });
+                                    if (e.target.checked) forceAddIds.select(addition.id);
+                                    else forceAddIds.deselect(addition.id);
                                   }}
                                   className="h-3.5 w-3.5 rounded border-gray-300 dark:border-gray-600 text-indigo-600"
                                 />
@@ -593,8 +555,8 @@ export function EmailScanReview() {
                       <input
                         type="checkbox"
                         id={update.id}
-                        checked={selectedUpdates.has(update.id)}
-                        onChange={() => toggleUpdate(update.id)}
+                        checked={selectedUpdates.isSelected(update.id)}
+                        onChange={() => selectedUpdates.toggle(update.id)}
                         className="mt-1 h-5 w-5 text-green-600 border-gray-300 dark:border-gray-600 rounded focus:ring-green-500"
                       />
                       <div className="flex-1 min-w-0">
