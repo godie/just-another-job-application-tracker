@@ -1,6 +1,30 @@
 // src/storage/preferences.ts
 import { PREFERENCES_STORAGE_KEY, DEFAULT_PREFERENCES } from '../utils/constants';
-import type { UserPreferences } from '../types/preferences';
+import type { UserPreferences, ATSSearchPreferences } from '../types/preferences';
+
+/**
+ * Migrates legacy OR-separated search strings to arrays.
+ */
+const migrateAtsSearch = (atsSearch: any): ATSSearchPreferences => {
+  if (!atsSearch) return DEFAULT_PREFERENCES.atsSearch!;
+
+  const migrateField = (field: any): string[] => {
+    if (Array.isArray(field)) return field;
+    if (typeof field !== 'string') return [];
+
+    // Split by " OR " (case-insensitive), remove quotes and trim
+    return field
+      .split(/ OR /i)
+      .map(part => part.trim().replace(/^"(.*)"$/, '').replace(/^'(.*)'$/, ''))
+      .filter(part => part.length > 0);
+  };
+
+  return {
+    roles: migrateField(atsSearch.roles),
+    keywords: migrateField(atsSearch.keywords),
+    location: migrateField(atsSearch.location),
+  };
+};
 
 /**
  * Obtiene las preferencias del usuario desde localStorage.
@@ -11,7 +35,7 @@ export const getPreferences = (): UserPreferences => {
     if (!stored) {
       return DEFAULT_PREFERENCES;
     }
-    const parsed = JSON.parse(stored) as Partial<UserPreferences>;
+    const parsed = JSON.parse(stored) as any;
 
     // Merge with defaults to be resilient to schema changes
     const enabledFields = parsed.enabledFields && parsed.enabledFields.length > 0
@@ -34,9 +58,12 @@ export const getPreferences = (): UserPreferences => {
 
     const customInterviewEvents = parsed.customInterviewEvents ?? DEFAULT_PREFERENCES.customInterviewEvents;
 
-    const atsSearch = parsed.atsSearch ?? DEFAULT_PREFERENCES.atsSearch;
+    // Migrate ATS search if it exists
+    const atsSearch = migrateAtsSearch(parsed.atsSearch);
 
     return {
+      ...DEFAULT_PREFERENCES,
+      ...parsed,
       enabledFields,
       columnOrder,
       customFields,
@@ -61,4 +88,3 @@ export const savePreferences = (preferences: UserPreferences): void => {
     console.error('Error saving preferences to localStorage:', error);
   }
 };
-

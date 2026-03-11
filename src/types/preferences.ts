@@ -30,9 +30,9 @@ export interface CustomInterviewEvent {
 }
 
 export interface ATSSearchPreferences {
-  roles: string;
-  keywords: string;
-  location: string;
+  roles: string[];
+  keywords: string[];
+  location: string[];
 }
 
 export interface UserPreferences {
