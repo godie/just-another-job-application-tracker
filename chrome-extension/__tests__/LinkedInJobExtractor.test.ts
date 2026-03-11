@@ -33,23 +33,23 @@ describe('LinkedInJobExtractor', () => {
 
   describe('extract', () => {
     it('should extract position from DOM', () => {
-      const mockElement = { textContent: 'Software Engineer' };
-      mockQuerySelector.mockReturnValueOnce(mockElement);
+      const mockElement = { textContent: 'Software Engineer', tagName: 'H1' };
+      mockQuerySelector.mockImplementation((selector) => {
+        if (selector === '.job-details-jobs-unified-top-card__job-title') return mockElement;
+        return null;
+      });
       
       const result = extractor.extract();
       expect(result.position).toBe('Software Engineer');
     });
 
     it('should extract company name from DOM', () => {
-      const mockCompanyElement = { textContent: 'Google' };
+      const mockCompanyElement = { textContent: 'Google', tagName: 'A' };
       
-      // Mock position selectors (4) to return null, then company selector to return element
-      mockQuerySelector
-        .mockReturnValueOnce(null) // position 1
-        .mockReturnValueOnce(null) // position 2
-        .mockReturnValueOnce(null) // position 3
-        .mockReturnValueOnce(null) // position 4
-        .mockReturnValueOnce(mockCompanyElement); // company 1 (found!)
+      mockQuerySelector.mockImplementation((selector) => {
+        if (selector === '.job-details-jobs-unified-top-card__company-name') return mockCompanyElement;
+        return null;
+      });
       
       const result = extractor.extract();
       expect(result.company).toBe('Google');
@@ -58,26 +58,13 @@ describe('LinkedInJobExtractor', () => {
     it('should extract location and job type', () => {
       const mockLocationElement = {
         textContent: 'San Francisco, CA · Remote · Posted 2 days ago',
+        tagName: 'DIV'
       };
       
-      // Mock position (4), company (4), location (4), jobType (4)
-      mockQuerySelector
-        .mockReturnValueOnce(null) // position 1
-        .mockReturnValueOnce(null) // position 2
-        .mockReturnValueOnce(null) // position 3
-        .mockReturnValueOnce(null) // position 4
-        .mockReturnValueOnce(null) // company 1
-        .mockReturnValueOnce(null) // company 2
-        .mockReturnValueOnce(null) // company 3
-        .mockReturnValueOnce(null) // company 4
-        .mockReturnValueOnce(null) // location 1
-        .mockReturnValueOnce(null) // location 2
-        .mockReturnValueOnce(null) // location 3
-        .mockReturnValueOnce(mockLocationElement) // location 4 (found!)
-        .mockReturnValueOnce(null) // jobType 1
-        .mockReturnValueOnce(null) // jobType 2
-        .mockReturnValueOnce(null) // jobType 3
-        .mockReturnValueOnce(mockLocationElement); // jobType 4 (found!)
+      mockQuerySelector.mockImplementation((selector) => {
+        if (selector === '.job-details-jobs-unified-top-card__primary-description-without-tagline') return mockLocationElement;
+        return null;
+      });
       
       const result = extractor.extract();
       expect(result.location).toBe('San Francisco, CA');
@@ -86,30 +73,12 @@ describe('LinkedInJobExtractor', () => {
 
     it('should extract description and limit to 1000 characters', () => {
       const longDescription = 'A'.repeat(1500);
-      const mockDescriptionElement = { textContent: longDescription };
+      const mockDescriptionElement = { textContent: longDescription, tagName: 'DIV' };
       
-      // Mock all previous selectors: position (4), company (4), location (4), jobType (4), description (4)
-      mockQuerySelector
-        .mockReturnValueOnce(null) // position 1
-        .mockReturnValueOnce(null) // position 2
-        .mockReturnValueOnce(null) // position 3
-        .mockReturnValueOnce(null) // position 4
-        .mockReturnValueOnce(null) // company 1
-        .mockReturnValueOnce(null) // company 2
-        .mockReturnValueOnce(null) // company 3
-        .mockReturnValueOnce(null) // company 4
-        .mockReturnValueOnce(null) // location 1
-        .mockReturnValueOnce(null) // location 2
-        .mockReturnValueOnce(null) // location 3
-        .mockReturnValueOnce(null) // location 4
-        .mockReturnValueOnce(null) // jobType 1
-        .mockReturnValueOnce(null) // jobType 2
-        .mockReturnValueOnce(null) // jobType 3
-        .mockReturnValueOnce(null) // jobType 4
-        .mockReturnValueOnce(null) // description 1
-        .mockReturnValueOnce(null) // description 2
-        .mockReturnValueOnce(null) // description 3
-        .mockReturnValueOnce(mockDescriptionElement); // description 4 (found!)
+      mockQuerySelector.mockImplementation((selector) => {
+        if (selector === '.jobs-description__text') return mockDescriptionElement;
+        return null;
+      });
       
       const result = extractor.extract();
       expect(result.description?.length).toBeLessThanOrEqual(1003);
@@ -117,36 +86,70 @@ describe('LinkedInJobExtractor', () => {
     });
 
     it('should extract salary when available', () => {
-      const mockSalaryElement = { textContent: '$120,000 - $150,000' };
+      const mockSalaryElement = { textContent: '$120,000 - $150,000', tagName: 'DIV' };
       const mockSalaryElements = [mockSalaryElement];
       
-      mockQuerySelectorAll.mockReturnValueOnce(mockSalaryElements);
-      
-      // Mock all previous selectors
-      for (let i = 0; i < 20; i++) {
-        mockQuerySelector.mockReturnValueOnce(null);
-      }
+      mockQuerySelectorAll.mockImplementation((selector) => {
+        if (selector === '.job-details-jobs-unified-top-card__job-insight') return mockSalaryElements;
+        return [];
+      });
       
       const result = extractor.extract();
       expect(result.salary).toBe('$120,000 - $150,000');
     });
 
+    it('should extract salary from description if not in insights', () => {
+      const mockDescriptionElement = { textContent: 'The salary is $80,000 - $90,000 per year.' + 'A'.repeat(100), tagName: 'DIV' };
+
+      mockQuerySelectorAll.mockReturnValue([]); // No salary in insights
+      mockQuerySelector.mockImplementation((selector) => {
+        if (selector === '.jobs-description__text') return mockDescriptionElement;
+        return null;
+      });
+
+      const result = extractor.extract();
+      expect(result.salary).toContain('$80,000');
+    });
+
+    it('should handle Spanish job types', () => {
+      const mockLocationElement = {
+        textContent: 'Madrid · En remoto',
+        tagName: 'DIV'
+      };
+
+      mockQuerySelector.mockImplementation((selector) => {
+        if (selector === '.job-details-jobs-unified-top-card__primary-description-without-tagline') return mockLocationElement;
+        return null;
+      });
+
+      const result = extractor.extract();
+      expect(result.jobType).toBe('En remoto');
+    });
+
     it('should extract posted date from "Posted X days ago" format', () => {
-      // The location/jobType/date selectors all use the same element
-      // This element contains: "Location · Job Type · Posted X days ago"
       const mockPrimaryDescriptionElement = {
         textContent: 'San Francisco, CA · Remote · Posted 5 days ago',
+        tagName: 'DIV'
       };
       
-      // Use mockImplementation to return elements based on selector
-      mockQuerySelector.mockImplementation((selector: string) => {
-        // Location, jobType, and date all use these same selectors
-        if (selector === '.job-details-jobs-unified-top-card__primary-description-without-tagline' ||
-            selector === '.jobs-details-top-card__primary-description' ||
-            selector === '.jobs-details-top-card__primary-description-without-tagline' ||
-            selector === '.job-details-jobs-unified-top-card__primary-description') {
-          return mockPrimaryDescriptionElement as unknown as HTMLElement;
-        }
+      mockQuerySelector.mockImplementation((selector) => {
+        if (selector === '.job-details-jobs-unified-top-card__primary-description-without-tagline') return mockPrimaryDescriptionElement;
+        return null;
+      });
+
+      const result = extractor.extract();
+      expect(result.postedDate).toBeDefined();
+      expect(result.postedDate).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    });
+
+    it('should extract posted date from Spanish relative format (hace 3 semanas)', () => {
+      const mockPrimaryDescriptionElement = {
+        textContent: 'Barcelona · Híbrido · hace 3 semanas',
+        tagName: 'DIV'
+      };
+
+      mockQuerySelector.mockImplementation((selector) => {
+        if (selector === '.job-details-jobs-unified-top-card__primary-description-without-tagline') return mockPrimaryDescriptionElement;
         return null;
       });
       
@@ -156,7 +159,6 @@ describe('LinkedInJobExtractor', () => {
     });
 
     it('should handle missing DOM elements gracefully', () => {
-      // Reset mock to ensure clean state
       mockQuerySelector.mockReset();
       mockQuerySelector.mockReturnValue(null);
       
@@ -182,4 +184,3 @@ describe('LinkedInJobExtractor', () => {
     });
   });
 });
-

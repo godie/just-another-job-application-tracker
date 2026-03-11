@@ -1,5 +1,5 @@
 // src/pages/HomePage.tsx
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import Footer from '../components/Footer';
 import ViewSwitcher, { type ViewType } from '../components/ViewSwitcher';
@@ -7,16 +7,15 @@ import FiltersBar, { type Filters } from '../components/FiltersBar';
 import MetricsSummary from '../components/MetricsSummary';
 import { useAlert } from '../components/AlertProvider';
 import {
-  DEFAULT_FIELDS,
   type JobApplication,
 } from '../utils/localStorage';
-import type { TableColumn } from '../types/table';
 import AddJobForm from '../components/AddJobComponent';
 import GoogleSheetsSync from '../components/GoogleSheetsSync';
 import packageJson from '../../package.json';
 import { useApplicationsStore } from '../stores/applicationsStore';
 import { usePreferencesStore } from '../stores/preferencesStore';
 import { useFilteredApplications } from '../hooks/useFilteredApplications';
+import { useTableColumns } from '../hooks/useTableColumns';
 import CurrentViewRenderer from '../components/CurrentViewRenderer';
 
 const VIEW_STORAGE_KEY = 'preferredView';
@@ -38,7 +37,7 @@ interface HomePageContentProps {
   onNavigate?: (page: PageType) => void;
 }
 
-const HomePageContent: React.FC<HomePageContentProps> = () => {
+const HomePageContent: React.FC<HomePageContentProps> = ({ onNavigate }) => {
   const { t } = useTranslation();
   const { showSuccess } = useAlert();
   
@@ -166,31 +165,7 @@ const HomePageContent: React.FC<HomePageContentProps> = () => {
     nonDeletedApplications
   } = useFilteredApplications(applications, filters);
 
-  const tableColumns: TableColumn[] = useMemo(() => {
-    const buildColumn = (id: string, fallbackLabel: string): TableColumn => ({
-      id,
-      label: t(`fields.${id}`, fallbackLabel),
-    });
-
-    if (!preferences) {
-      return DEFAULT_FIELDS.map((field) => buildColumn(field.id, field.label));
-    }
-
-    const enabledSet = new Set(preferences.enabledFields);
-
-    const fieldById = new Map<string, TableColumn>();
-    DEFAULT_FIELDS.forEach((field) => {
-      fieldById.set(field.id, buildColumn(field.id, field.label));
-    });
-    preferences.customFields.forEach((field) => {
-      fieldById.set(field.id, { id: field.id, label: field.label });
-    });
-
-    return preferences.columnOrder
-      .filter((id) => enabledSet.has(id))
-      .map((id) => fieldById.get(id))
-      .filter((column): column is TableColumn => Boolean(column));
-  }, [preferences, t]);
+  const tableColumns = useTableColumns(preferences);
 
   return (
     <div className="max-w-7xl mx-auto">
@@ -207,6 +182,19 @@ const HomePageContent: React.FC<HomePageContentProps> = () => {
             }}
           />
 
+          {/* Gmail Scan Link */}
+          <div className="mb-6 flex justify-end">
+            <button
+              onClick={() => onNavigate?.('gmail-scan')}
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition-colors border border-indigo-100 dark:border-indigo-800"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+              {t('settings.emailScan.scanGmail')}
+            </button>
+          </div>
+
           <div className="space-y-4">
             <FiltersBar
               filters={filters}
@@ -216,7 +204,7 @@ const HomePageContent: React.FC<HomePageContentProps> = () => {
               onClear={handleClearFilters}
             />
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-              <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
+              <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
                 <Trans
                   i18nKey="home.showing"
                   values={{ count: filteredApplications.length, total: applications.length }}
@@ -229,11 +217,11 @@ const HomePageContent: React.FC<HomePageContentProps> = () => {
           {/* View Switcher, Header and Add Button */}
           <div className="flex flex-col gap-4 mb-6 mt-6 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between lg:flex-1">
-              <h2 className="text-2xl font-bold text-gray-800 dark:text-white">{t('home.pipeline')}</h2>
+              <h1 className="text-2xl font-bold text-gray-800 dark:text-white">{t('home.pipeline')}</h1>
               <ViewSwitcher currentView={currentView} onViewChange={handleViewChange} />
             </div>
             <button 
-              className="self-start sm:self-auto bg-green-600 hover:bg-green-700 text-white font-bold py-2.5 px-6 rounded-full shadow-lg transition duration-150 transform hover:scale-[1.02]"
+              className="self-start sm:self-auto bg-green-700 hover:bg-green-800 text-white font-bold py-2.5 px-6 rounded-full shadow-lg transition duration-150 transform hover:scale-[1.02]"
               onClick={handleCreateNew}
               aria-label={t('home.addEntry')}
               data-testid="add-entry-button"

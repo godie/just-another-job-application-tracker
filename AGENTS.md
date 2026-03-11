@@ -2,6 +2,17 @@
 
 This document provides comprehensive guidelines for agentic coding assistants working on the Job Application Tracker frontend application and Chrome extension. Follow these instructions carefully to maintain code quality, consistency, and user experience.
 
+## Specialized Agents
+
+### 🕵️ Colector (Collector)
+**Role**: Specialist in Job Data Extraction.
+**Responsibilities**:
+- Implement and refine `JobExtractor` modules for various job boards.
+- Ensure high accuracy in capturing position, company, location, salary, and description.
+- Maintain multi-language support, specifically ensuring English and Spanish keywords are correctly handled.
+- Regularly update CSS selectors to adapt to job board changes.
+- Validate extraction logic against real-world HTML samples.
+
 ## Project Overview
 
 **Framework**: React 19 with TypeScript 5.9+

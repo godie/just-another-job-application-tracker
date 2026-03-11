@@ -81,7 +81,7 @@ const ApplicationTable: React.FC<ApplicationTableProps> = ({ columns, data, onEd
       {/* Mobile Card View */}
       <div className="md:hidden space-y-3" data-testid="application-cards">
         {data.length === 0 ? (
-          <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-xl border border-gray-100 dark:border-gray-700 text-center text-gray-400 dark:text-gray-500 italic text-sm">
+          <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-xl border border-gray-100 dark:border-gray-700 text-center text-gray-600 dark:text-gray-400 italic text-sm font-medium">
             {t('home.noApplications')}
           </div>
         ) : (
@@ -106,7 +106,7 @@ const ApplicationTable: React.FC<ApplicationTableProps> = ({ columns, data, onEd
               {columns.map((column) => (
                 <TableHead
                   key={column.id}
-                  className="px-4 sm:px-6 py-3 text-[11px] sm:text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider bg-indigo-50 dark:bg-indigo-900/50 whitespace-nowrap"
+                  className="px-4 sm:px-6 py-3 text-[11px] sm:text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider bg-indigo-50 dark:bg-indigo-900/50 whitespace-nowrap"
                 >
                   {column.label}
                 </TableHead>
@@ -119,7 +119,7 @@ const ApplicationTable: React.FC<ApplicationTableProps> = ({ columns, data, onEd
           <TableBody>
             {data.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={columns.length + 1} className="px-4 sm:px-6 py-10 text-center text-gray-400 dark:text-gray-500 italic text-sm">
+                <TableCell colSpan={columns.length + 1} className="px-4 sm:px-6 py-10 text-center text-gray-600 dark:text-gray-400 italic text-sm font-medium">
                   {t('home.noApplications')}
                 </TableCell>
               </TableRow>

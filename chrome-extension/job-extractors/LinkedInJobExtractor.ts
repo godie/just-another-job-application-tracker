@@ -34,7 +34,10 @@ export class LinkedInJobExtractor implements JobExtractor {
       '.job-details-jobs-unified-top-card__company-name',
       '.jobs-details-top-card__company-name',
       'a[data-test-id="job-company-name"]',
+      'a[data-test-id="job-company-link"]',
       '.jobs-details-top-card__company-info a',
+      '.jobs-unified-top-card__company-name',
+      '.jobs-details-top-card__company-link',
     ];
     for (const selector of companySelectors) {
       const element = document.querySelector(selector);
@@ -80,11 +83,11 @@ export class LinkedInJobExtractor implements JobExtractor {
         const parts = text.split('·').map(p => p.trim());
         
         // Check each part for job type keywords
-        for (let i = 1; i < parts.length; i++) {
+        for (let i = 0; i < parts.length; i++) {
           const part = parts[i].toLowerCase();
           if (part.includes('remote') || part.includes('remoto') || part.includes('en remoto')) {
             return parts[i];
-          } else if (part.includes('hybrid')) {
+          } else if (part.includes('hybrid') || part.includes('híbrido')) {
             return parts[i];
           } else if (part.includes('on-site') || part.includes('onsite') || part.includes('presencial')) {
             return parts[i];
@@ -92,6 +95,26 @@ export class LinkedInJobExtractor implements JobExtractor {
         }
       }
     }
+
+    // Check other common areas for job type if not found in primary description
+    const insightSelectors = [
+      '.job-details-jobs-unified-top-card__job-insight',
+      '.jobs-details-top-card__job-insight',
+    ];
+    for (const selector of insightSelectors) {
+      const elements = document.querySelectorAll(selector);
+      for (const element of Array.from(elements)) {
+        const text = element.textContent?.toLowerCase() || '';
+        if (text.includes('remote') || text.includes('remoto') || text.includes('en remoto')) {
+          return element.textContent?.trim() || '';
+        } else if (text.includes('hybrid') || text.includes('híbrido')) {
+          return element.textContent?.trim() || '';
+        } else if (text.includes('on-site') || text.includes('onsite') || text.includes('presencial')) {
+          return element.textContent?.trim() || '';
+        }
+      }
+    }
+
     return '';
   }
 
@@ -122,17 +145,33 @@ export class LinkedInJobExtractor implements JobExtractor {
       '.jobs-details-top-card__job-insight',
       '[data-test-id="job-salary"]',
       '.job-details-jobs-unified-top-card__job-insight-text-item',
+      '.jobs-unified-top-card__job-insight',
+      '.salary-range',
     ];
     for (const selector of salarySelectors) {
       const elements = document.querySelectorAll(selector);
       for (const element of Array.from(elements)) {
-        const text = element.textContent?.toLowerCase() || '';
-        if (text.includes('$') || text.includes('salary') || text.includes('compensation') || 
-            text.includes('€') || text.includes('£')) {
-          return element.textContent?.trim() || '';
+        const text = element.textContent?.trim() || '';
+        const textLower = text.toLowerCase();
+        // Look for currency symbols or keywords
+        if (textLower.match(/[$€£]\s*[\d,]+/) ||
+            textLower.includes('salary') ||
+            textLower.includes('compensation') ||
+            textLower.includes('salario') ||
+            textLower.includes('remuneración')) {
+          return text;
         }
       }
     }
+
+    // Try finding in description if not found in insights
+    const description = this.extractJobDescription();
+    const salaryRegex = /([$€£]\s*[\d,]+[.\d]*[kKmM]?\s*[-–—]\s*[$€£]\s*[\d,]+[.\d]*[kKmM]?)|([$€£]\s*[\d,]+[.\d]*[kKmM]?\s*(per|a|\/) (year|month|hour|año|mes|hora))/gi;
+    const match = description.match(salaryRegex);
+    if (match) {
+      return match[0];
+    }
+
     return '';
   }
 
@@ -164,34 +203,55 @@ export class LinkedInJobExtractor implements JobExtractor {
         '.job-details-jobs-unified-top-card__primary-description-without-tagline',
         '.jobs-details-top-card__primary-description',
         '.job-details-jobs-unified-top-card__primary-description',
+        'time',
+        '.jobs-unified-top-card__posted-date',
       ];
       for (const selector of dateSelectors) {
         const element = document.querySelector(selector);
         if (element) {
+          // If it's a <time> element, it might have a datetime attribute
+          if (element.tagName && element.tagName.toLowerCase() === 'time') {
+            const datetime = element.getAttribute('datetime');
+            if (datetime) {
+              const date = new Date(datetime);
+              if (!isNaN(date.getTime())) {
+                data.postedDate = date.toISOString().split('T')[0];
+                break;
+              }
+            }
+          }
+
           const text = element.textContent || '';
           // Look for various date formats:
-          // English: "Posted X days ago", "X days ago"
-          // Spanish: "Hace X semanas", "Hace X días", "Publicado hace X días"
+          // English: "Posted X days ago", "X days ago", "X weeks ago", "X months ago"
+          // Spanish: "Hace X semanas", "Hace X días", "Publicado hace X días", "Hace X meses"
           const postedMatch = text.match(/posted\s+(\d+)\s+days?\s+ago/i) ||
                              text.match(/(\d+)\s+days?\s+ago/i) ||
-                             text.match(/hace\s+(\d+)\s+semanas?/i) ||
                              text.match(/hace\s+(\d+)\s+d[ií]as?/i) ||
-                             text.match(/publicado\s+hace\s+(\d+)\s+d[ií]as?/i);
+                             text.match(/publicado\s+hace\s+(\d+)\s+d[ií]as?/i) ||
+                             text.match(/posted\s+(\d+)\s+weeks?\s+ago/i) ||
+                             text.match(/(\d+)\s+weeks?\s+ago/i) ||
+                             text.match(/hace\s+(\d+)\s+semanas?/i) ||
+                             text.match(/posted\s+(\d+)\s+months?\s+ago/i) ||
+                             text.match(/(\d+)\s+months?\s+ago/i) ||
+                             text.match(/hace\s+(\d+)\s+meses/i);
           
           if (postedMatch) {
-            const daysAgo = parseInt(postedMatch[1], 10);
+            const value = parseInt(postedMatch[1], 10);
             const date = new Date();
             
-            // Handle "semanas" (weeks) vs "días" (days)
-            if (text.toLowerCase().includes('semanas') || text.toLowerCase().includes('weeks')) {
-              date.setDate(date.getDate() - (daysAgo * 7));
+            const lowerText = text.toLowerCase();
+            if (lowerText.includes('semanas') || lowerText.includes('weeks')) {
+              date.setDate(date.getDate() - (value * 7));
+            } else if (lowerText.includes('meses') || lowerText.includes('months')) {
+              date.setMonth(date.getMonth() - value);
             } else {
-              date.setDate(date.getDate() - daysAgo);
+              date.setDate(date.getDate() - value);
             }
             
             data.postedDate = date.toISOString().split('T')[0];
+            break;
           }
-          break;
         }
       }
 

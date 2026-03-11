@@ -1,6 +1,7 @@
 // src/components/TimelineView.tsx
 import React, { useState, useMemo, useEffect, memo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useSelection } from '../hooks/useSelection';
 import type { JobApplication } from '../utils/localStorage';
 import type { ApplicationWithMetadata } from '../hooks/useFilteredApplications';
 import ConfirmDialog from './ConfirmDialog';
@@ -21,7 +22,7 @@ const TimelineView: React.FC<TimelineViewProps> = ({ applications, onEdit, onDel
     isOpen: false,
     application: null,
   });
-  const [expandedApps, setExpandedApps] = useState<Set<string>>(new Set());
+  const expandedApps = useSelection<string>();
   const [currentPage, setCurrentPage] = useState(1);
 
   const getStageDisplayName = (type: string, customTypeName?: string): string => {
@@ -48,18 +49,6 @@ const TimelineView: React.FC<TimelineViewProps> = ({ applications, onEdit, onDel
     } catch {
       return dateString;
     }
-  };
-
-  const toggleExpanded = (appId: string) => {
-    setExpandedApps((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(appId)) {
-        newSet.delete(appId);
-      } else {
-        newSet.add(appId);
-      }
-      return newSet;
-    });
   };
 
   // Pagination logic
@@ -95,7 +84,7 @@ const TimelineView: React.FC<TimelineViewProps> = ({ applications, onEdit, onDel
   return (
     <div className="space-y-5">
       {paginatedApplications.map((app) => {
-        const isExpanded = expandedApps.has(app.id);
+        const isExpanded = expandedApps.isSelected(app.id);
         // ⚡ Bolt: Using pre-calculated sortedTimeline and nextEvent from useFilteredApplications
         // to avoid expensive sorting and finding operations on every render cycle.
         const sortedEvents = app.sortedTimeline || [];
@@ -106,7 +95,7 @@ const TimelineView: React.FC<TimelineViewProps> = ({ applications, onEdit, onDel
             key={app.id}
             app={app}
             isExpanded={isExpanded}
-            onToggleExpand={() => toggleExpanded(app.id)}
+            onToggleExpand={() => expandedApps.toggle(app.id)}
             onEdit={onEdit}
             onDelete={(application) => setDeleteConfirm({ isOpen: true, application })}
             sortedEvents={sortedEvents}

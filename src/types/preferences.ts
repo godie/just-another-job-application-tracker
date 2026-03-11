@@ -50,5 +50,9 @@ export interface UserPreferences {
   customInterviewEvents: CustomInterviewEvent[];
   /** ATS Search filters configuration */
   atsSearch?: ATSSearchPreferences;
+  /** Gmail scan default months back (3, 6, 9, 12) */
+  emailScanMonths?: number;
+  /** Enabled chatbots for manual email scan prompt (ChatGPT, Claude, Gemini) */
+  enabledChatbots?: string[];
 }
 

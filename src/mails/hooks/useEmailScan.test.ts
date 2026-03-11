@@ -41,7 +41,7 @@ describe('useEmailScan', () => {
       await result.current.scan(mockProvider as never);
     });
 
-    expect(mockScanEmails).toHaveBeenCalledWith(mockProvider);
+    expect(mockScanEmails).toHaveBeenCalledWith(mockProvider, 30);
     expect(result.current.preview).toEqual(preview);
     expect(result.current.loading).toBe(false);
     expect(result.current.error).toBeNull();

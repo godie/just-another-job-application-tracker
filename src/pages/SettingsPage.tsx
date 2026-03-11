@@ -1,128 +1,101 @@
-import React, { useEffect, useReducer } from 'react';
+import React, { useReducer } from 'react';
 import { useTranslation } from 'react-i18next';
-import Footer from '../components/Footer';
-import { useAlert } from '../components/AlertProvider';
-import {
-  DEFAULT_FIELDS,
-  type FieldDefinition,
-  type ViewType,
-  type DateFormat,
-  type CustomInterviewEvent,
-  generateId,
-} from '../utils/localStorage';
-import packageJson from '../../package.json';
 import { usePreferencesStore } from '../stores/preferencesStore';
-import { EmailScanReview } from '../components/EmailScanReview';
-
+import { useAuthStore } from '../stores/authStore';
+import { useAlert } from '../components/AlertProvider';
+import { DEFAULT_FIELDS } from '../utils/constants';
+import { type FieldDefinition, type ViewType, type DateFormat } from '../types/preferences';
 import FieldsSettings from '../components/settings/FieldsSettings';
 import ViewSettings from '../components/settings/ViewSettings';
 import DateFormatSettings from '../components/settings/DateFormatSettings';
 import CustomFieldsSettings from '../components/settings/CustomFieldsSettings';
-import ATSSearchSettings from '../components/settings/ATSSearchSettings';
 import InterviewingSettings from '../components/settings/InterviewingSettings';
-
-import { type PageType } from '../App';
+import EmailScanSettings from '../components/settings/EmailScanSettings';
+import ATSSearchSettings from '../components/settings/ATSSearchSettings';
+import Footer from '../components/Footer';
+import packageJson from '../../package.json';
 
 interface SettingsPageProps {
-  onNavigate?: (page: PageType) => void;
+  onNavigate?: (page: any) => void;
 }
 
-interface SettingsPageState {
+type SettingsSection = 'fields' | 'view' | 'date' | 'custom' | 'interviewing' | 'emailScan' | 'atsSearch' | 'cloud';
+
+interface SettingsState {
+  activeSection: SettingsSection;
   hasChanges: boolean;
-  activeSection: 'fields' | 'view' | 'date' | 'custom' | 'interviewing' | 'atsSearch' | 'emailScan';
   editingCustomField: FieldDefinition | null;
   customFieldForm: Partial<FieldDefinition>;
-  editingInterviewEvent: CustomInterviewEvent | null;
-  interviewEventForm: Partial<CustomInterviewEvent>;
+  editingInterviewEvent: any | null;
+  interviewEventForm: any;
 }
 
-type SettingsPageAction =
-  | { type: 'SET_FIELD'; field: keyof SettingsPageState; value: boolean | string | FieldDefinition | CustomInterviewEvent | Partial<FieldDefinition> | Partial<CustomInterviewEvent> | null }
+type SettingsAction =
+  | { type: 'SET_FIELD'; field: keyof SettingsState; value: any }
   | { type: 'SET_CUSTOM_FIELD_FORM'; value: Partial<FieldDefinition> }
-  | { type: 'SET_INTERVIEW_EVENT_FORM'; value: Partial<CustomInterviewEvent> }
+  | { type: 'SET_INTERVIEW_EVENT_FORM'; value: any }
   | { type: 'RESET_FORMS' };
 
-const settingsPageReducer = (state: SettingsPageState, action: SettingsPageAction): SettingsPageState => {
+const initialState: SettingsState = {
+  activeSection: 'view',
+  hasChanges: false,
+  editingCustomField: null,
+  customFieldForm: { type: 'text' },
+  editingInterviewEvent: null,
+  interviewEventForm: { type: 'first_contact', status: 'completed' },
+};
+
+function settingsReducer(state: SettingsState, action: SettingsAction): SettingsState {
   switch (action.type) {
     case 'SET_FIELD':
       return { ...state, [action.field]: action.value };
     case 'SET_CUSTOM_FIELD_FORM':
-      return { ...state, customFieldForm: { ...state.customFieldForm, ...action.value } };
+      return { ...state, customFieldForm: action.value };
     case 'SET_INTERVIEW_EVENT_FORM':
-      return { ...state, interviewEventForm: { ...state.interviewEventForm, ...action.value } };
+      return { ...state, interviewEventForm: action.value };
     case 'RESET_FORMS':
       return {
         ...state,
         editingCustomField: null,
-        customFieldForm: { label: '', type: 'text', required: false, options: [] },
+        customFieldForm: { type: 'text' },
         editingInterviewEvent: null,
-        interviewEventForm: { label: '' },
+        interviewEventForm: { type: 'first_contact', status: 'completed' },
       };
     default:
       return state;
   }
-};
+}
 
-const SettingsPageContent: React.FC<SettingsPageProps> = () => {
+const SettingsPageContent: React.FC<SettingsPageProps> = ({ onNavigate }) => {
   const { t } = useTranslation();
+  const { preferences, updatePreferences, resetPreferences } = usePreferencesStore();
+  const { user, logout, isAuthenticated } = useAuthStore();
   const { showSuccess } = useAlert();
-  
-  // Use Zustand store
-  const preferences = usePreferencesStore((state) => state.preferences);
-  const loadPreferences = usePreferencesStore((state) => state.loadPreferences);
-  const updatePreferences = usePreferencesStore((state) => state.updatePreferences);
-  const resetPreferences = usePreferencesStore((state) => state.resetPreferences);
-  
-  const [state, dispatch] = useReducer(settingsPageReducer, {
-    hasChanges: false,
-    activeSection: 'fields',
-    editingCustomField: null,
-    customFieldForm: {
-      label: '',
-      type: 'text',
-      required: false,
-      options: [],
-    },
-    editingInterviewEvent: null,
-    interviewEventForm: {
-      label: '',
-    },
-  });
+  const [state, dispatch] = useReducer(settingsReducer, initialState);
 
   const {
-    hasChanges,
     activeSection,
+    hasChanges,
     editingCustomField,
     customFieldForm,
     editingInterviewEvent,
     interviewEventForm,
   } = state;
 
-  useEffect(() => {
-    loadPreferences();
-  }, [loadPreferences]);
-
-  const allFields: FieldDefinition[] = [...DEFAULT_FIELDS, ...(preferences.customFields || [])];
-
   const handleToggleField = (fieldId: string) => {
-    const isEnabled = preferences.enabledFields.includes(fieldId);
-    const enabledFields = isEnabled
-      ? preferences.enabledFields.filter((id) => id !== fieldId)
+    const enabledFields = preferences.enabledFields.includes(fieldId)
+      ? preferences.enabledFields.filter((id: string) => id !== fieldId)
       : [...preferences.enabledFields, fieldId];
     updatePreferences({ enabledFields });
     dispatch({ type: 'SET_FIELD', field: 'hasChanges', value: true });
   };
 
-  const handleMoveField = (fieldId: string, direction: 'up' | 'down') => {
-    const order = [...preferences.columnOrder];
-    const index = order.indexOf(fieldId);
-    if (index === -1) return;
-
-    const targetIndex = direction === 'up' ? index - 1 : index + 1;
-    if (targetIndex < 0 || targetIndex >= order.length) return;
-
-    [order[index], order[targetIndex]] = [order[targetIndex], order[index]];
-    updatePreferences({ columnOrder: order });
+  const handleMoveField = (dragIndex: number, hoverIndex: number) => {
+    const newOrder = [...preferences.columnOrder];
+    const dragField = newOrder[dragIndex];
+    newOrder.splice(dragIndex, 1);
+    newOrder.splice(hoverIndex, 0, dragField);
+    updatePreferences({ columnOrder: newOrder });
     dispatch({ type: 'SET_FIELD', field: 'hasChanges', value: true });
   };
 
@@ -137,120 +110,72 @@ const SettingsPageContent: React.FC<SettingsPageProps> = () => {
   };
 
   const handleAddCustomField = () => {
-    if (!customFieldForm.label || !customFieldForm.type) return;
-    
-    const newField: FieldDefinition = {
-      id: `custom-${generateId()}`,
-      label: customFieldForm.label,
-      type: customFieldForm.type as FieldDefinition['type'],
-      required: customFieldForm.required || false,
-      options: customFieldForm.type === 'select' ? (customFieldForm.options || []) : undefined,
-    };
-
+    const id = `custom_${Date.now()}`;
+    const newField = { ...customFieldForm, id } as FieldDefinition;
     const customFields = [...(preferences.customFields || []), newField];
-    const enabledFields = [...preferences.enabledFields, newField.id];
-    const columnOrder = [...preferences.columnOrder, newField.id];
+    const enabledFields = [...preferences.enabledFields, id];
+    const columnOrder = [...preferences.columnOrder, id];
     updatePreferences({ customFields, enabledFields, columnOrder });
-    dispatch({ type: 'SET_FIELD', field: 'hasChanges', value: true });
-
     dispatch({ type: 'RESET_FORMS' });
+    dispatch({ type: 'SET_FIELD', field: 'hasChanges', value: true });
   };
 
   const handleEditCustomField = (field: FieldDefinition) => {
     dispatch({ type: 'SET_FIELD', field: 'editingCustomField', value: field });
-    dispatch({
-      type: 'SET_FIELD',
-      field: 'customFieldForm',
-      value: {
-        label: field.label,
-        type: field.type,
-        required: field.required,
-        options: field.options || [],
-      },
-    });
+    dispatch({ type: 'SET_CUSTOM_FIELD_FORM', value: field });
   };
 
   const handleUpdateCustomField = () => {
-    if (!editingCustomField || !customFieldForm.label) return;
-
-    const customFields = (preferences.customFields || []).map((field) =>
-      field.id === editingCustomField.id
-        ? {
-            ...field,
-            label: customFieldForm.label!,
-            type: customFieldForm.type as FieldDefinition['type'],
-            required: customFieldForm.required || false,
-            options: customFieldForm.type === 'select' ? (customFieldForm.options || []) : undefined,
-          }
-        : field
+    const customFields = (preferences.customFields || []).map((f: FieldDefinition) =>
+      f.id === editingCustomField?.id ? { ...f, ...customFieldForm } : f
     );
     updatePreferences({ customFields });
-    dispatch({ type: 'SET_FIELD', field: 'hasChanges', value: true });
-
     dispatch({ type: 'RESET_FORMS' });
+    dispatch({ type: 'SET_FIELD', field: 'hasChanges', value: true });
   };
 
   const handleDeleteCustomField = (fieldId: string) => {
-    const customFields = (preferences.customFields || []).filter((f) => f.id !== fieldId);
-    const enabledFields = preferences.enabledFields.filter((id) => id !== fieldId);
-    const columnOrder = preferences.columnOrder.filter((id) => id !== fieldId);
+    const customFields = (preferences.customFields || []).filter((f: FieldDefinition) => f.id !== fieldId);
+    const enabledFields = preferences.enabledFields.filter((id: string) => id !== fieldId);
+    const columnOrder = preferences.columnOrder.filter((id: string) => id !== fieldId);
     updatePreferences({ customFields, enabledFields, columnOrder });
     dispatch({ type: 'SET_FIELD', field: 'hasChanges', value: true });
   };
 
   const handleAddInterviewEvent = () => {
-    if (!interviewEventForm.label) return;
-    
-    const newEvent: CustomInterviewEvent = {
-      id: `interview-event-${generateId()}`,
-      label: interviewEventForm.label,
-    };
-
+    const id = `event_${Date.now()}`;
+    const newEvent = { ...interviewEventForm, id };
     const customInterviewEvents = [...(preferences.customInterviewEvents || []), newEvent];
     updatePreferences({ customInterviewEvents });
-    dispatch({ type: 'SET_FIELD', field: 'hasChanges', value: true });
-
     dispatch({ type: 'RESET_FORMS' });
+    dispatch({ type: 'SET_FIELD', field: 'hasChanges', value: true });
   };
 
-  const handleEditInterviewEvent = (event: CustomInterviewEvent) => {
+  const handleEditInterviewEvent = (event: any) => {
     dispatch({ type: 'SET_FIELD', field: 'editingInterviewEvent', value: event });
-    dispatch({
-      type: 'SET_FIELD',
-      field: 'interviewEventForm',
-      value: {
-        label: event.label,
-      },
-    });
+    dispatch({ type: 'SET_INTERVIEW_EVENT_FORM', value: event });
   };
 
   const handleUpdateInterviewEvent = () => {
-    if (!editingInterviewEvent || !interviewEventForm.label) return;
-
-    const customInterviewEvents = (preferences.customInterviewEvents || []).map((event) =>
-      event.id === editingInterviewEvent.id
-        ? {
-            ...event,
-            label: interviewEventForm.label!,
-          }
-        : event
+    const customInterviewEvents = (preferences.customInterviewEvents || []).map((e: any) =>
+      e.id === editingInterviewEvent?.id ? { ...e, ...interviewEventForm } : e
     );
     updatePreferences({ customInterviewEvents });
-    dispatch({ type: 'SET_FIELD', field: 'hasChanges', value: true });
-
     dispatch({ type: 'RESET_FORMS' });
+    dispatch({ type: 'SET_FIELD', field: 'hasChanges', value: true });
   };
 
   const handleDeleteInterviewEvent = (eventId: string) => {
-    const customInterviewEvents = (preferences.customInterviewEvents || []).filter((e) => e.id !== eventId);
+    const customInterviewEvents = (preferences.customInterviewEvents || []).filter((e: any) => e.id !== eventId);
     updatePreferences({ customInterviewEvents });
     dispatch({ type: 'SET_FIELD', field: 'hasChanges', value: true });
   };
 
   const handleReset = () => {
     resetPreferences();
-    dispatch({ type: 'SET_FIELD', field: 'hasChanges', value: true });
     dispatch({ type: 'RESET_FORMS' });
+    dispatch({ type: 'SET_FIELD', field: 'hasChanges', value: false });
+    showSuccess(t('settings.resetDefault'));
   };
 
   const handleSave = () => {
@@ -258,20 +183,47 @@ const SettingsPageContent: React.FC<SettingsPageProps> = () => {
     showSuccess(t('settings.success'));
   };
 
-  // Build ordered list of fields based on columnOrder
+  const allFieldsList = [...DEFAULT_FIELDS, ...(preferences.customFields || [])];
+
   const orderedFields = preferences.columnOrder
-    .map((id) => allFields.find((field) => field.id === id))
+    .map((id: string) => allFieldsList.find((field) => field.id === id))
     .filter((field): field is FieldDefinition => Boolean(field));
 
-  const sections = [
-    { id: 'fields' as const, label: t('settings.sections.fields'), icon: '📋' },
-    { id: 'view' as const, label: t('settings.sections.view'), icon: '👁️' },
-    { id: 'date' as const, label: t('settings.sections.date'), icon: '📅' },
-    { id: 'custom' as const, label: t('settings.sections.custom'), icon: '➕' },
-    { id: 'interviewing' as const, label: t('settings.sections.interviewing'), icon: '🎯' },
-    { id: 'atsSearch' as const, label: t('opportunities.atsSearch.title'), icon: '🔍' },
-    { id: 'emailScan' as const, label: t('settings.emailScan.section'), icon: '📧' },
+  const categories = [
+    {
+      id: 'general',
+      label: t('settings.categories.general'),
+      sections: ['view', 'date'],
+    },
+    {
+      id: 'customization',
+      label: t('settings.categories.customization'),
+      sections: ['fields', 'custom', 'interviewing'],
+    },
+    {
+      id: 'integrations',
+      label: t('settings.categories.integrations'),
+      sections: ['atsSearch', 'emailScan'],
+    },
+    {
+      id: 'account',
+      label: t('settings.categories.account'),
+      sections: ['cloud'],
+    },
   ];
+
+  const sections = [
+    { id: 'fields' as const, label: t('settings.sections.fields'), icon: '📋', description: t('settings.sections.fieldsDesc') },
+    { id: 'view' as const, label: t('settings.sections.view'), icon: '👁️', description: t('settings.sections.viewDesc') },
+    { id: 'date' as const, label: t('settings.sections.date'), icon: '📅', description: t('settings.sections.dateDesc') },
+    { id: 'custom' as const, label: t('settings.sections.custom'), icon: '➕', description: t('settings.sections.customDesc') },
+    { id: 'interviewing' as const, label: t('settings.sections.interviewing'), icon: '🎯', description: t('settings.sections.interviewingDesc') },
+    { id: 'atsSearch' as const, label: t('opportunities.atsSearch.title'), icon: '🔍', description: t('settings.sections.atsSearchDesc') },
+    { id: 'emailScan' as const, label: t('settings.emailScan.section'), icon: '📧', description: t('settings.sections.emailScanDesc') },
+    { id: 'cloud' as const, label: t('settings.sections.cloud'), icon: '☁️', description: t('settings.sections.cloudDesc') },
+  ];
+
+  const currentSection = sections.find(s => s.id === activeSection);
 
   const renderSection = () => {
     switch (activeSection) {
@@ -313,6 +265,25 @@ const SettingsPageContent: React.FC<SettingsPageProps> = () => {
             onCancelEdit={() => dispatch({ type: 'RESET_FORMS' })}
           />
         );
+      case 'emailScan':
+        return (
+          <EmailScanSettings
+            emailScanMonths={preferences.emailScanMonths || 3}
+            enabledChatbots={preferences.enabledChatbots || ['ChatGPT', 'Claude', 'Gemini']}
+            onEmailScanMonthsChange={(months) => {
+              updatePreferences({ emailScanMonths: months });
+              dispatch({ type: 'SET_FIELD', field: 'hasChanges', value: true });
+            }}
+            onChatbotToggle={(chatbotId) => {
+              const current = preferences.enabledChatbots || ['ChatGPT', 'Claude', 'Gemini'];
+              const enabledChatbots = current.includes(chatbotId)
+                ? current.filter(id => id !== chatbotId)
+                : [...current, chatbotId];
+              updatePreferences({ enabledChatbots });
+              dispatch({ type: 'SET_FIELD', field: 'hasChanges', value: true });
+            }}
+          />
+        );
       case 'atsSearch':
         return (
           <ATSSearchSettings
@@ -339,76 +310,210 @@ const SettingsPageContent: React.FC<SettingsPageProps> = () => {
             onCancelEdit={() => dispatch({ type: 'RESET_FORMS' })}
           />
         );
-      case 'emailScan':
-        return <EmailScanReview />;
+      case 'cloud':
+        return (
+          <div className="space-y-8">
+            <div className="bg-indigo-50 dark:bg-indigo-900/10 border border-indigo-100 dark:border-indigo-900/30 rounded-2xl p-8">
+              {isAuthenticated ? (
+                <div className="flex flex-col sm:flex-row items-center gap-6">
+                  <div className="w-16 h-16 bg-indigo-600 rounded-full flex items-center justify-center text-white text-2xl font-bold shadow-lg">
+                    {user?.email?.charAt(0).toUpperCase()}
+                  </div>
+                  <div className="flex-1 text-center sm:text-left">
+                    <p className="text-sm font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">{t('settings.categories.account')}</p>
+                    <p className="text-xl font-bold text-gray-900 dark:text-white mt-1">{user?.email}</p>
+                    <div className="flex items-center justify-center sm:justify-start gap-2 mt-2 text-green-600 dark:text-green-400">
+                       <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                      </svg>
+                      <span className="text-sm font-medium">Synced & Secure</span>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => {
+                      logout();
+                      showSuccess('Logged out successfully');
+                    }}
+                    className="px-6 py-2.5 bg-white dark:bg-gray-800 border border-red-200 dark:border-red-900/30 text-red-600 dark:text-red-400 rounded-xl text-sm font-bold hover:bg-red-50 dark:hover:bg-red-900/20 shadow-sm transition-all"
+                  >
+                    Logout
+                  </button>
+                </div>
+              ) : (
+                <div className="text-center py-6">
+                  <div className="w-16 h-16 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center text-gray-400 mx-auto mb-4">
+                     <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
+                  </div>
+                  <h4 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Sync is currently disabled</h4>
+                  <p className="text-gray-600 dark:text-gray-400 mb-8 max-w-md mx-auto">Log in to keep your applications and opportunities in sync across all your devices.</p>
+                  <div className="flex flex-col sm:flex-row justify-center gap-4">
+                    <button
+                      onClick={() => onNavigate?.('login' as any)}
+                      className="px-8 py-3 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 shadow-lg shadow-indigo-200 dark:shadow-none transition-all"
+                    >
+                      Login
+                    </button>
+                    <button
+                      onClick={() => onNavigate?.('register' as any)}
+                      className="px-8 py-3 bg-white dark:bg-gray-800 border-2 border-gray-100 dark:border-gray-700 text-gray-700 dark:text-gray-200 rounded-xl text-sm font-bold hover:bg-gray-50 dark:hover:bg-gray-700 transition-all"
+                    >
+                      Create Account
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        );
       default:
         return null;
     }
   };
 
   return (
-    <div className="max-w-5xl mx-auto">
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-800 dark:text-white mb-2">{t('settings.title')}</h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            {t('settings.subtitle')}
-          </p>
-        </div>
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="mb-10 text-center sm:text-left">
+        <h1 className="text-4xl font-black text-gray-900 dark:text-white tracking-tight">
+          {t('settings.title')}
+        </h1>
+        <p className="mt-2 text-lg text-gray-500 dark:text-gray-400 font-medium">
+          {t('settings.subtitle')}
+        </p>
+      </div>
 
-        {/* Section Navigation */}
-        <div className="mb-6 flex flex-wrap gap-2 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-2">
-          {sections.map((section) => (
-            <button
-              key={section.id}
-              type="button"
-              onClick={() => dispatch({ type: 'SET_FIELD', field: 'activeSection', value: section.id })}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition ${
-                activeSection === section.id
-                  ? 'bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300'
-                  : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
-              }`}
-            >
-              <span>{section.icon}</span>
-              <span>{section.label}</span>
-            </button>
-          ))}
-        </div>
+      <div className="lg:grid lg:grid-cols-12 lg:gap-x-12">
+        {/* Sidebar Navigation */}
+        <aside className="py-6 lg:col-span-3">
+          <nav className="space-y-10">
+            {categories.map((category) => (
+              <div key={category.id}>
+                <h3 className="px-4 text-xs font-black text-gray-400 dark:text-gray-500 uppercase tracking-[0.2em] mb-4">
+                  {category.label}
+                </h3>
+                <div className="space-y-1">
+                  {category.sections.map((sectionId) => {
+                    const section = sections.find((s) => s.id === sectionId);
+                    if (!section) return null;
+                    const isActive = activeSection === sectionId;
+                    return (
+                      <button
+                        key={sectionId}
+                        onClick={() => dispatch({ type: 'SET_FIELD', field: 'activeSection', value: sectionId })}
+                        className={`group flex items-center px-4 py-3 text-sm font-bold rounded-xl w-full transition-all duration-200 ${
+                          isActive
+                            ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200 dark:shadow-none ring-4 ring-indigo-50 dark:ring-indigo-900/20'
+                            : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800/50 hover:text-gray-900 dark:hover:text-white'
+                        }`}
+                      >
+                        <span className={`mr-3 text-xl transition-transform duration-200 group-hover:scale-110 ${isActive ? 'text-white' : 'text-gray-400 group-hover:text-gray-600'}`}>
+                          {section.icon}
+                        </span>
+                        <span className="truncate">{section.label}</span>
+                        {isActive && (
+                          <span className="ml-auto">
+                             <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                              <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                            </svg>
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+          </nav>
+        </aside>
 
-        {/* Save/Reset Controls */}
-        <div className="mb-6 flex justify-between items-center bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={handleSave}
-              disabled={!hasChanges}
-              className={`px-4 py-2 rounded-full text-sm font-semibold shadow-sm transition ${
-                hasChanges
-                  ? 'bg-indigo-600 text-white hover:bg-indigo-700'
-                  : 'bg-gray-200 text-gray-500 dark:text-gray-400 cursor-not-allowed'
-              }`}
-            >
-              {t('settings.saveChanges')}
-            </button>
-            <button
-              type="button"
-              onClick={handleReset}
-              className="px-4 py-2 rounded-full text-sm font-semibold border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-700 transition"
-            >
-              {t('settings.resetDefault')}
-            </button>
+        {/* Main Content Area */}
+        <div className="lg:col-span-9 mt-8 lg:mt-0">
+          {/* Header for current section */}
+          <div className="bg-white dark:bg-gray-800 shadow-xl shadow-gray-100 dark:shadow-none border border-gray-100 dark:border-gray-700 rounded-2xl mb-8 overflow-hidden">
+            <div className={`p-8 ${activeSection === 'atsSearch' ? 'bg-indigo-50/30 dark:bg-indigo-900/5 border-l-8 border-indigo-600' : ''}`}>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-4">
+                <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 bg-gray-50 dark:bg-gray-700 rounded-2xl flex items-center justify-center text-3xl shadow-inner">
+                    {currentSection?.icon}
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-black text-gray-900 dark:text-white">
+                      {currentSection?.label}
+                    </h2>
+                    <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mt-1">
+                      {currentSection?.description}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Save/Reset Controls for desktop inside the header */}
+                <div className="hidden sm:flex items-center gap-4">
+                  <button
+                    type="button"
+                    onClick={handleReset}
+                    className="px-5 py-2.5 text-sm font-bold text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-800 border-2 border-gray-100 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-all"
+                  >
+                    {t('settings.resetDefault')}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleSave}
+                    disabled={!hasChanges}
+                    className={`inline-flex items-center px-6 py-2.5 border border-transparent text-sm font-bold rounded-xl shadow-lg transition-all ${
+                      hasChanges
+                        ? 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-indigo-200 dark:shadow-none'
+                        : 'bg-gray-200 text-gray-400 cursor-not-allowed shadow-none'
+                    }`}
+                  >
+                    {t('settings.saveChanges')}
+                  </button>
+                </div>
+              </div>
+              {hasChanges && (
+                <div className="flex items-center gap-2 mt-4 px-4 py-2 bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-900/30 rounded-lg w-fit">
+                   <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+                   <span className="text-xs text-amber-700 dark:text-amber-400 font-bold uppercase tracking-wider">
+                    {t('settings.unsavedChanges')}
+                  </span>
+                </div>
+              )}
+            </div>
           </div>
-          {hasChanges && (
-            <span className="text-xs text-amber-600 font-medium">
-              {t('settings.unsavedChanges')}
-            </span>
-          )}
-        </div>
 
-        {/* Section Content */}
-        <div className="bg-white dark:bg-gray-800 shadow-lg rounded-xl p-6 sm:p-8">
-          {renderSection()}
+          {/* Section Content Card */}
+          <div className="bg-white dark:bg-gray-800 shadow-2xl shadow-gray-200/50 dark:shadow-none border border-gray-100 dark:border-gray-700 rounded-[2rem] overflow-hidden min-h-[500px]">
+            <div className="p-8 sm:p-12">
+              {renderSection()}
+            </div>
+          </div>
+
+          {/* Mobile Save/Reset Controls */}
+          <div className="mt-8 sm:hidden bg-white dark:bg-gray-800 p-6 border border-gray-100 dark:border-gray-700 rounded-3xl shadow-xl flex flex-col gap-4">
+             <button
+                type="button"
+                onClick={handleSave}
+                disabled={!hasChanges}
+                className={`w-full flex justify-center py-4 px-4 rounded-2xl shadow-lg text-sm font-bold transition-all ${
+                  hasChanges ? 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-indigo-200' : 'bg-gray-200 text-gray-400'
+                }`}
+              >
+                {t('settings.saveChanges')}
+              </button>
+              <button
+                type="button"
+                onClick={handleReset}
+                className="w-full flex justify-center py-4 px-4 border-2 border-gray-100 dark:border-gray-700 rounded-2xl text-sm font-bold text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all"
+              >
+                {t('settings.resetDefault')}
+              </button>
+          </div>
         </div>
-      <Footer version={packageJson.version} />
+      </div>
+
+      <div className="mt-20 border-t border-gray-100 dark:border-gray-700 pt-10">
+        <Footer version={packageJson.version} />
+      </div>
     </div>
   );
 };

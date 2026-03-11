@@ -99,6 +99,7 @@ export interface ProposedUpdate {
 export interface ScanPreview {
   proposedAdditions: ProposedAddition[];
   proposedUpdates: ProposedUpdate[];
+  emails: Email[];
 }
 
 /** Result of applying selected additions/updates. */
