@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { usePreferencesStore } from '../stores/preferencesStore';
 import { ATS_PLATFORMS } from '../utils/constants';
-import { Card, Input, Button } from './ui';
+import { Card, Button } from './ui';
+import { TagInput } from './ui/TagInput';
 
 const ATSSearch: React.FC = () => {
   const { t } = useTranslation();
@@ -11,12 +12,19 @@ const ATSSearch: React.FC = () => {
 
   const [isExpanded, setIsExpanded] = useState(false);
   const [localFilters, setLocalFilters] = useState(preferences.atsSearch || {
-    roles: '',
-    keywords: '',
-    location: '',
+    roles: [] as string[],
+    keywords: [] as string[],
+    location: [] as string[],
   });
 
-  const handleFilterChange = (key: keyof typeof localFilters, value: string) => {
+  // Sync local filters when preferences change (e.g. after load)
+  useEffect(() => {
+    if (preferences.atsSearch) {
+      setLocalFilters(preferences.atsSearch);
+    }
+  }, [preferences.atsSearch]);
+
+  const handleFilterChange = (key: keyof typeof localFilters, value: string[]) => {
     const newFilters = { ...localFilters, [key]: value };
     setLocalFilters(newFilters);
     updatePreferences({ atsSearch: newFilters });
@@ -27,23 +35,35 @@ const ATSSearch: React.FC = () => {
     const queryParts = [];
 
     if (atsUrl) queryParts.push(`site:${atsUrl}`);
-    if (roles) queryParts.push(`(${roles})`);
-    if (keywords) queryParts.push(`(${keywords})`);
-    if (location) queryParts.push(`(${location})`);
+    if (roles && roles.length > 0) queryParts.push(`(${roles.join(' OR ')})`);
+    if (keywords && keywords.length > 0) queryParts.push(`(${keywords.join(' OR ')})`);
+    if (location && location.length > 0) queryParts.push(`(${location.join(' OR ')})`);
 
     const query = queryParts.join(' ');
     return `https://www.google.com/search?q=${encodeURIComponent(query)}`;
   };
 
-  const handleSearch = (atsUrl: string) => {
-    window.open(generateGoogleUrl(atsUrl), '_blank', 'noopener,noreferrer');
+  const generateLinkedInUrl = () => {
+    const { roles, keywords, location } = localFilters;
+    const allKeywords = [...roles, ...keywords, ...location];
+    const query = allKeywords.join(' OR ');
+
+    return `https://www.linkedin.com/jobs/search/?keywords=${encodeURIComponent(query)}`;
+  };
+
+  const handleSearch = (platform: typeof ATS_PLATFORMS[0]) => {
+    if (platform.id === 'linkedin') {
+      window.open(generateLinkedInUrl(), '_blank', 'noopener,noreferrer');
+    } else {
+      window.open(generateGoogleUrl(platform.url), '_blank', 'noopener,noreferrer');
+    }
   };
 
   const handleSearchAll = () => {
     ATS_PLATFORMS.forEach((platform, index) => {
-      // Small delay to avoid popup blockers if possible, though many browsers will still block
+      // Small delay to avoid popup blockers
       setTimeout(() => {
-        handleSearch(platform.url);
+        handleSearch(platform);
       }, index * 300);
     });
   };
@@ -94,25 +114,22 @@ const ATSSearch: React.FC = () => {
       {isExpanded && (
         <div className="px-6 pb-6 pt-4 border-t border-gray-100 dark:border-gray-700 bg-gray-50/30 dark:bg-gray-800/50">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            <Input
+            <TagInput
               label={t('opportunities.atsSearch.roles')}
-              type="text"
-              value={localFilters.roles}
-              onChange={(e) => handleFilterChange('roles', e.target.value)}
+              tags={localFilters.roles}
+              onChange={(tags) => handleFilterChange('roles', tags)}
               placeholder={t('opportunities.atsSearch.placeholderRoles')}
             />
-            <Input
+            <TagInput
               label={t('opportunities.atsSearch.keywords')}
-              type="text"
-              value={localFilters.keywords}
-              onChange={(e) => handleFilterChange('keywords', e.target.value)}
+              tags={localFilters.keywords}
+              onChange={(tags) => handleFilterChange('keywords', tags)}
               placeholder={t('opportunities.atsSearch.placeholderKeywords')}
             />
-            <Input
+            <TagInput
               label={t('opportunities.atsSearch.location')}
-              type="text"
-              value={localFilters.location}
-              onChange={(e) => handleFilterChange('location', e.target.value)}
+              tags={localFilters.location}
+              onChange={(tags) => handleFilterChange('location', tags)}
               placeholder={t('opportunities.atsSearch.placeholderLocation')}
             />
           </div>
@@ -126,7 +143,7 @@ const ATSSearch: React.FC = () => {
                 <Button
                   key={platform.id}
                   variant="outline"
-                  onClick={() => handleSearch(platform.url)}
+                  onClick={() => handleSearch(platform)}
                   className="px-4 py-2 h-auto text-sm font-medium transition-all flex items-center gap-2 shadow-sm group"
                 >
                   <span className="text-gray-400 group-hover:text-indigo-500 transition-colors">

@@ -12,14 +12,14 @@ interface TagInputProps {
 export const TagInput: React.FC<TagInputProps> = ({
   label,
   placeholder,
-  tags,
+  tags = [],
   onChange,
   className = '',
 }) => {
   const [inputValue, setInputValue] = useState('');
 
   const addTag = (tag: string) => {
-    const trimmedTag = tag.trim();
+    const trimmedTag = tag.trim().replace(/^"(.*)"$/, '').replace(/^'(.*)'$/, '');
     if (trimmedTag && !tags.includes(trimmedTag)) {
       onChange([...tags, trimmedTag]);
     }

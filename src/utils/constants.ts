@@ -38,9 +38,9 @@ export const DEFAULT_PREFERENCES: UserPreferences = {
   dateFormat: 'YYYY-MM-DD',
   customInterviewEvents: [],
   atsSearch: {
-    roles: '"customer success engineer" OR "customer success" OR "customer support" OR "technical support"',
-    keywords: '"hiring" OR "apply" OR "open role"',
-    location: '"remote" OR "work from home"',
+    roles: ['customer success engineer', 'customer success', 'customer support', 'technical support'],
+    keywords: ['hiring', 'apply', 'open role'],
+    location: ['remote', 'work from home'],
   },
   emailScanMonths: 3,
   enabledChatbots: ['ChatGPT', 'Claude', 'Gemini'],
@@ -53,6 +53,7 @@ export const CHATBOTS = [
 ];
 
 export const ATS_PLATFORMS = [
+  { id: 'linkedin', name: 'LinkedIn', url: 'linkedin.com/jobs' },
   { id: 'ashby', name: 'Ashby', url: 'jobs.ashbyhq.com' },
   { id: 'teamtailor', name: 'Teamtailor', url: '*.teamtailor.com' },
   { id: 'workday', name: 'Workday', url: 'myworkdayjobs.com' },
