@@ -26,27 +26,45 @@ class Router {
                 // Opción B: Es un string tipo "UserController@profile"
                 if (is_string($handler) && strpos($handler, '@') !== false) {
                     list($controllerName, $methodName) = explode('@', $handler);
-                    $path = __DIR__ . "/controllers/$controllerName.php";
-                    if (file_exists($path)) {
-                        require_once $path;
+
+                    // Slicer: Directory Traversal Fix.
+                    // Resolved by appending a DIRECTORY_SEPARATOR to the resolvedClientPath before validation.
+                    $controllersDir = realpath(__DIR__ . '/controllers');
+                    if ($controllersDir === false) {
+                        if (!headers_sent()) {
+                            http_response_code(500);
+                            header('Content-Type: application/json; charset=utf-8');
+                        }
+                        echo json_encode(["error" => "500", "message" => "Internal Server Error: Controllers directory missing"]);
+                        return;
+                    }
+
+                    $resolvedClientPath = $controllersDir . DIRECTORY_SEPARATOR;
+                    $controllerFile = realpath(__DIR__ . "/controllers/$controllerName.php");
+
+                    // Validate that the controller file is within the allowed controllers directory
+                    if ($controllerFile !== false && strpos($controllerFile, $resolvedClientPath) === 0) {
+                        require_once $controllerFile;
                         $controller = new $controllerName();
                         $response = $controller->$methodName();
                         if (is_array($response) || is_object($response)) {
-                            // Si es un array/objeto, asumimos que es JSON
-                            header('Content-Type: application/json; charset=utf-8');
+                            if (!headers_sent()) {
+                                header('Content-Type: application/json; charset=utf-8');
+                            }
                             echo json_encode($response);
                         } elseif (is_string($response)) {
-                            // Si es string, quizás es HTML o texto plano
                             echo $response;
                         }
-                        exit;
+                        return;
                     }
                 }
             }
         }
 
-        http_response_code(404);
-        header('Content-Type: application/json; charset=utf-8');
+        if (!headers_sent()) {
+            http_response_code(404);
+            header('Content-Type: application/json; charset=utf-8');
+        }
         echo json_encode(["error" => "404", "message" => "Route not found"]);
     }
 }
