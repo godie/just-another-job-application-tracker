@@ -11,8 +11,8 @@ import { useAlert } from './AlertProvider';
 import { useApplicationsStore } from '../stores/applicationsStore';
 import { usePreferencesStore } from '../stores/preferencesStore';
 import { CHATBOTS } from '../utils/constants';
-import type { InterviewStageType } from '../types/applications';
 import { isApplicationDuplicate } from '../utils/applications';
+import { processManualScanJson } from '../utils/manualScan';
 
 export function EmailScanReview() {
   const { t } = useTranslation();
@@ -151,56 +151,7 @@ export function EmailScanReview() {
 
   const handleProcessJson = useCallback(() => {
     try {
-      const data = JSON.parse(pastedJson);
-      const additions: ProposedAddition[] = (data.additions || []).map((a: any, index: number) => ({
-        id: `json-add-${index}-${Date.now()}`,
-        data: {
-          position: a.position || 'Unknown',
-          company: a.company || 'Unknown',
-          salary: '',
-          status: a.status || 'Applied',
-          applicationDate: a.applicationDate || new Date().toISOString().split('T')[0],
-          interviewDate: '',
-          timeline: [
-            {
-              id: crypto.randomUUID(),
-              type: 'application_submitted',
-              date: a.applicationDate || new Date().toISOString().split('T')[0],
-              notes: a.notes || '',
-              status: 'completed',
-            }
-          ],
-          notes: a.notes || '',
-          link: '',
-          platform: a.platform || 'Email',
-          contactName: '',
-          followUpDate: '',
-        },
-        source: { subject: 'Chatbot extraction', date: new Date().toISOString() }
-      }));
-
-      const updates: ProposedUpdate[] = (data.updates || []).map((u: any, index: number) => {
-        const existingApp = applications.find(app =>
-          app.company.toLowerCase().trim() === u.company.toLowerCase().trim() &&
-          app.position.toLowerCase().trim() === u.position.toLowerCase().trim() &&
-          app.status !== 'Deleted'
-        );
-
-        return {
-          id: `json-update-${index}-${Date.now()}`,
-          applicationId: existingApp?.id || '',
-          company: u.company || 'Unknown',
-          position: u.position || 'Unknown',
-          newEvent: {
-            id: crypto.randomUUID(),
-            type: (u.newEvent?.type as InterviewStageType) || 'first_contact',
-            date: u.newEvent?.date || new Date().toISOString().split('T')[0],
-            notes: u.newEvent?.notes || '',
-            status: (u.newEvent?.status as 'completed' | 'pending' | 'canceled') || 'completed',
-          },
-          source: { subject: 'Chatbot extraction', date: new Date().toISOString() }
-        };
-      });
+      const { additions, updates } = processManualScanJson(pastedJson, applications);
 
       setPreview(prev => ({
         proposedAdditions: [...(prev?.proposedAdditions || []), ...additions],
@@ -211,11 +162,11 @@ export function EmailScanReview() {
       selectedAdditions.selectAll(additions.map(a => a.id));
       selectedUpdates.selectAll(updates.map(u => u.id));
       setPastedJson('');
-      showSuccess('JSON procesado correctamente');
-    } catch (err) {
+      showSuccess(t('settings.emailScan.jsonProcessedSuccess') === 'settings.emailScan.jsonProcessedSuccess' ? 'JSON procesado correctamente' : t('settings.emailScan.jsonProcessedSuccess'));
+    } catch {
       showError(t('settings.emailScan.invalidJson'));
     }
-  }, [pastedJson, applications, setPreview, showSuccess, showError, t]);
+  }, [pastedJson, applications, setPreview, showSuccess, showError, t, selectedAdditions, selectedUpdates]);
 
   const selectAllEmails = () => {
     if (!preview) return;
