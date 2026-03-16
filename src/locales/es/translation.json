@@ -400,6 +400,15 @@
       "Sat": "Sáb"
     }
   },
+  "csv": {
+    "title": "Gestión Local de Datos",
+    "export": "Exportar CSV",
+    "import": "Importar CSV",
+    "exportSuccess": "Datos exportados con éxito",
+    "importSuccess": "Se importaron {{count}} aplicaciones con éxito",
+    "importError": "Error al importar el archivo CSV",
+    "noData": "No hay datos para exportar"
+  },
   "sheets": {
     "title": "Integración con Google Sheets",
     "loginRequired": "<strong>Sincronización con Google Sheets:</strong> Por favor, inicia sesión con Google para habilitar la sincronización de la hoja de cálculo.",
