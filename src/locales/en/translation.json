@@ -400,6 +400,15 @@
       "Sat": "Sat"
     }
   },
+  "csv": {
+    "title": "Local Data Management",
+    "export": "Export CSV",
+    "import": "Import CSV",
+    "exportSuccess": "Data exported successfully",
+    "importSuccess": "Imported {{count}} applications successfully",
+    "importError": "Error importing CSV file",
+    "noData": "No data to export"
+  },
   "sheets": {
     "title": "Google Sheets Integration",
     "loginRequired": "<strong>Google Sheets Sync:</strong> Please log in with Google to enable spreadsheet synchronization.",

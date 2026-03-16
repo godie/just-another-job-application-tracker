@@ -10,6 +10,7 @@ import {
   type JobApplication,
 } from '../utils/localStorage';
 import AddJobForm from '../components/AddJobComponent';
+import CSVActions from '../components/CSVActions';
 import GoogleSheetsSync from '../components/GoogleSheetsSync';
 import packageJson from '../../package.json';
 import { useApplicationsStore } from '../stores/applicationsStore';
@@ -174,6 +175,12 @@ const HomePageContent: React.FC<HomePageContentProps> = ({ onNavigate }) => {
           <MetricsSummary applications={filteredApplications} />
 
           {/* Google Sheets Sync */}
+          <div className="mb-4 flex justify-between items-center bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+              <h2 className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t("csv.title", "Local Data Management")}</h2>
+              <CSVActions />
+            </div>
+          </div>
           <GoogleSheetsSync 
             applications={nonDeletedApplications}
             onSyncComplete={() => {
