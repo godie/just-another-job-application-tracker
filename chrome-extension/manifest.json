@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Job Application Tracker",
-  "version": "2.0.13",
+  "version": "2.0.17",
   "description": "Capture job opportunities from sites like LinkedIn, Greenhouse, AshbyHQ, and more... and save them to your Job Application Tracker",
   "permissions": [
     "storage",
