@@ -15,6 +15,7 @@ import { useOpportunitiesStore } from '../stores/opportunitiesStore';
 import { useApplicationsStore } from '../stores/applicationsStore';
 import OpportunitiesEmptyState from '../components/OpportunitiesEmptyState';
 import OpportunitiesTable from '../components/OpportunitiesTable';
+import { useFormatDate } from '../hooks/useFormatDate';
 
 import { type PageType } from '../App';
 
@@ -23,8 +24,9 @@ interface OpportunitiesPageContentProps {
 }
 
 const OpportunitiesPageContent: React.FC<OpportunitiesPageContentProps> = () => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { showSuccess, showError } = useAlert();
+  const { formatLocaleDate } = useFormatDate();
   
   // Use Zustand stores
   const opportunities = useOpportunitiesStore((state) => state.opportunities);
@@ -159,16 +161,6 @@ const OpportunitiesPageContent: React.FC<OpportunitiesPageContentProps> = () => 
     );
   }, [opportunities, searchTerm]);
 
-  const formatDate = (dateString?: string): string => {
-    if (!dateString) return 'N/A';
-    try {
-      const date = new Date(dateString);
-      return date.toLocaleDateString(i18n.language, { year: 'numeric', month: 'short', day: 'numeric' });
-    } catch {
-      return dateString;
-    }
-  };
-
   return (
     <div className="max-w-7xl mx-auto">
         <ATSSearch />
@@ -198,7 +190,7 @@ const OpportunitiesPageContent: React.FC<OpportunitiesPageContentProps> = () => 
             onSearchChange={setSearchTerm}
             onApply={handleApply}
             onDelete={handleDelete}
-            formatDate={formatDate}
+            formatDate={formatLocaleDate}
           />
         )}
       <Footer version={packageJson.version} />

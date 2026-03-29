@@ -2,6 +2,7 @@
 import React, { useState, useMemo, useEffect, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelection } from '../hooks/useSelection';
+import { useFormatDate } from '../hooks/useFormatDate';
 import type { JobApplication } from '../utils/localStorage';
 import type { ApplicationWithMetadata } from '../hooks/useFilteredApplications';
 import ConfirmDialog from './ConfirmDialog';
@@ -18,6 +19,7 @@ const ITEMS_PER_PAGE = 10;
 // Memoized to prevent re-renders when filteredApplications reference changes but content is the same
 const TimelineView: React.FC<TimelineViewProps> = ({ applications, onEdit, onDelete }) => {
   const { t } = useTranslation();
+  const { formatLocaleDate } = useFormatDate();
   const [deleteConfirm, setDeleteConfirm] = useState<{ isOpen: boolean; application: JobApplication | null }>({
     isOpen: false,
     application: null,
@@ -40,15 +42,6 @@ const TimelineView: React.FC<TimelineViewProps> = ({ applications, onEdit, onDel
       'pending': 'bg-yellow-500',
     };
     return colors[status] || 'bg-gray-400';
-  };
-
-  const formatDate = (dateString: string): string => {
-    try {
-      const date = new Date(dateString);
-      return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
-    } catch {
-      return dateString;
-    }
   };
 
   // Pagination logic
@@ -102,7 +95,7 @@ const TimelineView: React.FC<TimelineViewProps> = ({ applications, onEdit, onDel
             nextEvent={nextEvent}
             getStageDisplayName={getStageDisplayName}
             getStatusColor={getStatusColor}
-            formatDate={formatDate}
+            formatDate={formatLocaleDate}
           />
         );
       })}
