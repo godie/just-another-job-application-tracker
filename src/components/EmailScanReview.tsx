@@ -15,9 +15,11 @@ import { isApplicationDuplicate } from '../utils/applications';
 import { processManualScanJson } from '../utils/manualScan';
 import { ProposedAdditionItem } from './ProposedAdditionItem';
 import { ProposedUpdateItem } from './ProposedUpdateItem';
+import { useFormatDate } from '../hooks/useFormatDate';
 
 export function EmailScanReview() {
   const { t } = useTranslation();
+  const { formatShortDate } = useFormatDate();
   const { showSuccess, showError } = useAlert();
   const applications = useApplicationsStore((state) => state.applications);
   const preferences = usePreferencesStore((state) => state.preferences);
@@ -114,17 +116,6 @@ export function EmailScanReview() {
     showError,
     t,
   ]);
-
-  const formatDate = (dateStr: string) => {
-    try {
-      const d = new Date(dateStr);
-      return d.toLocaleDateString(undefined, {
-        dateStyle: 'short',
-      });
-    } catch {
-      return dateStr;
-    }
-  };
 
   const handleGeneratePrompt = useCallback((chatbot?: { id: string; name: string; url: string }) => {
     if (!preview) return;
@@ -358,7 +349,7 @@ export function EmailScanReview() {
                           <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{email.subject}</p>
                           <p className="text-xs text-gray-500 truncate">{email.from}</p>
                         </div>
-                        <span className="text-[10px] text-gray-400 whitespace-nowrap">{formatDate(email.date)}</span>
+                        <span className="text-[10px] text-gray-400 whitespace-nowrap">{formatShortDate(email.date)}</span>
                       </div>
                     ))}
                   </div>
@@ -421,7 +412,7 @@ export function EmailScanReview() {
                         if (forced) forceAddIds.select(addition.id);
                         else forceAddIds.deselect(addition.id);
                       }}
-                      formatDate={formatDate}
+                      formatDate={formatShortDate}
                     />
                   ))}
                 </ul>
@@ -454,7 +445,7 @@ export function EmailScanReview() {
                       update={update}
                       isSelected={selectedUpdates.isSelected(update.id)}
                       onToggle={() => selectedUpdates.toggle(update.id)}
-                      formatDate={formatDate}
+                      formatDate={formatShortDate}
                     />
                   ))}
                 </ul>
