@@ -1,0 +1,101 @@
+name: Code Audit
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  schedule:
+    # Run weekly on Sunday at 2am UTC
+    - cron: '0 2 * * 0'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Run code audit
+        run: node audit/audit.cjs
+        
+      - name: Upload audit report (JSON)
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: audit-report-json
+          path: audit/audit-report.json
+          retention-days: 30
+          
+      - name: Upload audit report (Markdown)
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: audit-report-markdown
+          path: audit/AUDIT.md
+          retention-days: 30
+          
+      - name: Comment on PR with audit summary
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            
+            const reportPath = path.join(process.cwd(), 'audit/audit-report.json');
+            
+            if (!fs.existsSync(reportPath)) {
+              console.log('No audit report found');
+              return;
+            }
+            
+            const report = JSON.parse(fs.readFileSync(reportPath, 'utf8'));
+            const { summary } = report;
+            
+            const body = `## Code Audit Summary
+            
+| Metric | Count |
+|--------|-------|
+| Total Issues | ${summary.total} |
+| Critical | ${summary.critical} |
+| High | ${summary.high} |
+| Medium | ${summary.medium} |
+| Low | ${summary.low} |
+
+${summary.total > 0 ? '⚠️ Please review the audit report and address the issues.' : '✅ No significant issues found!'}
+
+*This audit was automatically generated*`;
+            
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
+            });
+            
+      - name: Fail workflow on critical issues
+        if: always()
+        run: |
+          if [ -f audit/audit-report.json ]; then
+            CRITICAL=$(cat audit/audit-report.json | grep -o '"critical":[0-9]*' | grep -o '[0-9]*')
+            HIGH=$(cat audit/audit-report.json | grep -o '"high":[0-9]*' | grep -o '[0-9]*')
+            if [ "$CRITICAL" -gt 0 ] || [ "$HIGH" -gt 5 ]; then
+              echo "Found critical or many high-priority issues!"
+              exit 1
+            fi
+          fi
