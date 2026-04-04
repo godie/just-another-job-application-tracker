@@ -350,14 +350,14 @@ const SettingsPageContent: React.FC<SettingsPageProps> = ({ onNavigate }) => {
                   <p className="text-gray-600 dark:text-gray-400 mb-8 max-w-md mx-auto">Log in to keep your applications and opportunities in sync across all your devices.</p>
                   <div className="flex flex-col sm:flex-row justify-center gap-4">
                     <button
-                      onClick={() => onNavigate?.('login' as any)}
-                      className="px-8 py-3 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 shadow-lg shadow-indigo-200 dark:shadow-none transition-all"
+                      onClick={() => onNavigate?.('login')}
+                      className="px-6 py-2 bg-indigo-600 text-white rounded-md text-sm font-medium hover:bg-indigo-700 shadow-sm"
                     >
                       Login
                     </button>
                     <button
-                      onClick={() => onNavigate?.('register' as any)}
-                      className="px-8 py-3 bg-white dark:bg-gray-800 border-2 border-gray-100 dark:border-gray-700 text-gray-700 dark:text-gray-200 rounded-xl text-sm font-bold hover:bg-gray-50 dark:hover:bg-gray-700 transition-all"
+                      onClick={() => onNavigate?.('register')}
+                      className="px-6 py-2 bg-white dark:bg-gray-800 border border-gray-300 text-gray-700 dark:text-gray-200 rounded-md text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700"
                     >
                       Create Account
                     </button>

@@ -19,8 +19,8 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
-          cache: 'npm'
+          node-version: "22"
+          cache: "npm"
 
       - name: Install dependencies
         run: npm ci
@@ -30,7 +30,7 @@ jobs:
           VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
           VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
         run: npm run build
-    
+
       - name: Copy api/ into dist/ (include dotfiles e.g. .htaccess)
         run: |
           cp -r api dist/
@@ -38,7 +38,7 @@ jobs:
 
       - name: Create config.php from example for deploy
         run: cp dist/api/config.example.php dist/api/config.php
-      
+
       - name: Verify .htaccess exists before upload
         run: |
           echo "Files in dist/api/:"
@@ -49,7 +49,7 @@ jobs:
             echo "✗ .htaccess NOT found"
             exit 1
           fi
-      
+
       - name: Create tarball to preserve all files including dotfiles
         run: tar -czf dist.tar.gz -C dist .
 
@@ -70,13 +70,12 @@ jobs:
         with:
           name: production-files
           path: ./
-      
+
       - name: Extract tarball
         run: |
           mkdir -p dist
           tar -xzf dist.tar.gz -C dist
           rm -f dist.tar.gz
-      
 
       - name: Verify .htaccess exists after extraction
         run: |
@@ -93,17 +92,35 @@ jobs:
         env:
           VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
           VITE_GOOGLE_CLIENT_SECRET: ${{ secrets.VITE_GOOGLE_CLIENT_SECRET }}
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_PORT: ${{ secrets.DB_PORT }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
         run: |
           python3 -c "
           import os
+          replacements = {
+            '__VITE_GOOGLE_CLIENT_ID__': os.environ.get('VITE_GOOGLE_CLIENT_ID', ''),
+            '__VITE_GOOGLE_CLIENT_SECRET__': os.environ.get('VITE_GOOGLE_CLIENT_SECRET', ''),
+            '__DB_HOST__': os.environ.get('DB_HOST', ''),
+            '__DB_PORT__': os.environ.get('DB_PORT', ''),
+            '__DB_NAME__': os.environ.get('DB_NAME', ''),
+            '__DB_USER__': os.environ.get('DB_USER', ''),
+            '__DB_PASSWORD__': os.environ.get('DB_PASSWORD', ''),
+          }
           path = 'dist/api/config.php'
           with open(path) as f:
-              content = f.read()
-          content = content.replace('__VITE_GOOGLE_CLIENT_ID__', os.environ.get('VITE_GOOGLE_CLIENT_ID', ''))
-          content = content.replace('__VITE_GOOGLE_CLIENT_SECRET__', os.environ.get('VITE_GOOGLE_CLIENT_SECRET', ''))
+            content = f.read()
+          for placeholder, value in replacements.items():
+            content = content.replace(placeholder, value)
           with open(path, 'w') as f:
-              f.write(content)
+            f.write(content)
+          print('Secrets injected successfully')
           "
+
+      - name: Set secure file permissions on config.php
+        run: chmod 440 dist/api/config.php
 
       - name: Write SSH key to file
         run: |

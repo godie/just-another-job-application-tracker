@@ -6,6 +6,35 @@ import { vi } from 'vitest';
 
 import enTranslations from './locales/en/translation.json';
 
+// Simple localStorage mock to avoid errors in happy-dom if it's not fully initialized or if vitest is configured with a missing --localstorage-file
+const localStorageMock = (function() {
+  let store: Record<string, string> = {};
+  return {
+    getItem: (key: string) => store[key] || null,
+    setItem: (key: string, value: string) => { store[key] = String(value); },
+    removeItem: (key: string) => { delete store[key]; },
+    clear: () => { store = {}; },
+    key: (index: number) => Object.keys(store)[index] || null,
+    get length() { return Object.keys(store).length; }
+  };
+})();
+
+if (typeof window !== 'undefined') {
+  Object.defineProperty(window, 'localStorage', { value: localStorageMock });
+}
+// Also define it on global for tests that use it without window.
+if (typeof global !== 'undefined') {
+  Object.defineProperty(global, 'localStorage', { value: localStorageMock });
+}
+// For vitest, we might also need globalThis
+if (typeof globalThis !== 'undefined' && !globalThis.localStorage) {
+  try {
+    Object.defineProperty(globalThis, 'localStorage', { value: localStorageMock });
+  } catch {
+    // In some environments globalThis.localStorage might be read-only
+  }
+}
+
 declare global {
   // Flag picked up in components to avoid real network calls while testing.
   var __TEST__: boolean | undefined;

@@ -3,7 +3,7 @@ import { useAuthStore } from '../stores/authStore';
 import { useAlert } from '../components/AlertProvider';
 
 interface RegisterPageProps {
-  onNavigate: (page: any) => void;
+  onNavigate: (page: string) => void;
   onSuccess?: () => void;
 }
 
@@ -41,7 +41,7 @@ const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate, onSuccess }) =>
       } else {
         showError(data.error || 'Registration failed');
       }
-    } catch (err) {
+    } catch {
       showError('An unexpected error occurred');
     } finally {
       setIsSubmitting(false);
@@ -61,7 +61,7 @@ const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate, onSuccess }) =>
           <p className="mt-2 text-center text-sm text-gray-600">
             Already have an account?{' '}
             <button
-              onClick={() => onNavigate('login' as any)}
+              onClick={() => onNavigate('login')}
               className="font-medium text-indigo-600 hover:text-indigo-500 focus:outline-none focus:underline"
             >
               Sign in instead
