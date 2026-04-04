@@ -6,6 +6,7 @@ import { useEmailScan } from '../mails/hooks/useEmailScan';
 import { isGmailRateLimitError } from '../mails/errors';
 import { GmailEmailClient } from '../mails/providers/gmail/gmailClient';
 import type { ProposedAddition, ProposedUpdate } from '../mails/types';
+import type { InterviewStageType } from '../types/applications';
 import { getAuthCookie } from '../utils/api';
 import { useAlert } from './AlertProvider';
 import { useApplicationsStore } from '../stores/applicationsStore';
@@ -67,7 +68,7 @@ export function EmailScanReview() {
         : (err instanceof Error ? err.message : t('settings.emailScan.scanError'));
       showError(message);
     }
-  }, [scan, scanMonths, showError, t]);
+  }, [scan, scanMonths, showError, t, selectedAdditions, selectedUpdates, selectedEmailIds]);
 
   const selectAllAdditions = useCallback(() => {
     if (!preview) return;

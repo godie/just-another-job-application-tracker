@@ -2,17 +2,30 @@
 import { PREFERENCES_STORAGE_KEY, DEFAULT_PREFERENCES } from '../utils/constants';
 import type { UserPreferences, ATSSearchPreferences } from '../types/preferences';
 
-/**
- * Migrates legacy OR-separated search strings to arrays.
- */
-const migrateAtsSearch = (atsSearch: any): ATSSearchPreferences => {
+interface LegacyATSSearch {
+  roles?: string[] | string;
+  keywords?: string[] | string;
+  location?: string[] | string;
+}
+
+interface StoredPreferences {
+  enabledFields?: string[];
+  columnOrder?: string[];
+  customFields?: unknown[];
+  defaultView?: string;
+  dateFormat?: string;
+  customInterviewEvents?: unknown[];
+  atsSearch?: LegacyATSSearch;
+  [key: string]: unknown;
+}
+
+const migrateAtsSearch = (atsSearch: LegacyATSSearch | undefined): ATSSearchPreferences => {
   if (!atsSearch) return DEFAULT_PREFERENCES.atsSearch!;
 
-  const migrateField = (field: any): string[] => {
+  const migrateField = (field: string[] | string | undefined): string[] => {
     if (Array.isArray(field)) return field;
     if (typeof field !== 'string') return [];
 
-    // Split by " OR " (case-insensitive), remove quotes and trim
     return field
       .split(/ OR /i)
       .map(part => part.trim().replace(/^"(.*)"$/, '').replace(/^'(.*)'$/, ''))
@@ -26,18 +39,14 @@ const migrateAtsSearch = (atsSearch: any): ATSSearchPreferences => {
   };
 };
 
-/**
- * Obtiene las preferencias del usuario desde localStorage.
- */
 export const getPreferences = (): UserPreferences => {
   try {
     const stored = localStorage.getItem(PREFERENCES_STORAGE_KEY);
     if (!stored) {
       return DEFAULT_PREFERENCES;
     }
-    const parsed = JSON.parse(stored) as any;
+    const parsed: StoredPreferences = JSON.parse(stored);
 
-    // Merge with defaults to be resilient to schema changes
     const enabledFields = parsed.enabledFields && parsed.enabledFields.length > 0
       ? parsed.enabledFields
       : DEFAULT_PREFERENCES.enabledFields;
@@ -46,24 +55,22 @@ export const getPreferences = (): UserPreferences => {
       ? parsed.columnOrder
       : DEFAULT_PREFERENCES.columnOrder;
 
-    const customFields = parsed.customFields ?? DEFAULT_PREFERENCES.customFields;
+    const customFields = parsed.customFields as UserPreferences['customFields'] ?? DEFAULT_PREFERENCES.customFields;
     
     const defaultView = (parsed.defaultView && ['table', 'timeline', 'kanban', 'calendar'].includes(parsed.defaultView))
-      ? parsed.defaultView
+      ? parsed.defaultView as UserPreferences['defaultView']
       : DEFAULT_PREFERENCES.defaultView;
     
     const dateFormat = (parsed.dateFormat && ['DD/MM/YYYY', 'MM/DD/YYYY', 'YYYY-MM-DD'].includes(parsed.dateFormat))
-      ? parsed.dateFormat
+      ? parsed.dateFormat as UserPreferences['dateFormat']
       : DEFAULT_PREFERENCES.dateFormat;
 
-    const customInterviewEvents = parsed.customInterviewEvents ?? DEFAULT_PREFERENCES.customInterviewEvents;
+    const customInterviewEvents = parsed.customInterviewEvents as UserPreferences['customInterviewEvents'] ?? DEFAULT_PREFERENCES.customInterviewEvents;
 
-    // Migrate ATS search if it exists
     const atsSearch = migrateAtsSearch(parsed.atsSearch);
 
     return {
       ...DEFAULT_PREFERENCES,
-      ...parsed,
       enabledFields,
       columnOrder,
       customFields,
@@ -78,9 +85,6 @@ export const getPreferences = (): UserPreferences => {
   }
 };
 
-/**
- * Guarda las preferencias del usuario en localStorage.
- */
 export const savePreferences = (preferences: UserPreferences): void => {
   try {
     localStorage.setItem(PREFERENCES_STORAGE_KEY, JSON.stringify(preferences));
