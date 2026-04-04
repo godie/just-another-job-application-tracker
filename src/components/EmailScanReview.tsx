@@ -61,7 +61,7 @@ export function EmailScanReview() {
         : (err instanceof Error ? err.message : t('settings.emailScan.scanError'));
       showError(message);
     }
-  }, [scan, showError, t]);
+  }, [scan, scanMonths, showError, t]);
 
   const toggleAddition = useCallback((id: string) => {
     setSelectedAdditions((prev) => {
@@ -184,7 +184,7 @@ export function EmailScanReview() {
   const handleProcessJson = useCallback(() => {
     try {
       const data = JSON.parse(pastedJson);
-      const additions: ProposedAddition[] = (data.additions || []).map((a: any, index: number) => ({
+      const additions: ProposedAddition[] = (data.additions || []).map((a: { position?: string; company?: string; status?: string; applicationDate?: string; notes?: string; platform?: string }, index: number) => ({
         id: `json-add-${index}-${Date.now()}`,
         data: {
           position: a.position || 'Unknown',
@@ -211,10 +211,10 @@ export function EmailScanReview() {
         source: { subject: 'Chatbot extraction', date: new Date().toISOString() }
       }));
 
-      const updates: ProposedUpdate[] = (data.updates || []).map((u: any, index: number) => {
+      const updates: ProposedUpdate[] = (data.updates || []).map((u: { company?: string; position?: string; newEvent?: { type?: string; date?: string; notes?: string; status?: string } }, index: number) => {
         const existingApp = applications.find(app =>
-          app.company.toLowerCase().trim() === u.company.toLowerCase().trim() &&
-          app.position.toLowerCase().trim() === u.position.toLowerCase().trim() &&
+          app.company.toLowerCase().trim() === (u.company || '').toLowerCase().trim() &&
+          app.position.toLowerCase().trim() === (u.position || '').toLowerCase().trim() &&
           app.status !== 'Deleted'
         );
 
@@ -244,7 +244,7 @@ export function EmailScanReview() {
       setSelectedUpdates(new Set(updates.map(u => u.id)));
       setPastedJson('');
       showSuccess('JSON procesado correctamente');
-    } catch (err) {
+    } catch {
       showError(t('settings.emailScan.invalidJson'));
     }
   }, [pastedJson, applications, setPreview, showSuccess, showError, t]);

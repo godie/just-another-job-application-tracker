@@ -392,13 +392,13 @@ const SettingsPageContent: React.FC<SettingsPageProps> = ({ onNavigate }) => {
                   <p className="text-gray-600 dark:text-gray-300 mb-4">Sync is currently disabled. Log in to enable cloud features.</p>
                   <div className="flex justify-center gap-3">
                     <button
-                      onClick={() => onNavigate?.('login' as any)}
+                      onClick={() => onNavigate?.('login')}
                       className="px-6 py-2 bg-indigo-600 text-white rounded-md text-sm font-medium hover:bg-indigo-700 shadow-sm"
                     >
                       Login
                     </button>
                     <button
-                      onClick={() => onNavigate?.('register' as any)}
+                      onClick={() => onNavigate?.('register')}
                       className="px-6 py-2 bg-white dark:bg-gray-800 border border-gray-300 text-gray-700 dark:text-gray-200 rounded-md text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700"
                     >
                       Create Account

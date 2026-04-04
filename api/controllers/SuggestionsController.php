@@ -15,7 +15,7 @@ class SuggestionsController
     /** GET /suggestions - List all suggestions */
     public function index(): array
     {
-        $dbPath = $this->config['suggestions_db_path'];
+        $dbPath = $this->getSuggestionsDbPath();
         if (!file_exists($dbPath)) {
             return ['success' => true, 'suggestions' => []];
         }
@@ -121,7 +121,7 @@ class SuggestionsController
             return ['success' => false, 'error' => 'Failed to encode suggestion types.'];
         }
 
-        $dbPath = $this->config['suggestions_db_path'];
+        $dbPath = $this->getSuggestionsDbPath();
         $dbDir = dirname($dbPath);
         if (!is_dir($dbDir)) {
             mkdir($dbDir, 0755, true);
@@ -202,5 +202,13 @@ class SuggestionsController
 
         // Use @ to suppress potential errors if mail() is not configured
         @mail($to, $subject, $message, $headers);
+    }
+
+    private function getSuggestionsDbPath(): string
+    {
+        return (string) (
+            $this->config['paths']['suggestions_db'] ??
+            (__DIR__ . '/../data/suggestions.db')
+        );
     }
 }

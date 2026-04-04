@@ -1,0 +1,1274 @@
+{
+  "version": "2.8",
+  "children": [
+    {
+      "type": "frame",
+      "id": "bi8Au",
+      "x": 0,
+      "y": 0,
+      "name": "Frame",
+      "clip": true,
+      "width": 800,
+      "height": 600,
+      "fill": "#FFFFFF",
+      "layout": "none"
+    },
+    {
+      "type": "frame",
+      "id": "w1s75",
+      "x": 0,
+      "y": 0,
+      "name": "Landing Page V2",
+      "width": 1440,
+      "height": 3200,
+      "fill": "#FFFFFF",
+      "layout": "vertical",
+      "gap": 48,
+      "children": [
+        {
+          "type": "frame",
+          "id": "ZWjKN",
+          "name": "Lang Switcher",
+          "width": "fill_container",
+          "gap": 8,
+          "children": [
+            {
+              "type": "frame",
+              "id": "ry93p",
+              "name": "spacer",
+              "width": "fill_container",
+              "height": 1
+            },
+            {
+              "type": "frame",
+              "id": "0qQHk",
+              "name": "enBtn",
+              "fill": "#4F46E5",
+              "cornerRadius": 6,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "kZdIR",
+                  "name": "enText",
+                  "fill": "#FFFFFF",
+                  "content": "English",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "bold"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "YbWjQ",
+              "name": "esBtn",
+              "fill": "#E5E7EB",
+              "cornerRadius": 6,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "WewTK",
+                  "name": "esText",
+                  "fill": "#374151",
+                  "content": "Español",
+                  "fontFamily": "Inter",
+                  "fontSize": 12,
+                  "fontWeight": "bold"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "kBwKB",
+          "name": "Hero Section",
+          "width": "fill_container",
+          "fill": "#FFFFFF",
+          "layout": "vertical",
+          "gap": 24,
+          "children": [
+            {
+              "type": "frame",
+              "id": "mRylN",
+              "name": "Hero Copy",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 18,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "3mO00",
+                  "name": "badge",
+                  "fill": "#6366F1",
+                  "content": "CLEAR PIPELINE. BETTER FOLLOW-UPS. MORE INTERVIEWS.",
+                  "fontFamily": "Inter",
+                  "fontSize": 14,
+                  "fontWeight": "bold"
+                },
+                {
+                  "type": "text",
+                  "id": "UEymu",
+                  "name": "headline",
+                  "fill": "#4338CA",
+                  "content": "A Job Application Tracker for Organized Job Seekers",
+                  "textAlign": "center",
+                  "fontFamily": "Inter",
+                  "fontSize": 52,
+                  "fontWeight": "bold"
+                },
+                {
+                  "type": "text",
+                  "id": "RQRWt",
+                  "name": "sub",
+                  "fill": "#4B5563",
+                  "content": "Still tracking applications in spreadsheets? Organize every role, interview, and follow-up in one focused dashboard.",
+                  "textAlign": "center",
+                  "fontFamily": "Inter",
+                  "fontSize": 24,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "frame",
+                  "id": "5McHW",
+                  "name": "ctaRow",
+                  "gap": 12,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "PRqYu",
+                      "name": "Primary CTA",
+                      "fill": "#4F46E5",
+                      "cornerRadius": 8,
+                      "gap": 8,
+                      "padding": 20,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "EGk4K",
+                          "name": "ctaText",
+                          "fill": "#FFFFFF",
+                          "content": "Get Started Free",
+                          "fontFamily": "Inter",
+                          "fontSize": 20,
+                          "fontWeight": "bold"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "l9jtY",
+                  "name": "ctaNote",
+                  "fill": "#475569",
+                  "content": "Free to start. No credit card required. Sign in with Google in seconds.",
+                  "textAlign": "center",
+                  "fontFamily": "Inter",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "Kb6vA",
+              "name": "Hero Visual",
+              "width": "fill_container",
+              "fill": "#F1F5F9",
+              "cornerRadius": 16,
+              "layout": "vertical",
+              "gap": 12,
+              "padding": 20,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "zHjGG",
+                  "name": "mockTitle",
+                  "fill": "#0F172A",
+                  "content": "What You Get",
+                  "fontFamily": "Inter",
+                  "fontSize": 22,
+                  "fontWeight": "bold"
+                },
+                {
+                  "type": "frame",
+                  "id": "JvEbO",
+                  "name": "metricRow",
+                  "gap": 10,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "H0Yte",
+                      "name": "metric1",
+                      "width": 160,
+                      "fill": "#FFFFFF",
+                      "cornerRadius": 10,
+                      "layout": "vertical",
+                      "gap": 6,
+                      "padding": 12,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "IQ6C4",
+                          "name": "m1a",
+                          "fill": "#111827",
+                          "content": "Table",
+                          "fontFamily": "Inter",
+                          "fontSize": 28,
+                          "fontWeight": "bold"
+                        },
+                        {
+                          "type": "text",
+                          "id": "dJgwH",
+                          "name": "m1b",
+                          "content": "Track every application",
+                          "fontFamily": "Inter",
+                          "fontSize": 12,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "RARCB",
+                      "name": "metric2",
+                      "width": 160,
+                      "fill": "#FFFFFF",
+                      "cornerRadius": 10,
+                      "layout": "vertical",
+                      "gap": 6,
+                      "padding": 12,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "mfi3k",
+                          "name": "m2a",
+                          "fill": "#111827",
+                          "content": "Kanban",
+                          "fontFamily": "Inter",
+                          "fontSize": 28,
+                          "fontWeight": "bold"
+                        },
+                        {
+                          "type": "text",
+                          "id": "ompbM",
+                          "name": "m2b",
+                          "content": "See your pipeline clearly",
+                          "fontFamily": "Inter",
+                          "fontSize": 12,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "UlzYV",
+                      "name": "metric3",
+                      "width": 160,
+                      "fill": "#FFFFFF",
+                      "cornerRadius": 10,
+                      "layout": "vertical",
+                      "gap": 6,
+                      "padding": 12,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "tUhUx",
+                          "name": "m3a",
+                          "fill": "#111827",
+                          "content": "Insights",
+                          "fontFamily": "Inter",
+                          "fontSize": 28,
+                          "fontWeight": "bold"
+                        },
+                        {
+                          "type": "text",
+                          "id": "AOO9x",
+                          "name": "m3b",
+                          "content": "Focus on what converts",
+                          "fontFamily": "Inter",
+                          "fontSize": 12,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "KjKuU",
+          "name": "Trust Bar",
+          "width": "fill_container",
+          "fill": "#EEF2FF",
+          "cornerRadius": 12,
+          "gap": 16,
+          "padding": 16,
+          "children": [
+            {
+              "type": "text",
+              "id": "BNnb7",
+              "name": "proof1",
+              "fill": "#4338CA",
+              "content": "Built by job seekers, for job seekers",
+              "fontFamily": "Inter",
+              "fontSize": 18,
+              "fontWeight": "bold"
+            },
+            {
+              "type": "text",
+              "id": "PQjcS",
+              "name": "proof2",
+              "fill": "#6366F1",
+              "content": "Early access users are actively shaping weekly improvements",
+              "fontFamily": "Inter",
+              "fontSize": 16,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "Nxa3O",
+              "name": "proof3",
+              "fill": "#6366F1",
+              "content": "Secure Google OAuth and full data ownership in your account",
+              "fontFamily": "Inter",
+              "fontSize": 16,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "igrFw",
+          "name": "Problem Solution",
+          "width": "fill_container",
+          "fill": "#F9FAFB",
+          "layout": "vertical",
+          "gap": 24,
+          "children": [
+            {
+              "type": "text",
+              "id": "cznZ1",
+              "name": "probTitle",
+              "fill": "#0F172A",
+              "content": "From job-search chaos to clear action",
+              "fontFamily": "Inter",
+              "fontSize": 36,
+              "fontWeight": "bold"
+            },
+            {
+              "type": "text",
+              "id": "Yicxz",
+              "name": "probSub",
+              "fill": "#334155",
+              "content": "Most candidates lose momentum because tracking is fragmented. Organize everything in one workflow.",
+              "fontFamily": "Inter",
+              "fontSize": 18,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "frame",
+              "id": "Vr8J5",
+              "name": "probGrid",
+              "width": "fill_container",
+              "gap": 16,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "ggpX0",
+                  "name": "before",
+                  "width": "fill_container",
+                  "fill": "#FEF2F2",
+                  "cornerRadius": 12,
+                  "layout": "vertical",
+                  "gap": 10,
+                  "padding": 20,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "WFMj3",
+                      "name": "bTitle",
+                      "fill": "#991B1B",
+                      "content": "Before",
+                      "fontFamily": "Inter",
+                      "fontSize": 20,
+                      "fontWeight": "bold"
+                    },
+                    {
+                      "type": "text",
+                      "id": "tpF3Z",
+                      "name": "b1",
+                      "fill": "#7F1D1D",
+                      "content": "Applications scattered in tabs and notes",
+                      "fontFamily": "Inter",
+                      "fontSize": 15,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "fuDfa",
+                      "name": "b2",
+                      "fill": "#7F1D1D",
+                      "content": "Missed follow-ups and stale opportunities",
+                      "fontFamily": "Inter",
+                      "fontSize": 15,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "GQdne",
+                      "name": "b3",
+                      "fill": "#7F1D1D",
+                      "content": "No clear signal on what strategy works",
+                      "fontFamily": "Inter",
+                      "fontSize": 15,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "EmnUn",
+                  "name": "after",
+                  "width": "fill_container",
+                  "fill": "#ECFDF5",
+                  "cornerRadius": 12,
+                  "layout": "vertical",
+                  "gap": 10,
+                  "padding": 20,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "tvjWw",
+                      "name": "aTitle",
+                      "fill": "#065F46",
+                      "content": "After",
+                      "fontFamily": "Inter",
+                      "fontSize": 20,
+                      "fontWeight": "bold"
+                    },
+                    {
+                      "type": "text",
+                      "id": "ipRIz",
+                      "name": "a1",
+                      "fill": "#065F46",
+                      "content": "One dashboard for every role and stage",
+                      "fontFamily": "Inter",
+                      "fontSize": 15,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "BBOtn",
+                      "name": "a2",
+                      "fill": "#065F46",
+                      "content": "Automatic reminders for timely follow-ups",
+                      "fontFamily": "Inter",
+                      "fontSize": 15,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "Bnjfq",
+                      "name": "a3",
+                      "fill": "#065F46",
+                      "content": "Insights that show which applications convert",
+                      "fontFamily": "Inter",
+                      "fontSize": 15,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "2EPEh",
+          "name": "Why Not Spreadsheet",
+          "width": "fill_container",
+          "fill": "#FFFFFF",
+          "layout": "vertical",
+          "gap": 14,
+          "children": [
+            {
+              "type": "text",
+              "id": "ixurp",
+              "name": "sheetTitle",
+              "fill": "#111827",
+              "content": "Why not just use a spreadsheet?",
+              "fontFamily": "Inter",
+              "fontSize": 34,
+              "fontWeight": "bold"
+            },
+            {
+              "type": "text",
+              "id": "YG0H1",
+              "name": "sheetSub",
+              "fill": "#4B5563",
+              "content": "Spreadsheets are flexible, but they were not built for active job-search workflows.",
+              "fontFamily": "Inter",
+              "fontSize": 17,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "frame",
+              "id": "A2tH1",
+              "name": "sheetGrid",
+              "width": "fill_container",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "jzJBR",
+                  "name": "s1",
+                  "width": "fill_container",
+                  "fill": "#F9FAFB",
+                  "cornerRadius": 10,
+                  "layout": "vertical",
+                  "gap": 6,
+                  "padding": 16,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "fpWbP",
+                      "name": "s1t",
+                      "fill": "#1F2937",
+                      "content": "No automated Gmail scanning",
+                      "fontFamily": "Inter",
+                      "fontSize": 16,
+                      "fontWeight": "bold"
+                    },
+                    {
+                      "type": "text",
+                      "id": "rDdoF",
+                      "name": "s1d",
+                      "fill": "#6B7280",
+                      "content": "Manual inbox review makes follow-ups easy to miss.",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "qZ9Nb",
+                  "name": "s2",
+                  "width": "fill_container",
+                  "fill": "#F9FAFB",
+                  "cornerRadius": 10,
+                  "layout": "vertical",
+                  "gap": 6,
+                  "padding": 16,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "AGA6c",
+                      "name": "s2t",
+                      "fill": "#1F2937",
+                      "content": "No pipeline visualization",
+                      "fontFamily": "Inter",
+                      "fontSize": 16,
+                      "fontWeight": "bold"
+                    },
+                    {
+                      "type": "text",
+                      "id": "OCHXC",
+                      "name": "s2d",
+                      "fill": "#6B7280",
+                      "content": "You cannot quickly see bottlenecks across stages.",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "r1gLk",
+                  "name": "s3",
+                  "width": "fill_container",
+                  "fill": "#F9FAFB",
+                  "cornerRadius": 10,
+                  "layout": "vertical",
+                  "gap": 6,
+                  "padding": 16,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "0qfTc",
+                      "name": "s3t",
+                      "fill": "#1F2937",
+                      "content": "No job-search-specific insights",
+                      "fontFamily": "Inter",
+                      "fontSize": 16,
+                      "fontWeight": "bold"
+                    },
+                    {
+                      "type": "text",
+                      "id": "hgX3V",
+                      "name": "s3d",
+                      "fill": "#6B7280",
+                      "content": "Hard to learn what is actually driving interviews.",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "id": "YuX3g",
+              "name": "sheetClose",
+              "fill": "#4338CA",
+              "content": "This tracker is purpose-built for job seekers who need clarity, consistency, and momentum.",
+              "fontFamily": "Inter",
+              "fontSize": 16,
+              "fontWeight": "bold"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "36UEm",
+          "name": "Core Benefits",
+          "width": "fill_container",
+          "fill": "#F9FAFB",
+          "layout": "vertical",
+          "gap": 20,
+          "children": [
+            {
+              "type": "text",
+              "id": "UpYrX",
+              "name": "featTitle",
+              "fill": "#111827",
+              "content": "Benefits that move you toward offers",
+              "fontFamily": "Inter",
+              "fontSize": 42,
+              "fontWeight": "bold"
+            },
+            {
+              "type": "frame",
+              "id": "dIyZi",
+              "name": "featRow",
+              "width": "fill_container",
+              "gap": 14,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "g5yd4",
+                  "name": "card1",
+                  "width": "fill_container",
+                  "fill": "#F8FAFC",
+                  "cornerRadius": 12,
+                  "layout": "vertical",
+                  "gap": 8,
+                  "padding": 18,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "7byfF",
+                      "name": "c1t",
+                      "fill": "#4F46E5",
+                      "content": "Never miss a follow-up",
+                      "fontFamily": "Inter",
+                      "fontSize": 20,
+                      "fontWeight": "bold"
+                    },
+                    {
+                      "type": "text",
+                      "id": "OhbZn",
+                      "name": "c1d",
+                      "fill": "#475569",
+                      "content": "Track deadlines and communication history so interviews never slip.",
+                      "fontFamily": "Inter",
+                      "fontSize": 15,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "cYUGv",
+                  "name": "card2",
+                  "width": "fill_container",
+                  "fill": "#F8FAFC",
+                  "cornerRadius": 12,
+                  "layout": "vertical",
+                  "gap": 8,
+                  "padding": 18,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "tAKID",
+                      "name": "c2t",
+                      "fill": "#4F46E5",
+                      "content": "See what is actually working",
+                      "fontFamily": "Inter",
+                      "fontSize": 20,
+                      "fontWeight": "bold"
+                    },
+                    {
+                      "type": "text",
+                      "id": "DPnNV",
+                      "name": "c2d",
+                      "fill": "#475569",
+                      "content": "Visual funnel and status analytics reveal which strategies get responses.",
+                      "fontFamily": "Inter",
+                      "fontSize": 15,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "8aXyK",
+                  "name": "card3",
+                  "width": "fill_container",
+                  "fill": "#F8FAFC",
+                  "cornerRadius": 12,
+                  "layout": "vertical",
+                  "gap": 8,
+                  "padding": 18,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "xzQsX",
+                      "name": "c3t",
+                      "fill": "#4F46E5",
+                      "content": "Work the way recruiters do",
+                      "fontFamily": "Inter",
+                      "fontSize": 20,
+                      "fontWeight": "bold"
+                    },
+                    {
+                      "type": "text",
+                      "id": "2MQDq",
+                      "name": "c3d",
+                      "fill": "#475569",
+                      "content": "Kanban, timeline, and calendar views help you prioritize with confidence.",
+                      "fontFamily": "Inter",
+                      "fontSize": 15,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "dPECP",
+          "name": "How It Works",
+          "width": "fill_container",
+          "fill": "#F9FAFB",
+          "layout": "vertical",
+          "gap": 20,
+          "children": [
+            {
+              "type": "text",
+              "id": "Izube",
+              "name": "howTitle",
+              "fill": "#111827",
+              "content": "How it works in 3 steps",
+              "fontFamily": "Inter",
+              "fontSize": 42,
+              "fontWeight": "bold"
+            },
+            {
+              "type": "frame",
+              "id": "OTC81",
+              "name": "steps",
+              "width": "fill_container",
+              "gap": 14,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "H0gS9",
+                  "name": "step1",
+                  "width": "fill_container",
+                  "fill": "#FFFFFF",
+                  "cornerRadius": 12,
+                  "layout": "vertical",
+                  "gap": 8,
+                  "padding": 18,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "0jGJh",
+                      "name": "s1n",
+                      "fill": "#0E7490",
+                      "content": "01",
+                      "fontFamily": "Inter",
+                      "fontSize": 28,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "zawG2",
+                      "name": "s1t",
+                      "fill": "#0F172A",
+                      "content": "Sign in securely with Google",
+                      "fontFamily": "Inter",
+                      "fontSize": 18,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "HvS6l",
+                      "name": "s1d",
+                      "fill": "#334155",
+                      "content": "No passwords to manage. Your account stays protected with OAuth.",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "9kqX2",
+                  "name": "step2",
+                  "width": "fill_container",
+                  "fill": "#FFFFFF",
+                  "cornerRadius": 12,
+                  "layout": "vertical",
+                  "gap": 8,
+                  "padding": 18,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "zAbWq",
+                      "name": "s2n",
+                      "fill": "#0E7490",
+                      "content": "02",
+                      "fontFamily": "Inter",
+                      "fontSize": 28,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "djQk1",
+                      "name": "s2t",
+                      "fill": "#0F172A",
+                      "content": "Capture and organize applications",
+                      "fontFamily": "Inter",
+                      "fontSize": 18,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "YLjGB",
+                      "name": "s2d",
+                      "fill": "#334155",
+                      "content": "Use the extension or add manually. Keep every stage in one pipeline.",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "OsrXz",
+                  "name": "step3",
+                  "width": "fill_container",
+                  "fill": "#FFFFFF",
+                  "cornerRadius": 12,
+                  "layout": "vertical",
+                  "gap": 8,
+                  "padding": 18,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "eVgXG",
+                      "name": "s3n",
+                      "fill": "#0E7490",
+                      "content": "03",
+                      "fontFamily": "Inter",
+                      "fontSize": 28,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "1Iq6q",
+                      "name": "s3t",
+                      "fill": "#0F172A",
+                      "content": "Follow up and improve faster",
+                      "fontFamily": "Inter",
+                      "fontSize": 18,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "YqfMt",
+                      "name": "s3d",
+                      "fill": "#334155",
+                      "content": "Track conversion rates and focus on what gets interviews.",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "4zDtl",
+          "name": "Social Proof",
+          "width": "fill_container",
+          "fill": "#F9FAFB",
+          "layout": "vertical",
+          "gap": 20,
+          "children": [
+            {
+              "type": "text",
+              "id": "zXk6o",
+              "name": "testTitle",
+              "fill": "#0F172A",
+              "content": "Early-stage adoption, transparent progress",
+              "fontFamily": "Inter",
+              "fontSize": 34,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "frame",
+              "id": "uAQs5",
+              "name": "quotes",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "EI2Vh",
+                  "name": "q1",
+                  "width": "fill_container",
+                  "fill": "#F8FAFC",
+                  "cornerRadius": 12,
+                  "layout": "vertical",
+                  "gap": 8,
+                  "padding": 18,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "7hjKe",
+                      "name": "q1t",
+                      "fill": "#1E293B",
+                      "content": "We are in early adoption, so every new user helps shape product direction with real workflow feedback.",
+                      "fontFamily": "Inter",
+                      "fontSize": 15,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "F8gB5",
+                      "name": "q1a",
+                      "fill": "#64748B",
+                      "content": "Built in public with weekly iterations",
+                      "fontFamily": "Inter",
+                      "fontSize": 12,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "0kHSP",
+                  "name": "q2",
+                  "width": "fill_container",
+                  "fill": "#F8FAFC",
+                  "cornerRadius": 12,
+                  "layout": "vertical",
+                  "gap": 8,
+                  "padding": 18,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "3kTe0",
+                      "name": "q2t",
+                      "fill": "#1E293B",
+                      "content": "Priority right now: reduce job-search friction, simplify follow-ups, and improve clarity over spreadsheets.",
+                      "fontFamily": "Inter",
+                      "fontSize": 15,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "ktR0Z",
+                      "name": "q2a",
+                      "fill": "#64748B",
+                      "content": "Focused roadmap based on user pain points",
+                      "fontFamily": "Inter",
+                      "fontSize": 12,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "Y0QsE",
+                  "name": "q3",
+                  "width": "fill_container",
+                  "fill": "#F8FAFC",
+                  "cornerRadius": 12,
+                  "layout": "vertical",
+                  "gap": 8,
+                  "padding": 18,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "QzIXv",
+                      "name": "q3t",
+                      "fill": "#1E293B",
+                      "content": "If you join now, your feedback directly influences the next releases and core feature decisions.",
+                      "fontFamily": "Inter",
+                      "fontSize": 15,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "e4XbT",
+                      "name": "q3a",
+                      "fill": "#64748B",
+                      "content": "Early users get the fastest support loop",
+                      "fontFamily": "Inter",
+                      "fontSize": 12,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "0zub7",
+          "name": "FAQ",
+          "width": "fill_container",
+          "fill": "#F9FAFB",
+          "layout": "vertical",
+          "gap": 16,
+          "children": [
+            {
+              "type": "text",
+              "id": "auJHT",
+              "name": "faqTitle",
+              "fill": "#111827",
+              "content": "Frequently asked questions",
+              "fontFamily": "Inter",
+              "fontSize": 42,
+              "fontWeight": "bold"
+            },
+            {
+              "type": "frame",
+              "id": "cVp6u",
+              "name": "faq1",
+              "width": "fill_container",
+              "fill": "#F8FAFC",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "gap": 6,
+              "padding": 16,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "d5oJY",
+                  "name": "f1q",
+                  "fill": "#0F172A",
+                  "content": "Is it free to start?",
+                  "fontFamily": "Inter",
+                  "fontSize": 18,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "text",
+                  "id": "khE7c",
+                  "name": "f1a",
+                  "fill": "#475569",
+                  "content": "Yes. You can start free with no credit card required.",
+                  "fontFamily": "Inter",
+                  "fontSize": 15,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "Sd9B3",
+              "name": "faq2",
+              "width": "fill_container",
+              "fill": "#F8FAFC",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "gap": 6,
+              "padding": 16,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "Zi57S",
+                  "name": "f2q",
+                  "fill": "#0F172A",
+                  "content": "Is my Gmail data secure?",
+                  "fontFamily": "Inter",
+                  "fontSize": 18,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "text",
+                  "id": "XwQSc",
+                  "name": "f2a",
+                  "fill": "#475569",
+                  "content": "Authentication uses Google OAuth. No app password storage.",
+                  "fontFamily": "Inter",
+                  "fontSize": 15,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "ZCN7L",
+              "name": "faq3",
+              "width": "fill_container",
+              "fill": "#F8FAFC",
+              "cornerRadius": 10,
+              "layout": "vertical",
+              "gap": 6,
+              "padding": 16,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "qy0rk",
+                  "name": "f3q",
+                  "fill": "#0F172A",
+                  "content": "Can I export or keep ownership of my data?",
+                  "fontFamily": "Inter",
+                  "fontSize": 18,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "text",
+                  "id": "zaubL",
+                  "name": "f3a",
+                  "fill": "#475569",
+                  "content": "Yes. Your data stays in your Google account and can be exported anytime.",
+                  "fontFamily": "Inter",
+                  "fontSize": 15,
+                  "fontWeight": "normal"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "9DEGs",
+          "name": "Final CTA",
+          "width": "fill_container",
+          "fill": "#4338CA",
+          "layout": "vertical",
+          "gap": 16,
+          "children": [
+            {
+              "type": "text",
+              "id": "ejRdA",
+              "name": "finalTitle",
+              "fill": "#FFFFFF",
+              "content": "Your next interview should not\nbe lost in your inbox.",
+              "fontFamily": "Inter",
+              "fontSize": 48,
+              "fontWeight": "bold"
+            },
+            {
+              "type": "text",
+              "id": "HpKyV",
+              "name": "finalSub",
+              "fill": "#E0E7FF",
+              "content": "Take control of your pipeline this week with a simple, focused system.",
+              "fontFamily": "Inter",
+              "fontSize": 18,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "frame",
+              "id": "8Zuk6",
+              "name": "finalBtn",
+              "width": 200,
+              "height": 64,
+              "fill": "#FFFFFF",
+              "cornerRadius": 8,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": [
+                  "#000000ff",
+                  "#00000033"
+                ]
+              },
+              "layout": "none",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "2jI7r",
+                  "x": 20,
+                  "y": 20,
+                  "name": "finalBtnText",
+                  "fill": "#4338CA",
+                  "content": "Get Started Free",
+                  "fontFamily": "Inter",
+                  "fontSize": 20,
+                  "fontWeight": "bold"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "id": "GD63G",
+              "name": "finalNote",
+              "fill": "#C7D2FE",
+              "content": "Free to start • No credit card • Secure Google sign-in",
+              "fontFamily": "Inter",
+              "fontSize": 14,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "xDu7O",
+          "name": "Footer",
+          "width": "fill_container",
+          "fill": "#FFFFFF",
+          "layout": "vertical",
+          "children": [
+            {
+              "type": "text",
+              "id": "NwNMC",
+              "name": "footerText",
+              "fill": "#6B7280",
+              "content": "© 2026 Job Application Tracker. Master your career path.",
+              "textAlign": "center",
+              "fontFamily": "Inter",
+              "fontSize": 14,
+              "fontWeight": "normal"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

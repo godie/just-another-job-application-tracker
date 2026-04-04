@@ -3,7 +3,7 @@ import { useAuthStore } from '../stores/authStore';
 import { useAlert } from '../components/AlertProvider';
 
 interface LoginPageProps {
-  onNavigate: (page: any) => void;
+  onNavigate: (page: string) => void;
   onSuccess?: () => void;
 }
 
@@ -34,7 +34,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onNavigate, onSuccess }) => {
       } else {
         showError(data.error || 'Login failed');
       }
-    } catch (err) {
+    } catch {
       showError('An unexpected error occurred');
     } finally {
       setIsSubmitting(false);
@@ -54,7 +54,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onNavigate, onSuccess }) => {
           <p className="mt-2 text-center text-sm text-gray-600">
             Or{' '}
             <button
-              onClick={() => onNavigate('register' as any)}
+              onClick={() => onNavigate('register')}
               className="font-medium text-indigo-600 hover:text-indigo-500 focus:outline-none focus:underline"
             >
               create a new account

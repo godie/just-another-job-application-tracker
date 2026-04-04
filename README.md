@@ -30,6 +30,7 @@ This project is feature-complete for its core functionality. Based on the projec
 - AI-Assisted job matching and resume optimization
 - Browser notifications for interviews and follow-ups
 - Export to PDF/CSV and enhanced data import
+- Account-backed sync and multitenancy roadmap documented in [DOCS/MULTITENANCY_AND_AUTH_PLAN.md](./DOCS/MULTITENANCY_AND_AUTH_PLAN.md)
 
 For a detailed feature breakdown, please see the [recommendations document](./RECOMMENDATIONS.md).
 
@@ -112,6 +113,61 @@ Add your frontend origin (e.g. `http://localhost:5173`, `https://yourdomain.com`
 
 > **Note:** `.env` and `.env.local` are gitignored. Never commit `GOOGLE_CLIENT_SECRET`.
 
+## Run Locally
+
+Run the frontend and PHP API in separate terminals.
+
+1. Start the frontend from the project root:
+
+```bash
+npm install
+npm run dev
+```
+
+This starts Vite at `http://localhost:5173`.
+
+1. Start the API from [api/](/api):
+
+```bash
+cd api
+php -S 127.0.0.1:8080 index.php
+```
+
+1. Point the frontend to the local API in [`.env.local`](.env.local):
+
+```bash
+VITE_API_BASE_URL=http://127.0.0.1:8080/api
+```
+
+Restart `npm run dev` after changing `.env.local`.
+
+### Optional local backend variables
+
+If you want to test Google login, token refresh, Sheets sync, or MySQL-backed sync routes locally, export the backend variables before starting PHP:
+
+```bash
+export GOOGLE_CLIENT_ID="your_client_id.apps.googleusercontent.com"
+export GOOGLE_CLIENT_SECRET="your_client_secret"
+export DB_ENABLED=true
+export DB_HOST=127.0.0.1
+export DB_PORT=3306
+export DB_NAME=jajat
+export DB_USER=root
+export DB_PASSWORD="your_password"
+php -S 127.0.0.1:8080 index.php
+```
+
+If you only want to test basic API routes like `/api/hello` or `/api/captcha`, you can leave the DB and Google variables unset.
+
+### Quick API checks
+
+With the local API running:
+
+```bash
+curl http://127.0.0.1:8080/api/hello
+curl http://127.0.0.1:8080/api/captcha
+```
+
 # Available Scripts
 
 In the project directory, you can run:
@@ -124,8 +180,6 @@ In the project directory, you can run:
   - Starts the Vitest test runner in watch mode (recommended for TDD).
 - `npm run build`
   - Builds the application for production to the dist folder.
-- `npm run build:extension`
-  - Builds the Chrome extension to the chrome-extension/dist folder.
 
 ## Install as PWA (Progressive Web App)
 
@@ -147,6 +201,7 @@ Requirements: the site must be served over HTTPS (or `localhost` for testing). T
 - Modular Code Organization: Separated concerns with dedicated modules for types (`src/types/`), storage logic (`src/storage/`), and utilities, ensuring maintainability and scalability
 - Type Safety: Full TypeScript implementation with strict type checking
 - Vite Environment Variables: Secure management of the Google Client ID using VITE_ prefixed environment variables
+- Product/auth and multitenancy migration plan: [DOCS/MULTITENANCY_AND_AUTH_PLAN.md](./DOCS/MULTITENANCY_AND_AUTH_PLAN.md)
 
 ## Data Management & Persistence
 
@@ -247,55 +302,14 @@ The application includes comprehensive legal documentation required for Google O
 
 These pages are accessible from the footer and are required for Google Cloud Console OAuth consent screen verification. The bilingual support ensures compliance with international users and Google's requirements.
 
-## Chrome Extension - Multi-Platform Job Capture
+## Chrome Extension
 
-The project includes a Chrome extension for capturing job opportunities from multiple job boards. Currently supports LinkedIn, Greenhouse, AshbyHQ, Workable, and Lever.co, with more platforms coming soon.
+The Chrome extension is now an independent project located at:
 
-### Supported Job Boards
+- `../job-application-tracker-extension`
+- `https://github.com/godie/job-application-tracker-extension`
 
-- **LinkedIn**: Full support for LinkedIn job postings
-- **Greenhouse**: Complete extraction from Greenhouse job boards
-- **AshbyHQ**: Full support for AshbyHQ job postings
-- **Workable**: Full support for Workable job postings
-- **Lever.co**: Full support for Lever.co job postings
-
-### Features
-
-- **One-click capture**: Automatically extracts job details from supported job boards
-- **Smart extraction**: Uses multiple data sources (embedded JSON, JSON-LD, HTML, meta tags) for reliable data extraction
-- **Editable form**: Review and edit captured data before saving
-- **Sync with web app**: Automatically syncs with the web application when open
-- **Offline storage**: Uses Chrome's storage API for reliable data persistence
-- **Manual creation**: Add opportunities directly from the web app without the extension
-- **Bidirectional sync**: Real-time synchronization between extension and web app
-- **Memory efficient**: Proper cleanup prevents memory leaks in single-page applications
-- **Advanced filtering**: Filter opportunities by status with inclusion/exclusion options
-
-### Quick Start
-
-1. Build the extension: `npm run build:extension`
-2. Load it in Chrome: Go to `chrome://extensions/`, enable Developer mode, and load the `chrome-extension/dist` folder
-3. Visit a job posting on LinkedIn, Greenhouse, AshbyHQ, Workable, or Lever.co and click the extension icon to capture it
-4. Or add opportunities manually from the Opportunities page in the web app
-
-### Supported URLs
-
-- LinkedIn: `https://www.linkedin.com/jobs/view/*`
-- Greenhouse: `https://boards.greenhouse.io/*`, `https://job-boards.greenhouse.io/*`
-- AshbyHQ: `https://jobs.ashbyhq.com/*`, `https://*.ashbyhq.com/*`
-- Workable: `https://apply.workable.com/*`, `https://workable.com/j/*`
-- Lever.co: `https://jobs.lever.co/*`, `https://*.lever.co/*`, `https://lever.co/*`
-
-### Manual Opportunity Creation
-
-You don't need the extension to add opportunities! Simply:
-
-1. Navigate to the Opportunities page in the web app
-2. Click "+ Add Opportunity"
-3. Fill in the job details
-4. Save - it will sync with the extension if installed
-
-For detailed installation and usage instructions, see [CHROME_EXTENSION.md](./CHROME_EXTENSION.md).
+Build/test/install instructions live in that folder's own documentation and `package.json`.
 
 ## Google Sheets Integration
 
@@ -442,25 +456,10 @@ job-application-tracker/
 │   ├── controllers/             // AuthController, CaptchaController, SuggestionsController, GoogleSheetsController
 │   ├── helpers/                 // cors.php, auth.php (token resolve + refresh)
 │   └── ...                      // Legacy .php scripts can be removed once new routes are confirmed
-├── chrome-extension/            // Chrome extension for multi-platform job capture
-│   ├── manifest.json            // Extension manifest
-│   ├── popup.html               // Popup HTML container
-│   ├── popup.tsx                // React popup component
-│   ├── content.ts               // Content script for job board pages
-│   ├── webapp-content.ts       // Content script for web app sync
-│   ├── background.ts            // Background service worker
-│   ├── job-extractors/          // Job extraction system
-│   │   ├── JobExtractor.ts      // Extractor interface
-│   │   ├── LinkedInJobExtractor.ts  // LinkedIn extractor
-│   │   ├── GreenhouseJobExtractor.ts // Greenhouse extractor
-│   │   ├── AshbyhqJobExtractor.ts   // AshbyHQ extractor
-│   │   ├── WorkableJobExtractor.ts  // Workable extractor
-│   │   ├── LeverJobExtractor.ts     // Lever.co extractor
-│   │   └── index.ts             // Extractor registry
-│   └── dist/                    // Built extension files (generated)
+└── ../job-application-tracker-extension/ // Independent Chrome extension project (separate package.json)
 ├── .env.local                   // Stores VITE_GOOGLE_CLIENT_ID (Ignored by Git).
 ├── .nvmrc                       // Node version specification (v22)
-├── CHROME_EXTENSION.md          // Chrome extension documentation
+├── CHROME_EXTENSION.md          // Pointer doc to external extension project
 └── tailwind.config.js
 ```
 

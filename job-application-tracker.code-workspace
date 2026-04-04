@@ -1,0 +1,19 @@
+{
+    "folders": [
+        {
+            "path": "."
+        },
+        {
+            "path": "../job-application-tracker-mobile"
+        },
+        {
+            "path": "../job-application-tracker-backend"
+        },
+        {
+            "path": "../job-application-tracker-extension"
+        }
+    ],
+    "settings": {
+        "kiroAgent.configureMCP": "Disabled"
+    }
+}
