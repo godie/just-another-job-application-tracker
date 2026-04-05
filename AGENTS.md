@@ -44,8 +44,7 @@ npm run test:cov
 # Build for production
 npm run build
 
-# Build Chrome extension
-npm run build:extension
+# Chrome extension is now an independent project in ../job-application-tracker-extension
 
 # Lint code
 npm run lint
@@ -253,7 +252,7 @@ describe('Component', () => {
 5. **Message Passing**: Use `chrome.runtime.sendMessage` for communication between scripts
 
 ```typescript
-// chrome-extension/content.ts
+// job-application-tracker-extension/content.ts
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === 'getJobData') {
     const jobData = extractJobData();
@@ -272,7 +271,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 5. **Date Parsing**: Handle various date formats (English, Spanish, ISO, etc.)
 
 ```typescript
-// chrome-extension/job-extractors/WorkableJobExtractor.ts
+// job-application-tracker-extension/job-extractors/WorkableJobExtractor.ts
 export class WorkableJobExtractor implements JobExtractor {
   readonly name = 'Workable';
 
@@ -324,7 +323,7 @@ job-application-tracker/
 │   ├── tests/              # Test files
 │   ├── App.tsx             # Main app component
 │   └── main.tsx            # Application entry point
-├── chrome-extension/
+├── job-application-tracker-extension/
 │   ├── job-extractors/     # Job extraction system
 │   ├── __tests__/          # Extension tests
 │   ├── background.ts       # Service worker
@@ -426,7 +425,7 @@ Before committing code:
 ## Chrome Extension Specific Guidelines
 
 1. **Manifest Updates**: Update `manifest.json` when adding new content scripts or permissions
-2. **Build Command**: Use `npm run build:extension` for extension builds
+2. **Build Command**: Run extension build commands from `../job-application-tracker-extension`
 3. **Content Script Isolation**: Remember content scripts run in isolated context
 4. **Message Passing**: Use proper message passing patterns for script communication
 5. **Storage Sync**: Use `chrome.storage.local` for extension data
@@ -455,7 +454,7 @@ The project includes a pre-commit hook that runs ESLint automatically:
 
 - **README.md**: Main project documentation
 - **CHROME_EXTENSION.md**: Chrome extension specific documentation
-- **chrome-extension/job-extractors/README.md**: Job extractor system documentation
+- **job-application-tracker-extension/job-extractors/README.md**: Job extractor system documentation
 - **Code Comments**: Add comments for complex logic and business rules
 
 Remember: Test first, type everything, follow React best practices, maintain consistency with existing code patterns, and prioritize user experience and accessibility.

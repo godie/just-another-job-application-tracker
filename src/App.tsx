@@ -118,9 +118,9 @@ function App() {
       case 'landing':
         return <LandingPage onNavigate={setCurrentPage} />;
       case 'login':
-        return <LoginPage onNavigate={setCurrentPage} />;
+        return <LoginPage onNavigate={(page) => setCurrentPage(page as PageType)} />;
       case 'register':
-        return <RegisterPage onNavigate={setCurrentPage} />;
+        return <RegisterPage onNavigate={(page) => setCurrentPage(page as PageType)} />;
       default:
         return <HomePage onNavigate={setCurrentPage} />;
     }

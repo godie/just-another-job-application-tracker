@@ -4,7 +4,8 @@ import { usePreferencesStore } from '../stores/preferencesStore';
 import { useAuthStore } from '../stores/authStore';
 import { useAlert } from '../components/AlertProvider';
 import { DEFAULT_FIELDS } from '../utils/constants';
-import { type FieldDefinition, type ViewType, type DateFormat } from '../types/preferences';
+import { type PageType } from '../App';
+import { type FieldDefinition, type ViewType, type DateFormat, type CustomInterviewEvent } from '../types/preferences';
 import FieldsSettings from '../components/settings/FieldsSettings';
 import ViewSettings from '../components/settings/ViewSettings';
 import DateFormatSettings from '../components/settings/DateFormatSettings';
@@ -16,7 +17,7 @@ import Footer from '../components/Footer';
 import packageJson from '../../package.json';
 
 interface SettingsPageProps {
-  onNavigate?: (page: any) => void;
+  onNavigate?: (page: PageType) => void;
 }
 
 type SettingsSection = 'fields' | 'view' | 'date' | 'custom' | 'interviewing' | 'emailScan' | 'atsSearch' | 'cloud';
@@ -26,14 +27,14 @@ interface SettingsState {
   hasChanges: boolean;
   editingCustomField: FieldDefinition | null;
   customFieldForm: Partial<FieldDefinition>;
-  editingInterviewEvent: any | null;
-  interviewEventForm: any;
+  editingInterviewEvent: CustomInterviewEvent | null;
+  interviewEventForm: Partial<CustomInterviewEvent>;
 }
 
 type SettingsAction =
-  | { type: 'SET_FIELD'; field: keyof SettingsState; value: any }
+  | { type: 'SET_FIELD'; field: keyof SettingsState; value: unknown }
   | { type: 'SET_CUSTOM_FIELD_FORM'; value: Partial<FieldDefinition> }
-  | { type: 'SET_INTERVIEW_EVENT_FORM'; value: any }
+  | { type: 'SET_INTERVIEW_EVENT_FORM'; value: Partial<CustomInterviewEvent> }
   | { type: 'RESET_FORMS' };
 
 const initialState: SettingsState = {
@@ -42,7 +43,7 @@ const initialState: SettingsState = {
   editingCustomField: null,
   customFieldForm: { type: 'text' },
   editingInterviewEvent: null,
-  interviewEventForm: { type: 'first_contact', status: 'completed' },
+  interviewEventForm: { id: '', label: '' },
 };
 
 function settingsReducer(state: SettingsState, action: SettingsAction): SettingsState {
@@ -59,7 +60,7 @@ function settingsReducer(state: SettingsState, action: SettingsAction): Settings
         editingCustomField: null,
         customFieldForm: { type: 'text' },
         editingInterviewEvent: null,
-        interviewEventForm: { type: 'first_contact', status: 'completed' },
+        interviewEventForm: { id: '', label: '' },
       };
     default:
       return state;
@@ -144,20 +145,20 @@ const SettingsPageContent: React.FC<SettingsPageProps> = ({ onNavigate }) => {
 
   const handleAddInterviewEvent = () => {
     const id = `event_${Date.now()}`;
-    const newEvent = { ...interviewEventForm, id };
+    const newEvent: CustomInterviewEvent = { id, label: interviewEventForm.label || '' };
     const customInterviewEvents = [...(preferences.customInterviewEvents || []), newEvent];
     updatePreferences({ customInterviewEvents });
     dispatch({ type: 'RESET_FORMS' });
     dispatch({ type: 'SET_FIELD', field: 'hasChanges', value: true });
   };
 
-  const handleEditInterviewEvent = (event: any) => {
+  const handleEditInterviewEvent = (event: CustomInterviewEvent) => {
     dispatch({ type: 'SET_FIELD', field: 'editingInterviewEvent', value: event });
     dispatch({ type: 'SET_INTERVIEW_EVENT_FORM', value: event });
   };
 
   const handleUpdateInterviewEvent = () => {
-    const customInterviewEvents = (preferences.customInterviewEvents || []).map((e: any) =>
+    const customInterviewEvents = (preferences.customInterviewEvents || []).map((e: CustomInterviewEvent) =>
       e.id === editingInterviewEvent?.id ? { ...e, ...interviewEventForm } : e
     );
     updatePreferences({ customInterviewEvents });
@@ -166,7 +167,7 @@ const SettingsPageContent: React.FC<SettingsPageProps> = ({ onNavigate }) => {
   };
 
   const handleDeleteInterviewEvent = (eventId: string) => {
-    const customInterviewEvents = (preferences.customInterviewEvents || []).filter((e: any) => e.id !== eventId);
+    const customInterviewEvents = (preferences.customInterviewEvents || []).filter((e: CustomInterviewEvent) => e.id !== eventId);
     updatePreferences({ customInterviewEvents });
     dispatch({ type: 'SET_FIELD', field: 'hasChanges', value: true });
   };
@@ -350,14 +351,14 @@ const SettingsPageContent: React.FC<SettingsPageProps> = ({ onNavigate }) => {
                   <p className="text-gray-600 dark:text-gray-400 mb-8 max-w-md mx-auto">Log in to keep your applications and opportunities in sync across all your devices.</p>
                   <div className="flex flex-col sm:flex-row justify-center gap-4">
                     <button
-                      onClick={() => onNavigate?.('login' as any)}
-                      className="px-8 py-3 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 shadow-lg shadow-indigo-200 dark:shadow-none transition-all"
+                      onClick={() => onNavigate?.('login')}
+                      className="px-6 py-2 bg-indigo-600 text-white rounded-md text-sm font-medium hover:bg-indigo-700 shadow-sm"
                     >
                       Login
                     </button>
                     <button
-                      onClick={() => onNavigate?.('register' as any)}
-                      className="px-8 py-3 bg-white dark:bg-gray-800 border-2 border-gray-100 dark:border-gray-700 text-gray-700 dark:text-gray-200 rounded-xl text-sm font-bold hover:bg-gray-50 dark:hover:bg-gray-700 transition-all"
+                      onClick={() => onNavigate?.('register')}
+                      className="px-6 py-2 bg-white dark:bg-gray-800 border border-gray-300 text-gray-700 dark:text-gray-200 rounded-md text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700"
                     >
                       Create Account
                     </button>

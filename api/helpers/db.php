@@ -7,11 +7,13 @@ class DB {
     private \PDO $connection;
 
     private function __construct(array $config) {
-        $host = $config['db_host'] ?? 'localhost';
-        $db   = $config['db_name'] ?? 'jajat';
-        $user = $config['db_user'] ?? 'root';
-        $pass = $config['db_pass'] ?? '';
-        $port = $config['db_port'] ?? '3306';
+        $mysqlConfig = $config['database']['mysql'] ?? [];
+
+        $host = $mysqlConfig['host'] ?? '127.0.0.1';
+        $db   = $mysqlConfig['database'] ?? 'jajat';
+        $user = $mysqlConfig['username'] ?? 'root';
+        $pass = $mysqlConfig['password'] ?? '';
+        $port = (string) ($mysqlConfig['port'] ?? '3306');
         $charset = 'utf8mb4';
 
         $dsn = "mysql:host=$host;dbname=$db;charset=$charset;port=$port";

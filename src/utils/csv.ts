@@ -77,9 +77,9 @@ export const parseCSV = (csvText: string): JobApplication[] => {
     }
     values.push(current);
 
-    const app: any = {};
+    const app: Record<string, unknown> = {};
     headers.forEach((header, index) => {
-      let value = values[index] || '';
+      const value = values[index] || '';
 
       if (header === 'timeline' || header === 'customFields') {
         try {
@@ -101,7 +101,7 @@ export const parseCSV = (csvText: string): JobApplication[] => {
 
     // Validate required fields at least exist
     if (app.position && app.company) {
-      applications.push(app as JobApplication);
+      applications.push(app as unknown as JobApplication);
     }
   }
 

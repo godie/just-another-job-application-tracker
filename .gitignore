@@ -35,3 +35,6 @@ PR_MESSAGE.md
 # PHP
 # api/config.php is local only; use config.example.php as template and for deploy
 api/config.php
+api/vendor/
+
+.agents

@@ -3,109 +3,52 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { VitePWA } from 'vite-plugin-pwa'
-import { resolve } from 'path'
-import { copyFileSync, mkdirSync, existsSync } from 'fs'
 
-const isExtensionBuild = process.env.BUILD_EXTENSION === 'true'
+const apiProxyTarget = process.env.VITE_API_PROXY_TARGET || 'http://localhost:8080'
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
-    // PWA: manifest + service worker (only for web app build, not extension)
-    ...(isExtensionBuild
-      ? []
-      : [
-          VitePWA({
-            registerType: 'autoUpdate',
-            includeAssets: ['jajat-logo.png', 'vite.svg'],
-            manifest: {
-              name: 'JAJAT - Job Application Tracker',
-              short_name: 'JAJAT',
-              description: 'Track and manage your job applications with timeline views, calendar, and Google Sheets sync.',
-              theme_color: '#4f46e5',
-              background_color: '#ffffff',
-              display: 'standalone',
-              start_url: '/',
-              icons: [
-                {
-                  src: '/jajat-logo.png',
-                  sizes: '192x192',
-                  type: 'image/png',
-                  purpose: 'any',
-                },
-                {
-                  src: '/jajat-logo.png',
-                  sizes: '512x512',
-                  type: 'image/png',
-                  purpose: 'any maskable',
-                },
-              ],
-            },
-            workbox: {
-              globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
-              navigateFallback: '/index.html',
-            },
-            devOptions: {
-              enabled: false,
-            },
-          }),
-        ]),
-    // Plugin to copy extension files after build
-    {
-      name: 'copy-extension-files',
-      closeBundle() {
-        if (process.env.BUILD_EXTENSION === 'true') {
-          const distDir = resolve(__dirname, 'chrome-extension/dist');
-          if (!existsSync(distDir)) {
-            mkdirSync(distDir, { recursive: true });
-          }
-          
-          // Copy manifest.json
-          copyFileSync(
-            resolve(__dirname, 'chrome-extension/manifest.json'),
-            resolve(distDir, 'manifest.json')
-          );
-          
-          // Copy popup.html
-          copyFileSync(
-            resolve(__dirname, 'chrome-extension/popup.html'),
-            resolve(distDir, 'popup.html')
-          );
-          
-          // Copy icons if they exist (create placeholder if not)
-          const iconSizes = [16, 48, 128];
-          iconSizes.forEach(size => {
-            const iconPath = resolve(__dirname, `chrome-extension/icon${size}.png`);
-            if (existsSync(iconPath)) {
-              copyFileSync(iconPath, resolve(distDir, `icon${size}.png`));
-            }
-          });
-        }
-      }
-    }
+    VitePWA({
+      registerType: 'autoUpdate',
+      includeAssets: ['jajat-logo.png', 'vite.svg'],
+      manifest: {
+        name: 'JAJAT - Job Application Tracker',
+        short_name: 'JAJAT',
+        description: 'Track and manage your job applications with timeline views, calendar, and Google Sheets sync.',
+        theme_color: '#4f46e5',
+        background_color: '#ffffff',
+        display: 'standalone',
+        start_url: '/',
+        icons: [
+          {
+            src: '/jajat-logo.png',
+            sizes: '192x192',
+            type: 'image/png',
+            purpose: 'any',
+          },
+          {
+            src: '/jajat-logo.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'any maskable',
+          },
+        ],
+      },
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+        navigateFallback: '/index.html',
+      },
+      devOptions: {
+        enabled: false,
+      },
+    }),
   ],
   build: {
-    outDir: process.env.BUILD_EXTENSION === 'true' ? 'chrome-extension/dist' : 'dist',
-    rollupOptions: process.env.BUILD_EXTENSION === 'true' ? {
-      input: {
-        popup: resolve(__dirname, 'chrome-extension/popup.tsx'),
-        content: resolve(__dirname, 'chrome-extension/content.ts'),
-        'webapp-content': resolve(__dirname, 'chrome-extension/webapp-content.ts'),
-        background: resolve(__dirname, 'chrome-extension/background.ts'),
-      },
-      output: {
-        entryFileNames: '[name].js',
-        chunkFileNames: '[name].js',
-        assetFileNames: '[name].[ext]',
-        // Avoid using eval in output to prevent CSP issues
-        format: 'es',
-        generatedCode: {
-          constBindings: true,
-        },
-      },
-    } : {
+    outDir: 'dist',
+    rollupOptions: {
       output: {
         // Avoid using eval in output to prevent CSP issues
         format: 'es',
@@ -131,7 +74,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-          target: 'http://localhost:8000',
+          target: apiProxyTarget,
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/api/, '/api'),
       },
