@@ -50,11 +50,7 @@ export default defineConfig({
     outDir: 'dist',
     rollupOptions: {
       output: {
-        // Avoid using eval in output to prevent CSP issues
         format: 'es',
-        generatedCode: {
-          constBindings: true,
-        },
       },
     },
     // Use modern target to avoid eval in production
