@@ -1,0 +1,3004 @@
+{
+  "timestamp": "2026-04-02T02:39:13.187Z",
+  "branch": "main",
+  "summary": {
+    "total": 25,
+    "critical": 0,
+    "high": 20,
+    "medium": 4,
+    "low": 1,
+    "warning": 0,
+    "filesAnalyzed": 164
+  },
+  "categories": {
+    "critical": [],
+    "high": [
+      {
+        "file": "/workspace/project/just-another-job-application-tracker/src/components/PWAReloadPrompt.tsx",
+        "line": 9,
+        "column": 28,
+        "message": "Unexpected any. Specify a different type.",
+        "rule": "@typescript-eslint/no-explicit-any",
+        "severity": 2
+      },
+      {
+        "file": "/workspace/project/just-another-job-application-tracker/src/pages/LoginPage.tsx",
+        "line": 6,
+        "column": 22,
+        "message": "Unexpected any. Specify a different type.",
+        "rule": "@typescript-eslint/no-explicit-any",
+        "severity": 2
+      },
+      {
+        "file": "/workspace/project/just-another-job-application-tracker/src/pages/LoginPage.tsx",
+        "line": 57,
+        "column": 55,
+        "message": "Unexpected any. Specify a different type.",
+        "rule": "@typescript-eslint/no-explicit-any",
+        "severity": 2
+      },
+      {
+        "file": "/workspace/project/just-another-job-application-tracker/src/pages/RegisterPage.tsx",
+        "line": 6,
+        "column": 22,
+        "message": "Unexpected any. Specify a different type.",
+        "rule": "@typescript-eslint/no-explicit-any",
+        "severity": 2
+      },
+      {
+        "file": "/workspace/project/just-another-job-application-tracker/src/pages/RegisterPage.tsx",
+        "line": 64,
+        "column": 52,
+        "message": "Unexpected any. Specify a different type.",
+        "rule": "@typescript-eslint/no-explicit-any",
+        "severity": 2
+      },
+      {
+        "file": "/workspace/project/just-another-job-application-tracker/src/pages/SettingsPage.tsx",
+        "line": 19,
+        "column": 23,
+        "message": "Unexpected any. Specify a different type.",
+        "rule": "@typescript-eslint/no-explicit-any",
+        "severity": 2
+      },
+      {
+        "file": "/workspace/project/just-another-job-application-tracker/src/pages/SettingsPage.tsx",
+        "line": 29,
+        "column": 26,
+        "message": "Unexpected any. Specify a different type.",
+        "rule": "@typescript-eslint/no-explicit-any",
+        "severity": 2
+      },
+      {
+        "file": "/workspace/project/just-another-job-application-tracker/src/pages/SettingsPage.tsx",
+        "line": 30,
+        "column": 23,
+        "message": "Unexpected any. Specify a different type.",
+        "rule": "@typescript-eslint/no-explicit-any",
+        "severity": 2
+      },
+      {
+        "file": "/workspace/project/just-another-job-application-tracker/src/pages/SettingsPage.tsx",
+        "line": 34,
+        "column": 61,
+        "message": "Unexpected any. Specify a different type.",
+        "rule": "@typescript-eslint/no-explicit-any",
+        "severity": 2
+      },
+      {
+        "file": "/workspace/project/just-another-job-application-tracker/src/pages/SettingsPage.tsx",
+        "line": 36,
+        "column": 48,
+        "message": "Unexpected any. Specify a different type.",
+        "rule": "@typescript-eslint/no-explicit-any",
+        "severity": 2
+      },
+      {
+        "file": "/workspace/project/just-another-job-application-tracker/src/pages/SettingsPage.tsx",
+        "line": 154,
+        "column": 44,
+        "message": "Unexpected any. Specify a different type.",
+        "rule": "@typescript-eslint/no-explicit-any",
+        "severity": 2
+      },
+      {
+        "file": "/workspace/project/just-another-job-application-tracker/src/pages/SettingsPage.tsx",
+        "line": 160,
+        "column": 85,
+        "message": "Unexpected any. Specify a different type.",
+        "rule": "@typescript-eslint/no-explicit-any",
+        "severity": 2
+      },
+      {
+        "file": "/workspace/project/just-another-job-application-tracker/src/pages/SettingsPage.tsx",
+        "line": 169,
+        "column": 88,
+        "message": "Unexpected any. Specify a different type.",
+        "rule": "@typescript-eslint/no-explicit-any",
+        "severity": 2
+      },
+      {
+        "file": "/workspace/project/just-another-job-application-tracker/src/pages/SettingsPage.tsx",
+        "line": 353,
+        "column": 62,
+        "message": "Unexpected any. Specify a different type.",
+        "rule": "@typescript-eslint/no-explicit-any",
+        "severity": 2
+      },
+      {
+        "file": "/workspace/project/just-another-job-application-tracker/src/pages/SettingsPage.tsx",
+        "line": 359,
+        "column": 65,
+        "message": "Unexpected any. Specify a different type.",
+        "rule": "@typescript-eslint/no-explicit-any",
+        "severity": 2
+      },
+      {
+        "file": "/workspace/project/just-another-job-application-tracker/src/pwa.d.ts",
+        "line": 7,
+        "column": 31,
+        "message": "Unexpected any. Specify a different type.",
+        "rule": "@typescript-eslint/no-explicit-any",
+        "severity": 2
+      },
+      {
+        "file": "/workspace/project/just-another-job-application-tracker/src/storage/preferences.ts",
+        "line": 8,
+        "column": 38,
+        "message": "Unexpected any. Specify a different type.",
+        "rule": "@typescript-eslint/no-explicit-any",
+        "severity": 2
+      },
+      {
+        "file": "/workspace/project/just-another-job-application-tracker/src/storage/preferences.ts",
+        "line": 11,
+        "column": 32,
+        "message": "Unexpected any. Specify a different type.",
+        "rule": "@typescript-eslint/no-explicit-any",
+        "severity": 2
+      },
+      {
+        "file": "/workspace/project/just-another-job-application-tracker/src/storage/preferences.ts",
+        "line": 38,
+        "column": 42,
+        "message": "Unexpected any. Specify a different type.",
+        "rule": "@typescript-eslint/no-explicit-any",
+        "severity": 2
+      },
+      {
+        "file": "/workspace/project/just-another-job-application-tracker/src/utils/csv.ts",
+        "line": 80,
+        "column": 16,
+        "message": "Unexpected any. Specify a different type.",
+        "rule": "@typescript-eslint/no-explicit-any",
+        "severity": 2
+      }
+    ],
+    "medium": [
+      {
+        "file": "/workspace/project/just-another-job-application-tracker/src/components/EmailScanReview.tsx",
+        "line": 70,
+        "column": 6,
+        "message": "React Hook useCallback has missing dependencies: 'scanMonths', 'selectedAdditions', 'selectedEmailIds', and 'selectedUpdates'. Either include them or remove the dependency array.",
+        "rule": "react-hooks/exhaustive-deps",
+        "severity": 1
+      },
+      {
+        "file": "/workspace/project/just-another-job-application-tracker/src/pages/LoginPage.tsx",
+        "line": 37,
+        "column": 14,
+        "message": "'err' is defined but never used.",
+        "rule": "@typescript-eslint/no-unused-vars",
+        "severity": 2
+      },
+      {
+        "file": "/workspace/project/just-another-job-application-tracker/src/pages/RegisterPage.tsx",
+        "line": 44,
+        "column": 14,
+        "message": "'err' is defined but never used.",
+        "rule": "@typescript-eslint/no-unused-vars",
+        "severity": 2
+      },
+      {
+        "file": "/workspace/project/just-another-job-application-tracker/src/stores/authStore.ts",
+        "line": 62,
+        "column": 14,
+        "message": "'err' is defined but never used.",
+        "rule": "@typescript-eslint/no-unused-vars",
+        "severity": 2
+      }
+    ],
+    "low": [
+      {
+        "file": "/workspace/project/just-another-job-application-tracker/src/utils/csv.ts",
+        "line": 82,
+        "column": 11,
+        "message": "'value' is never reassigned. Use 'const' instead.",
+        "rule": "prefer-const",
+        "severity": 2
+      }
+    ],
+    "warning": []
+  },
+  "files": [
+    "/workspace/project/just-another-job-application-tracker/audit/audit.cjs",
+    "/workspace/project/just-another-job-application-tracker/eslint.config.js",
+    "/workspace/project/just-another-job-application-tracker/playwright.config.ts",
+    "/workspace/project/just-another-job-application-tracker/src/App.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/components/ATSSearch.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/components/AddJobComponent.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/components/Alert.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/components/AlertProvider.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/components/ApplicationCard.test.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/components/ApplicationCard.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/components/ApplicationTable.store.integration.test.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/components/ApplicationTable.test.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/components/ApplicationTable.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/components/ApplicationTableRow.test.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/components/ApplicationTableRow.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/components/ApplicationTimelineCard.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/components/BottomNav.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/components/CSVActions.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/components/CalendarView.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/components/ConfirmDialog.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/components/CurrentViewRenderer.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/components/DonationSection.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/components/EmailScanReview.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/components/FiltersBar.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/components/Footer.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/components/GoogleSheetsSync.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/components/Header.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/components/InterviewBarChart.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/components/KanbanView.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/components/MetricsSummary.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/components/OpportunitiesEmptyState.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/components/OpportunitiesTable.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/components/OpportunityForm.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/components/PWAReloadPrompt.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/components/ProposedAdditionItem.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/components/ProposedUpdateItem.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/components/Sidebar.test.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/components/Sidebar.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/components/StatCard.test.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/components/StatCard.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/components/StatusBarChart.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/components/SuggestionForm.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/components/SyncActions.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/components/SyncStatusInfo.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/components/TimelineEditor.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/components/TimelineEventList.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/components/TimelineView.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/components/ViewSwitcher.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/components/settings/ATSSearchSettings.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/components/settings/CustomFieldsSettings.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/components/settings/DateFormatSettings.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/components/settings/EmailScanSettings.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/components/settings/FieldsSettings.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/components/settings/InterviewingSettings.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/components/settings/ViewSettings.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/components/ui/Badge.test.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/components/ui/Badge.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/components/ui/Button.test.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/components/ui/Button.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/components/ui/Card.test.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/components/ui/Card.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/components/ui/Input.test.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/components/ui/Input.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/components/ui/Select.test.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/components/ui/Select.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/components/ui/Separator.test.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/components/ui/Separator.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/components/ui/Table.test.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/components/ui/Table.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/components/ui/TagInput.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/components/ui/index.ts",
+    "/workspace/project/just-another-job-application-tracker/src/hooks/useCloudSync.ts",
+    "/workspace/project/just-another-job-application-tracker/src/hooks/useFilteredApplications.test.ts",
+    "/workspace/project/just-another-job-application-tracker/src/hooks/useFilteredApplications.ts",
+    "/workspace/project/just-another-job-application-tracker/src/hooks/useFormatDate.ts",
+    "/workspace/project/just-another-job-application-tracker/src/hooks/useInsightsData.ts",
+    "/workspace/project/just-another-job-application-tracker/src/hooks/useIsLoggedIn.ts",
+    "/workspace/project/just-another-job-application-tracker/src/hooks/useKeyboardEscape.ts",
+    "/workspace/project/just-another-job-application-tracker/src/hooks/useKeyboardKey.ts",
+    "/workspace/project/just-another-job-application-tracker/src/hooks/useSelection.ts",
+    "/workspace/project/just-another-job-application-tracker/src/hooks/useTableColumns.test.ts",
+    "/workspace/project/just-another-job-application-tracker/src/hooks/useTableColumns.ts",
+    "/workspace/project/just-another-job-application-tracker/src/i18n.ts",
+    "/workspace/project/just-another-job-application-tracker/src/layouts/MainLayout.test.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/layouts/MainLayout.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/mails/adapter/emailAdapter.test.ts",
+    "/workspace/project/just-another-job-application-tracker/src/mails/adapter/emailAdapter.ts",
+    "/workspace/project/just-another-job-application-tracker/src/mails/errors.ts",
+    "/workspace/project/just-another-job-application-tracker/src/mails/hooks/useEmailScan.test.ts",
+    "/workspace/project/just-another-job-application-tracker/src/mails/hooks/useEmailScan.ts",
+    "/workspace/project/just-another-job-application-tracker/src/mails/providers/emailProvider.ts",
+    "/workspace/project/just-another-job-application-tracker/src/mails/providers/fake/fakeData.ts",
+    "/workspace/project/just-another-job-application-tracker/src/mails/providers/fake/fakeProvider.test.ts",
+    "/workspace/project/just-another-job-application-tracker/src/mails/providers/fake/fakeProvider.ts",
+    "/workspace/project/just-another-job-application-tracker/src/mails/providers/gmail/gmailClient.ts",
+    "/workspace/project/just-another-job-application-tracker/src/mails/services/scanService.test.ts",
+    "/workspace/project/just-another-job-application-tracker/src/mails/services/scanService.ts",
+    "/workspace/project/just-another-job-application-tracker/src/mails/types.ts",
+    "/workspace/project/just-another-job-application-tracker/src/main.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/pages/GmailScanPage.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/pages/HomePage.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/pages/InsightsPage.test.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/pages/InsightsPage.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/pages/LandingPage.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/pages/LoginPage.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/pages/OpportunitiesPage.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/pages/RegisterPage.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/pages/SettingsPage.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/pages/SuggestionsViewerPage.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/pages/SupportPage.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/pwa.d.ts",
+    "/workspace/project/just-another-job-application-tracker/src/services/api.test.ts",
+    "/workspace/project/just-another-job-application-tracker/src/services/api.ts",
+    "/workspace/project/just-another-job-application-tracker/src/setupTests.ts",
+    "/workspace/project/just-another-job-application-tracker/src/storage/applications.test.ts",
+    "/workspace/project/just-another-job-application-tracker/src/storage/applications.ts",
+    "/workspace/project/just-another-job-application-tracker/src/storage/auth.ts",
+    "/workspace/project/just-another-job-application-tracker/src/storage/index.ts",
+    "/workspace/project/just-another-job-application-tracker/src/storage/opportunities.ts",
+    "/workspace/project/just-another-job-application-tracker/src/storage/preferences.ts",
+    "/workspace/project/just-another-job-application-tracker/src/stores/applicationsStore.ts",
+    "/workspace/project/just-another-job-application-tracker/src/stores/authStore.ts",
+    "/workspace/project/just-another-job-application-tracker/src/stores/opportunitiesStore.ts",
+    "/workspace/project/just-another-job-application-tracker/src/stores/preferencesStore.ts",
+    "/workspace/project/just-another-job-application-tracker/src/tests/Alert.test.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/tests/AlertProvider.test.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/tests/App.test.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/tests/CalendarView.test.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/tests/DarkModeIntegration.test.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/tests/EmailScanReview.test.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/tests/FiltersBar.test.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/tests/GoogleSheetsSync.test.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/tests/Header.test.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/tests/HomePage.test.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/tests/KanbanView.test.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/tests/OpportunitiesPage.test.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/tests/OpportunityForm.test.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/tests/SettingsPage.test.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/tests/SuggestionsViewerPage.test.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/tests/SupportPage.test.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/tests/Theme.test.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/tests/TimelineEditor.test.tsx",
+    "/workspace/project/just-another-job-application-tracker/src/tests/date.test.ts",
+    "/workspace/project/just-another-job-application-tracker/src/tests/google-oauth-mock.ts",
+    "/workspace/project/just-another-job-application-tracker/src/tests/googleSheets.test.ts",
+    "/workspace/project/just-another-job-application-tracker/src/types/applications.ts",
+    "/workspace/project/just-another-job-application-tracker/src/types/index.ts",
+    "/workspace/project/just-another-job-application-tracker/src/types/opportunities.ts",
+    "/workspace/project/just-another-job-application-tracker/src/types/preferences.ts",
+    "/workspace/project/just-another-job-application-tracker/src/types/table.ts",
+    "/workspace/project/just-another-job-application-tracker/src/utils/api.ts",
+    "/workspace/project/just-another-job-application-tracker/src/utils/applications.ts",
+    "/workspace/project/just-another-job-application-tracker/src/utils/constants.ts",
+    "/workspace/project/just-another-job-application-tracker/src/utils/csv.test.ts",
+    "/workspace/project/just-another-job-application-tracker/src/utils/csv.ts",
+    "/workspace/project/just-another-job-application-tracker/src/utils/date.ts",
+    "/workspace/project/just-another-job-application-tracker/src/utils/googleSheets.ts",
+    "/workspace/project/just-another-job-application-tracker/src/utils/id.ts",
+    "/workspace/project/just-another-job-application-tracker/src/utils/localStorage.ts",
+    "/workspace/project/just-another-job-application-tracker/src/utils/manualScan.ts",
+    "/workspace/project/just-another-job-application-tracker/src/utils/status.ts",
+    "/workspace/project/just-another-job-application-tracker/src/utils/url.ts",
+    "/workspace/project/just-another-job-application-tracker/tailwind.config.js",
+    "/workspace/project/just-another-job-application-tracker/vite.config.ts"
+  ],
+  "rawResults": [
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/audit/audit.cjs",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/eslint.config.js",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/playwright.config.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/App.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/components/ATSSearch.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/components/AddJobComponent.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/components/Alert.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/components/AlertProvider.tsx",
+      "messages": [],
+      "suppressedMessages": [
+        {
+          "ruleId": "react-refresh/only-export-components",
+          "severity": 2,
+          "message": "Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components.",
+          "line": 80,
+          "column": 14,
+          "nodeType": "Identifier",
+          "messageId": "namedExport",
+          "endLine": 80,
+          "endColumn": 22,
+          "suppressions": [
+            {
+              "kind": "directive",
+              "justification": ""
+            }
+          ]
+        }
+      ],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/components/ApplicationCard.test.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/components/ApplicationCard.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/components/ApplicationTable.store.integration.test.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/components/ApplicationTable.test.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/components/ApplicationTable.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/components/ApplicationTableRow.test.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/components/ApplicationTableRow.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/components/ApplicationTimelineCard.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/components/BottomNav.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/components/CSVActions.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/components/CalendarView.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/components/ConfirmDialog.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/components/CurrentViewRenderer.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/components/DonationSection.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/components/EmailScanReview.tsx",
+      "messages": [
+        {
+          "ruleId": "react-hooks/exhaustive-deps",
+          "severity": 1,
+          "message": "React Hook useCallback has missing dependencies: 'scanMonths', 'selectedAdditions', 'selectedEmailIds', and 'selectedUpdates'. Either include them or remove the dependency array.",
+          "line": 70,
+          "column": 6,
+          "nodeType": "ArrayExpression",
+          "endLine": 70,
+          "endColumn": 26,
+          "suggestions": [
+            {
+              "desc": "Update the dependencies array to be: [scan, scanMonths, selectedAdditions, selectedEmailIds, selectedUpdates, showError, t]",
+              "fix": {
+                "range": [
+                  2736,
+                  2756
+                ],
+                "text": "[scan, scanMonths, selectedAdditions, selectedEmailIds, selectedUpdates, showError, t]"
+              }
+            }
+          ]
+        }
+      ],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 1,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "source": "import { useState, useCallback } from 'react';\nimport { useTranslation } from 'react-i18next';\n\nimport { useSelection } from '../hooks/useSelection';\nimport { useEmailScan } from '../mails/hooks/useEmailScan';\nimport { isGmailRateLimitError } from '../mails/errors';\nimport { GmailEmailClient } from '../mails/providers/gmail/gmailClient';\nimport type { ProposedAddition, ProposedUpdate } from '../mails/types';\nimport { getAuthCookie } from '../utils/api';\nimport { useAlert } from './AlertProvider';\nimport { useApplicationsStore } from '../stores/applicationsStore';\nimport { usePreferencesStore } from '../stores/preferencesStore';\nimport { CHATBOTS } from '../utils/constants';\nimport { isApplicationDuplicate } from '../utils/applications';\nimport { processManualScanJson } from '../utils/manualScan';\nimport { ProposedAdditionItem } from './ProposedAdditionItem';\nimport { ProposedUpdateItem } from './ProposedUpdateItem';\nimport { useFormatDate } from '../hooks/useFormatDate';\n\nexport function EmailScanReview() {\n  const { t } = useTranslation();\n  const { formatShortDate } = useFormatDate();\n  const { showSuccess, showError } = useAlert();\n  const applications = useApplicationsStore((state) => state.applications);\n  const preferences = usePreferencesStore((state) => state.preferences);\n\n  const {\n    scan,\n    applySelected,\n    loading,\n    applying,\n    error,\n    preview,\n    setPreview,\n    clearPreview,\n  } = useEmailScan();\n\n  const [activeTab, setActiveTab] = useState<'automatic' | 'manual'>('automatic');\n  const selectedAdditions = useSelection<string>();\n  const selectedUpdates = useSelection<string>();\n\n  // Manual tab states\n  const [scanMonths, setScanMonths] = useState(preferences.emailScanMonths || 3);\n  const [snippetLength, setSnippetLength] = useState(200);\n  const selectedEmailIds = useSelection<string>();\n  const [pastedJson, setPastedJson] = useState('');\n  const forceAddIds = useSelection<string>();\n\n  const handleScanGmail = useCallback(async () => {\n    try {\n      const res = await getAuthCookie();\n      if (!res.success || !res.access_token) {\n        showError(t('settings.emailScan.signInRequired'));\n        return;\n      }\n      const provider = new GmailEmailClient(res.access_token);\n      const daysBack = scanMonths * 30;\n      const result = await scan(provider, daysBack);\n      selectedAdditions.clear();\n      selectedUpdates.clear();\n      if (result) {\n        selectedEmailIds.selectAll(result.emails.map(e => e.id));\n      }\n    } catch (err) {\n      const message = isGmailRateLimitError(err)\n        ? t('settings.emailScan.rateLimitError')\n        : (err instanceof Error ? err.message : t('settings.emailScan.scanError'));\n      showError(message);\n    }\n  }, [scan, showError, t]);\n\n  const selectAllAdditions = useCallback(() => {\n    if (!preview) return;\n    selectedAdditions.selectAll(preview.proposedAdditions.map((a) => a.id));\n  }, [preview, selectedAdditions]);\n\n  const selectAllUpdates = useCallback(() => {\n    if (!preview) return;\n    selectedUpdates.selectAll(preview.proposedUpdates.map((u) => u.id));\n  }, [preview, selectedUpdates]);\n\n  const handleApplySelected = useCallback(async () => {\n    if (!preview) return;\n\n    const additions = preview.proposedAdditions.filter((a) =>\n      selectedAdditions.isSelected(a.id)\n    );\n    const updates = preview.proposedUpdates.filter((u) =>\n      selectedUpdates.isSelected(u.id)\n    );\n\n    if (additions.length === 0 && updates.length === 0) {\n      showError(t('settings.emailScan.selectAtLeastOne'));\n      return;\n    }\n\n    try {\n      const result = await applySelected(additions, updates);\n      showSuccess(\n        t('settings.emailScan.applySuccess', {\n          added: result.added,\n          updated: result.updated,\n        })\n      );\n      selectedAdditions.removeMultiple(additions.map((a) => a.id));\n      selectedUpdates.removeMultiple(updates.map((u) => u.id));\n    } catch (err) {\n      showError(err instanceof Error ? err.message : t('settings.emailScan.applyError'));\n    }\n  }, [\n    preview,\n    selectedAdditions,\n    selectedUpdates,\n    applySelected,\n    showSuccess,\n    showError,\n    t,\n  ]);\n\n  const handleGeneratePrompt = useCallback((chatbot?: { id: string; name: string; url: string }) => {\n    if (!preview) return;\n    const selectedEmails = preview.emails.filter(e => selectedEmailIds.isSelected(e.id));\n\n    const emailsData = selectedEmails.map(e => ({\n      subject: e.subject,\n      from: e.from,\n      date: e.date,\n      snippet: e.body.substring(0, snippetLength)\n    }));\n\n    const prompt = t('settings.emailScan.promptTemplate', {\n      emails: JSON.stringify(emailsData, null, 2)\n    });\n\n    navigator.clipboard.writeText(prompt);\n\n    if (chatbot) {\n      showSuccess(t('settings.emailScan.promptCopiedToOpen', { name: chatbot.name }));\n      window.open(chatbot.url, '_blank');\n    } else {\n      showSuccess(t('settings.emailScan.promptCopied'));\n    }\n  }, [preview, selectedEmailIds, snippetLength, showSuccess, t]);\n\n  const handleProcessJson = useCallback(() => {\n    try {\n      const { additions, updates } = processManualScanJson(pastedJson, applications);\n\n      setPreview(prev => ({\n        proposedAdditions: [...(prev?.proposedAdditions || []), ...additions],\n        proposedUpdates: [...(prev?.proposedUpdates || []), ...updates],\n        emails: prev?.emails || []\n      }));\n\n      selectedAdditions.selectAll(additions.map(a => a.id));\n      selectedUpdates.selectAll(updates.map(u => u.id));\n      setPastedJson('');\n      showSuccess(t('settings.emailScan.jsonProcessedSuccess') === 'settings.emailScan.jsonProcessedSuccess' ? 'JSON procesado correctamente' : t('settings.emailScan.jsonProcessedSuccess'));\n    } catch {\n      showError(t('settings.emailScan.invalidJson'));\n    }\n  }, [pastedJson, applications, setPreview, showSuccess, showError, t, selectedAdditions, selectedUpdates]);\n\n  const selectAllEmails = () => {\n    if (!preview) return;\n    selectedEmailIds.selectAll(preview.emails.map(e => e.id));\n  };\n\n  return (\n    <div className=\"space-y-6\">\n      <div className=\"bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-700\">\n        <h2 className=\"text-2xl font-bold text-gray-800 dark:text-white mb-2\">\n          {t('settings.emailScan.title')}\n        </h2>\n        <p className=\"text-sm text-gray-500 dark:text-gray-400 mb-6\">\n          {t('settings.emailScan.subtitle')}\n        </p>\n\n        <div className=\"flex border-b border-gray-200 dark:border-gray-700 mb-6\">\n          <button\n            className={`px-4 py-2 font-medium text-sm transition-colors ${\n              activeTab === 'automatic'\n                ? 'border-b-2 border-indigo-600 text-indigo-600'\n                : 'text-gray-500 hover:text-gray-700 dark:text-gray-400'\n            }`}\n            onClick={() => setActiveTab('automatic')}\n          >\n            {t('settings.emailScan.tabs.automatic')}\n          </button>\n          <button\n            className={`px-4 py-2 font-medium text-sm transition-colors ${\n              activeTab === 'manual'\n                ? 'border-b-2 border-indigo-600 text-indigo-600'\n                : 'text-gray-500 hover:text-gray-700 dark:text-gray-400'\n            }`}\n            onClick={() => setActiveTab('manual')}\n          >\n            {t('settings.emailScan.tabs.manual')}\n          </button>\n        </div>\n\n        {error && (\n          <div\n            className=\"mb-4 p-3 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 text-sm\"\n            role=\"alert\"\n          >\n            {isGmailRateLimitError(error)\n              ? t('settings.emailScan.rateLimitError')\n              : error.message}\n          </div>\n        )}\n\n        <div className=\"flex flex-wrap items-end gap-4 mb-6\">\n          <div className=\"flex flex-col gap-1.5\">\n            <label className=\"text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider\">\n              {t('settings.emailScan.scanPeriod')}\n            </label>\n            <select\n              value={scanMonths}\n              onChange={(e) => setScanMonths(parseInt(e.target.value))}\n              disabled={loading}\n              className=\"px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm font-medium focus:ring-2 focus:ring-indigo-500 outline-none disabled:opacity-50 transition-all\"\n            >\n              <option value={3}>{t('settings.emailScan.months', { count: 3 })}</option>\n              <option value={6}>{t('settings.emailScan.months', { count: 6 })}</option>\n              <option value={9}>{t('settings.emailScan.months', { count: 9 })}</option>\n              <option value={12}>{t('settings.emailScan.months', { count: 12 })}</option>\n            </select>\n          </div>\n\n          <button\n            type=\"button\"\n            onClick={handleScanGmail}\n            disabled={loading}\n            className=\"px-4 py-2 rounded-lg font-medium bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition h-[38px] flex items-center gap-2\"\n          >\n            {loading ? (\n              <>\n                <svg className=\"animate-spin h-4 w-4 text-white\" xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 24 24\">\n                  <circle className=\"opacity-25\" cx=\"12\" cy=\"12\" r=\"10\" stroke=\"currentColor\" strokeWidth=\"4\"></circle>\n                  <path className=\"opacity-75\" fill=\"currentColor\" d=\"M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z\"></path>\n                </svg>\n                {t('settings.emailScan.scanning')}\n              </>\n            ) : (\n              t('settings.emailScan.scanGmail')\n            )}\n          </button>\n          {preview && (\n            <>\n              <button\n                type=\"button\"\n                onClick={clearPreview}\n                className=\"px-4 py-2 rounded-lg font-medium border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition\"\n              >\n                {t('settings.emailScan.clearPreview')}\n              </button>\n              <button\n                type=\"button\"\n                onClick={handleApplySelected}\n                disabled={\n                  applying ||\n                  (selectedAdditions.size === 0 && selectedUpdates.size === 0)\n                }\n                className=\"px-4 py-2 rounded-lg font-medium bg-green-600 text-white hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition\"\n              >\n                {applying\n                  ? t('settings.emailScan.applying')\n                  : t('settings.emailScan.applySelected', {\n                      count: selectedAdditions.size + selectedUpdates.size,\n                    })}\n              </button>\n            </>\n          )}\n        </div>\n\n        {activeTab === 'manual' && (\n          <div className=\"space-y-6 animate-in fade-in slide-in-from-top-4 duration-300\">\n            {preview && (\n              <div className=\"bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4 space-y-4 border border-gray-200 dark:border-gray-600\">\n                <div className=\"flex flex-col gap-4\">\n                  <div className=\"flex items-center gap-4\">\n                    <div className=\"flex-1\">\n                      <label htmlFor=\"snippetLength\" className=\"block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1\">\n                        {t('settings.emailScan.snippetLength')}\n                      </label>\n                      <input\n                        type=\"number\"\n                        id=\"snippetLength\"\n                        value={snippetLength}\n                        onChange={(e) => setSnippetLength(parseInt(e.target.value) || 200)}\n                        className=\"w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-sm\"\n                      />\n                    </div>\n                  </div>\n\n                  <div className=\"space-y-2\">\n                    <label className=\"block text-sm font-medium text-gray-700 dark:text-gray-300\">\n                      {t('settings.emailScan.generatePrompt')}\n                    </label>\n                    <div className=\"flex flex-wrap gap-2\">\n                      <button\n                        onClick={() => handleGeneratePrompt()}\n                        disabled={selectedEmailIds.size === 0}\n                        className=\"px-4 py-2 rounded-lg font-medium border border-indigo-200 text-indigo-700 hover:bg-indigo-50 dark:border-indigo-900/30 dark:text-indigo-300 dark:hover:bg-indigo-900/20 transition flex items-center gap-2\"\n                      >\n                        <svg className=\"w-4 h-4\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\">\n                          <path strokeLinecap=\"round\" strokeLinejoin=\"round\" strokeWidth={2} d=\"M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3\" />\n                        </svg>\n                        {t('common.copy')}\n                      </button>\n\n                      {CHATBOTS.filter(cb => (preferences.enabledChatbots || ['ChatGPT', 'Claude', 'Gemini']).includes(cb.id)).map(chatbot => (\n                        <button\n                          key={chatbot.id}\n                          onClick={() => handleGeneratePrompt(chatbot)}\n                          disabled={selectedEmailIds.size === 0}\n                          className=\"px-4 py-2 rounded-lg font-medium bg-indigo-600 text-white hover:bg-indigo-700 transition flex items-center gap-2\"\n                        >\n                          <svg className=\"w-4 h-4\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\">\n                            <path strokeLinecap=\"round\" strokeLinejoin=\"round\" strokeWidth={2} d=\"M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14\" />\n                          </svg>\n                          {t('settings.emailScan.copyAndOpen', { name: chatbot.name })}\n                        </button>\n                      ))}\n                    </div>\n                  </div>\n                </div>\n\n                <div className=\"space-y-2\">\n                  <div className=\"flex items-center justify-between\">\n                    <h4 className=\"text-sm font-semibold text-gray-700 dark:text-gray-300\">\n                      {t('settings.emailScan.emailsFound', { count: preview.emails.length })}\n                    </h4>\n                    <button onClick={selectAllEmails} className=\"text-xs text-indigo-600 hover:underline\">\n                      {t('settings.emailScan.selectAll')}\n                    </button>\n                  </div>\n                  <div className=\"max-h-60 overflow-y-auto border border-gray-200 dark:border-gray-600 rounded-lg divide-y divide-gray-100 dark:divide-gray-700 bg-white dark:bg-gray-800\">\n                    {preview.emails.map(email => (\n                      <div key={email.id} className=\"flex items-start gap-3 px-3 py-2 hover:bg-gray-50 dark:hover:bg-gray-700/50\">\n                        <input\n                          type=\"checkbox\"\n                          checked={selectedEmailIds.isSelected(email.id)}\n                          onChange={() => selectedEmailIds.toggle(email.id)}\n                          className=\"mt-1\"\n                        />\n                        <div className=\"min-w-0 flex-1\">\n                          <p className=\"text-sm font-medium text-gray-900 dark:text-white truncate\">{email.subject}</p>\n                          <p className=\"text-xs text-gray-500 truncate\">{email.from}</p>\n                        </div>\n                        <span className=\"text-[10px] text-gray-400 whitespace-nowrap\">{formatShortDate(email.date)}</span>\n                      </div>\n                    ))}\n                  </div>\n                </div>\n              </div>\n            )}\n\n            <div className=\"bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4 space-y-2 border border-gray-200 dark:border-gray-600\">\n              <label className=\"block text-sm font-medium text-gray-700 dark:text-gray-300\">\n                {t('settings.emailScan.pasteJson')}\n              </label>\n              <textarea\n                value={pastedJson}\n                onChange={(e) => setPastedJson(e.target.value)}\n                className=\"w-full h-32 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-sm font-mono\"\n                placeholder='{ \"additions\": [...], \"updates\": [...] }'\n              />\n              <button\n                onClick={handleProcessJson}\n                disabled={!pastedJson.trim()}\n                className=\"w-full px-4 py-2 rounded-lg font-medium bg-green-600 text-white hover:bg-green-700 transition\"\n              >\n                {t('settings.emailScan.processJson')}\n              </button>\n            </div>\n          </div>\n        )}\n\n        {preview && (\n          <div className=\"space-y-6 mt-8\">\n            {(preview.proposedAdditions.length > 0) && (\n              <section className=\"animate-in fade-in slide-in-from-bottom-4 duration-500\">\n                <div className=\"flex items-center justify-between mb-3\">\n                  <h3 className=\"text-lg font-semibold text-gray-800 dark:text-white flex items-center gap-2\">\n                    <span className=\"flex h-6 w-6 items-center justify-center rounded-full bg-indigo-100 text-indigo-700 text-xs dark:bg-indigo-900/40 dark:text-indigo-300\">\n                      {preview.proposedAdditions.length}\n                    </span>\n                    {t('settings.emailScan.newApplications', {\n                      count: preview.proposedAdditions.length,\n                    })}\n                  </h3>\n                  <button\n                    type=\"button\"\n                    onClick={selectAllAdditions}\n                    className=\"text-sm text-indigo-600 dark:text-indigo-400 hover:underline\"\n                  >\n                    {t('settings.emailScan.selectAll')}\n                  </button>\n                </div>\n                <ul className=\"grid gap-3\">\n                  {preview.proposedAdditions.map((addition: ProposedAddition) => (\n                    <ProposedAdditionItem\n                      key={addition.id}\n                      addition={addition}\n                      isSelected={selectedAdditions.isSelected(addition.id)}\n                      onToggle={() => selectedAdditions.toggle(addition.id)}\n                      duplicate={isApplicationDuplicate(applications, addition.data.company, addition.data.position)}\n                      isForced={forceAddIds.isSelected(addition.id)}\n                      onToggleForce={(forced) => {\n                        if (forced) forceAddIds.select(addition.id);\n                        else forceAddIds.deselect(addition.id);\n                      }}\n                      formatDate={formatShortDate}\n                    />\n                  ))}\n                </ul>\n              </section>\n            )}\n\n            {preview.proposedUpdates.length > 0 && (\n              <section className=\"animate-in fade-in slide-in-from-bottom-4 duration-500 delay-150\">\n                <div className=\"flex items-center justify-between mb-3\">\n                  <h3 className=\"text-lg font-semibold text-gray-800 dark:text-white flex items-center gap-2\">\n                    <span className=\"flex h-6 w-6 items-center justify-center rounded-full bg-green-100 text-green-700 text-xs dark:bg-green-900/40 dark:text-green-300\">\n                      {preview.proposedUpdates.length}\n                    </span>\n                    {t('settings.emailScan.updatesToExisting', {\n                      count: preview.proposedUpdates.length,\n                    })}\n                  </h3>\n                  <button\n                    type=\"button\"\n                    onClick={selectAllUpdates}\n                    className=\"text-sm text-indigo-600 dark:text-indigo-400 hover:underline\"\n                  >\n                    {t('settings.emailScan.selectAll')}\n                  </button>\n                </div>\n                <ul className=\"grid gap-3\">\n                  {preview.proposedUpdates.map((update: ProposedUpdate) => (\n                    <ProposedUpdateItem\n                      key={update.id}\n                      update={update}\n                      isSelected={selectedUpdates.isSelected(update.id)}\n                      onToggle={() => selectedUpdates.toggle(update.id)}\n                      formatDate={formatShortDate}\n                    />\n                  ))}\n                </ul>\n              </section>\n            )}\n\n            {preview.proposedAdditions.length === 0 &&\n              preview.proposedUpdates.length === 0 && (\n                <div className=\"text-center py-12 bg-gray-50 dark:bg-gray-700/30 rounded-2xl border-2 border-dashed border-gray-200 dark:border-gray-700\">\n                  <p className=\"text-gray-500 dark:text-gray-400\">\n                    {t('settings.emailScan.nothingFound')}\n                  </p>\n                </div>\n              )}\n          </div>\n        )}\n      </div>\n    </div>\n  );\n}\n",
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/components/FiltersBar.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/components/Footer.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/components/GoogleSheetsSync.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/components/Header.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/components/InterviewBarChart.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/components/KanbanView.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/components/MetricsSummary.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/components/OpportunitiesEmptyState.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/components/OpportunitiesTable.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/components/OpportunityForm.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/components/PWAReloadPrompt.tsx",
+      "messages": [
+        {
+          "ruleId": "@typescript-eslint/no-explicit-any",
+          "severity": 2,
+          "message": "Unexpected any. Specify a different type.",
+          "line": 9,
+          "column": 28,
+          "nodeType": "TSAnyKeyword",
+          "messageId": "unexpectedAny",
+          "endLine": 9,
+          "endColumn": 31,
+          "suggestions": [
+            {
+              "messageId": "suggestUnknown",
+              "fix": {
+                "range": [
+                  296,
+                  299
+                ],
+                "text": "unknown"
+              },
+              "desc": "Use `unknown` instead, this will force you to explicitly, and safely assert the type is correct."
+            },
+            {
+              "messageId": "suggestNever",
+              "fix": {
+                "range": [
+                  296,
+                  299
+                ],
+                "text": "never"
+              },
+              "desc": "Use `never` instead, this is useful when instantiating generic type parameters that you don't need to know the type of."
+            }
+          ]
+        }
+      ],
+      "suppressedMessages": [],
+      "errorCount": 1,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "source": "import React from 'react';\nimport { useRegisterSW } from 'virtual:pwa-register/react';\n\nconst PWAReloadPrompt: React.FC = () => {\n  const sw = useRegisterSW({\n    onRegistered(r: ServiceWorkerRegistration | undefined) {\n      console.log('SW Registered: ' + r);\n    },\n    onRegisterError(error: any) {\n      console.log('SW registration error', error);\n    },\n  });\n\n  if (!sw || !sw.offlineReady || !sw.needUpdate) return null;\n\n  const {\n    offlineReady: [offlineReady, setOfflineReady],\n    needUpdate: [needUpdate, setNeedUpdate],\n    updateServiceWorker,\n  } = sw;\n\n  const close = () => {\n    setOfflineReady(false);\n    setNeedUpdate(false);\n  };\n\n  if (!offlineReady && !needUpdate) return null;\n\n  return (\n    <div className=\"fixed bottom-20 right-4 z-50 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-2xl border border-indigo-100 dark:border-indigo-900 flex flex-col gap-3 max-w-sm animate-in fade-in slide-in-from-bottom-4 duration-300\">\n      <div className=\"flex items-start gap-3\">\n        <div className=\"bg-indigo-100 dark:bg-indigo-900/50 p-2 rounded-full\">\n          <svg className=\"w-5 h-5 text-indigo-600 dark:text-indigo-400\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\">\n            <path strokeLinecap=\"round\" strokeLinejoin=\"round\" strokeWidth={2} d=\"M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z\" />\n          </svg>\n        </div>\n        <div>\n          <h4 className=\"text-sm font-bold text-gray-900 dark:text-white\">\n            {offlineReady ? 'App ready to work offline' : 'Update available!'}\n          </h4>\n          <p className=\"text-xs text-gray-500 dark:text-gray-400 mt-1\">\n            {offlineReady ? 'The app has been cached and is ready for offline use.' : 'A new version of JAJAT is available. Update now to get the latest features.'}\n          </p>\n        </div>\n      </div>\n      <div className=\"flex justify-end gap-2\">\n        <button\n          onClick={close}\n          className=\"px-3 py-1.5 text-xs font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded\"\n        >\n          Dismiss\n        </button>\n        {needUpdate && (\n          <button\n            onClick={() => updateServiceWorker(true)}\n            className=\"px-3 py-1.5 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded shadow-sm\"\n          >\n            Update\n          </button>\n        )}\n      </div>\n    </div>\n  );\n};\n\nexport default PWAReloadPrompt;\n",
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/components/ProposedAdditionItem.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/components/ProposedUpdateItem.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/components/Sidebar.test.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/components/Sidebar.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/components/StatCard.test.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/components/StatCard.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/components/StatusBarChart.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/components/SuggestionForm.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/components/SyncActions.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/components/SyncStatusInfo.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/components/TimelineEditor.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/components/TimelineEventList.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/components/TimelineView.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/components/ViewSwitcher.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/components/settings/ATSSearchSettings.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/components/settings/CustomFieldsSettings.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/components/settings/DateFormatSettings.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/components/settings/EmailScanSettings.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/components/settings/FieldsSettings.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/components/settings/InterviewingSettings.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/components/settings/ViewSettings.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/components/ui/Badge.test.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/components/ui/Badge.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/components/ui/Button.test.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/components/ui/Button.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/components/ui/Card.test.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/components/ui/Card.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/components/ui/Input.test.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/components/ui/Input.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/components/ui/Select.test.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/components/ui/Select.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/components/ui/Separator.test.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/components/ui/Separator.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/components/ui/Table.test.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/components/ui/Table.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/components/ui/TagInput.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/components/ui/index.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/hooks/useCloudSync.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/hooks/useFilteredApplications.test.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/hooks/useFilteredApplications.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/hooks/useFormatDate.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/hooks/useInsightsData.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/hooks/useIsLoggedIn.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/hooks/useKeyboardEscape.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/hooks/useKeyboardKey.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/hooks/useSelection.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/hooks/useTableColumns.test.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/hooks/useTableColumns.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/i18n.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/layouts/MainLayout.test.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/layouts/MainLayout.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/mails/adapter/emailAdapter.test.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/mails/adapter/emailAdapter.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/mails/errors.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/mails/hooks/useEmailScan.test.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/mails/hooks/useEmailScan.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/mails/providers/emailProvider.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/mails/providers/fake/fakeData.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/mails/providers/fake/fakeProvider.test.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/mails/providers/fake/fakeProvider.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/mails/providers/gmail/gmailClient.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/mails/services/scanService.test.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/mails/services/scanService.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/mails/types.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/main.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/pages/GmailScanPage.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/pages/HomePage.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/pages/InsightsPage.test.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/pages/InsightsPage.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/pages/LandingPage.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/pages/LoginPage.tsx",
+      "messages": [
+        {
+          "ruleId": "@typescript-eslint/no-explicit-any",
+          "severity": 2,
+          "message": "Unexpected any. Specify a different type.",
+          "line": 6,
+          "column": 22,
+          "nodeType": "TSAnyKeyword",
+          "messageId": "unexpectedAny",
+          "endLine": 6,
+          "endColumn": 25,
+          "suggestions": [
+            {
+              "messageId": "suggestUnknown",
+              "fix": {
+                "range": [
+                  198,
+                  201
+                ],
+                "text": "unknown"
+              },
+              "desc": "Use `unknown` instead, this will force you to explicitly, and safely assert the type is correct."
+            },
+            {
+              "messageId": "suggestNever",
+              "fix": {
+                "range": [
+                  198,
+                  201
+                ],
+                "text": "never"
+              },
+              "desc": "Use `never` instead, this is useful when instantiating generic type parameters that you don't need to know the type of."
+            }
+          ]
+        },
+        {
+          "ruleId": "@typescript-eslint/no-unused-vars",
+          "severity": 2,
+          "message": "'err' is defined but never used.",
+          "line": 37,
+          "column": 14,
+          "nodeType": null,
+          "messageId": "unusedVar",
+          "endLine": 37,
+          "endColumn": 17
+        },
+        {
+          "ruleId": "@typescript-eslint/no-explicit-any",
+          "severity": 2,
+          "message": "Unexpected any. Specify a different type.",
+          "line": 57,
+          "column": 55,
+          "nodeType": "TSAnyKeyword",
+          "messageId": "unexpectedAny",
+          "endLine": 57,
+          "endColumn": 58,
+          "suggestions": [
+            {
+              "messageId": "suggestUnknown",
+              "fix": {
+                "range": [
+                  1967,
+                  1970
+                ],
+                "text": "unknown"
+              },
+              "desc": "Use `unknown` instead, this will force you to explicitly, and safely assert the type is correct."
+            },
+            {
+              "messageId": "suggestNever",
+              "fix": {
+                "range": [
+                  1967,
+                  1970
+                ],
+                "text": "never"
+              },
+              "desc": "Use `never` instead, this is useful when instantiating generic type parameters that you don't need to know the type of."
+            }
+          ]
+        }
+      ],
+      "suppressedMessages": [],
+      "errorCount": 3,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "source": "import React, { useState } from 'react';\nimport { useAuthStore } from '../stores/authStore';\nimport { useAlert } from '../components/AlertProvider';\n\ninterface LoginPageProps {\n  onNavigate: (page: any) => void;\n  onSuccess?: () => void;\n}\n\nconst LoginPage: React.FC<LoginPageProps> = ({ onNavigate, onSuccess }) => {\n  const [email, setEmail] = useState('');\n  const [password, setPassword] = useState('');\n  const [isSubmitting, setIsSubmitting] = useState(false);\n  const { setUser } = useAuthStore();\n  const { showSuccess, showError } = useAlert();\n\n  const handleSubmit = async (e: React.FormEvent) => {\n    e.preventDefault();\n    setIsSubmitting(true);\n\n    try {\n      const res = await fetch('/api/auth/login', {\n        method: 'POST',\n        headers: { 'Content-Type': 'application/json' },\n        body: JSON.stringify({ email, password }),\n      });\n\n      const data = await res.json();\n      if (res.ok && data.success) {\n        setUser(data.user);\n        showSuccess('Logged in successfully!');\n        if (onSuccess) onSuccess();\n        onNavigate('applications');\n      } else {\n        showError(data.error || 'Login failed');\n      }\n    } catch (err) {\n      showError('An unexpected error occurred');\n    } finally {\n      setIsSubmitting(false);\n    }\n  };\n\n  return (\n    <div className=\"min-h-screen flex items-center justify-center bg-gray-50 px-4 py-12 sm:px-6 lg:px-8\">\n      <div className=\"max-w-md w-full space-y-8 bg-white p-10 rounded-xl shadow-sm border border-gray-100\">\n        <div>\n          <div className=\"flex justify-center\">\n             <img src=\"/jajat-logo.png\" alt=\"JAJAT Logo\" className=\"h-12 w-auto\" />\n          </div>\n          <h1 className=\"mt-6 text-center text-3xl font-extrabold text-gray-900\">\n            Sign in to your account\n          </h1>\n          <p className=\"mt-2 text-center text-sm text-gray-600\">\n            Or{' '}\n            <button\n              onClick={() => onNavigate('register' as any)}\n              className=\"font-medium text-indigo-600 hover:text-indigo-500 focus:outline-none focus:underline\"\n            >\n              create a new account\n            </button>\n          </p>\n        </div>\n        <form className=\"mt-8 space-y-6\" onSubmit={handleSubmit}>\n          <div className=\"rounded-md shadow-sm -space-y-px\">\n            <div>\n              <label htmlFor=\"email-address\" className=\"block text-sm font-medium text-gray-700 mb-1\">\n                Email address\n              </label>\n              <input\n                id=\"email-address\"\n                name=\"email\"\n                type=\"email\"\n                autoComplete=\"email\"\n                required\n                value={email}\n                onChange={(e) => setEmail(e.target.value)}\n                className=\"appearance-none rounded-t-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm\"\n                placeholder=\"you@example.com\"\n              />\n            </div>\n            <div className=\"mt-4\">\n              <label htmlFor=\"password\" className=\"block text-sm font-medium text-gray-700 mb-1\">\n                Password\n              </label>\n              <input\n                id=\"password\"\n                name=\"password\"\n                type=\"password\"\n                autoComplete=\"current-password\"\n                required\n                value={password}\n                onChange={(e) => setPassword(e.target.value)}\n                className=\"appearance-none rounded-b-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm\"\n                placeholder=\"••••••••\"\n              />\n            </div>\n          </div>\n\n          <div>\n            <button\n              type=\"submit\"\n              disabled={isSubmitting}\n              className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}\n            >\n              {isSubmitting ? 'Signing in...' : 'Sign in'}\n            </button>\n          </div>\n        </form>\n\n        <div className=\"mt-6\">\n          <div className=\"relative\">\n            <div className=\"absolute inset-0 flex items-center\">\n              <div className=\"w-full border-t border-gray-300\"></div>\n            </div>\n            <div className=\"relative flex justify-center text-sm\">\n              <span className=\"px-2 bg-white text-gray-500\">Or continue with</span>\n            </div>\n          </div>\n\n          <div className=\"mt-6\">\n            <button\n              type=\"button\"\n              className=\"w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500\"\n            >\n              <span className=\"sr-only\">Sign in with Google</span>\n              <svg className=\"w-5 h-5\" aria-hidden=\"true\" fill=\"currentColor\" viewBox=\"0 0 24 24\">\n                <path d=\"M12.48 10.92v3.28h4.78c-.19 1.06-.92 1.96-1.91 2.59l2.72 2.11c1.59-1.47 2.49-3.62 2.49-6.09 0-.47-.04-.92-.12-1.36l-8.48-.53-.51 2.01z\" />\n                <path d=\"M12 23c2.97 0 5.46-.98 7.28-2.66l-2.72-2.11c-.75.5-1.71.81-2.77.81-2.13 0-3.93-1.44-4.58-3.39l-2.82 2.18C8.1 20.37 10.15 23 12 23z\" />\n                <path d=\"M7.42 15.65c-.17-.5-.26-1.04-.26-1.65s.09-1.15.26-1.65l-2.82-2.18C4.1 11.1 3.5 12.5 3.5 14s.6 2.9 1.1 3.83l2.82-2.18z\" />\n                <path d=\"M12 5c1.62 0 3.06.56 4.21 1.66l3.15-3.15C17.45 1.54 14.96 1 12 1 10.15 1 8.1 3.63 6.6 6.17l2.82 2.18c.65-1.95 2.45-3.35 4.58-3.35z\" />\n              </svg>\n              <span className=\"ml-2\">Google</span>\n            </button>\n          </div>\n        </div>\n      </div>\n    </div>\n  );\n};\n\nexport default LoginPage;\n",
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/pages/OpportunitiesPage.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/pages/RegisterPage.tsx",
+      "messages": [
+        {
+          "ruleId": "@typescript-eslint/no-explicit-any",
+          "severity": 2,
+          "message": "Unexpected any. Specify a different type.",
+          "line": 6,
+          "column": 22,
+          "nodeType": "TSAnyKeyword",
+          "messageId": "unexpectedAny",
+          "endLine": 6,
+          "endColumn": 25,
+          "suggestions": [
+            {
+              "messageId": "suggestUnknown",
+              "fix": {
+                "range": [
+                  201,
+                  204
+                ],
+                "text": "unknown"
+              },
+              "desc": "Use `unknown` instead, this will force you to explicitly, and safely assert the type is correct."
+            },
+            {
+              "messageId": "suggestNever",
+              "fix": {
+                "range": [
+                  201,
+                  204
+                ],
+                "text": "never"
+              },
+              "desc": "Use `never` instead, this is useful when instantiating generic type parameters that you don't need to know the type of."
+            }
+          ]
+        },
+        {
+          "ruleId": "@typescript-eslint/no-unused-vars",
+          "severity": 2,
+          "message": "'err' is defined but never used.",
+          "line": 44,
+          "column": 14,
+          "nodeType": null,
+          "messageId": "unusedVar",
+          "endLine": 44,
+          "endColumn": 17
+        },
+        {
+          "ruleId": "@typescript-eslint/no-explicit-any",
+          "severity": 2,
+          "message": "Unexpected any. Specify a different type.",
+          "line": 64,
+          "column": 52,
+          "nodeType": "TSAnyKeyword",
+          "messageId": "unexpectedAny",
+          "endLine": 64,
+          "endColumn": 55,
+          "suggestions": [
+            {
+              "messageId": "suggestUnknown",
+              "fix": {
+                "range": [
+                  2174,
+                  2177
+                ],
+                "text": "unknown"
+              },
+              "desc": "Use `unknown` instead, this will force you to explicitly, and safely assert the type is correct."
+            },
+            {
+              "messageId": "suggestNever",
+              "fix": {
+                "range": [
+                  2174,
+                  2177
+                ],
+                "text": "never"
+              },
+              "desc": "Use `never` instead, this is useful when instantiating generic type parameters that you don't need to know the type of."
+            }
+          ]
+        }
+      ],
+      "suppressedMessages": [],
+      "errorCount": 3,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "source": "import React, { useState } from 'react';\nimport { useAuthStore } from '../stores/authStore';\nimport { useAlert } from '../components/AlertProvider';\n\ninterface RegisterPageProps {\n  onNavigate: (page: any) => void;\n  onSuccess?: () => void;\n}\n\nconst RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate, onSuccess }) => {\n  const [email, setEmail] = useState('');\n  const [password, setPassword] = useState('');\n  const [confirmPassword, setConfirmPassword] = useState('');\n  const [isSubmitting, setIsSubmitting] = useState(false);\n  const { setUser } = useAuthStore();\n  const { showSuccess, showError } = useAlert();\n\n  const handleSubmit = async (e: React.FormEvent) => {\n    e.preventDefault();\n\n    if (password !== confirmPassword) {\n      showError('Passwords do not match');\n      return;\n    }\n\n    setIsSubmitting(true);\n\n    try {\n      const res = await fetch('/api/auth/register', {\n        method: 'POST',\n        headers: { 'Content-Type': 'application/json' },\n        body: JSON.stringify({ email, password }),\n      });\n\n      const data = await res.json();\n      if (res.ok && data.success) {\n        setUser(data.user);\n        showSuccess('Account created successfully!');\n        if (onSuccess) onSuccess();\n        onNavigate('applications');\n      } else {\n        showError(data.error || 'Registration failed');\n      }\n    } catch (err) {\n      showError('An unexpected error occurred');\n    } finally {\n      setIsSubmitting(false);\n    }\n  };\n\n  return (\n    <div className=\"min-h-screen flex items-center justify-center bg-gray-50 px-4 py-12 sm:px-6 lg:px-8\">\n      <div className=\"max-w-md w-full space-y-8 bg-white p-10 rounded-xl shadow-sm border border-gray-100\">\n        <div>\n          <div className=\"flex justify-center\">\n             <img src=\"/jajat-logo.png\" alt=\"JAJAT Logo\" className=\"h-12 w-auto\" />\n          </div>\n          <h1 className=\"mt-6 text-center text-3xl font-extrabold text-gray-900\">\n            Create your account\n          </h1>\n          <p className=\"mt-2 text-center text-sm text-gray-600\">\n            Already have an account?{' '}\n            <button\n              onClick={() => onNavigate('login' as any)}\n              className=\"font-medium text-indigo-600 hover:text-indigo-500 focus:outline-none focus:underline\"\n            >\n              Sign in instead\n            </button>\n          </p>\n        </div>\n        <form className=\"mt-8 space-y-6\" onSubmit={handleSubmit}>\n          <div className=\"space-y-4\">\n            <div>\n              <label htmlFor=\"email-address\" className=\"block text-sm font-medium text-gray-700 mb-1\">\n                Email address\n              </label>\n              <input\n                id=\"email-address\"\n                name=\"email\"\n                type=\"email\"\n                autoComplete=\"email\"\n                required\n                value={email}\n                onChange={(e) => setEmail(e.target.value)}\n                className=\"appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm\"\n                placeholder=\"you@example.com\"\n              />\n            </div>\n            <div>\n              <label htmlFor=\"password\" className=\"block text-sm font-medium text-gray-700 mb-1\">\n                Password\n              </label>\n              <input\n                id=\"password\"\n                name=\"password\"\n                type=\"password\"\n                autoComplete=\"new-password\"\n                required\n                value={password}\n                onChange={(e) => setPassword(e.target.value)}\n                className=\"appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm\"\n                placeholder=\"••••••••\"\n              />\n            </div>\n            <div>\n              <label htmlFor=\"confirm-password\" className=\"block text-sm font-medium text-gray-700 mb-1\">\n                Confirm Password\n              </label>\n              <input\n                id=\"confirm-password\"\n                name=\"confirm-password\"\n                type=\"password\"\n                autoComplete=\"new-password\"\n                required\n                value={confirmPassword}\n                onChange={(e) => setConfirmPassword(e.target.value)}\n                className=\"appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm\"\n                placeholder=\"••••••••\"\n              />\n            </div>\n          </div>\n\n          <div>\n            <button\n              type=\"submit\"\n              disabled={isSubmitting}\n              className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}\n            >\n              {isSubmitting ? 'Creating account...' : 'Create account'}\n            </button>\n          </div>\n        </form>\n      </div>\n    </div>\n  );\n};\n\nexport default RegisterPage;\n",
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/pages/SettingsPage.tsx",
+      "messages": [
+        {
+          "ruleId": "@typescript-eslint/no-explicit-any",
+          "severity": 2,
+          "message": "Unexpected any. Specify a different type.",
+          "line": 19,
+          "column": 23,
+          "nodeType": "TSAnyKeyword",
+          "messageId": "unexpectedAny",
+          "endLine": 19,
+          "endColumn": 26,
+          "suggestions": [
+            {
+              "messageId": "suggestUnknown",
+              "fix": {
+                "range": [
+                  1069,
+                  1072
+                ],
+                "text": "unknown"
+              },
+              "desc": "Use `unknown` instead, this will force you to explicitly, and safely assert the type is correct."
+            },
+            {
+              "messageId": "suggestNever",
+              "fix": {
+                "range": [
+                  1069,
+                  1072
+                ],
+                "text": "never"
+              },
+              "desc": "Use `never` instead, this is useful when instantiating generic type parameters that you don't need to know the type of."
+            }
+          ]
+        },
+        {
+          "ruleId": "@typescript-eslint/no-explicit-any",
+          "severity": 2,
+          "message": "Unexpected any. Specify a different type.",
+          "line": 29,
+          "column": 26,
+          "nodeType": "TSAnyKeyword",
+          "messageId": "unexpectedAny",
+          "endLine": 29,
+          "endColumn": 29,
+          "suggestions": [
+            {
+              "messageId": "suggestUnknown",
+              "fix": {
+                "range": [
+                  1403,
+                  1406
+                ],
+                "text": "unknown"
+              },
+              "desc": "Use `unknown` instead, this will force you to explicitly, and safely assert the type is correct."
+            },
+            {
+              "messageId": "suggestNever",
+              "fix": {
+                "range": [
+                  1403,
+                  1406
+                ],
+                "text": "never"
+              },
+              "desc": "Use `never` instead, this is useful when instantiating generic type parameters that you don't need to know the type of."
+            }
+          ]
+        },
+        {
+          "ruleId": "@typescript-eslint/no-explicit-any",
+          "severity": 2,
+          "message": "Unexpected any. Specify a different type.",
+          "line": 30,
+          "column": 23,
+          "nodeType": "TSAnyKeyword",
+          "messageId": "unexpectedAny",
+          "endLine": 30,
+          "endColumn": 26,
+          "suggestions": [
+            {
+              "messageId": "suggestUnknown",
+              "fix": {
+                "range": [
+                  1437,
+                  1440
+                ],
+                "text": "unknown"
+              },
+              "desc": "Use `unknown` instead, this will force you to explicitly, and safely assert the type is correct."
+            },
+            {
+              "messageId": "suggestNever",
+              "fix": {
+                "range": [
+                  1437,
+                  1440
+                ],
+                "text": "never"
+              },
+              "desc": "Use `never` instead, this is useful when instantiating generic type parameters that you don't need to know the type of."
+            }
+          ]
+        },
+        {
+          "ruleId": "@typescript-eslint/no-explicit-any",
+          "severity": 2,
+          "message": "Unexpected any. Specify a different type.",
+          "line": 34,
+          "column": 61,
+          "nodeType": "TSAnyKeyword",
+          "messageId": "unexpectedAny",
+          "endLine": 34,
+          "endColumn": 64,
+          "suggestions": [
+            {
+              "messageId": "suggestUnknown",
+              "fix": {
+                "range": [
+                  1527,
+                  1530
+                ],
+                "text": "unknown"
+              },
+              "desc": "Use `unknown` instead, this will force you to explicitly, and safely assert the type is correct."
+            },
+            {
+              "messageId": "suggestNever",
+              "fix": {
+                "range": [
+                  1527,
+                  1530
+                ],
+                "text": "never"
+              },
+              "desc": "Use `never` instead, this is useful when instantiating generic type parameters that you don't need to know the type of."
+            }
+          ]
+        },
+        {
+          "ruleId": "@typescript-eslint/no-explicit-any",
+          "severity": 2,
+          "message": "Unexpected any. Specify a different type.",
+          "line": 36,
+          "column": 48,
+          "nodeType": "TSAnyKeyword",
+          "messageId": "unexpectedAny",
+          "endLine": 36,
+          "endColumn": 51,
+          "suggestions": [
+            {
+              "messageId": "suggestUnknown",
+              "fix": {
+                "range": [
+                  1651,
+                  1654
+                ],
+                "text": "unknown"
+              },
+              "desc": "Use `unknown` instead, this will force you to explicitly, and safely assert the type is correct."
+            },
+            {
+              "messageId": "suggestNever",
+              "fix": {
+                "range": [
+                  1651,
+                  1654
+                ],
+                "text": "never"
+              },
+              "desc": "Use `never` instead, this is useful when instantiating generic type parameters that you don't need to know the type of."
+            }
+          ]
+        },
+        {
+          "ruleId": "@typescript-eslint/no-explicit-any",
+          "severity": 2,
+          "message": "Unexpected any. Specify a different type.",
+          "line": 154,
+          "column": 44,
+          "nodeType": "TSAnyKeyword",
+          "messageId": "unexpectedAny",
+          "endLine": 154,
+          "endColumn": 47,
+          "suggestions": [
+            {
+              "messageId": "suggestUnknown",
+              "fix": {
+                "range": [
+                  6266,
+                  6269
+                ],
+                "text": "unknown"
+              },
+              "desc": "Use `unknown` instead, this will force you to explicitly, and safely assert the type is correct."
+            },
+            {
+              "messageId": "suggestNever",
+              "fix": {
+                "range": [
+                  6266,
+                  6269
+                ],
+                "text": "never"
+              },
+              "desc": "Use `never` instead, this is useful when instantiating generic type parameters that you don't need to know the type of."
+            }
+          ]
+        },
+        {
+          "ruleId": "@typescript-eslint/no-explicit-any",
+          "severity": 2,
+          "message": "Unexpected any. Specify a different type.",
+          "line": 160,
+          "column": 85,
+          "nodeType": "TSAnyKeyword",
+          "messageId": "unexpectedAny",
+          "endLine": 160,
+          "endColumn": 88,
+          "suggestions": [
+            {
+              "messageId": "suggestUnknown",
+              "fix": {
+                "range": [
+                  6560,
+                  6563
+                ],
+                "text": "unknown"
+              },
+              "desc": "Use `unknown` instead, this will force you to explicitly, and safely assert the type is correct."
+            },
+            {
+              "messageId": "suggestNever",
+              "fix": {
+                "range": [
+                  6560,
+                  6563
+                ],
+                "text": "never"
+              },
+              "desc": "Use `never` instead, this is useful when instantiating generic type parameters that you don't need to know the type of."
+            }
+          ]
+        },
+        {
+          "ruleId": "@typescript-eslint/no-explicit-any",
+          "severity": 2,
+          "message": "Unexpected any. Specify a different type.",
+          "line": 169,
+          "column": 88,
+          "nodeType": "TSAnyKeyword",
+          "messageId": "unexpectedAny",
+          "endLine": 169,
+          "endColumn": 91,
+          "suggestions": [
+            {
+              "messageId": "suggestUnknown",
+              "fix": {
+                "range": [
+                  6967,
+                  6970
+                ],
+                "text": "unknown"
+              },
+              "desc": "Use `unknown` instead, this will force you to explicitly, and safely assert the type is correct."
+            },
+            {
+              "messageId": "suggestNever",
+              "fix": {
+                "range": [
+                  6967,
+                  6970
+                ],
+                "text": "never"
+              },
+              "desc": "Use `never` instead, this is useful when instantiating generic type parameters that you don't need to know the type of."
+            }
+          ]
+        },
+        {
+          "ruleId": "@typescript-eslint/no-explicit-any",
+          "severity": 2,
+          "message": "Unexpected any. Specify a different type.",
+          "line": 353,
+          "column": 62,
+          "nodeType": "TSAnyKeyword",
+          "messageId": "unexpectedAny",
+          "endLine": 353,
+          "endColumn": 65,
+          "suggestions": [
+            {
+              "messageId": "suggestUnknown",
+              "fix": {
+                "range": [
+                  15962,
+                  15965
+                ],
+                "text": "unknown"
+              },
+              "desc": "Use `unknown` instead, this will force you to explicitly, and safely assert the type is correct."
+            },
+            {
+              "messageId": "suggestNever",
+              "fix": {
+                "range": [
+                  15962,
+                  15965
+                ],
+                "text": "never"
+              },
+              "desc": "Use `never` instead, this is useful when instantiating generic type parameters that you don't need to know the type of."
+            }
+          ]
+        },
+        {
+          "ruleId": "@typescript-eslint/no-explicit-any",
+          "severity": 2,
+          "message": "Unexpected any. Specify a different type.",
+          "line": 359,
+          "column": 65,
+          "nodeType": "TSAnyKeyword",
+          "messageId": "unexpectedAny",
+          "endLine": 359,
+          "endColumn": 68,
+          "suggestions": [
+            {
+              "messageId": "suggestUnknown",
+              "fix": {
+                "range": [
+                  16318,
+                  16321
+                ],
+                "text": "unknown"
+              },
+              "desc": "Use `unknown` instead, this will force you to explicitly, and safely assert the type is correct."
+            },
+            {
+              "messageId": "suggestNever",
+              "fix": {
+                "range": [
+                  16318,
+                  16321
+                ],
+                "text": "never"
+              },
+              "desc": "Use `never` instead, this is useful when instantiating generic type parameters that you don't need to know the type of."
+            }
+          ]
+        }
+      ],
+      "suppressedMessages": [],
+      "errorCount": 10,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "source": "import React, { useReducer } from 'react';\nimport { useTranslation } from 'react-i18next';\nimport { usePreferencesStore } from '../stores/preferencesStore';\nimport { useAuthStore } from '../stores/authStore';\nimport { useAlert } from '../components/AlertProvider';\nimport { DEFAULT_FIELDS } from '../utils/constants';\nimport { type FieldDefinition, type ViewType, type DateFormat } from '../types/preferences';\nimport FieldsSettings from '../components/settings/FieldsSettings';\nimport ViewSettings from '../components/settings/ViewSettings';\nimport DateFormatSettings from '../components/settings/DateFormatSettings';\nimport CustomFieldsSettings from '../components/settings/CustomFieldsSettings';\nimport InterviewingSettings from '../components/settings/InterviewingSettings';\nimport EmailScanSettings from '../components/settings/EmailScanSettings';\nimport ATSSearchSettings from '../components/settings/ATSSearchSettings';\nimport Footer from '../components/Footer';\nimport packageJson from '../../package.json';\n\ninterface SettingsPageProps {\n  onNavigate?: (page: any) => void;\n}\n\ntype SettingsSection = 'fields' | 'view' | 'date' | 'custom' | 'interviewing' | 'emailScan' | 'atsSearch' | 'cloud';\n\ninterface SettingsState {\n  activeSection: SettingsSection;\n  hasChanges: boolean;\n  editingCustomField: FieldDefinition | null;\n  customFieldForm: Partial<FieldDefinition>;\n  editingInterviewEvent: any | null;\n  interviewEventForm: any;\n}\n\ntype SettingsAction =\n  | { type: 'SET_FIELD'; field: keyof SettingsState; value: any }\n  | { type: 'SET_CUSTOM_FIELD_FORM'; value: Partial<FieldDefinition> }\n  | { type: 'SET_INTERVIEW_EVENT_FORM'; value: any }\n  | { type: 'RESET_FORMS' };\n\nconst initialState: SettingsState = {\n  activeSection: 'view',\n  hasChanges: false,\n  editingCustomField: null,\n  customFieldForm: { type: 'text' },\n  editingInterviewEvent: null,\n  interviewEventForm: { type: 'first_contact', status: 'completed' },\n};\n\nfunction settingsReducer(state: SettingsState, action: SettingsAction): SettingsState {\n  switch (action.type) {\n    case 'SET_FIELD':\n      return { ...state, [action.field]: action.value };\n    case 'SET_CUSTOM_FIELD_FORM':\n      return { ...state, customFieldForm: action.value };\n    case 'SET_INTERVIEW_EVENT_FORM':\n      return { ...state, interviewEventForm: action.value };\n    case 'RESET_FORMS':\n      return {\n        ...state,\n        editingCustomField: null,\n        customFieldForm: { type: 'text' },\n        editingInterviewEvent: null,\n        interviewEventForm: { type: 'first_contact', status: 'completed' },\n      };\n    default:\n      return state;\n  }\n}\n\nconst SettingsPageContent: React.FC<SettingsPageProps> = ({ onNavigate }) => {\n  const { t } = useTranslation();\n  const { preferences, updatePreferences, resetPreferences } = usePreferencesStore();\n  const { user, logout, isAuthenticated } = useAuthStore();\n  const { showSuccess } = useAlert();\n  const [state, dispatch] = useReducer(settingsReducer, initialState);\n\n  const {\n    activeSection,\n    hasChanges,\n    editingCustomField,\n    customFieldForm,\n    editingInterviewEvent,\n    interviewEventForm,\n  } = state;\n\n  const handleToggleField = (fieldId: string) => {\n    const enabledFields = preferences.enabledFields.includes(fieldId)\n      ? preferences.enabledFields.filter((id: string) => id !== fieldId)\n      : [...preferences.enabledFields, fieldId];\n    updatePreferences({ enabledFields });\n    dispatch({ type: 'SET_FIELD', field: 'hasChanges', value: true });\n  };\n\n  const handleMoveField = (dragIndex: number, hoverIndex: number) => {\n    const newOrder = [...preferences.columnOrder];\n    const dragField = newOrder[dragIndex];\n    newOrder.splice(dragIndex, 1);\n    newOrder.splice(hoverIndex, 0, dragField);\n    updatePreferences({ columnOrder: newOrder });\n    dispatch({ type: 'SET_FIELD', field: 'hasChanges', value: true });\n  };\n\n  const handleDefaultViewChange = (view: ViewType) => {\n    updatePreferences({ defaultView: view });\n    dispatch({ type: 'SET_FIELD', field: 'hasChanges', value: true });\n  };\n\n  const handleDateFormatChange = (format: DateFormat) => {\n    updatePreferences({ dateFormat: format });\n    dispatch({ type: 'SET_FIELD', field: 'hasChanges', value: true });\n  };\n\n  const handleAddCustomField = () => {\n    const id = `custom_${Date.now()}`;\n    const newField = { ...customFieldForm, id } as FieldDefinition;\n    const customFields = [...(preferences.customFields || []), newField];\n    const enabledFields = [...preferences.enabledFields, id];\n    const columnOrder = [...preferences.columnOrder, id];\n    updatePreferences({ customFields, enabledFields, columnOrder });\n    dispatch({ type: 'RESET_FORMS' });\n    dispatch({ type: 'SET_FIELD', field: 'hasChanges', value: true });\n  };\n\n  const handleEditCustomField = (field: FieldDefinition) => {\n    dispatch({ type: 'SET_FIELD', field: 'editingCustomField', value: field });\n    dispatch({ type: 'SET_CUSTOM_FIELD_FORM', value: field });\n  };\n\n  const handleUpdateCustomField = () => {\n    const customFields = (preferences.customFields || []).map((f: FieldDefinition) =>\n      f.id === editingCustomField?.id ? { ...f, ...customFieldForm } : f\n    );\n    updatePreferences({ customFields });\n    dispatch({ type: 'RESET_FORMS' });\n    dispatch({ type: 'SET_FIELD', field: 'hasChanges', value: true });\n  };\n\n  const handleDeleteCustomField = (fieldId: string) => {\n    const customFields = (preferences.customFields || []).filter((f: FieldDefinition) => f.id !== fieldId);\n    const enabledFields = preferences.enabledFields.filter((id: string) => id !== fieldId);\n    const columnOrder = preferences.columnOrder.filter((id: string) => id !== fieldId);\n    updatePreferences({ customFields, enabledFields, columnOrder });\n    dispatch({ type: 'SET_FIELD', field: 'hasChanges', value: true });\n  };\n\n  const handleAddInterviewEvent = () => {\n    const id = `event_${Date.now()}`;\n    const newEvent = { ...interviewEventForm, id };\n    const customInterviewEvents = [...(preferences.customInterviewEvents || []), newEvent];\n    updatePreferences({ customInterviewEvents });\n    dispatch({ type: 'RESET_FORMS' });\n    dispatch({ type: 'SET_FIELD', field: 'hasChanges', value: true });\n  };\n\n  const handleEditInterviewEvent = (event: any) => {\n    dispatch({ type: 'SET_FIELD', field: 'editingInterviewEvent', value: event });\n    dispatch({ type: 'SET_INTERVIEW_EVENT_FORM', value: event });\n  };\n\n  const handleUpdateInterviewEvent = () => {\n    const customInterviewEvents = (preferences.customInterviewEvents || []).map((e: any) =>\n      e.id === editingInterviewEvent?.id ? { ...e, ...interviewEventForm } : e\n    );\n    updatePreferences({ customInterviewEvents });\n    dispatch({ type: 'RESET_FORMS' });\n    dispatch({ type: 'SET_FIELD', field: 'hasChanges', value: true });\n  };\n\n  const handleDeleteInterviewEvent = (eventId: string) => {\n    const customInterviewEvents = (preferences.customInterviewEvents || []).filter((e: any) => e.id !== eventId);\n    updatePreferences({ customInterviewEvents });\n    dispatch({ type: 'SET_FIELD', field: 'hasChanges', value: true });\n  };\n\n  const handleReset = () => {\n    resetPreferences();\n    dispatch({ type: 'RESET_FORMS' });\n    dispatch({ type: 'SET_FIELD', field: 'hasChanges', value: false });\n    showSuccess(t('settings.resetDefault'));\n  };\n\n  const handleSave = () => {\n    dispatch({ type: 'SET_FIELD', field: 'hasChanges', value: false });\n    showSuccess(t('settings.success'));\n  };\n\n  const allFieldsList = [...DEFAULT_FIELDS, ...(preferences.customFields || [])];\n\n  const orderedFields = preferences.columnOrder\n    .map((id: string) => allFieldsList.find((field) => field.id === id))\n    .filter((field): field is FieldDefinition => Boolean(field));\n\n  const categories = [\n    {\n      id: 'general',\n      label: t('settings.categories.general'),\n      sections: ['view', 'date'],\n    },\n    {\n      id: 'customization',\n      label: t('settings.categories.customization'),\n      sections: ['fields', 'custom', 'interviewing'],\n    },\n    {\n      id: 'integrations',\n      label: t('settings.categories.integrations'),\n      sections: ['atsSearch', 'emailScan'],\n    },\n    {\n      id: 'account',\n      label: t('settings.categories.account'),\n      sections: ['cloud'],\n    },\n  ];\n\n  const sections = [\n    { id: 'fields' as const, label: t('settings.sections.fields'), icon: '📋', description: t('settings.sections.fieldsDesc') },\n    { id: 'view' as const, label: t('settings.sections.view'), icon: '👁️', description: t('settings.sections.viewDesc') },\n    { id: 'date' as const, label: t('settings.sections.date'), icon: '📅', description: t('settings.sections.dateDesc') },\n    { id: 'custom' as const, label: t('settings.sections.custom'), icon: '➕', description: t('settings.sections.customDesc') },\n    { id: 'interviewing' as const, label: t('settings.sections.interviewing'), icon: '🎯', description: t('settings.sections.interviewingDesc') },\n    { id: 'atsSearch' as const, label: t('opportunities.atsSearch.title'), icon: '🔍', description: t('settings.sections.atsSearchDesc') },\n    { id: 'emailScan' as const, label: t('settings.emailScan.section'), icon: '📧', description: t('settings.sections.emailScanDesc') },\n    { id: 'cloud' as const, label: t('settings.sections.cloud'), icon: '☁️', description: t('settings.sections.cloudDesc') },\n  ];\n\n  const currentSection = sections.find(s => s.id === activeSection);\n\n  const renderSection = () => {\n    switch (activeSection) {\n      case 'fields':\n        return (\n          <FieldsSettings\n            orderedFields={orderedFields}\n            enabledFields={preferences.enabledFields}\n            defaultFields={DEFAULT_FIELDS}\n            onToggleField={handleToggleField}\n            onMoveField={handleMoveField}\n          />\n        );\n      case 'view':\n        return (\n          <ViewSettings\n            defaultView={preferences.defaultView}\n            onDefaultViewChange={handleDefaultViewChange}\n          />\n        );\n      case 'date':\n        return (\n          <DateFormatSettings\n            currentFormat={preferences.dateFormat}\n            onDateFormatChange={handleDateFormatChange}\n          />\n        );\n      case 'custom':\n        return (\n          <CustomFieldsSettings\n            customFields={preferences.customFields || []}\n            editingCustomField={editingCustomField}\n            customFieldForm={customFieldForm}\n            setCustomFieldForm={(value) => dispatch({ type: 'SET_CUSTOM_FIELD_FORM', value })}\n            onAddCustomField={handleAddCustomField}\n            onEditCustomField={handleEditCustomField}\n            onUpdateCustomField={handleUpdateCustomField}\n            onDeleteCustomField={handleDeleteCustomField}\n            onCancelEdit={() => dispatch({ type: 'RESET_FORMS' })}\n          />\n        );\n      case 'emailScan':\n        return (\n          <EmailScanSettings\n            emailScanMonths={preferences.emailScanMonths || 3}\n            enabledChatbots={preferences.enabledChatbots || ['ChatGPT', 'Claude', 'Gemini']}\n            onEmailScanMonthsChange={(months) => {\n              updatePreferences({ emailScanMonths: months });\n              dispatch({ type: 'SET_FIELD', field: 'hasChanges', value: true });\n            }}\n            onChatbotToggle={(chatbotId) => {\n              const current = preferences.enabledChatbots || ['ChatGPT', 'Claude', 'Gemini'];\n              const enabledChatbots = current.includes(chatbotId)\n                ? current.filter(id => id !== chatbotId)\n                : [...current, chatbotId];\n              updatePreferences({ enabledChatbots });\n              dispatch({ type: 'SET_FIELD', field: 'hasChanges', value: true });\n            }}\n          />\n        );\n      case 'atsSearch':\n        return (\n          <ATSSearchSettings\n            atsSearch={preferences.atsSearch}\n            onAtsSearchChange={(key, value) => {\n              updatePreferences({\n                atsSearch: { ...preferences.atsSearch!, [key]: value }\n              });\n              dispatch({ type: 'SET_FIELD', field: 'hasChanges', value: true });\n            }}\n          />\n        );\n      case 'interviewing':\n        return (\n          <InterviewingSettings\n            customInterviewEvents={preferences.customInterviewEvents || []}\n            editingInterviewEvent={editingInterviewEvent}\n            interviewEventForm={interviewEventForm}\n            setInterviewEventForm={(value) => dispatch({ type: 'SET_INTERVIEW_EVENT_FORM', value })}\n            onAddInterviewEvent={handleAddInterviewEvent}\n            onEditInterviewEvent={handleEditInterviewEvent}\n            onUpdateInterviewEvent={handleUpdateInterviewEvent}\n            onDeleteInterviewEvent={handleDeleteInterviewEvent}\n            onCancelEdit={() => dispatch({ type: 'RESET_FORMS' })}\n          />\n        );\n      case 'cloud':\n        return (\n          <div className=\"space-y-8\">\n            <div className=\"bg-indigo-50 dark:bg-indigo-900/10 border border-indigo-100 dark:border-indigo-900/30 rounded-2xl p-8\">\n              {isAuthenticated ? (\n                <div className=\"flex flex-col sm:flex-row items-center gap-6\">\n                  <div className=\"w-16 h-16 bg-indigo-600 rounded-full flex items-center justify-center text-white text-2xl font-bold shadow-lg\">\n                    {user?.email?.charAt(0).toUpperCase()}\n                  </div>\n                  <div className=\"flex-1 text-center sm:text-left\">\n                    <p className=\"text-sm font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider\">{t('settings.categories.account')}</p>\n                    <p className=\"text-xl font-bold text-gray-900 dark:text-white mt-1\">{user?.email}</p>\n                    <div className=\"flex items-center justify-center sm:justify-start gap-2 mt-2 text-green-600 dark:text-green-400\">\n                       <svg xmlns=\"http://www.w3.org/2000/svg\" className=\"h-5 w-5\" viewBox=\"0 0 20 20\" fill=\"currentColor\">\n                        <path fillRule=\"evenodd\" d=\"M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z\" clipRule=\"evenodd\" />\n                      </svg>\n                      <span className=\"text-sm font-medium\">Synced & Secure</span>\n                    </div>\n                  </div>\n                  <button\n                    onClick={() => {\n                      logout();\n                      showSuccess('Logged out successfully');\n                    }}\n                    className=\"px-6 py-2.5 bg-white dark:bg-gray-800 border border-red-200 dark:border-red-900/30 text-red-600 dark:text-red-400 rounded-xl text-sm font-bold hover:bg-red-50 dark:hover:bg-red-900/20 shadow-sm transition-all\"\n                  >\n                    Logout\n                  </button>\n                </div>\n              ) : (\n                <div className=\"text-center py-6\">\n                  <div className=\"w-16 h-16 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center text-gray-400 mx-auto mb-4\">\n                     <svg xmlns=\"http://www.w3.org/2000/svg\" className=\"h-8 w-8\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\">\n                      <path strokeLinecap=\"round\" strokeLinejoin=\"round\" strokeWidth={2} d=\"M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z\" />\n                    </svg>\n                  </div>\n                  <h4 className=\"text-lg font-bold text-gray-900 dark:text-white mb-2\">Sync is currently disabled</h4>\n                  <p className=\"text-gray-600 dark:text-gray-400 mb-8 max-w-md mx-auto\">Log in to keep your applications and opportunities in sync across all your devices.</p>\n                  <div className=\"flex flex-col sm:flex-row justify-center gap-4\">\n                    <button\n                      onClick={() => onNavigate?.('login' as any)}\n                      className=\"px-8 py-3 bg-indigo-600 text-white rounded-xl text-sm font-bold hover:bg-indigo-700 shadow-lg shadow-indigo-200 dark:shadow-none transition-all\"\n                    >\n                      Login\n                    </button>\n                    <button\n                      onClick={() => onNavigate?.('register' as any)}\n                      className=\"px-8 py-3 bg-white dark:bg-gray-800 border-2 border-gray-100 dark:border-gray-700 text-gray-700 dark:text-gray-200 rounded-xl text-sm font-bold hover:bg-gray-50 dark:hover:bg-gray-700 transition-all\"\n                    >\n                      Create Account\n                    </button>\n                  </div>\n                </div>\n              )}\n            </div>\n          </div>\n        );\n      default:\n        return null;\n    }\n  };\n\n  return (\n    <div className=\"max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8\">\n      <div className=\"mb-10 text-center sm:text-left\">\n        <h1 className=\"text-4xl font-black text-gray-900 dark:text-white tracking-tight\">\n          {t('settings.title')}\n        </h1>\n        <p className=\"mt-2 text-lg text-gray-500 dark:text-gray-400 font-medium\">\n          {t('settings.subtitle')}\n        </p>\n      </div>\n\n      <div className=\"lg:grid lg:grid-cols-12 lg:gap-x-12\">\n        {/* Sidebar Navigation */}\n        <aside className=\"py-6 lg:col-span-3\">\n          <nav className=\"space-y-10\">\n            {categories.map((category) => (\n              <div key={category.id}>\n                <h3 className=\"px-4 text-xs font-black text-gray-400 dark:text-gray-500 uppercase tracking-[0.2em] mb-4\">\n                  {category.label}\n                </h3>\n                <div className=\"space-y-1\">\n                  {category.sections.map((sectionId) => {\n                    const section = sections.find((s) => s.id === sectionId);\n                    if (!section) return null;\n                    const isActive = activeSection === sectionId;\n                    return (\n                      <button\n                        key={sectionId}\n                        onClick={() => dispatch({ type: 'SET_FIELD', field: 'activeSection', value: sectionId })}\n                        className={`group flex items-center px-4 py-3 text-sm font-bold rounded-xl w-full transition-all duration-200 ${\n                          isActive\n                            ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200 dark:shadow-none ring-4 ring-indigo-50 dark:ring-indigo-900/20'\n                            : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800/50 hover:text-gray-900 dark:hover:text-white'\n                        }`}\n                      >\n                        <span className={`mr-3 text-xl transition-transform duration-200 group-hover:scale-110 ${isActive ? 'text-white' : 'text-gray-400 group-hover:text-gray-600'}`}>\n                          {section.icon}\n                        </span>\n                        <span className=\"truncate\">{section.label}</span>\n                        {isActive && (\n                          <span className=\"ml-auto\">\n                             <svg xmlns=\"http://www.w3.org/2000/svg\" className=\"h-4 w-4\" viewBox=\"0 0 20 20\" fill=\"currentColor\">\n                              <path fillRule=\"evenodd\" d=\"M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z\" clipRule=\"evenodd\" />\n                            </svg>\n                          </span>\n                        )}\n                      </button>\n                    );\n                  })}\n                </div>\n              </div>\n            ))}\n          </nav>\n        </aside>\n\n        {/* Main Content Area */}\n        <div className=\"lg:col-span-9 mt-8 lg:mt-0\">\n          {/* Header for current section */}\n          <div className=\"bg-white dark:bg-gray-800 shadow-xl shadow-gray-100 dark:shadow-none border border-gray-100 dark:border-gray-700 rounded-2xl mb-8 overflow-hidden\">\n            <div className={`p-8 ${activeSection === 'atsSearch' ? 'bg-indigo-50/30 dark:bg-indigo-900/5 border-l-8 border-indigo-600' : ''}`}>\n              <div className=\"flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-4\">\n                <div className=\"flex items-center gap-4\">\n                  <div className=\"w-14 h-14 bg-gray-50 dark:bg-gray-700 rounded-2xl flex items-center justify-center text-3xl shadow-inner\">\n                    {currentSection?.icon}\n                  </div>\n                  <div>\n                    <h2 className=\"text-2xl font-black text-gray-900 dark:text-white\">\n                      {currentSection?.label}\n                    </h2>\n                    <p className=\"text-sm font-medium text-gray-500 dark:text-gray-400 mt-1\">\n                      {currentSection?.description}\n                    </p>\n                  </div>\n                </div>\n\n                {/* Save/Reset Controls for desktop inside the header */}\n                <div className=\"hidden sm:flex items-center gap-4\">\n                  <button\n                    type=\"button\"\n                    onClick={handleReset}\n                    className=\"px-5 py-2.5 text-sm font-bold text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-800 border-2 border-gray-100 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-all\"\n                  >\n                    {t('settings.resetDefault')}\n                  </button>\n                  <button\n                    type=\"button\"\n                    onClick={handleSave}\n                    disabled={!hasChanges}\n                    className={`inline-flex items-center px-6 py-2.5 border border-transparent text-sm font-bold rounded-xl shadow-lg transition-all ${\n                      hasChanges\n                        ? 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-indigo-200 dark:shadow-none'\n                        : 'bg-gray-200 text-gray-400 cursor-not-allowed shadow-none'\n                    }`}\n                  >\n                    {t('settings.saveChanges')}\n                  </button>\n                </div>\n              </div>\n              {hasChanges && (\n                <div className=\"flex items-center gap-2 mt-4 px-4 py-2 bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-900/30 rounded-lg w-fit\">\n                   <div className=\"w-2 h-2 rounded-full bg-amber-500 animate-pulse\" />\n                   <span className=\"text-xs text-amber-700 dark:text-amber-400 font-bold uppercase tracking-wider\">\n                    {t('settings.unsavedChanges')}\n                  </span>\n                </div>\n              )}\n            </div>\n          </div>\n\n          {/* Section Content Card */}\n          <div className=\"bg-white dark:bg-gray-800 shadow-2xl shadow-gray-200/50 dark:shadow-none border border-gray-100 dark:border-gray-700 rounded-[2rem] overflow-hidden min-h-[500px]\">\n            <div className=\"p-8 sm:p-12\">\n              {renderSection()}\n            </div>\n          </div>\n\n          {/* Mobile Save/Reset Controls */}\n          <div className=\"mt-8 sm:hidden bg-white dark:bg-gray-800 p-6 border border-gray-100 dark:border-gray-700 rounded-3xl shadow-xl flex flex-col gap-4\">\n             <button\n                type=\"button\"\n                onClick={handleSave}\n                disabled={!hasChanges}\n                className={`w-full flex justify-center py-4 px-4 rounded-2xl shadow-lg text-sm font-bold transition-all ${\n                  hasChanges ? 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-indigo-200' : 'bg-gray-200 text-gray-400'\n                }`}\n              >\n                {t('settings.saveChanges')}\n              </button>\n              <button\n                type=\"button\"\n                onClick={handleReset}\n                className=\"w-full flex justify-center py-4 px-4 border-2 border-gray-100 dark:border-gray-700 rounded-2xl text-sm font-bold text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all\"\n              >\n                {t('settings.resetDefault')}\n              </button>\n          </div>\n        </div>\n      </div>\n\n      <div className=\"mt-20 border-t border-gray-100 dark:border-gray-700 pt-10\">\n        <Footer version={packageJson.version} />\n      </div>\n    </div>\n  );\n};\n\nconst SettingsPage: React.FC<SettingsPageProps> = ({ onNavigate }) => {\n  return <SettingsPageContent onNavigate={onNavigate} />;\n};\n\nexport default SettingsPage;\n",
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/pages/SuggestionsViewerPage.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/pages/SupportPage.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/pwa.d.ts",
+      "messages": [
+        {
+          "ruleId": "@typescript-eslint/no-explicit-any",
+          "severity": 2,
+          "message": "Unexpected any. Specify a different type.",
+          "line": 7,
+          "column": 31,
+          "nodeType": "TSAnyKeyword",
+          "messageId": "unexpectedAny",
+          "endLine": 7,
+          "endColumn": 34,
+          "suggestions": [
+            {
+              "messageId": "suggestUnknown",
+              "fix": {
+                "range": [
+                  275,
+                  278
+                ],
+                "text": "unknown"
+              },
+              "desc": "Use `unknown` instead, this will force you to explicitly, and safely assert the type is correct."
+            },
+            {
+              "messageId": "suggestNever",
+              "fix": {
+                "range": [
+                  275,
+                  278
+                ],
+                "text": "never"
+              },
+              "desc": "Use `never` instead, this is useful when instantiating generic type parameters that you don't need to know the type of."
+            }
+          ]
+        }
+      ],
+      "suppressedMessages": [],
+      "errorCount": 1,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "source": "declare module 'virtual:pwa-register/react' {\n  import { Dispatch, SetStateAction } from 'react';\n\n  export interface RegisterSWOptions {\n    immediate?: boolean;\n    onRegistered?: (registration: ServiceWorkerRegistration | undefined) => void;\n    onRegisterError?: (error: any) => void;\n    onNeedRefresh?: () => void;\n    onOfflineReady?: () => void;\n  }\n\n  export function useRegisterSW(options?: RegisterSWOptions): {\n    needUpdate: [boolean, Dispatch<SetStateAction<boolean>>];\n    offlineReady: [boolean, Dispatch<SetStateAction<boolean>>];\n    updateServiceWorker: (reloadPage?: boolean) => Promise<void>;\n  };\n}\n",
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/services/api.test.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/services/api.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/setupTests.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/storage/applications.test.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/storage/applications.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/storage/auth.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/storage/index.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/storage/opportunities.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/storage/preferences.ts",
+      "messages": [
+        {
+          "ruleId": "@typescript-eslint/no-explicit-any",
+          "severity": 2,
+          "message": "Unexpected any. Specify a different type.",
+          "line": 8,
+          "column": 38,
+          "nodeType": "TSAnyKeyword",
+          "messageId": "unexpectedAny",
+          "endLine": 8,
+          "endColumn": 41,
+          "suggestions": [
+            {
+              "messageId": "suggestUnknown",
+              "fix": {
+                "range": [
+                  300,
+                  303
+                ],
+                "text": "unknown"
+              },
+              "desc": "Use `unknown` instead, this will force you to explicitly, and safely assert the type is correct."
+            },
+            {
+              "messageId": "suggestNever",
+              "fix": {
+                "range": [
+                  300,
+                  303
+                ],
+                "text": "never"
+              },
+              "desc": "Use `never` instead, this is useful when instantiating generic type parameters that you don't need to know the type of."
+            }
+          ]
+        },
+        {
+          "ruleId": "@typescript-eslint/no-explicit-any",
+          "severity": 2,
+          "message": "Unexpected any. Specify a different type.",
+          "line": 11,
+          "column": 32,
+          "nodeType": "TSAnyKeyword",
+          "messageId": "unexpectedAny",
+          "endLine": 11,
+          "endColumn": 35,
+          "suggestions": [
+            {
+              "messageId": "suggestUnknown",
+              "fix": {
+                "range": [
+                  421,
+                  424
+                ],
+                "text": "unknown"
+              },
+              "desc": "Use `unknown` instead, this will force you to explicitly, and safely assert the type is correct."
+            },
+            {
+              "messageId": "suggestNever",
+              "fix": {
+                "range": [
+                  421,
+                  424
+                ],
+                "text": "never"
+              },
+              "desc": "Use `never` instead, this is useful when instantiating generic type parameters that you don't need to know the type of."
+            }
+          ]
+        },
+        {
+          "ruleId": "@typescript-eslint/no-explicit-any",
+          "severity": 2,
+          "message": "Unexpected any. Specify a different type.",
+          "line": 38,
+          "column": 42,
+          "nodeType": "TSAnyKeyword",
+          "messageId": "unexpectedAny",
+          "endLine": 38,
+          "endColumn": 45,
+          "suggestions": [
+            {
+              "messageId": "suggestUnknown",
+              "fix": {
+                "range": [
+                  1218,
+                  1221
+                ],
+                "text": "unknown"
+              },
+              "desc": "Use `unknown` instead, this will force you to explicitly, and safely assert the type is correct."
+            },
+            {
+              "messageId": "suggestNever",
+              "fix": {
+                "range": [
+                  1218,
+                  1221
+                ],
+                "text": "never"
+              },
+              "desc": "Use `never` instead, this is useful when instantiating generic type parameters that you don't need to know the type of."
+            }
+          ]
+        }
+      ],
+      "suppressedMessages": [],
+      "errorCount": 3,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "source": "// src/storage/preferences.ts\nimport { PREFERENCES_STORAGE_KEY, DEFAULT_PREFERENCES } from '../utils/constants';\nimport type { UserPreferences, ATSSearchPreferences } from '../types/preferences';\n\n/**\n * Migrates legacy OR-separated search strings to arrays.\n */\nconst migrateAtsSearch = (atsSearch: any): ATSSearchPreferences => {\n  if (!atsSearch) return DEFAULT_PREFERENCES.atsSearch!;\n\n  const migrateField = (field: any): string[] => {\n    if (Array.isArray(field)) return field;\n    if (typeof field !== 'string') return [];\n\n    // Split by \" OR \" (case-insensitive), remove quotes and trim\n    return field\n      .split(/ OR /i)\n      .map(part => part.trim().replace(/^\"(.*)\"$/, '').replace(/^'(.*)'$/, ''))\n      .filter(part => part.length > 0);\n  };\n\n  return {\n    roles: migrateField(atsSearch.roles),\n    keywords: migrateField(atsSearch.keywords),\n    location: migrateField(atsSearch.location),\n  };\n};\n\n/**\n * Obtiene las preferencias del usuario desde localStorage.\n */\nexport const getPreferences = (): UserPreferences => {\n  try {\n    const stored = localStorage.getItem(PREFERENCES_STORAGE_KEY);\n    if (!stored) {\n      return DEFAULT_PREFERENCES;\n    }\n    const parsed = JSON.parse(stored) as any;\n\n    // Merge with defaults to be resilient to schema changes\n    const enabledFields = parsed.enabledFields && parsed.enabledFields.length > 0\n      ? parsed.enabledFields\n      : DEFAULT_PREFERENCES.enabledFields;\n\n    const columnOrder = parsed.columnOrder && parsed.columnOrder.length > 0\n      ? parsed.columnOrder\n      : DEFAULT_PREFERENCES.columnOrder;\n\n    const customFields = parsed.customFields ?? DEFAULT_PREFERENCES.customFields;\n    \n    const defaultView = (parsed.defaultView && ['table', 'timeline', 'kanban', 'calendar'].includes(parsed.defaultView))\n      ? parsed.defaultView\n      : DEFAULT_PREFERENCES.defaultView;\n    \n    const dateFormat = (parsed.dateFormat && ['DD/MM/YYYY', 'MM/DD/YYYY', 'YYYY-MM-DD'].includes(parsed.dateFormat))\n      ? parsed.dateFormat\n      : DEFAULT_PREFERENCES.dateFormat;\n\n    const customInterviewEvents = parsed.customInterviewEvents ?? DEFAULT_PREFERENCES.customInterviewEvents;\n\n    // Migrate ATS search if it exists\n    const atsSearch = migrateAtsSearch(parsed.atsSearch);\n\n    return {\n      ...DEFAULT_PREFERENCES,\n      ...parsed,\n      enabledFields,\n      columnOrder,\n      customFields,\n      defaultView,\n      dateFormat,\n      customInterviewEvents,\n      atsSearch,\n    };\n  } catch (error) {\n    console.error('Error loading preferences from localStorage:', error);\n    return DEFAULT_PREFERENCES;\n  }\n};\n\n/**\n * Guarda las preferencias del usuario en localStorage.\n */\nexport const savePreferences = (preferences: UserPreferences): void => {\n  try {\n    localStorage.setItem(PREFERENCES_STORAGE_KEY, JSON.stringify(preferences));\n  } catch (error) {\n    console.error('Error saving preferences to localStorage:', error);\n  }\n};\n",
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/stores/applicationsStore.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/stores/authStore.ts",
+      "messages": [
+        {
+          "ruleId": "@typescript-eslint/no-unused-vars",
+          "severity": 2,
+          "message": "'err' is defined but never used.",
+          "line": 62,
+          "column": 14,
+          "nodeType": null,
+          "messageId": "unusedVar",
+          "endLine": 62,
+          "endColumn": 17
+        }
+      ],
+      "suppressedMessages": [],
+      "errorCount": 1,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "source": "import { create } from 'zustand';\nimport { setLoginStatus } from '../storage/auth';\n\ninterface User {\n  id: number;\n  email: string;\n  name?: string;\n  picture?: string;\n}\n\ninterface AuthState {\n  user: User | null;\n  isAuthenticated: boolean;\n  isLoading: boolean;\n  error: string | null;\n\n  // Actions\n  setUser: (user: User | null) => void;\n  setAuthenticated: (status: boolean) => void;\n  setError: (error: string | null) => void;\n  logout: () => Promise<void>;\n  checkAuth: () => Promise<void>;\n}\n\nexport const useAuthStore = create<AuthState>()((set) => ({\n  user: null,\n  isAuthenticated: false,\n  isLoading: false,\n  error: null,\n\n  setUser: (user) => set({ user, isAuthenticated: !!user }),\n  setAuthenticated: (status) => set({ isAuthenticated: status }),\n  setError: (error) => set({ error }),\n\n  logout: async () => {\n    try {\n      await fetch('/api/auth/logout', { method: 'DELETE' });\n      set({ user: null, isAuthenticated: false });\n      setLoginStatus(false);\n    } catch (err) {\n      console.error('Logout failed', err);\n    }\n  },\n\n  checkAuth: async () => {\n    set({ isLoading: true });\n    try {\n      const res = await fetch('/api/auth/me');\n      if (res.ok) {\n        const data = await res.json();\n        if (data.success) {\n          set({ user: data.user, isAuthenticated: true });\n          setLoginStatus(true);\n        } else {\n          set({ user: null, isAuthenticated: false });\n          setLoginStatus(false);\n        }\n      } else {\n        set({ user: null, isAuthenticated: false });\n        setLoginStatus(false);\n      }\n    } catch (err) {\n      set({ user: null, isAuthenticated: false });\n      setLoginStatus(false);\n    } finally {\n      set({ isLoading: false });\n    }\n  },\n}));\n",
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/stores/opportunitiesStore.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/stores/preferencesStore.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/tests/Alert.test.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/tests/AlertProvider.test.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/tests/App.test.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/tests/CalendarView.test.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/tests/DarkModeIntegration.test.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/tests/EmailScanReview.test.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/tests/FiltersBar.test.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/tests/GoogleSheetsSync.test.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/tests/Header.test.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/tests/HomePage.test.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/tests/KanbanView.test.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/tests/OpportunitiesPage.test.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/tests/OpportunityForm.test.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/tests/SettingsPage.test.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/tests/SuggestionsViewerPage.test.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/tests/SupportPage.test.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/tests/Theme.test.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/tests/TimelineEditor.test.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/tests/date.test.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/tests/google-oauth-mock.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/tests/googleSheets.test.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/types/applications.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/types/index.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/types/opportunities.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/types/preferences.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/types/table.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/utils/api.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/utils/applications.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/utils/constants.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/utils/csv.test.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/utils/csv.ts",
+      "messages": [
+        {
+          "ruleId": "@typescript-eslint/no-explicit-any",
+          "severity": 2,
+          "message": "Unexpected any. Specify a different type.",
+          "line": 80,
+          "column": 16,
+          "nodeType": "TSAnyKeyword",
+          "messageId": "unexpectedAny",
+          "endLine": 80,
+          "endColumn": 19,
+          "suggestions": [
+            {
+              "messageId": "suggestUnknown",
+              "fix": {
+                "range": [
+                  2210,
+                  2213
+                ],
+                "text": "unknown"
+              },
+              "desc": "Use `unknown` instead, this will force you to explicitly, and safely assert the type is correct."
+            },
+            {
+              "messageId": "suggestNever",
+              "fix": {
+                "range": [
+                  2210,
+                  2213
+                ],
+                "text": "never"
+              },
+              "desc": "Use `never` instead, this is useful when instantiating generic type parameters that you don't need to know the type of."
+            }
+          ]
+        },
+        {
+          "ruleId": "prefer-const",
+          "severity": 2,
+          "message": "'value' is never reassigned. Use 'const' instead.",
+          "line": 82,
+          "column": 11,
+          "nodeType": "Identifier",
+          "messageId": "useConst",
+          "endLine": 82,
+          "endColumn": 16,
+          "fix": {
+            "range": [
+              2267,
+              2299
+            ],
+            "text": "const value = values[index] || '';"
+          }
+        }
+      ],
+      "suppressedMessages": [],
+      "errorCount": 2,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 1,
+      "fixableWarningCount": 0,
+      "source": "import type { JobApplication } from '../types/applications';\nimport { generateId } from './id';\n\n/**\n * Exports an array of JobApplication to a CSV string.\n */\nexport const exportToCSV = (applications: JobApplication[]): string => {\n  if (applications.length === 0) return '';\n\n  const columns: (keyof JobApplication)[] = [\n    'id', 'position', 'company', 'location', 'workType',\n    'hybridDaysInOffice', 'salary', 'status', 'applicationDate',\n    'interviewDate', 'notes', 'link', 'platform', 'contactName', 'followUpDate'\n  ];\n\n  const headers = [...columns, 'timeline', 'customFields'];\n\n  const csvRows = [];\n  csvRows.push(headers.join(','));\n\n  for (const app of applications) {\n    const values = headers.map(header => {\n      const val = app[header as keyof JobApplication];\n      let stringValue = '';\n\n      if (val === undefined || val === null) {\n        stringValue = '';\n      } else if (typeof val === 'object') {\n        stringValue = JSON.stringify(val);\n      } else {\n        stringValue = String(val);\n      }\n\n      // Escape double quotes and wrap in double quotes\n      const escaped = stringValue.replace(/\"/g, '\"\"');\n      return `\"${escaped}\"`;\n    });\n    csvRows.push(values.join(','));\n  }\n\n  return csvRows.join('\\n');\n};\n\n/**\n * Parses a CSV string into an array of JobApplication.\n */\nexport const parseCSV = (csvText: string): JobApplication[] => {\n  const lines = csvText.split(/\\r?\\n/);\n  if (lines.length < 2) return [];\n\n  const headers = lines[0].split(',').map(h => h.replace(/^\"|\"$/g, '').trim());\n  const applications: JobApplication[] = [];\n\n  for (let i = 1; i < lines.length; i++) {\n    const line = lines[i];\n    if (!line.trim()) continue;\n\n    const values: string[] = [];\n    let current = '';\n    let inQuotes = false;\n\n    for (let j = 0; j < line.length; j++) {\n      const char = line[j];\n      if (char === '\"') {\n        if (inQuotes && line[j + 1] === '\"') {\n          current += '\"';\n          j++;\n        } else {\n          inQuotes = !inQuotes;\n        }\n      } else if (char === ',' && !inQuotes) {\n        values.push(current);\n        current = '';\n      } else {\n        current += char;\n      }\n    }\n    values.push(current);\n\n    const app: any = {};\n    headers.forEach((header, index) => {\n      let value = values[index] || '';\n\n      if (header === 'timeline' || header === 'customFields') {\n        try {\n          app[header] = value ? JSON.parse(value) : (header === 'timeline' ? [] : {});\n        } catch {\n          app[header] = header === 'timeline' ? [] : {};\n        }\n      } else if (header === 'hybridDaysInOffice') {\n        app[header] = value ? parseInt(value, 10) : undefined;\n      } else {\n        app[header] = value;\n      }\n    });\n\n    // Ensure it has an ID\n    if (!app.id) {\n      app.id = generateId();\n    }\n\n    // Validate required fields at least exist\n    if (app.position && app.company) {\n      applications.push(app as JobApplication);\n    }\n  }\n\n  return applications;\n};\n",
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/utils/date.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/utils/googleSheets.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/utils/id.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/utils/localStorage.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/utils/manualScan.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/utils/status.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/src/utils/url.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/tailwind.config.js",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/workspace/project/just-another-job-application-tracker/vite.config.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    }
+  ]
+}
