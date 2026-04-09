@@ -1,11 +1,11 @@
 {
-  "timestamp": "2026-05-01T22:30:42.457Z",
-  "branch": "jules-16083708349688017590-2a98fbf4",
+  "timestamp": "2026-04-08T19:17:37.451Z",
+  "branch": "jules-522951310453559166-518a0c30",
   "summary": {
-    "total": 3,
+    "total": 0,
     "critical": 0,
     "high": 0,
-    "medium": 3,
+    "medium": 0,
     "low": 0,
     "warning": 0,
     "filesAnalyzed": 164
@@ -13,32 +13,7 @@
   "categories": {
     "critical": [],
     "high": [],
-    "medium": [
-      {
-        "file": "/app/src/components/ApplicationCard.test.tsx",
-        "line": 5,
-        "column": 15,
-        "message": "'JobApplication' is defined but never used.",
-        "rule": "@typescript-eslint/no-unused-vars",
-        "severity": 2
-      },
-      {
-        "file": "/app/src/components/ApplicationTableRow.test.tsx",
-        "line": 5,
-        "column": 15,
-        "message": "'JobApplication' is defined but never used.",
-        "rule": "@typescript-eslint/no-unused-vars",
-        "severity": 2
-      },
-      {
-        "file": "/app/src/components/ApplicationTableRow.test.tsx",
-        "line": 6,
-        "column": 10,
-        "message": "'getCellValue' is defined but never used.",
-        "rule": "@typescript-eslint/no-unused-vars",
-        "severity": 2
-      }
-    ],
+    "medium": [],
     "low": [],
     "warning": []
   },
@@ -48,7 +23,7 @@
     "/app/playwright.config.ts",
     "/app/src/App.tsx",
     "/app/src/components/ATSSearch.tsx",
-    "/app/src/components/AddJobForm.tsx",
+    "/app/src/components/AddJobComponent.tsx",
     "/app/src/components/Alert.tsx",
     "/app/src/components/AlertProvider.tsx",
     "/app/src/components/ApplicationCard.test.tsx",
@@ -265,7 +240,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/components/AddJobForm.tsx",
+      "filePath": "/app/src/components/AddJobComponent.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -317,42 +292,13 @@
     },
     {
       "filePath": "/app/src/components/ApplicationCard.test.tsx",
-      "messages": [
-        {
-          "ruleId": "@typescript-eslint/no-unused-vars",
-          "severity": 2,
-          "message": "'JobApplication' is defined but never used.",
-          "line": 5,
-          "column": 15,
-          "nodeType": "Identifier",
-          "messageId": "unusedVar",
-          "endLine": 5,
-          "endColumn": 29,
-          "suggestions": [
-            {
-              "messageId": "removeUnusedVar",
-              "data": {
-                "varName": "JobApplication"
-              },
-              "fix": {
-                "range": [
-                  232,
-                  252
-                ],
-                "text": ""
-              },
-              "desc": "Remove unused variable \"JobApplication\"."
-            }
-          ]
-        }
-      ],
+      "messages": [],
       "suppressedMessages": [],
-      "errorCount": 1,
+      "errorCount": 0,
       "fatalErrorCount": 0,
       "warningCount": 0,
       "fixableErrorCount": 0,
       "fixableWarningCount": 0,
-      "source": "// src/components/ApplicationCard.test.tsx\nimport { render, screen, fireEvent } from '@testing-library/react';\nimport { describe, it, expect, vi, beforeEach } from 'vitest';\nimport ApplicationCard from './ApplicationCard';\nimport { type JobApplication, type ApplicationWithMetadata } from '../types/applications';\nimport type { TableColumn } from '../types/table';\n\nvi.mock('dompurify', () => ({\n  default: { sanitize: (html: string) => html },\n}));\n\nvi.mock('../utils/localStorage', () => ({\n  sanitizeUrl: (url: string) => url,\n}));\n\nconst mockApplication: ApplicationWithMetadata = {\n  id: '1',\n  position: 'Software Engineer',\n  company: 'Tech Corp',\n  status: 'Applied',\n  salary: '100k',\n  applicationDate: '2024-01-01',\n  interviewDate: '',\n  platform: 'LinkedIn',\n  contactName: 'John Doe',\n  followUpDate: '',\n  notes: 'Test notes',\n  link: 'https://example.com/job',\n  timeline: [],\n  parsedApplicationDate: new Date('2024-01-01'),\n  searchMetadata: '',\n  translatedStatus: 'Applied',\n  translatedPlatform: 'LinkedIn',\n  translatedWorkType: '',\n  interviewingSubStatus: null,\n};\n\ndescribe('ApplicationCard', () => {\n  const mockOnEdit = vi.fn();\n  const mockOnDeleteRequest = vi.fn();\n  const otherColumns: TableColumn[] = [\n    { id: 'salary', label: 'Salary' },\n    { id: 'applicationDate', label: 'Application Date' },\n    { id: 'link', label: 'Link' },\n  ];\n\n  beforeEach(() => {\n    vi.clearAllMocks();\n  });\n\n  it('renders position and company prominently', () => {\n    render(\n      <ApplicationCard\n        item={mockApplication}\n        otherColumns={otherColumns}\n        onEdit={mockOnEdit}\n        onDeleteRequest={mockOnDeleteRequest}\n      />\n    );\n\n    expect(screen.getByText('Software Engineer')).toBeInTheDocument();\n    expect(screen.getByText('Tech Corp')).toBeInTheDocument();\n  });\n\n  it('renders status badge', () => {\n    render(\n      <ApplicationCard\n        item={mockApplication}\n        otherColumns={otherColumns}\n        onEdit={mockOnEdit}\n        onDeleteRequest={mockOnDeleteRequest}\n      />\n    );\n\n    expect(screen.getByText('Applied')).toBeInTheDocument();\n  });\n\n  it('calls onEdit when card is clicked', () => {\n    render(\n      <ApplicationCard\n        item={mockApplication}\n        otherColumns={otherColumns}\n        onEdit={mockOnEdit}\n        onDeleteRequest={mockOnDeleteRequest}\n      />\n    );\n\n    const card = screen.getByTestId('card-1');\n    fireEvent.click(card);\n\n    expect(mockOnEdit).toHaveBeenCalledTimes(1);\n    expect(mockOnEdit).toHaveBeenCalledWith(mockApplication);\n  });\n\n  it('calls onDeleteRequest when delete button is clicked and stops propagation', () => {\n    render(\n      <ApplicationCard\n        item={mockApplication}\n        otherColumns={otherColumns}\n        onEdit={mockOnEdit}\n        onDeleteRequest={mockOnDeleteRequest}\n      />\n    );\n\n    const deleteBtn = screen.getByTestId('delete-btn-1');\n    fireEvent.click(deleteBtn);\n\n    expect(mockOnDeleteRequest).toHaveBeenCalledTimes(1);\n    expect(mockOnDeleteRequest).toHaveBeenCalledWith(mockApplication);\n  });\n\n  it('renders other columns (e.g. Salary, Link) when provided', () => {\n    render(\n      <ApplicationCard\n        item={mockApplication}\n        otherColumns={otherColumns}\n        onEdit={mockOnEdit}\n        onDeleteRequest={mockOnDeleteRequest}\n      />\n    );\n\n    expect(screen.getByText('100k')).toBeInTheDocument();\n    const links = screen.getAllByRole('link');\n    const jobLink = links.find((l) => l.getAttribute('href') === 'https://example.com/job');\n    expect(jobLink).toBeDefined();\n    expect(jobLink).toBeInTheDocument();\n  });\n\n  it('displays fallbacks for missing position, company, status', () => {\n    const emptyApp: ApplicationWithMetadata = {\n      ...mockApplication,\n      id: '2',\n      position: '',\n      company: '',\n      status: '',\n      translatedStatus: '',\n    };\n\n    render(\n      <ApplicationCard\n        item={emptyApp}\n        otherColumns={otherColumns}\n        onEdit={mockOnEdit}\n        onDeleteRequest={mockOnDeleteRequest}\n      />\n    );\n\n    expect(screen.getByText('No Position')).toBeInTheDocument();\n    expect(screen.getByText('No Company')).toBeInTheDocument();\n    expect(screen.getByText('N/A')).toBeInTheDocument();\n  });\n\n  it('has correct aria-label on delete button', () => {\n    render(\n      <ApplicationCard\n        item={mockApplication}\n        otherColumns={otherColumns}\n        onEdit={mockOnEdit}\n        onDeleteRequest={mockOnDeleteRequest}\n      />\n    );\n\n    expect(\n      screen.getByRole('button', { name: /delete application for software engineer/i })\n    ).toBeInTheDocument();\n  });\n});\n",
       "usedDeprecatedRules": []
     },
     {
@@ -401,69 +347,13 @@
     },
     {
       "filePath": "/app/src/components/ApplicationTableRow.test.tsx",
-      "messages": [
-        {
-          "ruleId": "@typescript-eslint/no-unused-vars",
-          "severity": 2,
-          "message": "'JobApplication' is defined but never used.",
-          "line": 5,
-          "column": 15,
-          "nodeType": "Identifier",
-          "messageId": "unusedVar",
-          "endLine": 5,
-          "endColumn": 29,
-          "suggestions": [
-            {
-              "messageId": "removeUnusedVar",
-              "data": {
-                "varName": "JobApplication"
-              },
-              "fix": {
-                "range": [
-                  244,
-                  264
-                ],
-                "text": ""
-              },
-              "desc": "Remove unused variable \"JobApplication\"."
-            }
-          ]
-        },
-        {
-          "ruleId": "@typescript-eslint/no-unused-vars",
-          "severity": 2,
-          "message": "'getCellValue' is defined but never used.",
-          "line": 6,
-          "column": 10,
-          "nodeType": "Identifier",
-          "messageId": "unusedVar",
-          "endLine": 6,
-          "endColumn": 22,
-          "suggestions": [
-            {
-              "messageId": "removeUnusedImportDeclaration",
-              "data": {
-                "varName": "getCellValue"
-              },
-              "fix": {
-                "range": [
-                  326,
-                  380
-                ],
-                "text": ""
-              },
-              "desc": "Remove unused import declaration."
-            }
-          ]
-        }
-      ],
+      "messages": [],
       "suppressedMessages": [],
-      "errorCount": 2,
+      "errorCount": 0,
       "fatalErrorCount": 0,
       "warningCount": 0,
       "fixableErrorCount": 0,
       "fixableWarningCount": 0,
-      "source": "// src/components/ApplicationTableRow.test.tsx\nimport { render, screen, fireEvent } from '@testing-library/react';\nimport { describe, it, expect, vi, beforeEach } from 'vitest';\nimport ApplicationTableRow from './ApplicationTableRow';\nimport { type JobApplication, type ApplicationWithMetadata } from '../types/applications';\nimport { getCellValue } from '../utils/applications';\nimport type { TableColumn } from '../types/table';\n\nvi.mock('dompurify', () => ({\n  default: { sanitize: (html: string) => html },\n}));\n\nvi.mock('../utils/localStorage', () => ({\n  sanitizeUrl: (url: string) => url,\n}));\n\nconst mockApplication: ApplicationWithMetadata = {\n  id: '1',\n  position: 'Software Engineer',\n  company: 'Tech Corp',\n  status: 'Applied',\n  salary: '100k',\n  applicationDate: '2024-01-01',\n  interviewDate: '',\n  platform: 'LinkedIn',\n  contactName: 'John Doe',\n  followUpDate: '',\n  notes: 'Test notes',\n  link: 'https://example.com/job',\n  timeline: [],\n  parsedApplicationDate: new Date('2024-01-01'),\n  searchMetadata: '',\n  translatedStatus: 'Applied',\n  translatedPlatform: 'LinkedIn',\n  translatedWorkType: '',\n  interviewingSubStatus: null,\n};\n\ndescribe('ApplicationTableRow', () => {\n  const mockOnEdit = vi.fn();\n  const mockOnDeleteRequest = vi.fn();\n  const columns: TableColumn[] = [\n    { id: 'position', label: 'Position' },\n    { id: 'company', label: 'Company' },\n    { id: 'status', label: 'Status' },\n    { id: 'link', label: 'Link' },\n  ];\n\n  beforeEach(() => {\n    vi.clearAllMocks();\n  });\n\n  it('renders cells for each column', () => {\n    render(\n      <table>\n        <tbody>\n          <ApplicationTableRow\n            item={mockApplication}\n            columns={columns}\n            onEdit={mockOnEdit}\n            onDeleteRequest={mockOnDeleteRequest}\n          />\n        </tbody>\n      </table>\n    );\n\n    expect(screen.getByText('Software Engineer')).toBeInTheDocument();\n    expect(screen.getByText('Tech Corp')).toBeInTheDocument();\n    expect(screen.getByText('Applied')).toBeInTheDocument();\n    const link = screen.getByRole('link', { name: 'https://example.com/job' });\n    expect(link).toBeInTheDocument();\n    expect(link).toHaveAttribute('href', 'https://example.com/job');\n  });\n\n  it('calls onEdit when a cell is clicked', () => {\n    render(\n      <table>\n        <tbody>\n          <ApplicationTableRow\n            item={mockApplication}\n            columns={columns}\n            onEdit={mockOnEdit}\n            onDeleteRequest={mockOnDeleteRequest}\n          />\n        </tbody>\n      </table>\n    );\n\n    const cell = screen.getByText('Software Engineer').closest('td');\n    expect(cell).toBeInTheDocument();\n    if (cell) {\n      fireEvent.click(cell);\n      expect(mockOnEdit).toHaveBeenCalledWith(mockApplication);\n    }\n  });\n\n  it('has delete button in the document (visible on hover via CSS)', () => {\n    render(\n      <table>\n        <tbody>\n          <ApplicationTableRow\n            item={mockApplication}\n            columns={columns}\n            onEdit={mockOnEdit}\n            onDeleteRequest={mockOnDeleteRequest}\n          />\n        </tbody>\n      </table>\n    );\n\n    expect(screen.getByTestId('delete-btn-1')).toBeInTheDocument();\n  });\n\n  it('calls onDeleteRequest when delete button is clicked', () => {\n    render(\n      <table>\n        <tbody>\n          <ApplicationTableRow\n            item={mockApplication}\n            columns={columns}\n            onEdit={mockOnEdit}\n            onDeleteRequest={mockOnDeleteRequest}\n          />\n        </tbody>\n      </table>\n    );\n\n    const deleteBtn = screen.getByTestId('delete-btn-1');\n    fireEvent.click(deleteBtn);\n\n    expect(mockOnDeleteRequest).toHaveBeenCalledWith(mockApplication);\n  });\n\n  it('renders link with target _blank and rel noopener noreferrer', () => {\n    render(\n      <table>\n        <tbody>\n          <ApplicationTableRow\n            item={mockApplication}\n            columns={[{ id: 'link', label: 'Link' }]}\n            onEdit={mockOnEdit}\n            onDeleteRequest={mockOnDeleteRequest}\n          />\n        </tbody>\n      </table>\n    );\n\n    const link = screen.getByRole('link');\n    expect(link).toHaveAttribute('target', '_blank');\n    expect(link).toHaveAttribute('rel', 'noopener noreferrer');\n  });\n\n  it('has correct aria-label on delete button', () => {\n    render(\n      <table>\n        <tbody>\n          <ApplicationTableRow\n            item={mockApplication}\n            columns={columns}\n            onEdit={mockOnEdit}\n            onDeleteRequest={mockOnDeleteRequest}\n          />\n        </tbody>\n      </table>\n    );\n\n    expect(\n      screen.getByRole('button', { name: /delete application for software engineer/i })\n    ).toBeInTheDocument();\n  });\n});\n",
       "usedDeprecatedRules": []
     },
     {
