@@ -28,7 +28,7 @@ function runESLint() {
   
   try {
     const output = execSync(
-      'npx eslint . --ext ts,tsx --format json --report-unused-disable-directives',
+      'npx eslint . --format json --report-unused-disable-directives',
       { 
         cwd: ROOT_DIR,
         encoding: 'utf-8',

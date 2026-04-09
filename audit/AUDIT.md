@@ -1,143 +1,21 @@
 # Code Audit Report
 
-**Generated:** 2026-04-02T02:39:13.187Z
-**Branch:** main
+**Generated:** 2026-04-08T19:17:37.451Z
+**Branch:** jules-522951310453559166-518a0c30
 
 ## Summary
 
 | Metric | Count |
 |--------|-------|
-| Total Issues | 25 |
+| Total Issues | 0 |
 | Critical | 0 |
-| High | 20 |
-| Medium | 4 |
-| Low | 1 |
+| High | 0 |
+| Medium | 0 |
+| Low | 0 |
 | Warnings | 0 |
 | Files Analyzed | 164 |
 
-## 🚨 Critical & High Priority Issues
-
-### @typescript-eslint/no-explicit-any
-- **File:** `./src/components/PWAReloadPrompt.tsx:9:28`
-- **Message:** Unexpected any. Specify a different type.
-
-### @typescript-eslint/no-explicit-any
-- **File:** `./src/pages/LoginPage.tsx:6:22`
-- **Message:** Unexpected any. Specify a different type.
-
-### @typescript-eslint/no-explicit-any
-- **File:** `./src/pages/LoginPage.tsx:57:55`
-- **Message:** Unexpected any. Specify a different type.
-
-### @typescript-eslint/no-explicit-any
-- **File:** `./src/pages/RegisterPage.tsx:6:22`
-- **Message:** Unexpected any. Specify a different type.
-
-### @typescript-eslint/no-explicit-any
-- **File:** `./src/pages/RegisterPage.tsx:64:52`
-- **Message:** Unexpected any. Specify a different type.
-
-### @typescript-eslint/no-explicit-any
-- **File:** `./src/pages/SettingsPage.tsx:19:23`
-- **Message:** Unexpected any. Specify a different type.
-
-### @typescript-eslint/no-explicit-any
-- **File:** `./src/pages/SettingsPage.tsx:29:26`
-- **Message:** Unexpected any. Specify a different type.
-
-### @typescript-eslint/no-explicit-any
-- **File:** `./src/pages/SettingsPage.tsx:30:23`
-- **Message:** Unexpected any. Specify a different type.
-
-### @typescript-eslint/no-explicit-any
-- **File:** `./src/pages/SettingsPage.tsx:34:61`
-- **Message:** Unexpected any. Specify a different type.
-
-### @typescript-eslint/no-explicit-any
-- **File:** `./src/pages/SettingsPage.tsx:36:48`
-- **Message:** Unexpected any. Specify a different type.
-
-### @typescript-eslint/no-explicit-any
-- **File:** `./src/pages/SettingsPage.tsx:154:44`
-- **Message:** Unexpected any. Specify a different type.
-
-### @typescript-eslint/no-explicit-any
-- **File:** `./src/pages/SettingsPage.tsx:160:85`
-- **Message:** Unexpected any. Specify a different type.
-
-### @typescript-eslint/no-explicit-any
-- **File:** `./src/pages/SettingsPage.tsx:169:88`
-- **Message:** Unexpected any. Specify a different type.
-
-### @typescript-eslint/no-explicit-any
-- **File:** `./src/pages/SettingsPage.tsx:353:62`
-- **Message:** Unexpected any. Specify a different type.
-
-### @typescript-eslint/no-explicit-any
-- **File:** `./src/pages/SettingsPage.tsx:359:65`
-- **Message:** Unexpected any. Specify a different type.
-
-### @typescript-eslint/no-explicit-any
-- **File:** `./src/pwa.d.ts:7:31`
-- **Message:** Unexpected any. Specify a different type.
-
-### @typescript-eslint/no-explicit-any
-- **File:** `./src/storage/preferences.ts:8:38`
-- **Message:** Unexpected any. Specify a different type.
-
-### @typescript-eslint/no-explicit-any
-- **File:** `./src/storage/preferences.ts:11:32`
-- **Message:** Unexpected any. Specify a different type.
-
-### @typescript-eslint/no-explicit-any
-- **File:** `./src/storage/preferences.ts:38:42`
-- **Message:** Unexpected any. Specify a different type.
-
-### @typescript-eslint/no-explicit-any
-- **File:** `./src/utils/csv.ts:80:16`
-- **Message:** Unexpected any. Specify a different type.
-
 ## All Issues by Category
-
-### High (20)
-
-| File | Line | Rule | Message |
-|------|------|------|---------|
-| ./src/components/PWAReloadPrompt.tsx:9 | 28 | `@typescript-eslint/no-explicit-any` | Unexpected any. Specify a different type. |
-| ./src/pages/LoginPage.tsx:6 | 22 | `@typescript-eslint/no-explicit-any` | Unexpected any. Specify a different type. |
-| ./src/pages/LoginPage.tsx:57 | 55 | `@typescript-eslint/no-explicit-any` | Unexpected any. Specify a different type. |
-| ./src/pages/RegisterPage.tsx:6 | 22 | `@typescript-eslint/no-explicit-any` | Unexpected any. Specify a different type. |
-| ./src/pages/RegisterPage.tsx:64 | 52 | `@typescript-eslint/no-explicit-any` | Unexpected any. Specify a different type. |
-| ./src/pages/SettingsPage.tsx:19 | 23 | `@typescript-eslint/no-explicit-any` | Unexpected any. Specify a different type. |
-| ./src/pages/SettingsPage.tsx:29 | 26 | `@typescript-eslint/no-explicit-any` | Unexpected any. Specify a different type. |
-| ./src/pages/SettingsPage.tsx:30 | 23 | `@typescript-eslint/no-explicit-any` | Unexpected any. Specify a different type. |
-| ./src/pages/SettingsPage.tsx:34 | 61 | `@typescript-eslint/no-explicit-any` | Unexpected any. Specify a different type. |
-| ./src/pages/SettingsPage.tsx:36 | 48 | `@typescript-eslint/no-explicit-any` | Unexpected any. Specify a different type. |
-| ./src/pages/SettingsPage.tsx:154 | 44 | `@typescript-eslint/no-explicit-any` | Unexpected any. Specify a different type. |
-| ./src/pages/SettingsPage.tsx:160 | 85 | `@typescript-eslint/no-explicit-any` | Unexpected any. Specify a different type. |
-| ./src/pages/SettingsPage.tsx:169 | 88 | `@typescript-eslint/no-explicit-any` | Unexpected any. Specify a different type. |
-| ./src/pages/SettingsPage.tsx:353 | 62 | `@typescript-eslint/no-explicit-any` | Unexpected any. Specify a different type. |
-| ./src/pages/SettingsPage.tsx:359 | 65 | `@typescript-eslint/no-explicit-any` | Unexpected any. Specify a different type. |
-| ./src/pwa.d.ts:7 | 31 | `@typescript-eslint/no-explicit-any` | Unexpected any. Specify a different type. |
-| ./src/storage/preferences.ts:8 | 38 | `@typescript-eslint/no-explicit-any` | Unexpected any. Specify a different type. |
-| ./src/storage/preferences.ts:11 | 32 | `@typescript-eslint/no-explicit-any` | Unexpected any. Specify a different type. |
-| ./src/storage/preferences.ts:38 | 42 | `@typescript-eslint/no-explicit-any` | Unexpected any. Specify a different type. |
-| ./src/utils/csv.ts:80 | 16 | `@typescript-eslint/no-explicit-any` | Unexpected any. Specify a different type. |
-
-### Medium (4)
-
-| File | Line | Rule | Message |
-|------|------|------|---------|
-| ./src/components/EmailScanReview.tsx:70 | 6 | `react-hooks/exhaustive-deps` | React Hook useCallback has missing dependencies: 'scanMonths', 'selectedAddit... |
-| ./src/pages/LoginPage.tsx:37 | 14 | `@typescript-eslint/no-unused-vars` | 'err' is defined but never used. |
-| ./src/pages/RegisterPage.tsx:44 | 14 | `@typescript-eslint/no-unused-vars` | 'err' is defined but never used. |
-| ./src/stores/authStore.ts:62 | 14 | `@typescript-eslint/no-unused-vars` | 'err' is defined but never used. |
-
-### Low (1)
-
-| File | Line | Rule | Message |
-|------|------|------|---------|
-| ./src/utils/csv.ts:82 | 11 | `prefer-const` | 'value' is never reassigned. Use 'const' instead. |
 
 ## Files Analyzed
 
