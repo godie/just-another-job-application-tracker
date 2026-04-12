@@ -9,7 +9,7 @@ import { useAlert } from '../components/AlertProvider';
 import {
   type JobApplication,
 } from '../utils/localStorage';
-import AddJobForm from '../components/AddJobComponent';
+import AddJobForm from '../components/AddJobForm';
 import CSVActions from '../components/CSVActions';
 import GoogleSheetsSync from '../components/GoogleSheetsSync';
 import packageJson from '../../package.json';

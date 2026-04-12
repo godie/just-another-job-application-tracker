@@ -1,8 +1,8 @@
 // src/components/AddJobForm.tsx
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { JobApplication, InterviewEvent, InterviewStageType } from '../utils/localStorage';
-import { generateId } from '../utils/localStorage';
+import type { JobApplication } from '../utils/localStorage';
+import { toWorkType, buildInitialTimeline } from '../utils/applications';
 import useKeyboardEscape from '../hooks/useKeyboardEscape';
 import TimelineEditor from './TimelineEditor';
 import { Button, Input, Select, Card } from './ui';
@@ -31,46 +31,6 @@ const initialFormData: Omit<JobApplication, 'id'> = {
   timeline: [],
 };
 
-// Helper to map status to timeline event type
-const mapStatusToStageType = (status: string): InterviewStageType => {
-  const statusMap: Record<string, InterviewStageType> = {
-    'Applied': 'application_submitted',
-    'Interviewing': 'technical_interview',
-    'Offer': 'offer',
-    'Rejected': 'rejected',
-    'Withdrawn': 'withdrawn',
-    'Hold': 'application_submitted',
-  };
-  return statusMap[status] || 'application_submitted';
-};
-
-// Helper to build timeline from form data
-const buildTimeline = (data: Omit<JobApplication, 'id'> | JobApplication): InterviewEvent[] => {
-  const timeline: InterviewEvent[] = [];
-  
-  // Add application submitted event
-  if (data.applicationDate) {
-    timeline.push({
-      id: generateId(),
-      type: 'application_submitted',
-      date: data.applicationDate,
-      status: 'completed',
-    });
-  }
-  
-  // Add interview/status event
-  if (data.interviewDate) {
-    const stageType = mapStatusToStageType(data.status);
-    timeline.push({
-      id: generateId(),
-      type: stageType,
-      date: data.interviewDate,
-      status: data.status === 'Rejected' ? 'cancelled' : 'scheduled',
-    });
-  }
-  
-  return timeline;
-};
 
 const AddJobForm: React.FC<AddJobFormProps> = ({ onSave, onCancel, initialData }) => {
   const { t } = useTranslation();
@@ -117,12 +77,14 @@ const AddJobForm: React.FC<AddJobFormProps> = ({ onSave, onCancel, initialData }
     // Use manual timeline if exists, otherwise build from form data
     let timeline = dataWithStatus.timeline || [];
     if (timeline.length === 0) {
-      timeline = buildTimeline(dataWithStatus);
+      timeline = buildInitialTimeline(
+        dataWithStatus.applicationDate,
+        dataWithStatus.status,
+        dataWithStatus.interviewDate
+      );
     }
     
-    const workType = dataWithStatus.workType;
-    const validWorkType =
-      workType === 'remote' || workType === 'on-site' || workType === 'hybrid' ? workType : undefined;
+    const validWorkType = toWorkType(dataWithStatus.workType);
     const hybridDaysInOffice =
       validWorkType === 'hybrid' && typeof dataWithStatus.hybridDaysInOffice === 'number'
         ? dataWithStatus.hybridDaysInOffice
