@@ -2,26 +2,8 @@
 import { STORAGE_KEY } from '../utils/constants';
 import { generateId } from '../utils/id';
 import { sanitizeObject } from '../utils/url';
-import type { JobApplication, LegacyJobApplication, InterviewEvent, InterviewStageType, WorkType } from '../types/applications';
-
-const WORK_TYPES: WorkType[] = ['remote', 'on-site', 'hybrid'];
-
-const toWorkType = (s: string | undefined): WorkType | undefined =>
-  s && WORK_TYPES.includes(s as WorkType) ? (s as WorkType) : undefined;
-
-/**
- * Helper function to map legacy status to interview stage type
- */
-const mapStatusToStageType = (status: string): InterviewStageType => {
-  const statusMap: Record<string, InterviewStageType> = {
-    'Applied': 'application_submitted',
-    'Interviewing': 'technical_interview',
-    'Offer': 'offer',
-    'Rejected': 'rejected',
-    'Withdrawn': 'withdrawn',
-  };
-  return statusMap[status] || 'application_submitted';
-};
+import type { JobApplication, LegacyJobApplication } from '../types/applications';
+import { toWorkType, buildInitialTimeline } from '../utils/applications';
 
 /**
  * Check if an application is in legacy format
@@ -34,27 +16,11 @@ export const isLegacyApplication = (app: unknown): app is LegacyJobApplication =
  * Migrate legacy application data to new format
  */
 export const migrateApplicationData = (legacyApp: LegacyJobApplication): JobApplication => {
-  const timeline: InterviewEvent[] = [];
-
-  // Add application submitted event if date exists
-  if (legacyApp.applicationDate) {
-    timeline.push({
-      id: generateId(),
-      type: 'application_submitted',
-      date: legacyApp.applicationDate,
-      status: 'completed',
-    });
-  }
-
-  // Add interview event if date exists
-  if (legacyApp.interviewDate) {
-    timeline.push({
-      id: generateId(),
-      type: mapStatusToStageType(legacyApp.status),
-      date: legacyApp.interviewDate,
-      status: 'scheduled',
-    });
-  }
+  const timeline = buildInitialTimeline(
+    legacyApp.applicationDate,
+    legacyApp.status,
+    legacyApp.interviewDate
+  );
 
   // Create new application with timeline
   return {
