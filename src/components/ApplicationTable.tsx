@@ -36,11 +36,22 @@ const columnToKeyMap: Record<string, keyof JobApplication> = {
 
 const PRIMARY_COLUMN_IDS = ['position', 'company', 'status'];
 
-// ⚡ Bolt: Moved static helpers outside the component.
-// These functions do not depend on component state or props, so defining them
-// outside prevents them from being recreated on every render. This reduces
-// garbage collection pressure and improves rendering performance.
-const getCellValue = (item: JobApplication, columnId: string): string => {
+/**
+ * ⚡ Bolt: Centralized helper to get and translate cell values.
+ * Prioritizes pre-calculated metadata translations when available.
+ */
+const getCellValue = (item: ApplicationWithMetadata, columnId: string): string => {
+  // Use pre-calculated translations for better performance and consistency
+  if (columnId === 'status' && item.translatedStatus) {
+    return item.translatedStatus;
+  }
+  if (columnId === 'platform' && item.translatedPlatform) {
+    return item.translatedPlatform;
+  }
+  if (columnId === 'workType' && item.translatedWorkType) {
+    return item.translatedWorkType;
+  }
+
   const directValue = item[columnId as keyof JobApplication];
   if (typeof directValue === 'string' || typeof directValue === 'number') {
     return directValue ? String(directValue) : '';
