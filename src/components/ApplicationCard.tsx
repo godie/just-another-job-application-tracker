@@ -13,7 +13,7 @@ interface ApplicationCardProps {
   otherColumns: TableColumn[];
   onEdit: (application: JobApplication) => void;
   onDeleteRequest: (application: JobApplication) => void;
-  getCellValue: (item: JobApplication, columnId: string) => string;
+  getCellValue: (item: ApplicationWithMetadata, columnId: string) => string;
 }
 
 // This is a memoized component. It will only re-render if its props change.
@@ -31,8 +31,7 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
 
   const positionValue = getCellValue(item, 'position') || 'No Position';
   const companyValue = getCellValue(item, 'company') || 'No Company';
-  // ⚡ Bolt: Use pre-calculated status translation
-  const statusValue = item.translatedStatus || 'N/A';
+  const statusValue = getCellValue(item, 'status') || 'N/A';
 
 
   return (
@@ -61,13 +60,7 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
       {/* Other Important Info */}
       <div className="space-y-2 text-xs text-gray-600 dark:text-gray-400">
         {otherColumns.slice(0, 3).map((column) => {
-          let value = getCellValue(item, column.id);
-          // ⚡ Bolt: Use pre-calculated translations
-          if (column.id === 'platform' && item.translatedPlatform) {
-            value = item.translatedPlatform;
-          } else if (column.id === 'workType' && item.translatedWorkType) {
-            value = item.translatedWorkType;
-          }
+          const value = getCellValue(item, column.id);
           if (!value) return null;
           const isLink = column.id === 'link';
 

@@ -13,7 +13,7 @@ interface ApplicationTableRowProps {
   columns: TableColumn[];
   onEdit: (application: JobApplication) => void;
   onDeleteRequest: (application: JobApplication) => void;
-  getCellValue: (item: JobApplication, columnId: string) => string;
+  getCellValue: (item: ApplicationWithMetadata, columnId: string) => string;
 }
 
 const NOTES_TRUNCATE_LENGTH = 100;
@@ -38,17 +38,7 @@ const ApplicationTableRow: React.FC<ApplicationTableRowProps> = ({
       data-testid={`row-${item.id}`}
     >
       {columns.map((column) => {
-        let cellContent = getCellValue(item, column.id);
-
-        // ⚡ Bolt: Use pre-calculated translations for better performance
-        if (column.id === 'status' && item.translatedStatus) {
-          cellContent = item.translatedStatus;
-        } else if (column.id === 'platform' && item.translatedPlatform) {
-          cellContent = item.translatedPlatform;
-        } else if (column.id === 'workType' && item.translatedWorkType) {
-          cellContent = item.translatedWorkType;
-        }
-
+        const cellContent = getCellValue(item, column.id);
         const isNotes = column.id === 'notes';
         const isStatus = column.id === 'status';
 
