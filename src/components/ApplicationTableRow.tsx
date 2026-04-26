@@ -1,8 +1,8 @@
 // src/components/ApplicationTableRow.tsx
 import React, { memo } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { JobApplication } from '../types/applications';
-import type { ApplicationWithMetadata } from '../hooks/useFilteredApplications';
+import { type JobApplication, type ApplicationWithMetadata } from '../types/applications';
+import { getCellValue } from '../utils/applications';
 import type { TableColumn } from '../types/table';
 import { sanitizeUrl } from '../utils/localStorage';
 import { TableRow, TableCell, Button, Badge } from './ui';
@@ -13,7 +13,6 @@ interface ApplicationTableRowProps {
   columns: TableColumn[];
   onEdit: (application: JobApplication) => void;
   onDeleteRequest: (application: JobApplication) => void;
-  getCellValue: (item: ApplicationWithMetadata, columnId: string) => string;
 }
 
 const NOTES_TRUNCATE_LENGTH = 100;
@@ -27,7 +26,6 @@ const ApplicationTableRow: React.FC<ApplicationTableRowProps> = ({
   columns,
   onEdit,
   onDeleteRequest,
-  getCellValue,
 }) => {
   const { t } = useTranslation();
 

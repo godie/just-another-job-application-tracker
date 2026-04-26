@@ -1,23 +1,8 @@
 import { useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { type JobApplication } from '../types/applications';
+import { type JobApplication, type ApplicationWithMetadata } from '../types/applications';
 import { type Filters } from '../components/FiltersBar';
 import { parseLocalDate } from '../utils/date';
-
-/**
- * Interface for applications with pre-calculated metadata for performance optimization.
- * ⚡ Bolt: Using a specialized interface helps optimize filtering and searching.
- */
-export interface ApplicationWithMetadata extends JobApplication {
-  parsedApplicationDate: Date | null;
-  searchMetadata: string;
-  translatedStatus: string;
-  translatedPlatform: string;
-  translatedWorkType: string;
-  interviewingSubStatus: string | null;
-  sortedTimeline: import('../types/applications').InterviewEvent[];
-  nextEvent: import('../types/applications').InterviewEvent | null;
-}
 
 /**
  * Custom hook to process and filter job applications.

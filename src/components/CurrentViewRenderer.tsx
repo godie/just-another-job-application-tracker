@@ -4,7 +4,7 @@ import KanbanView from './KanbanView';
 import CalendarView from './CalendarView';
 import ApplicationTable from './ApplicationTable';
 import { type ViewType } from './ViewSwitcher';
-import { type ApplicationWithMetadata } from '../hooks/useFilteredApplications';
+import { type ApplicationWithMetadata } from '../types/applications';
 import { type JobApplication } from '../utils/localStorage';
 import { type TableColumn } from '../types/table';
 

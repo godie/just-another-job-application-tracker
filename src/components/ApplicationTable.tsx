@@ -1,8 +1,7 @@
 // src/components/ApplicationTable.tsx
 import React, { useState, memo, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { JobApplication } from '../types/applications';
-import type { ApplicationWithMetadata } from '../hooks/useFilteredApplications';
+import { type JobApplication, type ApplicationWithMetadata } from '../types/applications';
 import type { TableColumn } from '../types/table';
 import ConfirmDialog from './ConfirmDialog';
 import ApplicationTableRow from './ApplicationTableRow';
@@ -16,55 +15,7 @@ interface ApplicationTableProps {
     onDelete: (application: JobApplication) => void;
 }
 
-
-// Map column names to JobApplication properties
-const columnToKeyMap: Record<string, keyof JobApplication> = {
-  'position': 'position',
-  'company': 'company',
-  'location': 'location',
-  'worktype': 'workType',
-  'salary': 'salary',
-  'status': 'status',
-  'applicationdate': 'applicationDate',
-  'interviewdate': 'interviewDate',
-  'platform': 'platform',
-  'contactname': 'contactName',
-  'followupdate': 'followUpDate',
-  'notes': 'notes',
-  'link': 'link',
-};
-
 const PRIMARY_COLUMN_IDS = ['position', 'company', 'status'];
-
-/**
- * ⚡ Bolt: Centralized helper to get and translate cell values.
- * Prioritizes pre-calculated metadata translations when available.
- */
-const getCellValue = (item: ApplicationWithMetadata, columnId: string): string => {
-  // Use pre-calculated translations for better performance and consistency
-  if (columnId === 'status' && item.translatedStatus) {
-    return item.translatedStatus;
-  }
-  if (columnId === 'platform' && item.translatedPlatform) {
-    return item.translatedPlatform;
-  }
-  if (columnId === 'workType' && item.translatedWorkType) {
-    return item.translatedWorkType;
-  }
-
-  const directValue = item[columnId as keyof JobApplication];
-  if (typeof directValue === 'string' || typeof directValue === 'number') {
-    return directValue ? String(directValue) : '';
-  }
-
-  if (item.customFields && columnId in item.customFields) {
-    return item.customFields[columnId] ?? '';
-  }
-
-  const normalizedColumn = columnId.toLowerCase().replace(/ /g, '').replace(/-/g, '');
-  const key = columnToKeyMap[normalizedColumn];
-  return key ? String(item[key] ?? '') : '';
-};
 
 const ApplicationTable: React.FC<ApplicationTableProps> = ({ columns, data, onEdit, onDelete }) => {
   const { t } = useTranslation();
@@ -103,7 +54,6 @@ const ApplicationTable: React.FC<ApplicationTableProps> = ({ columns, data, onEd
               otherColumns={otherColumns}
               onEdit={onEdit}
               onDeleteRequest={handleDeleteRequest}
-              getCellValue={getCellValue}
             />
           ))
         )}
@@ -142,7 +92,6 @@ const ApplicationTable: React.FC<ApplicationTableProps> = ({ columns, data, onEd
                   columns={columns}
                   onEdit={onEdit}
                   onDeleteRequest={handleDeleteRequest}
-                  getCellValue={getCellValue}
                 />
               ))
             )}

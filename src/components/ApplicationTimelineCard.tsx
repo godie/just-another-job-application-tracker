@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { type JobApplication, type InterviewEvent } from '../utils/localStorage';
-import { type ApplicationWithMetadata } from '../hooks/useFilteredApplications';
+import { type ApplicationWithMetadata } from '../types/applications';
 import { Badge } from './ui';
 import { getBadgeVariantForStatus } from '../utils/status';
 import TimelineEventList from './TimelineEventList';
