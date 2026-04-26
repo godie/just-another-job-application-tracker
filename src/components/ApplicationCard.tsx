@@ -1,8 +1,8 @@
 // src/components/ApplicationCard.tsx
 import React, { memo } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { JobApplication } from '../types/applications';
-import type { ApplicationWithMetadata } from '../hooks/useFilteredApplications';
+import { type JobApplication, type ApplicationWithMetadata } from '../types/applications';
+import { getCellValue } from '../utils/applications';
 import type { TableColumn } from '../types/table';
 import { sanitizeUrl } from '../utils/localStorage';
 import { Card, Badge, Button, Separator } from './ui';
@@ -13,7 +13,6 @@ interface ApplicationCardProps {
   otherColumns: TableColumn[];
   onEdit: (application: JobApplication) => void;
   onDeleteRequest: (application: JobApplication) => void;
-  getCellValue: (item: ApplicationWithMetadata, columnId: string) => string;
 }
 
 // This is a memoized component. It will only re-render if its props change.
@@ -25,7 +24,6 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
   otherColumns,
   onEdit,
   onDeleteRequest,
-  getCellValue,
 }) => {
   const { t } = useTranslation();
 
