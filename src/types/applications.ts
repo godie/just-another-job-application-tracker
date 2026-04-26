@@ -73,6 +73,20 @@ export interface JobApplication {
 }
 
 /**
+ * Interface for applications with pre-calculated metadata for performance optimization.
+ */
+export interface ApplicationWithMetadata extends JobApplication {
+  parsedApplicationDate: Date | null;
+  searchMetadata: string;
+  translatedStatus: string;
+  translatedPlatform: string;
+  translatedWorkType: string;
+  interviewingSubStatus: string | null;
+  sortedTimeline: InterviewEvent[];
+  nextEvent: InterviewEvent | null;
+}
+
+/**
  * Legacy JobApplication for backward compatibility during migration
  */
 export interface LegacyJobApplication {

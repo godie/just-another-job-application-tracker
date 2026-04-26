@@ -1,7 +1,54 @@
-import { type JobApplication, type InterviewStageType, type WorkType, type InterviewEvent } from '../types/applications';
+import { type JobApplication, type InterviewStageType, type WorkType, type InterviewEvent, type ApplicationWithMetadata } from '../types/applications';
 import { generateId } from './id';
 
 export const WORK_TYPES: WorkType[] = ['remote', 'on-site', 'hybrid'];
+
+// Map column names to JobApplication properties
+export const columnToKeyMap: Record<string, keyof JobApplication> = {
+  'position': 'position',
+  'company': 'company',
+  'location': 'location',
+  'worktype': 'workType',
+  'salary': 'salary',
+  'status': 'status',
+  'applicationdate': 'applicationDate',
+  'interviewdate': 'interviewDate',
+  'platform': 'platform',
+  'contactname': 'contactName',
+  'followupdate': 'followUpDate',
+  'notes': 'notes',
+  'link': 'link',
+};
+
+/**
+ * ⚡ Bolt: Centralized helper to get and translate cell values.
+ * Prioritizes pre-calculated metadata translations when available.
+ */
+export const getCellValue = (item: ApplicationWithMetadata, columnId: string): string => {
+  // Use pre-calculated translations for better performance and consistency
+  if (columnId === 'status' && item.translatedStatus) {
+    return item.translatedStatus;
+  }
+  if (columnId === 'platform' && item.translatedPlatform) {
+    return item.translatedPlatform;
+  }
+  if (columnId === 'workType' && item.translatedWorkType) {
+    return item.translatedWorkType;
+  }
+
+  const directValue = item[columnId as keyof JobApplication];
+  if (typeof directValue === 'string' || typeof directValue === 'number') {
+    return directValue ? String(directValue) : '';
+  }
+
+  if (item.customFields && columnId in item.customFields) {
+    return item.customFields[columnId] ?? '';
+  }
+
+  const normalizedColumn = columnId.toLowerCase().replace(/ /g, '').replace(/-/g, '');
+  const key = columnToKeyMap[normalizedColumn];
+  return key ? String(item[key] ?? '') : '';
+};
 
 /**
  * Helper function to map legacy status to interview stage type

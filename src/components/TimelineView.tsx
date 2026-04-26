@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useSelection } from '../hooks/useSelection';
 import { useFormatDate } from '../hooks/useFormatDate';
 import type { JobApplication } from '../utils/localStorage';
-import type { ApplicationWithMetadata } from '../hooks/useFilteredApplications';
+import type { ApplicationWithMetadata } from '../types/applications';
 import ConfirmDialog from './ConfirmDialog';
 import ApplicationTimelineCard from './ApplicationTimelineCard';
 

@@ -2,7 +2,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, expect, test, vi } from 'vitest';
 import KanbanView from '../components/KanbanView';
 import type { JobApplication } from '../utils/localStorage';
-import type { ApplicationWithMetadata } from '../hooks/useFilteredApplications';
+import type { ApplicationWithMetadata } from '../types/applications';
 
 const makeApplication = (overrides: Partial<ApplicationWithMetadata>): ApplicationWithMetadata => ({
   id: overrides.id ?? 'id-1',

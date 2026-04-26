@@ -2,7 +2,8 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import ApplicationTableRow from './ApplicationTableRow';
-import type { JobApplication } from '../types/applications';
+import { type JobApplication, type ApplicationWithMetadata } from '../types/applications';
+import { getCellValue } from '../utils/applications';
 import type { TableColumn } from '../types/table';
 
 vi.mock('dompurify', () => ({
@@ -12,28 +13,6 @@ vi.mock('dompurify', () => ({
 vi.mock('../utils/localStorage', () => ({
   sanitizeUrl: (url: string) => url,
 }));
-
-const columnToKeyMap: Record<string, keyof JobApplication> = {
-  position: 'position',
-  company: 'company',
-  salary: 'salary',
-  status: 'status',
-  applicationdate: 'applicationDate',
-  interviewdate: 'interviewDate',
-  platform: 'platform',
-  contactname: 'contactName',
-  followupdate: 'followUpDate',
-  notes: 'notes',
-  link: 'link',
-};
-
-const getCellValue = (item: JobApplication, columnId: string): string => {
-  const n = columnId.toLowerCase().replace(/ /g, '').replace(/-/g, '');
-  const key = columnToKeyMap[n];
-  return key ? String(item[key] ?? '') : '';
-};
-
-import type { ApplicationWithMetadata } from '../hooks/useFilteredApplications';
 
 const mockApplication: ApplicationWithMetadata = {
   id: '1',
@@ -80,7 +59,6 @@ describe('ApplicationTableRow', () => {
             columns={columns}
             onEdit={mockOnEdit}
             onDeleteRequest={mockOnDeleteRequest}
-            getCellValue={getCellValue}
           />
         </tbody>
       </table>
@@ -103,7 +81,6 @@ describe('ApplicationTableRow', () => {
             columns={columns}
             onEdit={mockOnEdit}
             onDeleteRequest={mockOnDeleteRequest}
-            getCellValue={getCellValue}
           />
         </tbody>
       </table>
@@ -126,7 +103,6 @@ describe('ApplicationTableRow', () => {
             columns={columns}
             onEdit={mockOnEdit}
             onDeleteRequest={mockOnDeleteRequest}
-            getCellValue={getCellValue}
           />
         </tbody>
       </table>
@@ -144,7 +120,6 @@ describe('ApplicationTableRow', () => {
             columns={columns}
             onEdit={mockOnEdit}
             onDeleteRequest={mockOnDeleteRequest}
-            getCellValue={getCellValue}
           />
         </tbody>
       </table>
@@ -165,7 +140,6 @@ describe('ApplicationTableRow', () => {
             columns={[{ id: 'link', label: 'Link' }]}
             onEdit={mockOnEdit}
             onDeleteRequest={mockOnDeleteRequest}
-            getCellValue={getCellValue}
           />
         </tbody>
       </table>
@@ -185,7 +159,6 @@ describe('ApplicationTableRow', () => {
             columns={columns}
             onEdit={mockOnEdit}
             onDeleteRequest={mockOnDeleteRequest}
-            getCellValue={getCellValue}
           />
         </tbody>
       </table>

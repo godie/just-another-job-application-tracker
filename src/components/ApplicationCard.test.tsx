@@ -2,7 +2,7 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import ApplicationCard from './ApplicationCard';
-import type { JobApplication } from '../types/applications';
+import { type JobApplication, type ApplicationWithMetadata } from '../types/applications';
 import type { TableColumn } from '../types/table';
 
 vi.mock('dompurify', () => ({
@@ -12,28 +12,6 @@ vi.mock('dompurify', () => ({
 vi.mock('../utils/localStorage', () => ({
   sanitizeUrl: (url: string) => url,
 }));
-
-const columnToKeyMap: Record<string, keyof JobApplication> = {
-  position: 'position',
-  company: 'company',
-  salary: 'salary',
-  status: 'status',
-  applicationdate: 'applicationDate',
-  interviewdate: 'interviewDate',
-  platform: 'platform',
-  contactname: 'contactName',
-  followupdate: 'followUpDate',
-  notes: 'notes',
-  link: 'link',
-};
-
-const getCellValue = (item: JobApplication, columnId: string): string => {
-  const normalized = columnId.toLowerCase().replace(/ /g, '').replace(/-/g, '');
-  const key = columnToKeyMap[normalized];
-  return key ? String(item[key] ?? '') : '';
-};
-
-import type { ApplicationWithMetadata } from '../hooks/useFilteredApplications';
 
 const mockApplication: ApplicationWithMetadata = {
   id: '1',
@@ -77,7 +55,6 @@ describe('ApplicationCard', () => {
         otherColumns={otherColumns}
         onEdit={mockOnEdit}
         onDeleteRequest={mockOnDeleteRequest}
-        getCellValue={getCellValue}
       />
     );
 
@@ -92,7 +69,6 @@ describe('ApplicationCard', () => {
         otherColumns={otherColumns}
         onEdit={mockOnEdit}
         onDeleteRequest={mockOnDeleteRequest}
-        getCellValue={getCellValue}
       />
     );
 
@@ -106,7 +82,6 @@ describe('ApplicationCard', () => {
         otherColumns={otherColumns}
         onEdit={mockOnEdit}
         onDeleteRequest={mockOnDeleteRequest}
-        getCellValue={getCellValue}
       />
     );
 
@@ -124,7 +99,6 @@ describe('ApplicationCard', () => {
         otherColumns={otherColumns}
         onEdit={mockOnEdit}
         onDeleteRequest={mockOnDeleteRequest}
-        getCellValue={getCellValue}
       />
     );
 
@@ -142,7 +116,6 @@ describe('ApplicationCard', () => {
         otherColumns={otherColumns}
         onEdit={mockOnEdit}
         onDeleteRequest={mockOnDeleteRequest}
-        getCellValue={getCellValue}
       />
     );
 
@@ -169,7 +142,6 @@ describe('ApplicationCard', () => {
         otherColumns={otherColumns}
         onEdit={mockOnEdit}
         onDeleteRequest={mockOnDeleteRequest}
-        getCellValue={getCellValue}
       />
     );
 
@@ -185,7 +157,6 @@ describe('ApplicationCard', () => {
         otherColumns={otherColumns}
         onEdit={mockOnEdit}
         onDeleteRequest={mockOnDeleteRequest}
-        getCellValue={getCellValue}
       />
     );
 
