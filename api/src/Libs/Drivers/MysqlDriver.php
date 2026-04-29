@@ -16,12 +16,12 @@ final class MysqlDriver extends AbstractDriver
      */
     public function connect(array $driverConfig): \PDO
     {
-        $host     = trim((string) ($driverConfig['host'] ?? '127.0.0.1'));
+        $host     = $this->validateDsnComponent(trim((string) ($driverConfig['host'] ?? '127.0.0.1')), 'MySQL host');
         $port     = (int) ($driverConfig['port'] ?? 3306);
-        $database = trim((string) ($driverConfig['database'] ?? ''));
+        $database = $this->validateDsnComponent(trim((string) ($driverConfig['database'] ?? '')), 'MySQL database name');
         $username = (string) ($driverConfig['username'] ?? '');
         $password = (string) ($driverConfig['password'] ?? '');
-        $charset  = (string) ($driverConfig['charset'] ?? 'utf8mb4');
+        $charset  = $this->validateDsnComponent((string) ($driverConfig['charset'] ?? 'utf8mb4'), 'MySQL charset');
 
         if ($database === '') {
             throw new \RuntimeException('MySQL database name is missing from configuration.');
