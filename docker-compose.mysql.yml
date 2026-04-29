@@ -1,0 +1,46 @@
+# Docker Compose override for MySQL database
+# Usage: docker compose -f docker-compose.yml -f docker-compose.mysql.yml up -d
+
+services:
+  api:
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      - DB_ENABLED=true
+      - DB_DRIVER=mysql
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_NAME=${DB_NAME:-jajat}
+      - DB_USER=${MYSQL_USER:-jatuser}
+      - DB_PASSWORD=${MYSQL_PASSWORD:-jatpassword}
+      - DB_CHARSET=utf8mb4
+
+  mysql:
+    image: mysql:8.4
+    ports:
+      - '3306:3306'
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-rootpassword}
+      - MYSQL_DATABASE=${DB_NAME:-jajat}
+      - MYSQL_USER=${MYSQL_USER:-jatuser}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD:-jatpassword}
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./api/data/mysql-init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ['CMD-SHELL', 'printf "[client]\nuser=root\npassword=$$MYSQL_ROOT_PASSWORD\n" > /tmp/health.cnf && mysqladmin --defaults-extra-file=/tmp/health.cnf ping -h localhost; rc=$?; rm -f /tmp/health.cnf; exit $rc']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.75'
+          memory: 512M
+
+volumes:
+  mysql_data:
+    name: jat-mysql-data

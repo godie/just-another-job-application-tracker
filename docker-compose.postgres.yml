@@ -1,0 +1,47 @@
+# Docker Compose override for PostgreSQL database
+# Usage: docker compose -f docker-compose.yml -f docker-compose.postgres.yml up -d
+
+services:
+  api:
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      - DB_ENABLED=true
+      - DB_DRIVER=postgres
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=${DB_NAME:-jajat}
+      - DB_USER=${POSTGRES_USER:-jatuser}
+      - DB_PASSWORD=${POSTGRES_PASSWORD:-jatpassword}
+      - DB_CHARSET=utf8
+
+  postgres:
+    image: postgres:16-alpine
+    ports:
+      - '5432:5432'
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER:-jatuser}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-jatpassword}
+      - POSTGRES_DB=${DB_NAME:-jajat}
+      - PGUSER=${POSTGRES_USER:-jatuser}
+      - PGDATABASE=${DB_NAME:-jajat}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./api/data/postgres-init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.75'
+          memory: 512M
+
+volumes:
+  postgres_data:
+    name: jat-postgres-data
