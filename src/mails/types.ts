@@ -25,6 +25,7 @@ export interface ParsedEvent {
   date: string;
   company?: string;
   position?: string;
+  salary?: string;
   notes?: string;
 }
 
@@ -34,6 +35,7 @@ export interface Event {
   date: string;
   company?: string;
   position?: string;
+  salary?: string;
   notes?: string;
 }
 
@@ -68,6 +70,78 @@ export const QUERIES = {
       "availability" OR
       "book time" OR
       "next steps"
+    )`,
+
+  application_offers: (daysBack: number = 30) =>
+    `in:inbox newer_than:${daysBack}d -in:chats ${NO_PROMOTIONS_AND_SOCIAL_MEDIA} (
+      "job offer" OR
+      "offer of employment" OR
+      "congratulations" OR
+      "pleased to offer" OR
+      "excited to extend an offer"
+    )`,
+} as const;
+
+/** Spanish Gmail search queries for job application emails. */
+export const QUERIES_ES = {
+  application_submitted: (daysBack: number = 30) =>
+    `in:inbox newer_than:${daysBack}d -in:chats ${NO_PROMOTIONS_AND_SOCIAL_MEDIA} (
+      "gracias por tu postulación" OR
+      "hemos recibido tu candidatura" OR
+      "confirmación de solicitud" OR
+      "hemos recibido tu solicitud" OR
+      "tu candidatura ha sido recibida" OR
+      "gracias por tu interés" OR
+      "postulación recibida" OR
+      "solicitud recibida" OR
+      "tu solicitud ha sido enviada" OR
+      "hemos recibido tu postulación" OR
+      "recibimos tu candidatura" OR
+      "confirmamos tu solicitud" OR
+      "gracias por aplicar"
+    )`,
+
+  applications_rejected: (daysBack: number = 30) =>
+    `in:inbox newer_than:${daysBack}d -in:chats ${NO_PROMOTIONS_AND_SOCIAL_MEDIA} (
+      "no hemos seleccionado tu perfil" OR
+      "no procederemos con tu candidatura" OR
+      "no has sido seleccionado" OR
+      "hemos decidido continuar con otros candidatos" OR
+      "no pasará a la siguiente fase" OR
+      "otro candidato ha sido seleccionado" OR
+      "posiciones cubiertas" OR
+      "hemos cubierto la vacante" OR
+      "tu solicitud no fue seleccionada" OR
+      "no hemos avanzado con tu candidatura" OR
+      "regretamos" OR
+      "lamentamos"
+    )`,
+
+  application_next_steps: (daysBack: number = 30) =>
+    `in:inbox newer_than:${daysBack}d -in:chats ${NO_PROMOTIONS_AND_SOCIAL_MEDIA} (
+      "te invitamos a entrevista" OR
+      "entrevista" OR
+      "agendar" OR
+      "próximos pasos" OR
+      "siguiente fase" OR
+      "entrevista telefónica" OR
+      "entrevista por video" OR
+      "entrevista virtual" OR
+      "entrevista presencial" OR
+      "entrevista con el equipo" OR
+      "entrevista técnica" OR
+      "prueba técnica" OR
+      "evaluación" OR
+      "disponibilidad"
+    )`,
+
+  application_offers: (daysBack: number = 30) =>
+    `in:inbox newer_than:${daysBack}d -in:chats ${NO_PROMOTIONS_AND_SOCIAL_MEDIA} (
+      "oferta de empleo" OR
+      "oferta laboral" OR
+      "felicitaciones" OR
+      "tenemos el gusto de ofrecerte" OR
+      "nos complace ofrecerte"
     )`,
 } as const;
 

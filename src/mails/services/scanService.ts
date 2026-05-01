@@ -1,9 +1,9 @@
 import type { EmailProvider } from '../providers/emailProvider';
-import type { RawEmail } from '../types';
+import type { RawEmail, Email } from '../types';
 import type { ScanPreview, ProposedAddition, ProposedUpdate, ApplyResult } from '../types';
 
 import { EmailAdapter } from '../adapter/emailAdapter';
-import { QUERIES } from '../types';
+import { QUERIES, QUERIES_ES } from '../types';
 import { useApplicationsStore } from '../../stores/applicationsStore';
 
 /** Max concurrent getMessage requests to avoid Gmail "Too many concurrent requests" (429). */
@@ -13,6 +13,25 @@ const GMAIL_CHUNK_DELAY_MS = 150;
 
 function delay(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/**
+ * Deduplicates emails by (subject + from + date) to avoid processing
+ * the same email found by multiple search queries.
+ * Keeps the first occurrence and discards duplicates.
+ *
+ * Note: The `from` field is compared as-is after normalize(), so consistent
+ * formatting is assumed (e.g. always "Name <email>" or always just "email").
+ * If normalize() produces different formats for the same sender, dedup may miss.
+ */
+export function deduplicateEmails(emails: Email[]): Email[] {
+  const seen = new Set<string>();
+  return emails.filter((email) => {
+    const key = `${email.subject.toLowerCase().trim()}|${email.from.toLowerCase().trim()}|${email.date.split('T')[0]}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
 }
 
 /**
@@ -37,12 +56,6 @@ async function fetchMessagesInChunks(
   return results;
 }
 
-/** @deprecated Use scanEmails + applyScanPreview for manual flow. Kept for future automatic flow. */
-export interface ScanResult {
-  totalEvents: number;
-  added: number;
-  updated: number;
-}
 
 /**
  * Scans the email provider and returns proposed additions/updates for the user to review.
@@ -53,14 +66,15 @@ export async function scanEmails(provider: EmailProvider, daysBack: number = 30)
   const adapter = new EmailAdapter();
   const { applications } = useApplicationsStore.getState();
 
-  const idsByQuery = await Promise.all(
-    Object.values(QUERIES).map((q) => provider.search(q(daysBack) as string))
-  );
+  // Run both English and Spanish queries in parallel
+  const idsByQuery = await Promise.all([
+    ...Object.values(QUERIES).map((q) => provider.search(q(daysBack) as string)),
+    ...Object.values(QUERIES_ES).map((q) => provider.search(q(daysBack) as string)),
+  ]);
   const uniqueIds = [...new Set(idsByQuery.flat())];
 
   const rawMessages = await fetchMessagesInChunks(provider, uniqueIds);
-  const emails = rawMessages.map((r) => provider.normalize(r));
-  console.log("Emails: " + JSON.stringify(emails, null, 2));
+  const emails = deduplicateEmails(rawMessages.map((r) => provider.normalize(r)));
 
   const proposedAdditions: ProposedAddition[] = [];
   const proposedUpdates: ProposedUpdate[] = [];
@@ -133,16 +147,3 @@ export function applyScanPreview(
   return { added, updated };
 }
 
-/**
- * Automatic flow: scan and apply all without review.
- * @deprecated Prefer manual flow (scanEmails + user review + applyScanPreview).
- */
-export async function scanEmailsAndApply(provider: EmailProvider): Promise<ScanResult> {
-  const preview = await scanEmails(provider);
-  const result = applyScanPreview(preview.proposedAdditions, preview.proposedUpdates);
-  return {
-    totalEvents: preview.proposedAdditions.length + preview.proposedUpdates.length,
-    added: result.added,
-    updated: result.updated,
-  };
-}
