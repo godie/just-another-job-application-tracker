@@ -20,19 +20,19 @@ const SyncStatusInfo: React.FC<SyncStatusInfoProps> = ({
   const { t } = useTranslation();
 
   if (!hasSpreadsheet) {
-    return <p className="text-sm text-gray-600">{t('sheets.createSheetDesc')}</p>;
+    return <p className="text-sm text-earth-600 dark:text-earth-400">{t('sheets.createSheetDesc')}</p>;
   }
 
   return (
     <div className="space-y-1">
-      <p className="text-sm text-gray-600">
+      <p className="text-sm text-earth-600 dark:text-earth-400">
         <span className="font-medium">{t('sheets.status')}:</span>{' '}
         {syncStatus.lastSyncError ? (
-          <span className="text-red-600">{t('common.status')}: {syncStatus.lastSyncError}</span>
+          <span className="text-red-600 dark:text-red-400">{t('common.status')}: {syncStatus.lastSyncError}</span>
         ) : syncStatus.lastSyncTime ? (
-          <span className="text-green-600">{t('sheets.synced', { time: formatLastSyncTime(syncStatus.lastSyncTime) })}</span>
+          <span className="text-green-600 dark:text-green-400">{t('sheets.synced', { time: formatLastSyncTime(syncStatus.lastSyncTime) })}</span>
         ) : (
-          <span className="text-gray-500">{t('sheets.notSynced')}</span>
+          <span className="text-earth-500 dark:text-earth-400">{t('sheets.notSynced')}</span>
         )}
       </p>
       {spreadsheetUrl && (
@@ -46,7 +46,7 @@ const SyncStatusInfo: React.FC<SyncStatusInfoProps> = ({
           </button>
           <button
             onClick={onChangeSheet}
-            className="text-sm text-gray-600 hover:text-gray-800 underline"
+            className="text-sm text-earth-600 dark:text-earth-400 hover:text-earth-800 dark:hover:text-earth-200 underline"
             type="button"
           >
             {t('sheets.changeSheet')}

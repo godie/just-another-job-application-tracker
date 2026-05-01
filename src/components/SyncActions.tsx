@@ -29,10 +29,10 @@ const SyncActions: React.FC<SyncActionsProps> = ({
           <button
             onClick={onCreateSheet}
             disabled={isLoading}
-            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+            className={`px-4 py-2 rounded font-medium transition-colors ${
               isLoading
-                ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                : 'bg-green-600 hover:bg-green-700 text-white'
+                ? 'bg-earth-200 text-earth-400 dark:bg-earth-700 dark:text-earth-500 cursor-not-allowed'
+                : 'bg-sage-600 hover:bg-sage-700 text-white'
             }`}
             type="button"
           >
@@ -41,10 +41,10 @@ const SyncActions: React.FC<SyncActionsProps> = ({
           <button
             onClick={onSelectExisting}
             disabled={isLoading}
-            className={`px-4 py-2 rounded-lg font-medium transition-colors border ${
+            className={`px-4 py-2 rounded font-medium transition-colors border ${
               isLoading
-                ? 'bg-gray-300 text-gray-500 cursor-not-allowed border-gray-300'
-                : 'bg-white hover:bg-gray-50 text-gray-700 border-gray-300'
+                ? 'bg-earth-100 text-earth-400 dark:bg-earth-700 dark:text-earth-500 cursor-not-allowed border-earth-200 dark:border-earth-600'
+                : 'bg-white dark:bg-earth-800 hover:bg-earth-50 dark:hover:bg-earth-700 text-earth-700 dark:text-earth-200 border-earth-300 dark:border-earth-600'
             }`}
             type="button"
           >
@@ -55,10 +55,10 @@ const SyncActions: React.FC<SyncActionsProps> = ({
         <button
           onClick={onSync}
           disabled={isLoading}
-          className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+          className={`px-4 py-2 rounded font-medium transition-colors ${
             isLoading
-              ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-              : 'bg-blue-600 hover:bg-blue-700 text-white'
+              ? 'bg-earth-200 text-earth-400 dark:bg-earth-700 dark:text-earth-500 cursor-not-allowed'
+              : 'bg-sage-600 hover:bg-sage-700 text-white'
           }`}
           type="button"
         >
