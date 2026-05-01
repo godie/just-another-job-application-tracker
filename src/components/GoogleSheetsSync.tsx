@@ -3,6 +3,7 @@
 import React, { useReducer, useEffect, useCallback, useRef } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import { useAlert } from './AlertProvider';
+import { Card } from './ui';
 import { checkLoginStatus } from '../utils/localStorage';
 import {
   createSpreadsheet,
@@ -12,7 +13,7 @@ import {
   setSpreadsheetId,
   type SyncStatus,
 } from '../utils/googleSheets';
-import type { JobApplication } from '../utils/localStorage';
+import type { JobApplication } from '../types/applications';
 import SyncStatusInfo from './SyncStatusInfo';
 import SyncActions from './SyncActions';
 
@@ -231,10 +232,10 @@ const GoogleSheetsSync: React.FC<GoogleSheetsSyncProps> = ({ applications, onSyn
   const isLoading = isCreatingSheet || isSyncing || isSettingSheet;
 
   return (
-    <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 mb-4 shadow-sm">
+    <Card className='p-4 mb-4'>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex-1">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">{t('sheets.title')}</h3>
+          <h3 className="text-lg font-semibold text-earth-800 dark:text-earth-100 mb-2">{t('sheets.title')}</h3>
           
           <SyncStatusInfo
             hasSpreadsheet={hasSpreadsheet}
@@ -257,9 +258,9 @@ const GoogleSheetsSync: React.FC<GoogleSheetsSyncProps> = ({ applications, onSyn
       </div>
 
       {showSelectSheet && (
-        <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg">
-          <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-2">{t('sheets.selectTitle')}</h4>
-          <p className="text-xs text-gray-600 dark:text-gray-400 mb-3">
+        <div className="mt-4 p-4 bg-earth-50 dark:bg-earth-700 rounded-lg">
+          <h4 className="text-sm font-semibold text-earth-800 dark:text-earth-100 mb-2">{t('sheets.selectTitle')}</h4>
+          <p className="text-xs text-earth-600 dark:text-earth-400 mb-3">
             {t('sheets.selectDesc')}
           </p>
           <div className="flex gap-2">
@@ -268,7 +269,7 @@ const GoogleSheetsSync: React.FC<GoogleSheetsSyncProps> = ({ applications, onSyn
               value={sheetIdInput}
               onChange={(e) => dispatch({ type: 'SET_FIELD', field: 'sheetIdInput', value: e.target.value })}
               placeholder={t('sheets.placeholder')}
-              className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+              className="flex-1 px-3 py-2 border border-earth-300 dark:border-earth-600 rounded text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-earth-800 text-earth-900 dark:text-earth-100"
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
                   handleSelectExistingSheet();
@@ -283,7 +284,7 @@ const GoogleSheetsSync: React.FC<GoogleSheetsSyncProps> = ({ applications, onSyn
               disabled={isSettingSheet || !sheetIdInput.trim()}
               className={`px-4 py-2 rounded-lg font-medium text-sm transition-colors ${
                 isSettingSheet || !sheetIdInput.trim()
-                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  ? 'bg-earth-300 text-earth-500 dark:bg-earth-600 dark:text-earth-400 cursor-not-allowed'
                   : 'bg-blue-600 hover:bg-blue-700 text-white'
               }`}
               type="button"
@@ -296,16 +297,16 @@ const GoogleSheetsSync: React.FC<GoogleSheetsSyncProps> = ({ applications, onSyn
                 dispatch({ type: 'SET_FIELD', field: 'sheetIdInput', value: '' });
               }}
               disabled={isSettingSheet}
-              className="px-4 py-2 rounded-lg font-medium text-sm bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 transition-colors"
+              className="px-4 py-2 rounded font-medium text-sm bg-white dark:bg-earth-800 hover:bg-earth-100 dark:hover:bg-earth-700 text-earth-700 dark:text-earth-300 border border-earth-300 dark:border-earth-600 transition-colors"
               type="button"
             >
               {t('common.cancel')}
             </button>
           </div>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-            Example: <code className="bg-gray-200 dark:bg-gray-600 px-1 rounded">1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms</code>
+          <p className="text-xs text-earth-500 dark:text-earth-400 mt-2">
+            Example:            <code className="bg-earth-200 dark:bg-earth-600 px-1 rounded">1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms</code>
             <br />
-            Or: <code className="bg-gray-200 dark:bg-gray-600 px-1 rounded">https://docs.google.com/spreadsheets/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms</code>
+            Or:            <code className="bg-earth-200 dark:bg-earth-600 px-1 rounded">https://docs.google.com/spreadsheets/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms</code>
           </p>
         </div>
       )}
@@ -315,7 +316,7 @@ const GoogleSheetsSync: React.FC<GoogleSheetsSyncProps> = ({ applications, onSyn
           <strong>{t('sheets.error')}:</strong> {syncStatus.lastSyncError}
         </div>
       )}
-    </div>
+    </Card>
   );
 };
 
