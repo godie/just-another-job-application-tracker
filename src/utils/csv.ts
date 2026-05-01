@@ -1,5 +1,6 @@
 import type { JobApplication } from '../types/applications';
 import { generateId } from './id';
+import { toWorkType } from '../storage/applications';
 
 /**
  * Exports an array of JobApplication to a CSV string.
@@ -39,6 +40,13 @@ export const exportToCSV = (applications: JobApplication[]): string => {
   }
 
   return csvRows.join('\n');
+};
+
+/**
+ * Imports applications from a CSV string. Alias for parseCSV for backward compatibility.
+ */
+export const importFromCSV = (csvText: string): JobApplication[] => {
+  return parseCSV(csvText);
 };
 
 /**
@@ -101,7 +109,26 @@ export const parseCSV = (csvText: string): JobApplication[] => {
 
     // Validate required fields at least exist
     if (app.position && app.company) {
-      applications.push(app as unknown as JobApplication);
+      const typedApp: JobApplication = {
+        id: app.id as string,
+        position: app.position as string,
+        company: app.company as string,
+        location: (app.location as string) || undefined,
+        workType: toWorkType(app.workType as string | undefined),
+        hybridDaysInOffice: app.hybridDaysInOffice as number | undefined,
+        salary: (app.salary as string) ?? '',
+        status: (app.status as string) ?? '',
+        applicationDate: (app.applicationDate as string) ?? '',
+        interviewDate: (app.interviewDate as string) ?? '',
+        timeline: (app.timeline as JobApplication['timeline']) ?? [],
+        notes: (app.notes as string) ?? '',
+        link: (app.link as string) ?? '',
+        platform: (app.platform as string) ?? '',
+        contactName: (app.contactName as string) ?? '',
+        followUpDate: (app.followUpDate as string) ?? '',
+        customFields: (app.customFields as JobApplication['customFields']) ?? undefined,
+      };
+      applications.push(typedApp);
     }
   }
 

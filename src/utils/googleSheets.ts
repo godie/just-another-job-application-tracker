@@ -5,7 +5,7 @@
  * Handles synchronization between local storage and Google Sheets
  */
 
-import type { JobApplication } from './localStorage';
+import type { JobApplication } from '../types/applications';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
 
