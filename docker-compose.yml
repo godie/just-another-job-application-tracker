@@ -1,0 +1,73 @@
+# Docker Compose for Job Application Tracker
+# Usage: 
+#   - With MySQL:     docker compose -f docker-compose.yml -f docker-compose.mysql.yml up -d
+#   - With Postgres:  docker compose -f docker-compose.yml -f docker-compose.postgres.yml up -d
+#   - SQLite only:    docker compose up -d
+
+services:
+  # Frontend (React + Vite)
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    ports:
+      - '5173:5173'
+    environment:
+      - VITE_API_PROXY_TARGET=http://api:80
+    depends_on:
+      api:
+        condition: service_healthy
+    volumes:
+      - .:/app
+      - /app/node_modules
+    healthcheck:
+      test: ['CMD', 'wget', '-q', '--spider', 'http://localhost:5173']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+
+  # API (PHP + OverPHP)
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    ports:
+      - '8080:80'
+    environment:
+      - DB_ENABLED=${DB_ENABLED:-false}
+      - DB_DRIVER=${DB_DRIVER:-sqlite}
+      - DB_HOST=${DB_HOST:-}
+      - DB_PORT=${DB_PORT:-3306}
+      - DB_NAME=${DB_NAME:-jajat}
+      - DB_USER=${DB_USER:-root}
+      - DB_PASSWORD=${DB_PASSWORD:-}
+      - DB_CHARSET=${DB_CHARSET:-utf8mb4}
+      - DB_SQLITE_PATH=${DB_SQLITE_PATH:-/var/www/html/data/jajat.sqlite}
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-http://localhost:5173}
+      - CLIENT_ENABLED=true
+      - CLIENT_PATH=/var/www/html
+    volumes:
+      - ./api/data:/var/www/html/data
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost/']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+
+networks:
+  default:
+    name: jat-network

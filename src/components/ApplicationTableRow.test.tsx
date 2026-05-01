@@ -2,8 +2,7 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import ApplicationTableRow from './ApplicationTableRow';
-import { type JobApplication, type ApplicationWithMetadata } from '../types/applications';
-import { getCellValue } from '../utils/applications';
+import { type ApplicationWithMetadata } from '../types/applications';
 import type { TableColumn } from '../types/table';
 
 vi.mock('dompurify', () => ({

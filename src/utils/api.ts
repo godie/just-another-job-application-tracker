@@ -14,33 +14,6 @@ const defaultFetchOptions: RequestInit = {
 };
 
 /**
- * Set authentication cookie in backend (POST /api/auth/cookie).
- * Prefer setAuthCookieWithCode so the server can store a refresh token.
- *
- * @param accessToken - Google OAuth access token (legacy; no refresh)
- * @returns Promise with response data
- */
-export const setAuthCookie = async (accessToken: string): Promise<{ success: boolean }> => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/auth/cookie`, {
-      ...defaultFetchOptions,
-      method: 'POST',
-      body: JSON.stringify({ access_token: accessToken }),
-    });
-
-    if (!response.ok) {
-      const data = await response.json().catch(() => ({}));
-      throw new Error((data as { error?: string }).error ?? `Failed to set auth cookie: ${response.statusText}`);
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error('Error setting auth cookie:', error);
-    throw error;
-  }
-};
-
-/**
  * Exchange authorization code for tokens and set auth cookies (includes refresh token).
  * Use with useGoogleLogin({ flow: 'auth-code', onSuccess: (res) => setAuthCookieWithCode(res.code) }).
  *

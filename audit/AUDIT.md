@@ -1,29 +1,21 @@
 # Code Audit Report
 
-**Generated:** 2026-05-01T22:30:42.457Z
-**Branch:** jules-16083708349688017590-2a98fbf4
+**Generated:** 2026-04-08T19:17:37.451Z
+**Branch:** jules-522951310453559166-518a0c30
 
 ## Summary
 
 | Metric | Count |
 |--------|-------|
-| Total Issues | 3 |
+| Total Issues | 0 |
 | Critical | 0 |
 | High | 0 |
-| Medium | 3 |
+| Medium | 0 |
 | Low | 0 |
 | Warnings | 0 |
 | Files Analyzed | 164 |
 
 ## All Issues by Category
-
-### Medium (3)
-
-| File | Line | Rule | Message |
-|------|------|------|---------|
-| ./src/components/ApplicationCard.test.tsx:5 | 15 | `@typescript-eslint/no-unused-vars` | 'JobApplication' is defined but never used. |
-| ./src/components/ApplicationTableRow.test.tsx:5 | 15 | `@typescript-eslint/no-unused-vars` | 'JobApplication' is defined but never used. |
-| ./src/components/ApplicationTableRow.test.tsx:6 | 10 | `@typescript-eslint/no-unused-vars` | 'getCellValue' is defined but never used. |
 
 ## Files Analyzed
 
@@ -32,7 +24,7 @@
 - ./playwright.config.ts
 - ./src/App.tsx
 - ./src/components/ATSSearch.tsx
-- ./src/components/AddJobForm.tsx
+- ./src/components/AddJobComponent.tsx
 - ./src/components/Alert.tsx
 - ./src/components/AlertProvider.tsx
 - ./src/components/ApplicationCard.test.tsx
