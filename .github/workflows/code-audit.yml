@@ -69,17 +69,17 @@ jobs:
             
             const body = `## Code Audit Summary
             
-| Metric | Count |
-|--------|-------|
-| Total Issues | ${summary.total} |
-| Critical | ${summary.critical} |
-| High | ${summary.high} |
-| Medium | ${summary.medium} |
-| Low | ${summary.low} |
+            | Metric | Count |
+            |--------|-------|
+            | Total Issues | ${summary.total} |
+            | Critical | ${summary.critical} |
+            | High | ${summary.high} |
+            | Medium | ${summary.medium} |
+            | Low | ${summary.low} |
 
-${summary.total > 0 ? '⚠️ Please review the audit report and address the issues.' : '✅ No significant issues found!'}
+            ${summary.total > 0 ? '⚠️ Please review the audit report and address the issues.' : '✅ No significant issues found!'}
 
-*This audit was automatically generated*`;
+            *This audit was automatically generated*`;
             
             await github.rest.issues.createComment({
               issue_number: context.issue.number,
