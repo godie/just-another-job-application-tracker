@@ -47,7 +47,7 @@ describe('SettingsPage', () => {
     test('renders Settings page with header and sidebar navigation', async () => {
       renderWithGoogleProvider(<SettingsPage />);
       
-      expect(screen.getByText(/Settings/i)).toBeInTheDocument();
+      expect(screen.getByRole('heading', { level: 1, name: /Settings/i })).toBeInTheDocument();
       expect(screen.getByText(/General/i)).toBeInTheDocument();
       expect(screen.getByText(/Customization/i)).toBeInTheDocument();
       expect(screen.getByText(/Integrations/i)).toBeInTheDocument();

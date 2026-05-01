@@ -36,10 +36,9 @@ describe('App Navigation and History', () => {
 
     render(<App />);
 
-    // In SettingsPage, we expect the heading "Settings"
-    // Using exact string since i18next might be configured to return keys if not loaded,
-    // but the output shows "Settings" is rendered.
-    expect(screen.getByRole('heading', { name: /Settings/i })).toBeInTheDocument();
+    // In SettingsPage, we expect the h1 heading "Settings"
+    // Using level:1 to avoid matching h3 category labels that may contain "settings" in raw i18n keys
+    expect(screen.getByRole('heading', { level: 1, name: /Settings/i })).toBeInTheDocument();
   });
 
   it('updates the URL when the page changes', async () => {
@@ -61,7 +60,7 @@ describe('App Navigation and History', () => {
       window.dispatchEvent(new PopStateEvent('popstate', { state: { page: 'settings' } }));
     });
 
-    // Check if it navigated to settings
-    expect(screen.getByRole('heading', { name: /Settings/i })).toBeInTheDocument();
+    // Check if it navigated to settings (use level:1 to match only the page title h1)
+    expect(screen.getByRole('heading', { level: 1, name: /Settings/i })).toBeInTheDocument();
   });
 });
