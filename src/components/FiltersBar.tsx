@@ -111,13 +111,13 @@ const FiltersBar: React.FC<FiltersBarProps> = React.memo(({ filters, onFiltersCh
   const statusExclude = filters.statusExclude || [];
 
   return (
-    <Card className="rounded-xl shadow-sm p-4 space-y-3">
-      <div className="md:flex md:flex-wrap md:items-end md:gap-4">
-        <div className="flex-1 min-w-[180px]">
+    <Card className='p-5 border border-earth-200 dark:border-earth-700 space-y-4'>
+      <div className='md:flex md:flex-wrap md:items-end md:gap-5'>
+        <div className='flex-1 min-w-[180px]'>
           <Input
-            id="search"
+            id='search'
             label={t('filters.search')}
-            type="text"
+            type='text'
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder={t('filters.searchPlaceholder')}
@@ -125,48 +125,50 @@ const FiltersBar: React.FC<FiltersBarProps> = React.memo(({ filters, onFiltersCh
         </div>
 
         {/* Status filters - Advanced mode */}
-        <div className="min-w-[200px] relative">
-          <div className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">{t('filters.status')}</div>
-          <div className="flex gap-2">
-            <div className="flex-1 relative">
-              <details className="group">
-                <summary className="cursor-pointer text-xs px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400">
+        <div className='min-w-[200px] relative'>
+          <div className='block text-xs font-semibold text-earth-600 dark:text-earth-400 mb-2'>{t('filters.status')}</div>
+          <div className='flex gap-3'>
+            <div className='flex-1 relative'>
+              <details className='group'>
+                <summary className='cursor-pointer text-xs px-3 py-2 border border-earth-300 dark:border-earth-600 rounded bg-earth-50 dark:bg-earth-800 hover:bg-sage-50 dark:hover:bg-sage-900/30 text-earth-700 dark:text-earth-300 hover:text-sage-700 dark:hover:text-sage-300 transition-colors'>
                   {statusInclude.length > 0 ? t('filters.includeWithCount', { count: statusInclude.length }) : t('filters.include')}
                 </summary>
-                <div className="absolute mt-1 max-h-48 overflow-y-auto border border-gray-200 dark:border-gray-700 rounded-lg p-2 bg-white dark:bg-gray-800 shadow-lg z-20 w-48">
+                <div className='absolute mt-1 max-h-48 overflow-y-auto border border-earth-200 dark:border-earth-700 rounded p-2 bg-white dark:bg-earth-800 shadow-lg z-20 w-48'>
                   {availableStatuses.map((status) => (
-                    <label key={status} className="flex items-center gap-2 py-1.5 px-2 cursor-pointer hover:bg-indigo-50 dark:hover:bg-indigo-900 rounded">
+                    <label key={status} className='flex items-center gap-2 py-1.5 px-2 cursor-pointer hover:bg-sage-50 dark:hover:bg-sage-900/30 rounded transition-colors'>
                       <input
                         id={`status-include-${status}`}
                         name={`status-include-${status}`}
-                        type="checkbox"
+                        type='checkbox'
                         checked={statusInclude.includes(status)}
                         onChange={() => handleStatusIncludeToggle(status)}
-                        className="rounded border-gray-300 dark:border-gray-600 text-indigo-600 focus:ring-indigo-500 bg-white dark:bg-gray-700"
+                        className='rounded border-earth-300 dark:border-earth-600 text-sage-600 focus:ring-sage-500 bg-white dark:bg-earth-700'
+                        aria-label={t(`statuses.${status.toLowerCase()}`, status)}
                       />
-                      <span className="text-xs text-gray-700 dark:text-gray-300">{t(`statuses.${status.toLowerCase()}`, status)}</span>
+                      <span className='text-xs text-earth-700 dark:text-earth-300'>{t(`statuses.${status.toLowerCase()}`, status)}</span>
                     </label>
                   ))}
                 </div>
               </details>
             </div>
-            <div className="flex-1 relative">
-              <details className="group">
-                <summary className="cursor-pointer text-xs px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400">
+            <div className='flex-1 relative'>
+              <details className='group'>
+                <summary className='cursor-pointer text-xs px-3 py-2 border border-earth-300 dark:border-earth-600 rounded bg-earth-50 dark:bg-earth-800 hover:bg-terracotta-50 dark:hover:bg-terracotta-900/30 text-earth-700 dark:text-earth-300 hover:text-terracotta-700 dark:hover:text-terracotta-300 transition-colors'>
                   {statusExclude.length > 0 ? t('filters.excludeWithCount', { count: statusExclude.length }) : t('filters.exclude')}
                 </summary>
-                <div className="absolute mt-1 max-h-48 overflow-y-auto border border-gray-200 dark:border-gray-700 rounded-lg p-2 bg-white dark:bg-gray-800 shadow-lg z-20 w-48">
+                <div className='absolute mt-1 max-h-48 overflow-y-auto border border-earth-200 dark:border-earth-700 rounded p-2 bg-white dark:bg-earth-800 shadow-lg z-20 w-48'>
                   {availableStatuses.map((status) => (
-                    <label key={status} className="flex items-center gap-2 py-1.5 px-2 cursor-pointer hover:bg-red-50 dark:hover:bg-red-900 rounded">
+                    <label key={status} className='flex items-center gap-2 py-1.5 px-2 cursor-pointer hover:bg-terracotta-50 dark:hover:bg-terracotta-900/30 rounded transition-colors'>
                       <input
                         id={`status-exclude-${status}`}
                         name={`status-exclude-${status}`}
-                        type="checkbox"
+                        type='checkbox'
                         checked={statusExclude.includes(status)}
                         onChange={() => handleStatusExcludeToggle(status)}
-                        className="rounded border-gray-300 dark:border-gray-600 text-red-600 focus:ring-red-500 bg-white dark:bg-gray-700"
+                        className='rounded border-earth-300 dark:border-earth-600 text-terracotta-600 focus:ring-terracotta-500 bg-white dark:bg-earth-700'
+                        aria-label={`${t('filters.exclude')}: ${t(`statuses.${status.toLowerCase()}`, status)}`}
                       />
-                      <span className="text-xs text-gray-700 dark:text-gray-300">{t(`statuses.${status.toLowerCase()}`, status)}</span>
+                      <span className='text-xs text-earth-700 dark:text-earth-300'>{t(`statuses.${status.toLowerCase()}`, status)}</span>
                     </label>
                   ))}
                 </div>
@@ -175,55 +177,55 @@ const FiltersBar: React.FC<FiltersBarProps> = React.memo(({ filters, onFiltersCh
           </div>
           {(statusInclude.length > 0 || statusExclude.length > 0) && (
             <button
-              type="button"
+              type='button'
               onClick={() => onFiltersChange({ ...filters, statusInclude: [], statusExclude: [] })}
-              className="mt-1 text-xs text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 underline"
+              className='mt-2 text-xs text-earth-500 dark:text-earth-400 hover:text-earth-700 dark:hover:text-earth-300 underline transition-colors'
             >
               {t('filters.clearStatus')}
             </button>
           )}
         </div>
 
-      <div className="min-w-[160px]">
-        <Select
-          id="platform-filter"
-          label={t('filters.platform')}
-          value={filters.platform}
-          onChange={handleChange('platform')}
-        >
-          <option value="">{t('filters.all')}</option>
-          {availablePlatforms.map((platform) => (
-            <option key={platform} value={platform}>{t(`form.platforms.${platform}`, platform)}</option>
-          ))}
-        </Select>
-      </div>
-
-      <div className="flex flex-col sm:flex-row sm:items-end gap-2">
-        <div className="min-w-[140px]">
-          <Input
-            id="date-from"
-            label={t('filters.from')}
-            type="date"
-            value={filters.dateFrom}
-            onChange={handleChange('dateFrom')}
-          />
+        <div className='min-w-[160px]'>
+          <Select
+            id='platform-filter'
+            label={t('filters.platform')}
+            value={filters.platform}
+            onChange={handleChange('platform')}
+          >
+            <option value=''>{t('filters.all')}</option>
+            {availablePlatforms.map((platform) => (
+              <option key={platform} value={platform}>{t(`form.platforms.${platform}`, platform)}</option>
+            ))}
+          </Select>
         </div>
-        <div className="min-w-[140px]">
-          <Input
-            id="date-to"
-            label={t('filters.to')}
-            type="date"
-            value={filters.dateTo}
-            onChange={handleChange('dateTo')}
-          />
-        </div>
-      </div>
 
-        <div className="flex items-center gap-2 mt-2 md:mt-0">
+        <div className='flex flex-col sm:flex-row sm:items-end gap-3'>
+          <div className='min-w-[140px]'>
+            <Input
+              id='date-from'
+              label={t('filters.from')}
+              type='date'
+              value={filters.dateFrom}
+              onChange={handleChange('dateFrom')}
+            />
+          </div>
+          <div className='min-w-[140px]'>
+            <Input
+              id='date-to'
+              label={t('filters.to')}
+              type='date'
+              value={filters.dateTo}
+              onChange={handleChange('dateTo')}
+            />
+          </div>
+        </div>
+
+        <div className='flex items-center gap-2 mt-2 md:mt-0'>
           <Button
-            variant="outline"
-            size="sm"
-            type="button"
+            variant='outline'
+            size='sm'
+            type='button'
             onClick={onClear}
           >
             {t('filters.clear')}

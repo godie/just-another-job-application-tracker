@@ -6,14 +6,6 @@ export const STORAGE_KEY = 'jobTrackerData';
 export const OPPORTUNITIES_STORAGE_KEY = 'jobOpportunities';
 export const PREFERENCES_STORAGE_KEY = 'jobTrackerPreferences';
 
-export const VALUE_BY_STATUS: Record<string, string> = {
-  'applied': 'Applied',
-  'interviewing': 'Interviewing',
-  'offer': 'Offer',
-  'rejected': 'Rejected',
-  'withdrawn': 'Withdrawn',
-};
-
 export const DEFAULT_FIELDS: FieldDefinition[] = [
   { id: 'position', label: 'Position', type: 'text', required: true },
   { id: 'company', label: 'Company', type: 'text', required: true },

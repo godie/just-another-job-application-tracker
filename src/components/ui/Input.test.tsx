@@ -19,7 +19,7 @@ describe('Input', () => {
   it('renders error message when error prop is provided', () => {
     render(<Input label="Username" id="username" error="Required field" />);
     expect(screen.getByText(/required field/i)).toBeInTheDocument();
-    expect(screen.getByText(/required field/i)).toHaveClass('text-red-600');
+    expect(screen.getByText(/required field/i)).toHaveClass('text-terracotta-600');
   });
 
   it('is disabled when disabled prop is true', () => {

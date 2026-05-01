@@ -16,6 +16,7 @@ interface CalendarDay {
 }
 
 const WEEKDAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const WEEKDAY_ABBREV = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
 type TranslateFn = (key: string, options?: Record<string, unknown>) => string;
 
 const formatMonthYear = (date: Date, locale?: string) =>
@@ -48,58 +49,58 @@ const formatDateKey = (date: Date): string =>
  */
 const getEventStyles = (status: string, isPast: boolean) => {
   const s = status.toLowerCase();
-  const baseClasses = 'w-full text-left text-[10px] sm:text-[11px] px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-sm border-l-2 transition';
+  const baseClasses = 'w-full text-left text-[10px] sm:text-[11px] px-1.5 sm:px-2 py-1 sm:py-1.5 min-h-[44px] rounded-sm border-l-2 transition';
 
   // Status to colors mapping with full Tailwind classes to prevent purging during production builds.
   // ⚡ Bolt: Tailwind scans for full class names in the source code.
   const statusStyles: Record<string, { button: string; time: string; borderPast: string }> = {
     applied: {
-      button: 'bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-500',
-      time: 'text-blue-600 font-medium',
-      borderPast: 'border-blue-300',
+      button: 'bg-blue-50 hover:bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 dark:text-blue-300 border-blue-500 dark:border-blue-400',
+      time: 'text-blue-600 dark:text-blue-400 font-medium',
+      borderPast: 'border-blue-300 dark:border-blue-700',
     },
     interviewing: {
-      button: 'bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border-emerald-500',
-      time: 'text-emerald-600 font-medium',
-      borderPast: 'border-emerald-300',
+      button: 'bg-emerald-50 hover:bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:hover:bg-emerald-900/50 dark:text-emerald-300 border-emerald-500 dark:border-emerald-400',
+      time: 'text-emerald-600 dark:text-emerald-400 font-medium',
+      borderPast: 'border-emerald-300 dark:border-emerald-700',
     },
     rejected: {
-      button: 'bg-red-50 hover:bg-red-100 text-red-700 border-red-500',
-      time: 'text-red-600 font-medium',
-      borderPast: 'border-red-300',
+      button: 'bg-red-50 hover:bg-red-100 text-red-700 dark:bg-red-900/30 dark:hover:bg-red-900/50 dark:text-red-300 border-red-500 dark:border-red-400',
+      time: 'text-red-600 dark:text-red-400 font-medium',
+      borderPast: 'border-red-300 dark:border-red-700',
     },
     hold: {
-      button: 'bg-yellow-50 hover:bg-yellow-100 text-yellow-700 border-yellow-500',
-      time: 'text-yellow-600 font-medium',
-      borderPast: 'border-yellow-300',
+      button: 'bg-yellow-50 hover:bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:hover:bg-yellow-900/50 dark:text-yellow-300 border-yellow-500 dark:border-yellow-400',
+      time: 'text-yellow-600 dark:text-yellow-400 font-medium',
+      borderPast: 'border-yellow-300 dark:border-yellow-700',
     },
     offer: {
-      button: 'bg-green-50 hover:bg-green-100 text-green-700 border-green-500',
-      time: 'text-green-600 font-medium',
-      borderPast: 'border-green-300',
+      button: 'bg-green-50 hover:bg-green-100 text-green-700 dark:bg-green-900/30 dark:hover:bg-green-900/50 dark:text-green-300 border-green-500 dark:border-green-400',
+      time: 'text-green-600 dark:text-green-400 font-medium',
+      borderPast: 'border-green-300 dark:border-green-700',
     },
     withdrawn: {
-      button: 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-500',
-      time: 'text-slate-600 font-medium',
-      borderPast: 'border-slate-300',
+      button: 'bg-slate-50 hover:bg-slate-100 text-slate-700 dark:bg-slate-900/30 dark:hover:bg-slate-900/50 dark:text-slate-300 border-slate-500 dark:border-slate-400',
+      time: 'text-slate-600 dark:text-slate-400 font-medium',
+      borderPast: 'border-slate-300 dark:border-slate-700',
     },
     ghosted: {
-      button: 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-500',
-      time: 'text-slate-600 font-medium',
-      borderPast: 'border-slate-300',
+      button: 'bg-slate-50 hover:bg-slate-100 text-slate-700 dark:bg-slate-900/30 dark:hover:bg-slate-900/50 dark:text-slate-300 border-slate-500 dark:border-slate-400',
+      time: 'text-slate-600 dark:text-slate-400 font-medium',
+      borderPast: 'border-slate-300 dark:border-slate-700',
     },
   };
 
   const config = statusStyles[s] || {
-    button: 'bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border-indigo-500',
-    time: 'text-indigo-600 font-medium',
-    borderPast: 'border-indigo-300',
+    button: 'bg-sage-50 hover:bg-sage-100 text-sage-700 dark:bg-sage-900/30 dark:hover:bg-sage-900/50 dark:text-sage-300 border-sage-500 dark:border-sage-400',
+    time: 'text-sage-600 dark:text-sage-400 font-medium',
+    borderPast: 'border-sage-300 dark:border-sage-700',
   };
 
   if (isPast) {
     return {
-      button: `${baseClasses} bg-gray-100 hover:bg-gray-200 text-gray-700 ${config.borderPast}`,
-      time: 'text-gray-500',
+      button: `${baseClasses} bg-earth-100 dark:bg-earth-700 hover:bg-earth-200 dark:hover:bg-earth-600 text-earth-700 dark:text-earth-300 ${config.borderPast}`,
+      time: 'text-earth-500 dark:text-earth-400',
     };
   }
 
@@ -188,74 +189,75 @@ const CalendarView: React.FC<CalendarViewProps> = ({ applications, onEdit }) => 
   }, [applications, focusMonth]);
 
   return (
-    <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
-      <header className="flex items-center justify-between px-4 py-3 bg-gray-50 border-b border-gray-200 flex-wrap gap-3">
+    <div className='bg-white dark:bg-earth-800 border border-earth-200 dark:border-earth-700 rounded overflow-hidden'>
+      <header className='flex items-center justify-between px-4 py-3 bg-earth-50 dark:bg-earth-800 border-b border-earth-200 dark:border-earth-700 flex-wrap gap-3'>
         <div>
-          <h2 className="text-lg font-semibold text-gray-900">{t('calendar.title')}</h2>
-          <p className="text-sm text-gray-500">{formatMonthYear(focusMonth, i18n.language)}</p>
+          <h2 className='text-lg font-semibold text-earth-900 dark:text-earth-100'>{t('calendar.title')}</h2>
+          <p className='text-sm text-earth-500 dark:text-earth-400'>{formatMonthYear(focusMonth, i18n.language)}</p>
         </div>
-        <div className="flex items-center gap-2 text-sm">
+        <div className='flex items-center gap-2 text-sm'>
           <button
-            type="button"
+            type='button'
             onClick={() => setFocusMonth((prev) => addMonths(prev, -1))}
-            className="px-3 py-1.5 rounded-md border border-gray-200 hover:bg-gray-100 transition"
+            className='px-3 py-1.5 rounded border border-earth-300 dark:border-earth-600 hover:bg-earth-100 dark:hover:bg-earth-700 transition'
           >
             {t('common.previous')}
           </button>
           <button
-            type="button"
+            type='button'
             onClick={() => setFocusMonth(startOfMonth(new Date()))}
-            className="px-3 py-1.5 rounded-md border border-indigo-200 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 transition"
+            className='px-3 py-1.5 rounded border border-sage-300 dark:border-sage-600 bg-sage-50 dark:bg-sage-900/30 text-sage-700 dark:text-sage-300 hover:bg-sage-100 dark:hover:bg-sage-900/50 transition'
           >
             {t('calendar.today')}
           </button>
           <button
-            type="button"
+            type='button'
             onClick={() => setFocusMonth((prev) => addMonths(prev, 1))}
-            className="px-3 py-1.5 rounded-md border border-gray-200 hover:bg-gray-100 transition"
+            className='px-3 py-1.5 rounded border border-earth-300 dark:border-earth-600 hover:bg-earth-100 dark:hover:bg-earth-700 transition'
           >
             {t('common.next')}
           </button>
         </div>
       </header>
 
-      <div className="hidden sm:grid grid-cols-7 bg-gray-100 border-b border-gray-200 text-xs font-semibold uppercase tracking-wide text-gray-600">
-        {WEEKDAY_LABELS.map((label) => (
-          <div key={label} className="px-3 py-2 text-center">
-            {t(`calendar.weekdays.${label}`)}
+      <div className='grid grid-cols-7 bg-earth-100 dark:bg-earth-800 border-b border-earth-200 dark:border-earth-700 text-xs font-semibold uppercase tracking-wide text-earth-600 dark:text-earth-400'>
+        {WEEKDAY_LABELS.map((label, index) => (
+          <div key={label} className='px-1 sm:px-3 py-2 text-center' aria-label={t(`calendar.weekdays.${label}`)}>
+            <span className='sm:hidden'>{WEEKDAY_ABBREV[index]}</span>
+            <span className='hidden sm:inline'>{t(`calendar.weekdays.${label}`)}</span>
           </div>
         ))}
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-7 divide-y sm:divide-y-0 sm:divide-x">
+      <div className='grid grid-cols-1 sm:grid-cols-7 divide-y sm:divide-y-0 sm:divide-x'>
         {calendar.map((day) => {
           const today = isToday(day.date);
           return (
             <div
               key={day.date.toISOString()}
-              className={`min-h-[80px] sm:min-h-[110px] px-2 sm:px-3 py-1.5 sm:py-2 border-gray-200 ${
+              className={`min-h-[80px] sm:min-h-[110px] px-2 sm:px-3 py-1.5 sm:py-2 border-earth-200 ${
                 today
-                  ? 'bg-indigo-50 border-2 border-indigo-400'
+                  ? 'bg-sage-50 dark:bg-sage-900/30 border-2 border-sage-400 dark:border-sage-500'
                   : day.isCurrentMonth
-                  ? 'bg-white'
-                  : 'bg-gray-50 text-gray-400'
+                  ? 'bg-white dark:bg-earth-800'
+                  : 'bg-earth-50 dark:bg-earth-900 text-earth-400 dark:text-earth-600'
               }`}
             >
-              <div className="flex justify-between items-center">
+              <div className='flex justify-between items-center'>
                 <span
                   className={`text-xs font-semibold ${
                     today
-                      ? 'bg-indigo-600 text-white rounded-full w-6 h-6 flex items-center justify-center'
-                      : 'text-gray-600'
+                      ? 'bg-sage-600 text-white rounded-full w-6 h-6 flex items-center justify-center'
+                      : 'text-earth-600 dark:text-earth-400'
                   }`}
                 >
                   {day.date.getDate()}
                 </span>
                 {day.events.length > 0 && (
-                  <span className="text-[11px] font-semibold text-indigo-600">{day.events.length}</span>
+                  <span className='text-[11px] font-semibold text-sage-600 dark:text-sage-400'>{day.events.length}</span>
                 )}
               </div>
-              <ul className="mt-1 space-y-0.5 sm:space-y-1">
+              <ul className='mt-1 space-y-0.5 sm:space-y-1'>
                 {day.events.slice(0, 3).map(({ application, event }) => {
                   const eventDate = parseLocalDate(event.date);
                   const relativeTime = formatRelativeTime(eventDate, t);
@@ -267,12 +269,12 @@ const CalendarView: React.FC<CalendarViewProps> = ({ applications, onEdit }) => 
                   return (
                     <li key={event.id}>
                       <button
-                        type="button"
+                        type='button'
                         onClick={() => onEdit?.(application)}
                         className={styles.button}
                       >
-                        <span className="font-semibold block truncate">{application.position}</span>
-                        <span className="block truncate capitalize">
+                        <span className='font-semibold block truncate'>{application.position}</span>
+                        <span className='block truncate capitalize'>
                           {event.type === 'custom' && event.customTypeName
                             ? event.customTypeName
                             : t(`insights.interviewTypes.${event.type}`, event.type.replace(/_/g, ' '))}
@@ -285,7 +287,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({ applications, onEdit }) => 
                   );
                 })}
                 {day.events.length > 3 && (
-                  <li className="text-[10px] sm:text-[11px] text-gray-500">
+                  <li className='text-[10px] sm:text-[11px] text-earth-500 dark:text-earth-400'>
                     {t('kanban.more', { count: day.events.length - 3 })}
                   </li>
                 )}
@@ -296,7 +298,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({ applications, onEdit }) => 
       </div>
 
       {applications.length === 0 && (
-        <div className="px-4 py-3 bg-gray-50 border-t border-gray-200 text-sm text-gray-500">
+        <div className='px-4 py-3 bg-earth-50 dark:bg-earth-800 border-t border-earth-200 dark:border-earth-700 text-sm text-earth-500 dark:text-earth-400'>
           {t('calendar.noApplications')}
         </div>
       )}

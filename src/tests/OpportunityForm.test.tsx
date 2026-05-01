@@ -138,7 +138,7 @@ describe('OpportunityForm', () => {
   it('should call onClose when close button (×) is clicked', () => {
     render(<OpportunityForm isOpen={true} onClose={mockOnClose} onSave={mockOnSave} />);
     
-    const closeButton = screen.getByLabelText('Close');
+    const closeButton = screen.getByLabelText('Close dialog');
     fireEvent.click(closeButton);
 
     expect(mockOnClose).toHaveBeenCalled();

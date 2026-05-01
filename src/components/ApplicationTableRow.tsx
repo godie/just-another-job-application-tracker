@@ -5,7 +5,7 @@ import type { JobApplication } from '../types/applications';
 import type { ApplicationWithMetadata } from '../hooks/useFilteredApplications';
 import type { TableColumn } from '../types/table';
 import { sanitizeUrl } from '../utils/localStorage';
-import { TableRow, TableCell, Button, Badge } from './ui';
+import { TableRow, TableCell, Badge } from './ui';
 import { getBadgeVariantForStatus } from '../utils/status';
 
 interface ApplicationTableRowProps {
@@ -57,7 +57,7 @@ const ApplicationTableRow: React.FC<ApplicationTableRowProps> = ({
             <TableCell
               key={column.id}
               onClick={() => onEdit(item)}
-              className="px-4 sm:px-6 py-3 text-gray-900 dark:text-gray-100 border-r border-gray-100 dark:border-gray-700 group-hover:bg-indigo-50 dark:group-hover:bg-indigo-900 whitespace-nowrap"
+              className="px-4 sm:px-6 py-3 text-earth-900 dark:text-earth-100 border-r border-earth-100 dark:border-earth-700 group-hover:bg-sage-50 dark:group-hover:bg-sage-900/20 whitespace-nowrap"
             >
               <Badge variant={getBadgeVariantForStatus(item.status)}>
                 {cellContent}
@@ -81,7 +81,7 @@ const ApplicationTableRow: React.FC<ApplicationTableRowProps> = ({
             <TableCell
               key={column.id}
               onClick={() => onEdit(item)}
-              className={`px-4 sm:px-6 py-3 text-gray-900 dark:text-gray-100 border-r border-gray-100 dark:border-gray-700 group-hover:bg-indigo-50 dark:group-hover:bg-indigo-900 ${
+              className={`px-4 sm:px-6 py-3 text-earth-900 dark:text-earth-100 border-r border-earth-100 dark:border-earth-700 group-hover:bg-sage-50 dark:group-hover:bg-sage-900/20 ${
                 shouldWrap ? 'whitespace-pre-line' : 'whitespace-nowrap'
               } ${isNotes ? 'max-w-xs' : ''}`}
             >
@@ -99,14 +99,14 @@ const ApplicationTableRow: React.FC<ApplicationTableRowProps> = ({
           <TableCell
             key={column.id}
             onClick={() => onEdit(item)}
-            className="px-4 sm:px-6 py-3 whitespace-nowrap text-gray-900 dark:text-gray-100 border-r border-gray-100 dark:border-gray-700 group-hover:bg-indigo-50 dark:group-hover:bg-indigo-900"
+            className="px-4 sm:px-6 py-3 whitespace-nowrap text-earth-900 dark:text-earth-100 border-r border-earth-100 dark:border-earth-700 group-hover:bg-sage-50 dark:group-hover:bg-sage-900/20"
           >
             {isLink ? (
               <a
                 href={sanitizeUrl(cellContent)}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-indigo-600 dark:text-indigo-400 hover:underline"
+                className="text-sage-600 dark:text-sage-400 hover:underline"
                 onClick={(e) => e.stopPropagation()}
               >
                 {cellContent}
@@ -126,19 +126,17 @@ const ApplicationTableRow: React.FC<ApplicationTableRowProps> = ({
             for the entire table during mouse movements, significantly improving
             performance for large lists. */}
         <div className="opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-opacity duration-200">
-          <Button
-            variant="danger"
-            size="sm"
+          <button
             onClick={(e) => {
               e.stopPropagation();
               onDeleteRequest(item);
             }}
-            className="inline-flex items-center gap-1 text-xs px-3 py-1 rounded-full transition"
+            className="px-3 py-1.5 rounded text-xs font-semibold bg-red-600 hover:bg-red-700 text-white transition-colors inline-flex items-center gap-1"
             aria-label={t('home.deleteConfirm.titleFor', { position: item.position, company: item.company })}
             data-testid={`delete-btn-${item.id}`}
           >
             <span>{t('common.delete')}</span>
-          </Button>
+          </button>
         </div>
       </TableCell>
     </TableRow>

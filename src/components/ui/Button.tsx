@@ -13,14 +13,14 @@ export const Button: React.FC<ButtonProps> = ({
   children,
   ...props
 }) => {
-  const baseStyles = 'inline-flex items-center justify-center rounded-lg font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none';
+  const baseStyles = 'inline-flex items-center justify-center font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-sage-500 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none';
 
   const variants = {
-    primary: 'bg-indigo-600 text-white hover:bg-indigo-700 dark:bg-indigo-600 dark:hover:bg-indigo-500',
-    secondary: 'bg-gray-200 text-gray-900 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600',
-    outline: 'border border-gray-300 bg-transparent hover:bg-gray-100 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800',
-    ghost: 'bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800 dark:text-gray-300',
-    danger: 'bg-red-600 text-white hover:bg-red-700 dark:bg-red-600 dark:hover:bg-red-500',
+    primary: 'bg-sage-600 text-white hover:bg-sage-700 dark:bg-sage-600 dark:hover:bg-sage-500 rounded',
+    secondary: 'bg-earth-200 text-earth-800 hover:bg-earth-300 dark:bg-earth-700 dark:text-earth-100 dark:hover:bg-earth-600 rounded',
+    outline: 'border border-earth-300 bg-transparent hover:bg-earth-100 dark:border-earth-600 dark:text-earth-300 dark:hover:bg-earth-700 rounded',
+    ghost: 'bg-transparent hover:bg-earth-100 dark:hover:bg-earth-700 text-earth-600 dark:text-earth-400 rounded',
+    danger: 'bg-terracotta-600 text-white hover:bg-terracotta-700 dark:bg-terracotta-600 dark:hover:bg-terracotta-500 rounded',
   };
 
   const sizes = {

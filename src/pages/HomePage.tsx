@@ -56,6 +56,7 @@ const HomePageContent: React.FC<HomePageContentProps> = ({ onNavigate }) => {
   const [currentApplication, setCurrentApplication] = useState<JobApplication | null>(null);
   const [currentView, setCurrentView] = useState<ViewType>('table');
   const [filters, setFilters] = useState<Filters>(defaultFilters);
+  const [isDataToolsOpen, setIsDataToolsOpen] = useState(false);
   const isFormOpen = currentApplication !== null;
 
   // Load data on mount
@@ -169,91 +170,116 @@ const HomePageContent: React.FC<HomePageContentProps> = ({ onNavigate }) => {
   const tableColumns = useTableColumns(preferences);
 
   return (
-    <div className="max-w-7xl mx-auto">
+    <div className='max-w-7xl mx-auto px-6 lg:px-8 py-8'>
+      {/* ── HERO ZONE ── Header + Add Job CTA + Metrics ── */}
+      <header className='mb-10'>
+        <div className='flex flex-col sm:flex-row sm:items-start sm:justify-between gap-6'>
+          <div className='flex-1'>
+            <div className='flex items-center gap-3 mb-4'>
+              <div className='w-10 h-0.5 bg-sage-500'></div>
+              <span className='text-sage-600 dark:text-sage-400 text-sm font-medium tracking-wider uppercase'>
+                Dashboard
+              </span>
+            </div>
+            <h1 className='font-serif text-4xl md:text-5xl font-bold text-earth-900 dark:text-earth-50'>
+              {t('home.pipeline')}
+            </h1>
+            <p className='mt-3 text-base text-earth-600 dark:text-earth-300'>
+              Manage your job applications and track your progress
+            </p>
+          </div>
+          <button 
+            className='self-start sm:self-auto bg-terracotta-600 hover:bg-terracotta-700 active:bg-terracotta-800 text-white font-bold py-4 px-8 rounded transition-colors border border-terracotta-700 hover:border-terracotta-800 text-base shadow-sm hover:shadow-md'
+            onClick={handleCreateNew}
+            aria-label={t('home.addEntry')}
+            data-testid='add-entry-button'
+          >
+            + {t('home.addEntry')}
+          </button>
+        </div>
+      </header>
           
-          {/* Summary Section */}
-          <MetricsSummary applications={filteredApplications} />
+      <MetricsSummary applications={filteredApplications} />
 
-          {/* Google Sheets Sync */}
-          <div className="mb-4 flex justify-between items-center bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
-            <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-              <h2 className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t("csv.title", "Local Data Management")}</h2>
+      {/* ── DATA TOOLS ── Collapsible utilities zone ── */}
+      <div className='mb-8'>
+        <button
+          type='button'
+          onClick={() => setIsDataToolsOpen(!isDataToolsOpen)}
+          className='flex items-center gap-2 text-sm font-medium text-earth-500 dark:text-earth-400 hover:text-sage-600 dark:hover:text-sage-400 transition-colors mb-3'
+          aria-expanded={isDataToolsOpen}
+        >
+          <svg
+            className={`w-4 h-4 transform transition-transform ${isDataToolsOpen ? 'rotate-90' : ''}`}
+            fill='none' viewBox='0 0 24 24' stroke='currentColor'
+          >
+            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M9 5l7 7-7 7' />
+          </svg>
+          <span>{t('csv.title', 'Data Management')}</span>
+        </button>
+
+        {isDataToolsOpen && (
+          <div className='space-y-4 pl-6 border-l-2 border-earth-200 dark:border-earth-700'>
+            <div className='flex flex-col sm:flex-row sm:items-center gap-4 bg-earth-50 dark:bg-earth-800 p-4 rounded border border-earth-200 dark:border-earth-700'>
               <CSVActions />
+              <button
+                onClick={() => onNavigate?.('gmail-scan')}
+                className='flex items-center gap-2 px-4 py-2 text-sm font-medium text-sage-700 dark:text-sage-300 bg-sage-50 dark:bg-sage-900/30 rounded hover:bg-sage-100 dark:hover:bg-sage-900/50 transition-colors border border-sage-200 dark:border-sage-700'
+              >
+                <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                  <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z' />
+                </svg>
+                {t('settings.emailScan.scanGmail')}
+              </button>
             </div>
-          </div>
-          <GoogleSheetsSync 
-            applications={nonDeletedApplications}
-            onSyncComplete={() => {
-              // Refresh applications after sync if needed
-              refreshApplications();
-            }}
-          />
-
-          {/* Gmail Scan Link */}
-          <div className="mb-6 flex justify-end">
-            <button
-              onClick={() => onNavigate?.('gmail-scan')}
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition-colors border border-indigo-100 dark:border-indigo-800"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-              </svg>
-              {t('settings.emailScan.scanGmail')}
-            </button>
-          </div>
-
-          <div className="space-y-4">
-            <FiltersBar
-              filters={filters}
-              onFiltersChange={handleFiltersChange}
-              availableStatuses={availableStatuses}
-              availablePlatforms={availablePlatforms}
-              onClear={handleClearFilters}
+            <GoogleSheetsSync 
+              applications={nonDeletedApplications}
+              onSyncComplete={() => {
+                refreshApplications();
+              }}
             />
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-              <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
-                <Trans
-                  i18nKey="home.showing"
-                  values={{ count: filteredApplications.length, total: applications.length }}
-                  components={{ bold: <span className="font-semibold text-gray-700 dark:text-gray-300" /> }}
-                />
-              </p>
-            </div>
           </div>
-          
-          {/* View Switcher, Header and Add Button */}
-          <div className="flex flex-col gap-4 mb-6 mt-6 lg:flex-row lg:items-center lg:justify-between">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between lg:flex-1">
-              <h1 className="text-2xl font-bold text-gray-800 dark:text-white">{t('home.pipeline')}</h1>
-              <ViewSwitcher currentView={currentView} onViewChange={handleViewChange} />
-            </div>
-            <button 
-              className="self-start sm:self-auto bg-green-700 hover:bg-green-800 text-white font-bold py-2.5 px-6 rounded-full shadow-lg transition duration-150 transform hover:scale-[1.02]"
-              onClick={handleCreateNew}
-              aria-label={t('home.addEntry')}
-              data-testid="add-entry-button"
-            >
-              {t('home.addEntry')}
-            </button>
-          </div>
-          
-          {/* Current View */}
-          <CurrentViewRenderer
-            currentView={currentView}
-            filteredApplications={filteredApplications}
-            tableColumns={tableColumns}
-            onEdit={handleEdit}
-            onDelete={handleDeleteEntry}
-          />
-        <Footer version={packageJson.version} />
-        {isFormOpen && (
-          <AddJobForm 
-            initialData={currentApplication} // Pasar datos para prellenar
-            onSave={handleSaveEntry}
-            onCancel={handleCancel}
-          />
         )}
       </div>
+
+      {/* ── WORK ZONE ── Filters + View Switcher + Table ── */}
+      <div className='space-y-4 mb-6'>
+        <FiltersBar
+          filters={filters}
+          onFiltersChange={handleFiltersChange}
+          availableStatuses={availableStatuses}
+          availablePlatforms={availablePlatforms}
+          onClear={handleClearFilters}
+        />
+        <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4'>
+          <p className='text-sm text-earth-600 dark:text-earth-400'>
+            <Trans
+              i18nKey='home.showing'
+              values={{ count: filteredApplications.length, total: applications.length }}
+              components={{ bold: <span className='font-semibold text-earth-700 dark:text-earth-300' /> }}
+            />
+          </p>
+          <ViewSwitcher currentView={currentView} onViewChange={handleViewChange} />
+        </div>
+      </div>
+          
+      {/* Current View */}
+      <CurrentViewRenderer
+        currentView={currentView}
+        filteredApplications={filteredApplications}
+        tableColumns={tableColumns}
+        onEdit={handleEdit}
+        onDelete={handleDeleteEntry}
+      />
+      <Footer version={packageJson.version} />
+      {isFormOpen && (
+        <AddJobForm 
+          initialData={currentApplication}
+          onSave={handleSaveEntry}
+          onCancel={handleCancel}
+        />
+      )}
+    </div>
   );
 };
 

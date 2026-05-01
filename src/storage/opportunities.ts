@@ -41,32 +41,6 @@ export const saveOpportunities = (opportunities: JobOpportunity[]): void => {
   }
 };
 
-/**
- * Agrega una nueva oportunidad a la lista.
- */
-export const addOpportunity = (opportunity: Omit<JobOpportunity, 'id' | 'capturedDate'>): JobOpportunity => {
-  const newOpportunity: JobOpportunity = {
-    ...opportunity,
-    id: generateId(),
-    capturedDate: new Date().toISOString(),
-  };
-  
-  const opportunities = getOpportunities();
-  opportunities.push(newOpportunity);
-  saveOpportunities(opportunities);
-  
-  return newOpportunity;
-};
-
-/**
- * Elimina una oportunidad por ID.
- */
-export const deleteOpportunity = (id: string): void => {
-  const opportunities = getOpportunities();
-  const filtered = opportunities.filter(opp => opp.id !== id);
-  saveOpportunities(filtered);
-};
-
 /** Map opportunity jobType (e.g. "Remote", "Hybrid") to JobApplication workType */
 function toWorkType(jobType?: string): JobApplication['workType'] | undefined {
   if (!jobType) return undefined;
