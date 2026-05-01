@@ -23,10 +23,7 @@ if (typeof window !== 'undefined') {
   Object.defineProperty(window, 'localStorage', { value: localStorageMock });
 }
 // Also define it on global for tests that use it without window.
-if (typeof global !== 'undefined') {
-  Object.defineProperty(global, 'localStorage', { value: localStorageMock });
-}
-// For vitest, we might also need globalThis
+// Define on globalThis for vitest and other environments
 if (typeof globalThis !== 'undefined' && !globalThis.localStorage) {
   try {
     Object.defineProperty(globalThis, 'localStorage', { value: localStorageMock });

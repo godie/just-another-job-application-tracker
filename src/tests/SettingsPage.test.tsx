@@ -49,8 +49,10 @@ describe('SettingsPage', () => {
       
       expect(screen.getByText(/Settings/i)).toBeInTheDocument();
       expect(screen.getByText(/General/i)).toBeInTheDocument();
-      expect(screen.getByText(/Customization/i)).toBeInTheDocument();
-      expect(screen.getByText(/Integrations/i)).toBeInTheDocument();
+      expect(screen.getByText(/Data/i)).toBeInTheDocument();
+      // Use more specific selector for Tools category
+      const toolsHeading = screen.getByText('Tools', { selector: 'h3' });
+      expect(toolsHeading).toBeInTheDocument();
       expect(screen.getByText(/Account/i)).toBeInTheDocument();
     });
 

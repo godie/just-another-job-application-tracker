@@ -57,7 +57,7 @@ export const TableRow = React.forwardRef<
 >(({ className = '', ...props }, ref) => (
   <tr
     ref={ref}
-    className={`border-b transition-colors hover:bg-gray-100/50 dark:hover:bg-gray-800/50 data-[state=selected]:bg-gray-100 dark:data-[state=selected]:bg-gray-800 ${className}`}
+    className={`border-b border-earth-100 dark:border-earth-700 transition-colors hover:bg-earth-50 dark:hover:bg-earth-800/50 data-[state=selected]:bg-earth-100 dark:data-[state=selected]:bg-earth-800 ${className}`}
     {...props}
   />
 ));
@@ -69,7 +69,7 @@ export const TableHead = React.forwardRef<
 >(({ className = '', ...props }, ref) => (
   <th
     ref={ref}
-    className={`h-12 px-4 text-left align-middle font-semibold text-gray-700 dark:text-gray-300 [&:has([role=checkbox])]:pr-0 ${className}`}
+    className={`h-12 px-4 text-left align-middle font-semibold text-earth-700 dark:text-earth-200 [&:has([role=checkbox])]:pr-0 ${className}`}
     {...props}
   />
 ));
@@ -93,7 +93,7 @@ export const TableCaption = React.forwardRef<
 >(({ className = '', ...props }, ref) => (
   <caption
     ref={ref}
-    className={`mt-4 text-sm text-gray-500 dark:text-gray-400 ${className}`}
+    className={`mt-4 text-sm text-earth-500 dark:text-earth-400 ${className}`}
     {...props}
   />
 ));

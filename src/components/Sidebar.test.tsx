@@ -47,11 +47,11 @@ describe('Sidebar', () => {
       const { rerender } = render(<Sidebar currentPage="applications" onNavigate={mockNavigate} />);
       
       const applicationsButton = screen.getByText('Applications').closest('button');
-      expect(applicationsButton?.className).toContain('bg-gray-200');
+      expect(applicationsButton?.className).toContain('bg-earth-200');
       
       rerender(<Sidebar currentPage="opportunities" onNavigate={mockNavigate} />);
       const opportunitiesButton = screen.getByText('Opportunities').closest('button');
-      expect(opportunitiesButton?.className).toContain('bg-gray-200');
+      expect(opportunitiesButton?.className).toContain('bg-earth-200');
     });
 
     it('calls onNavigate when navigation button is clicked', () => {

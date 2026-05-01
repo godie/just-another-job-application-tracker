@@ -12,8 +12,10 @@ import GmailScanPage from './pages/GmailScanPage';
 import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import BackupSyncPage from './pages/BackupSyncPage';
 import PWAReloadPrompt from './components/PWAReloadPrompt';
 import MainLayout from './layouts/MainLayout';
+import MergePromptHandler from './components/sync/MergePromptHandler';
 import { useApplicationsStore } from './stores/applicationsStore';
 import { useAuthStore } from './stores/authStore';
 import { useCloudSync } from './hooks/useCloudSync';
@@ -21,9 +23,9 @@ import { useCloudSync } from './hooks/useCloudSync';
 // ⚡ Bolt: Provide a dummy client ID if not present to prevent crash in dev/test environments
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || 'dummy-client-id.apps.googleusercontent.com';
 
-export type PageType = 'landing' | 'applications' | 'opportunities' | 'settings' | 'insights' | 'support' | 'suggestions' | 'login' | 'register' | 'gmail-scan';
+export type PageType = 'landing' | 'applications' | 'opportunities' | 'settings' | 'insights' | 'support' | 'suggestions' | 'login' | 'register' | 'gmail-scan' | 'backup-sync';
 
-const VALID_PAGES: PageType[] = ['landing', 'applications', 'opportunities', 'settings', 'insights', 'support', 'suggestions', 'login', 'register', 'gmail-scan'];
+const VALID_PAGES: PageType[] = ['landing', 'applications', 'opportunities', 'settings', 'insights', 'support', 'suggestions', 'login', 'register', 'gmail-scan', 'backup-sync'];
 
 function App() {
   const { checkAuth } = useAuthStore();
@@ -108,13 +110,15 @@ function App() {
       case 'settings':
         return <SettingsPage onNavigate={setCurrentPage} />;
       case 'insights':
-        return <InsightsPage />;
+        return <InsightsPage onNavigate={setCurrentPage} />;
       case 'support':
         return <SupportPage onNavigate={setCurrentPage} />;
       case 'suggestions':
         return <SuggestionsViewerPage onNavigate={setCurrentPage} />;
       case 'gmail-scan':
         return <GmailScanPage onNavigate={setCurrentPage} />;
+      case 'backup-sync':
+        return <BackupSyncPage onNavigate={setCurrentPage} />;
       case 'landing':
         return <LandingPage onNavigate={setCurrentPage} />;
       case 'login':
@@ -139,6 +143,7 @@ function App() {
           </MainLayout>
         )}
         <PWAReloadPrompt />
+        <MergePromptHandler />
       </AlertProvider>
     </GoogleOAuthProvider>
   );

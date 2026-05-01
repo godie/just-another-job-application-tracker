@@ -1,6 +1,8 @@
 import React, { useState, type KeyboardEvent } from 'react';
 import { Badge } from './Badge';
 
+const EMPTY_TAGS: string[] = [];
+
 interface TagInputProps {
   label?: string;
   placeholder?: string;
@@ -12,7 +14,7 @@ interface TagInputProps {
 export const TagInput: React.FC<TagInputProps> = ({
   label,
   placeholder,
-  tags = [],
+  tags = EMPTY_TAGS,
   onChange,
   className = '',
 }) => {
@@ -49,7 +51,7 @@ export const TagInput: React.FC<TagInputProps> = ({
   return (
     <div className={`flex flex-col gap-2 ${className}`}>
       {label && (
-        <label className="block text-sm font-bold text-gray-700 dark:text-gray-300">
+        <label className='block text-sm font-bold text-earth-700 dark:text-earth-300'>
           {label}
         </label>
       )}
@@ -60,21 +62,21 @@ export const TagInput: React.FC<TagInputProps> = ({
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
-          className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white transition-all shadow-sm"
+          className='w-full px-4 py-3 border border-earth-300 dark:border-earth-600 rounded focus:ring-2 focus:ring-sage-500 focus:border-sage-500 bg-white dark:bg-earth-800 text-earth-900 dark:text-earth-100 transition-all'
         />
       </div>
       <div className="flex flex-wrap gap-2 min-h-[32px]">
         {tags.map((tag, index) => (
           <Badge
-            key={`${tag}-${index}`}
-            variant="indigo"
-            className="flex items-center gap-1.5 px-3 py-1.5 text-sm group cursor-default animate-in fade-in zoom-in duration-200 relative overflow-hidden"
+            key={tag}
+            variant='default'
+            className='flex items-center gap-1.5 px-3 py-1.5 text-sm group cursor-default animate-in fade-in zoom-in duration-200 relative overflow-hidden bg-sage-100 text-sage-700 dark:bg-sage-900/40 dark:text-sage-300'
           >
             {tag}
             <button
               type="button"
               onClick={() => removeTag(index)}
-              className="opacity-0 group-hover:opacity-100 ml-1 hover:bg-indigo-200 dark:hover:bg-indigo-800 rounded-full p-0.5 transition-all focus:outline-none focus:opacity-100"
+              className="opacity-0 group-hover:opacity-100 ml-1 hover:bg-sage-200 dark:hover:bg-sage-800 rounded-full p-0.5 transition-all focus:outline-none focus:opacity-100"
               aria-label={`Remove ${tag}`}
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">

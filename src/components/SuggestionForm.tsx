@@ -16,7 +16,6 @@ type GlobalWithTestFlag = typeof globalThis & { __TEST__?: boolean };
 const isTestingEnvironment =
   (typeof import.meta !== 'undefined' &&
     Boolean((import.meta as VitestAwareImportMeta).vitest || import.meta.env?.MODE === 'test')) ||
-  (typeof process !== 'undefined' && process.env?.VITEST === 'true') ||
   (typeof globalThis !== 'undefined' && Boolean((globalThis as GlobalWithTestFlag).__TEST__));
 
 interface SuggestionFormProps {
@@ -222,31 +221,31 @@ const SuggestionForm: React.FC<SuggestionFormProps> = ({ onNavigate }) => {
     : isSubmitting || !explanation.trim() || !captchaInput.trim() || !captchaId || isRefreshingCaptcha;
 
   return (
-    <Card className="p-6 border-none shadow-md">
+    <Card className="p-6">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-indigo-100 dark:bg-indigo-900 rounded-lg text-indigo-600 dark:text-indigo-300">
+          <div className='p-2 bg-sage-100 dark:bg-sage-900 rounded text-sage-600 dark:text-sage-300'>
             <FaClipboard size={24} />
           </div>
-          <h2 className="text-xl font-bold text-gray-800 dark:text-white">{t('support.suggestions')}</h2>
+          <h2 className='text-xl font-bold text-earth-800 dark:text-earth-100'>{t('support.suggestions')}</h2>
         </div>
         {onNavigate && (
           <button
             type="button"
             onClick={() => onNavigate('suggestions')}
-            className="text-sm text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer"
+            className='text-sm text-sage-600 dark:text-sage-400 hover:underline cursor-pointer'
           >
             {t('support.viewSuggestions')}
           </button>
         )}
       </div>
-      <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+      <p className="text-sm text-earth-600 dark:text-earth-400 mb-4">
         {t('support.suggestionsDesc')}
       </p>
 
       <form onSubmit={handleSubmit} className="space-y-5">
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <label className="block text-sm font-medium text-earth-700 dark:text-earth-300 mb-2">
             {t('support.suggestionType')}
           </label>
           <div className="flex flex-wrap gap-3">
@@ -260,8 +259,8 @@ const SuggestionForm: React.FC<SuggestionFormProps> = ({ onNavigate }) => {
                   htmlFor={inputId}
                   className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium cursor-pointer transition border ${
                     isActive
-                      ? 'bg-indigo-600 border-indigo-600 text-white shadow'
-                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-transparent hover:bg-gray-200 dark:hover:bg-gray-600'
+                      ? 'bg-sage-600 border-sage-600 text-white'
+                      : 'bg-earth-100 dark:bg-earth-700 text-earth-700 dark:text-earth-300 border-transparent hover:bg-earth-200 dark:hover:bg-earth-600'
                   }`}
                 >
                   <input
@@ -288,18 +287,18 @@ const SuggestionForm: React.FC<SuggestionFormProps> = ({ onNavigate }) => {
             value={explanation}
                 onChange={(event) => dispatch({ type: 'SET_FIELD', field: 'explanation', value: event.target.value })}
             placeholder={t('support.explanationPlaceholder')}
-            className="w-full px-4 py-2 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-indigo-500 dark:text-white outline-none"
+            className='w-full px-4 py-2 bg-white dark:bg-earth-900 border border-earth-300 dark:border-earth-600 rounded focus:ring-2 focus:ring-sage-500 dark:text-white outline-none'
             required
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <label className="block text-sm font-medium text-earth-700 dark:text-earth-300 mb-2">
             {t('support.captchaLabel')}
           </label>
-          <p className="text-xs text-gray-500 dark:text-gray-400">{t('support.captchaDesc')}</p>
+          <p className="text-xs text-earth-500 dark:text-earth-400">{t('support.captchaDesc')}</p>
           <div className="flex flex-col sm:flex-row gap-3 mt-2">
-            <div className="flex-1 flex items-center justify-center px-4 py-3 bg-gray-100 dark:bg-gray-900 rounded-xl border border-dashed border-gray-300 dark:border-gray-600 text-2xl font-bold tracking-[0.3em] text-gray-800 dark:text-gray-100">
+            <div className='flex-1 flex items-center justify-center px-4 py-3 bg-earth-100 dark:bg-earth-900 rounded border border-dashed border-earth-300 dark:border-earth-600 text-2xl font-bold tracking-[0.3em] text-earth-800 dark:text-earth-100'>
               {isRefreshingCaptcha
                 ? t('support.captchaLoading')
                 : captchaChallenge || t('support.captchaLoading')}
@@ -336,7 +335,7 @@ const SuggestionForm: React.FC<SuggestionFormProps> = ({ onNavigate }) => {
           </Button>
         </div>
 
-        <p className="text-xs text-gray-500 dark:text-gray-400">{t('support.submitInfo')}</p>
+        <p className="text-xs text-earth-500 dark:text-earth-400">{t('support.submitInfo')}</p>
       </form>
     </Card>
   );

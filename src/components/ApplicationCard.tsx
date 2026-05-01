@@ -35,16 +35,16 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
   return (
     <Card
       onClick={() => onEdit(item)}
-      className="p-4 cursor-pointer hover:shadow-lg transition-shadow"
+      className='p-4 cursor-pointer border border-earth-200 dark:border-earth-700 bg-white dark:bg-earth-800 hover:border-sage-300 dark:hover:border-sage-700 transition-colors'
       data-testid={`card-${item.id}`}
     >
       {/* Primary Info */}
       <div className="flex justify-between items-start mb-3">
         <div className="flex-1 min-w-0">
-          <h3 className="text-base font-semibold text-gray-900 dark:text-white truncate">
+          <h3 className="text-base font-semibold text-earth-900 dark:text-earth-100 truncate" title={positionValue}>
             {positionValue}
           </h3>
-          <h4 className="text-sm text-gray-600 dark:text-gray-400 truncate mt-0.5">
+          <h4 className="text-sm text-earth-600 dark:text-earth-400 truncate mt-0.5" title={companyValue}>
             {companyValue}
           </h4>
         </div>
@@ -56,15 +56,15 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
       </div>
 
       {/* Other Important Info */}
-      <div className="space-y-2 text-xs text-gray-600 dark:text-gray-400">
+      <div className="space-y-2 text-xs text-earth-600 dark:text-earth-400">
         {otherColumns.slice(0, 3).map((column) => {
           const value = getCellValue(item, column.id);
           if (!value) return null;
           const isLink = column.id === 'link';
 
           return (
-            <div key={column.id} className="flex items-center">
-              <span className="font-medium text-gray-500 dark:text-gray-500 w-24 flex-shrink-0">
+            <div key={column.id} className="flex items-center min-w-0">
+              <span className="font-medium text-earth-500 dark:text-earth-400 w-24 flex-shrink-0 truncate">
                 {column.label}:
               </span>
               {isLink ? (
@@ -72,13 +72,14 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
                   href={sanitizeUrl(value)}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex-1 truncate text-indigo-600 dark:text-indigo-400 hover:underline"
+                  className="flex-1 min-w-0 truncate text-sage-600 dark:text-sage-400 hover:underline"
                   onClick={(e) => e.stopPropagation()}
+                  title={value}
                 >
                   {value}
                 </a>
               ) : (
-                <span className="flex-1 truncate">
+                <span className="flex-1 min-w-0 truncate" title={value}>
                   {value}
                 </span>
               )}

@@ -18,13 +18,13 @@ const TimelineEventList: React.FC<TimelineEventListProps> = ({
   const { t } = useTranslation();
 
   if (events.length === 0) {
-    return <p className="text-sm text-gray-500 dark:text-gray-400 italic">{t('timeline.noEvents')}</p>;
+    return <p className="text-sm text-earth-500 dark:text-earth-400 italic">{t('timeline.noEvents')}</p>;
   }
 
   return (
     <div className="relative">
       {/* Timeline line */}
-      <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-gray-200 dark:bg-gray-600 sm:left-5"></div>
+      <div className='absolute left-4 top-0 bottom-0 w-0.5 bg-earth-200 dark:bg-earth-600 sm:left-5'></div>
 
       {/* Timeline events */}
       <div className="space-y-6 pl-10 sm:pl-12">
@@ -32,7 +32,7 @@ const TimelineEventList: React.FC<TimelineEventListProps> = ({
           <div key={event.id} className="relative flex items-start">
             {/* Timeline dot */}
             <div className="absolute left-[-34px] sm:left-[-37px] top-1">
-              <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full ${getStatusColor(event.status)} border-4 border-white dark:border-gray-800 shadow-lg flex items-center justify-center`}>
+              <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full ${getStatusColor(event.status)} border-4 border-white dark:border-earth-800 flex items-center justify-center`}>
                 {event.status === 'completed' && (
                   <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
@@ -58,26 +58,26 @@ const TimelineEventList: React.FC<TimelineEventListProps> = ({
 
             {/* Event content */}
             <div className="ml-0 flex-1">
-              <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 border border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
-                <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-                  <div className="space-y-1">
-                    <h4 className="font-semibold text-gray-900 dark:text-white text-sm sm:text-base">
+              <div className='bg-earth-50 dark:bg-earth-700 rounded p-4 border border-earth-200 dark:border-earth-600 hover:bg-earth-100 dark:hover:bg-earth-600 transition-colors'>
+                <div className='flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between'>
+                  <div className='space-y-1'>
+                    <h4 className='font-semibold text-earth-900 dark:text-earth-100 text-sm sm:text-base'>
                       {getStageDisplayName(event.type, event.customTypeName)}
                     </h4>
-                    <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">{formatDate(event.date)}</p>
+                    <p className='text-xs sm:text-sm text-earth-600 dark:text-earth-300'>{formatDate(event.date)}</p>
                     {event.interviewerName && (
-                      <p className="text-xs text-indigo-700 dark:text-indigo-300 font-medium">
+                      <p className='text-xs text-sage-700 dark:text-sage-300 font-medium'>
                         👤 {event.interviewerName}
                       </p>
                     )}
                     {event.notes && (
-                      <p className="text-xs sm:text-sm text-gray-700 dark:text-gray-300 italic">"{event.notes}"</p>
+                      <p className='text-xs sm:text-sm text-earth-700 dark:text-earth-300 italic'>"{event.notes}"</p>
                     )}
                   </div>
                   <span className={`px-3 py-1 rounded-full text-[11px] sm:text-xs font-semibold capitalize ${
                     event.status === 'completed' ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200' :
                     event.status === 'scheduled' ? 'bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200' :
-                    event.status === 'cancelled' ? 'bg-gray-100 dark:bg-gray-600 text-gray-800 dark:text-gray-200' :
+                    event.status === 'cancelled' ? 'bg-earth-200 dark:bg-earth-600 text-earth-800 dark:text-earth-200' :
                     'bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200'
                   }`}>
                     {t(`common.status_types.${event.status}`)}
