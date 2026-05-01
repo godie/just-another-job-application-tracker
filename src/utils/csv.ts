@@ -1,6 +1,6 @@
 import type { JobApplication } from '../types/applications';
 import { generateId } from './id';
-import { toWorkType } from '../storage/applications';
+import { toWorkType } from './applications';
 
 /**
  * Exports an array of JobApplication to a CSV string.
