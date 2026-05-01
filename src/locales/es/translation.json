@@ -21,11 +21,71 @@
     "enterApp": "Entrar a la Aplicación",
     "footer": "© 2025 Job Application Tracker. Domina tu camino profesional."
   },
+  "backupSync": {
+    "title": "Respaldo y Sync",
+    "subtitle": "Mantén tus datos seguros y accesibles desde cualquier dispositivo.",
+    "tabs": {
+      "acrossDevices": "Entre Dispositivos",
+      "googleSheets": "Google Sheets"
+    },
+    "notLoggedIn": {
+      "title": "Sincroniza Entre Dispositivos",
+      "description": "Mantén tus aplicaciones y oportunidades seguras y accesibles desde cualquier dispositivo.",
+      "signIn": "Iniciar Sesión",
+      "createAccount": "Crear Cuenta",
+      "signInWithGoogle": "Iniciar sesión con Google",
+      "orDivider": "o",
+      "privacyNote": "Tus datos se guardan en tu navegador por defecto. Crear una cuenta solo habilita el respaldo en la nube y la sincronización entre dispositivos."
+    },
+    "loggedIn": {
+      "syncedSecure": "Sincronizado y Seguro",
+      "yourData": "Tus Datos",
+      "applications_one": "{{count}} Aplicación",
+      "applications_other": "{{count}} Aplicaciones",
+      "opportunities_one": "{{count}} Oportunidad",
+      "opportunities_other": "{{count}} Oportunidades",
+      "lastSync": "Última Sync",
+      "syncNow": "Sincronizar Ahora",
+      "syncSuccess": "¡Sincronización completada exitosamente!",
+      "syncingNow": "Sincronizando...",
+      "autoSyncNote": "Los datos se sincronizan automáticamente cuando haces cambios.",
+      "logout": "Cerrar Sesión",
+      "neverSynced": "Aún no sincronizado"
+    },
+    "welcome": {
+      "title": "¡Has iniciado sesión!",
+      "message": "Tus datos ahora se sincronizarán automáticamente en todos tus dispositivos. Puedes gestionar la sincronización en Respaldo y Sync."
+    },
+    "merge": {
+      "title": "Conflicto de Datos",
+      "description": "Tienes datos existentes en este dispositivo y en la nube. ¿Cómo te gustaría manejar esto?",
+      "useCloud": "Usar Datos de la Nube",
+      "useCloudDesc": "Reemplaza los datos locales con tu respaldo en la nube. Los elementos solo locales se perderán.",
+      "keepLocal": "Mantener Datos Locales",
+      "keepLocalDesc": "Mantén lo que está en este dispositivo. Los datos de la nube se sobrescribirán en la próxima sincronización.",
+      "mergeBoth": "Fusionar Ambos (Recomendado)",
+      "mergeBothDesc": "Combina datos de ambas fuentes. Los duplicados se resuelven automáticamente.",
+      "cancel": "Cancelar",
+      "notSyncedBanner": "Datos no sincronizados — elige cómo manejar tus datos",
+      "cloudLabel": "Nube",
+      "localLabel": "Local",
+      "mergedLabel": "Fusionado",
+      "mergeSuccess": "¡Datos fusionados exitosamente!",
+      "syncSuccess": "¡Datos sincronizados exitosamente!",
+      "resolveError": "Error al resolver el conflicto de datos. Tus datos locales están preservados.",
+      "syncResumed": "¡Sincronización reanudada!",
+      "reopenFailed": "Error al verificar datos en la nube. Por favor, inténtalo de nuevo.",
+      "resolve": "Resolver"
+    },
+    "errors": {
+      "syncFailed": "Error de sync — tus cambios están guardados localmente y se sincronizarán cuando se restaure la conexión."
+    }
+  },
   "common": {
     "footer": {
       "vibecoded": "Vibecoded con amor ❤️ por <link>godie</link> con cursor v{{version}} ({{year}})",
-      "terms": "Términos de Servicio",
-      "privacy": "Privacidad"
+      "privacyPolicy": "Política de Privacidad",
+      "termsOfUse": "Términos de Uso"
     },
     "loading": "Cargando...",
     "loginSuccess": "¡Inicio de sesión exitoso con Google!",
@@ -35,6 +95,7 @@
     "logoutPartial": "Sesión cerrada (algunas credenciales pueden permanecer en el servidor).",
     "logout": "Cerrar sesión",
     "loginWithGoogle": "Iniciar sesión con Google",
+    "signIn": "Iniciar Sesión",
     "save": "Guardar",
     "cancel": "Cancelar",
     "delete": "Eliminar",
@@ -89,7 +150,8 @@
     "settings": "Ajustes",
     "insights": "Análisis",
     "support": "Soporte",
-    "about": "Acerca de"
+    "about": "Acerca de",
+    "backupSync": "Respaldo y Sync"
   },
   "home": {
     "pipeline": "Pipeline de Aplicaciones",
@@ -157,8 +219,9 @@
     "subtitle": "Personaliza tu experiencia de seguimiento de aplicaciones. Todos los cambios se guardan localmente en tu navegador.",
     "categories": {
       "general": "General",
-      "customization": "Personalización",
-      "integrations": "Integraciones",
+      "data": "Datos",
+      "sync": "Sincronización",
+      "tools": "Herramientas",
       "account": "Cuenta"
     },
     "sections": {
@@ -174,6 +237,8 @@
       "fields": "Campos de Tabla",
       "view": "Vista Predeterminada",
       "date": "Formato de Fecha",
+      "tools": "Herramientas",
+      "toolsDesc": "Herramientas de gestión de datos: CSV, backup, restauración y utilidades de debug.",
       "dateDesc": "Elige cómo se deben mostrar las fechas en toda la aplicación.",
       "custom": "Campos Personalizados",
       "interviewing": "Eventos de Entrevista"
@@ -270,6 +335,31 @@
     },
     "success": "¡Ajustes guardados con éxito!"
   },
+  "tools": {
+    "csv": {
+      "title": "Importar / Exportar CSV",
+      "desc": "Exporta tus aplicaciones a formato CSV o importa aplicaciones desde un archivo CSV."
+    },
+    "backup": {
+      "title": "Backup y Restauración",
+      "desc": "Crea un backup completo de todos tus datos o restaura desde un backup anterior.",
+      "create": "Crear Backup",
+      "restore": "Restaurar Backup",
+      "warning": "Restaurar un backup reemplazará todos los datos actuales. Asegúrate de tener un backup actualizado antes de continuar."
+    },
+    "debug": {
+      "title": "Debug / Datos Crudos",
+      "desc": "Ve los datos JSON sin procesar almacenados en tu navegador. Útil para troubleshooting.",
+      "show": "Mostrar Datos",
+      "hide": "Ocultar Datos"
+    },
+    "danger": {
+      "title": "Zona de Peligro",
+      "desc": "Estas acciones no se pueden deshacer. Procede con precaución.",
+      "clear": "Borrar Todos los Datos"
+    },
+    "clearConfirm": "¿Estás seguro de que quieres borrar TODOS los datos? Esta acción no se puede deshacer."
+  },
   "insights": {
     "title": "Análisis",
     "applicationsByStatus": "Aplicaciones por Estado",
@@ -277,6 +367,7 @@
     "totalInterviews": "Total de Entrevistas",
     "rejectedApplications": "Aplicaciones Rechazadas",
     "rejectionPercentage": "Porcentaje de Rechazo",
+    "rejectionRate": "tasa",
     "interviewsByStatus": "Entrevistas por Estado de Aplicación",
     "interviewsByType": "Entrevistas por Tipo",
     "interviewTypes": {
@@ -327,6 +418,11 @@
       "added": "¡La oportunidad \"{{position}}\" en {{company}} ha sido añadida!",
       "convertError": "Error al convertir la oportunidad en aplicación. Por favor, inténtalo de nuevo.",
       "addError": "Error al añadir la oportunidad. Por favor, inténtalo de nuevo."
+    },
+    "metrics": {
+      "total": "Total de Oportunidades",
+      "thisWeek": "Esta Semana",
+      "remote": "Remoto"
     },
     "atsSearch": {
       "title": "Búsqueda Directa en ATS",
