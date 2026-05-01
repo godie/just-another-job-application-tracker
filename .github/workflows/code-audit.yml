@@ -12,6 +12,7 @@ on:
 
 permissions:
   contents: read
+  pull-requests: write
 
 jobs:
   audit:
@@ -69,17 +70,17 @@ jobs:
             
             const body = `## Code Audit Summary
             
-            | Metric | Count |
-            |--------|-------|
-            | Total Issues | ${summary.total} |
-            | Critical | ${summary.critical} |
-            | High | ${summary.high} |
-            | Medium | ${summary.medium} |
-            | Low | ${summary.low} |
+| Metric | Count |
+|--------|-------|
+| Total Issues | ${summary.total} |
+| Critical | ${summary.critical} |
+| High | ${summary.high} |
+| Medium | ${summary.medium} |
+| Low | ${summary.low} |
 
-            ${summary.total > 0 ? '⚠️ Please review the audit report and address the issues.' : '✅ No significant issues found!'}
+${summary.total > 0 ? '⚠️ Please review the audit report and address the issues.' : '✅ No significant issues found!'}
 
-            *This audit was automatically generated*`;
+*This audit was automatically generated*`;
             
             await github.rest.issues.createComment({
               issue_number: context.issue.number,
@@ -92,8 +93,11 @@ jobs:
         if: always()
         run: |
           if [ -f audit/audit-report.json ]; then
-            CRITICAL=$(cat audit/audit-report.json | grep -o '"critical":[0-9]*' | grep -o '[0-9]*')
-            HIGH=$(cat audit/audit-report.json | grep -o '"high":[0-9]*' | grep -o '[0-9]*')
+            CRITICAL=$(grep -o '"critical":[0-9]*' audit/audit-report.json | head -n 1 | cut -d: -f2 || echo 0)
+            HIGH=$(grep -o '"high":[0-9]*' audit/audit-report.json | head -n 1 | cut -d: -f2 || echo 0)
+            CRITICAL=${CRITICAL:-0}
+            HIGH=${HIGH:-0}
+            echo "Critical: $CRITICAL, High: $HIGH"
             if [ "$CRITICAL" -gt 0 ] || [ "$HIGH" -gt 5 ]; then
               echo "Found critical or many high-priority issues!"
               exit 1
