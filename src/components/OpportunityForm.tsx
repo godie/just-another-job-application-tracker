@@ -1,5 +1,5 @@
 // src/components/OpportunityForm.tsx
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { type JobOpportunity } from '../utils/localStorage';
 import { Button, Input, Card } from './ui';
@@ -24,6 +24,52 @@ const OpportunityForm: React.FC<OpportunityFormProps> = ({ isOpen, onClose, onSa
   });
 
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+
+  // Focus trap for modal accessibility - hooks before early return
+  const modalRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!isOpen || !modalRef.current) return;
+    
+    const modal = modalRef.current;
+    const focusableElements = modal.querySelectorAll<HTMLElement>(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+    const firstFocusable = focusableElements[0];
+    const lastFocusable = focusableElements[focusableElements.length - 1];
+
+    // Store the previously focused element
+    const previouslyFocused = document.activeElement as HTMLElement;
+
+    // Focus the first element when modal opens
+    firstFocusable?.focus();
+
+    const handleTabKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Tab') return;
+      
+      if (e.shiftKey) {
+        if (document.activeElement === firstFocusable) {
+          e.preventDefault();
+          lastFocusable?.focus();
+        }
+      } else {
+        if (document.activeElement === lastFocusable) {
+          e.preventDefault();
+          firstFocusable?.focus();
+        }
+      }
+    };
+
+    modal.addEventListener('keydown', handleTabKey);
+
+    return () => {
+      modal.removeEventListener('keydown', handleTabKey);
+      try {
+        (previouslyFocused as HTMLElement | null)?.focus();
+      } catch {
+        // Element may have been removed from DOM
+      }
+    };
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -103,101 +149,118 @@ const OpportunityForm: React.FC<OpportunityFormProps> = ({ isOpen, onClose, onSa
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <Card className="max-w-2xl w-full max-h-[90vh] overflow-y-auto p-0">
+    <div 
+      className="fixed inset-0 bg-earth-900/80 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="opportunity-form-title"
+    >
+      <div ref={modalRef}>
+        <Card className="max-w-2xl w-full max-h-[90vh] overflow-y-auto p-0">
         <div className="p-6">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-xl font-bold text-gray-800 dark:text-white">{t('form.addOpportunityTitle')}</h3>
-            <Button
-              variant="ghost"
-              size="icon"
+            <h3 id="opportunity-form-title" className="text-xl font-bold text-earth-800 dark:text-earth-100">{t('form.addOpportunityTitle')}</h3>
+            <button
+              type="button"
               onClick={handleCancel}
-              className="text-gray-400 hover:text-gray-600"
-              aria-label="Close"
+              className="text-earth-400 hover:text-earth-600 dark:hover:text-earth-200 text-2xl leading-none p-1 rounded hover:bg-earth-100 dark:hover:bg-earth-700 transition-colors"
+              aria-label="Close dialog"
             >
-              ×
-            </Button>
+              <span aria-hidden="true">×</span>
+            </button>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <Input
+              id="opportunity-position"
               label={t('form.position')}
               type="text"
               value={formData.position}
               onChange={(e) => handleInputChange('position', e.target.value)}
               error={errors.position}
               placeholder="e.g., Software Engineer"
+              maxLength={200}
             />
 
             <Input
-              id="company"
+              id="opportunity-company"
               label={t('form.company')}
               type="text"
               value={formData.company}
               onChange={(e) => handleInputChange('company', e.target.value)}
               error={errors.company}
               placeholder="e.g., Google"
+              maxLength={200}
             />
 
             <Input
-              id="link"
+              id="opportunity-link"
               label={t('form.link')}
               type="url"
               value={formData.link}
               onChange={(e) => handleInputChange('link', e.target.value)}
               error={errors.link}
               placeholder="https://linkedin.com/jobs/view/..."
+              maxLength={500}
             />
 
             <div className="grid grid-cols-2 gap-4">
               <Input
-                id="location"
+                id="opportunity-location"
                 label={t('opportunities.table.location')}
                 type="text"
                 value={formData.location}
                 onChange={(e) => handleInputChange('location', e.target.value)}
                 placeholder="e.g., Remote, San Francisco, CA"
+                maxLength={200}
               />
 
               <Input
-                id="jobType"
+                id="opportunity-job-type"
                 label={t('opportunities.table.jobType')}
                 type="text"
                 value={formData.jobType}
                 onChange={(e) => handleInputChange('jobType', e.target.value)}
                 placeholder="Remote/Hybrid/On-site"
+                maxLength={100}
               />
             </div>
 
             <Input
-              id="salary"
+              id="opportunity-salary"
               label={t('fields.salary')}
               type="text"
               value={formData.salary}
               onChange={(e) => handleInputChange('salary', e.target.value)}
               placeholder="e.g., $120k - $150k"
+              maxLength={100}
             />
 
             <div>
-              <label htmlFor="description" className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">
+              <label htmlFor="opportunity-description" className="block text-xs font-semibold text-earth-600 dark:text-earth-400 mb-1">
                 {t('form.description')}
               </label>
               <textarea
-                id="description"
+                id="opportunity-description"
                 value={formData.description}
                 onChange={(e) => handleInputChange('description', e.target.value)}
                 rows={4}
-                className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:border-indigo-500 focus:ring-indigo-500 resize-none"
+                maxLength={2000}
+                className='w-full rounded border border-earth-300 dark:border-earth-600 px-3 py-2 text-sm bg-white dark:bg-earth-800 text-earth-900 dark:text-earth-100 placeholder-earth-400 dark:placeholder-earth-500 focus:border-sage-500 focus:ring-sage-500 resize-none'
                 placeholder="Job description or notes..."
               />
+              <p className='text-xs text-earth-400 dark:text-earth-500 mt-1'>
+                {(formData.description || '').length}/2000
+              </p>
             </div>
 
             <Input
-              id="postedDate"
+              id="opportunity-posted-date"
               label={t('form.postedDate')}
               type="date"
               value={formData.postedDate}
               onChange={(e) => handleInputChange('postedDate', e.target.value)}
+              maxLength={50}
             />
 
             <div className="flex justify-end gap-3 pt-4">
@@ -217,7 +280,8 @@ const OpportunityForm: React.FC<OpportunityFormProps> = ({ isOpen, onClose, onSa
             </div>
           </form>
         </div>
-      </Card>
+        </Card>
+      </div>
     </div>
   );
 };

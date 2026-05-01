@@ -21,14 +21,14 @@ describe('Button', () => {
   });
 
   it('applies the correct variant classes', () => {
-    const { rerender } = render(<Button variant="primary">Primary</Button>);
-    expect(screen.getByRole('button')).toHaveClass('bg-indigo-600');
+    const { rerender } = render(<Button variant='primary'>Primary</Button>);
+    expect(screen.getByRole('button')).toHaveClass('bg-sage-600');
 
-    rerender(<Button variant="danger">Danger</Button>);
-    expect(screen.getByRole('button')).toHaveClass('bg-red-600');
+    rerender(<Button variant='danger'>Danger</Button>);
+    expect(screen.getByRole('button')).toHaveClass('bg-terracotta-600');
 
-    rerender(<Button variant="outline">Outline</Button>);
-    expect(screen.getByRole('button')).toHaveClass('border-gray-300');
+    rerender(<Button variant='outline'>Outline</Button>);
+    expect(screen.getByRole('button')).toHaveClass('border-earth-300');
   });
 
   it('applies the correct size classes', () => {

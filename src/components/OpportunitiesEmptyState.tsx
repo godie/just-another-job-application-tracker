@@ -5,14 +5,14 @@ const OpportunitiesEmptyState: React.FC = () => {
   const { t } = useTranslation();
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8 text-center">
-      <p className="text-gray-500 dark:text-gray-400 text-lg mb-2">{t('opportunities.noOpportunities')}</p>
-      <p className="text-gray-400 dark:text-gray-500 text-sm">
+    <div className='bg-white dark:bg-earth-800 rounded p-8 text-center border border-earth-200 dark:border-earth-700'>
+      <p className='text-earth-500 dark:text-earth-400 text-lg mb-2'>{t('opportunities.noOpportunities')}</p>
+      <p className='text-earth-400 dark:text-earth-500 text-sm'>
         <a
-          href="https://chromewebstore.google.com/detail/job-application-tracker/inlfdhmkpfikjfgjgnininfcgdnlhlcc?pli=1"
-          className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
-          target="_blank"
-          rel="noopener noreferrer"
+          href='https://chromewebstore.google.com/detail/job-application-tracker/inlfdhmkpfikjfgjgnininfcgdnlhlcc?pli=1'
+          className='text-sage-600 dark:text-sage-400 hover:text-sage-700 dark:hover:text-sage-300'
+          target='_blank'
+          rel='noopener noreferrer'
         >
           {t('opportunities.noOpportunitiesDesc')}
         </a>

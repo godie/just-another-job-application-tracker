@@ -93,12 +93,12 @@ const TimelineEditor: React.FC<TimelineEditorProps> = ({ events, onChange }) => 
   return (
     <div className="mt-6">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-gray-800">Interview Timeline</h3>
+        <h3 className="text-lg font-semibold text-earth-800 dark:text-earth-100">Interview Timeline</h3>
         {!isAdding && (
           <button
             type="button"
             onClick={() => setIsAdding(true)}
-            className="text-sm px-3 py-1 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition"
+            className="text-sm px-3 py-1 bg-sage-600 text-white rounded hover:bg-sage-700 transition"
           >
             + Add Event
           </button>
@@ -108,7 +108,7 @@ const TimelineEditor: React.FC<TimelineEditorProps> = ({ events, onChange }) => 
       {/* Timeline List */}
       <div className="space-y-2">
         {sortedEvents.map((event) => (
-          <div key={event.id} className="bg-gray-50 border border-gray-200 rounded-lg p-3">
+          <div key={event.id} className="bg-earth-50 border border-earth-200 rounded p-3">
             {editingId === event.id ? (
               <EventForm
                 event={event}
@@ -120,43 +120,43 @@ const TimelineEditor: React.FC<TimelineEditorProps> = ({ events, onChange }) => 
             ) : (
               <div className="flex items-start justify-between">
                 <div className="flex-1">
-                  <div className="flex items-center space-x-2">
-                    <span className="font-medium text-gray-900">
+                  <div className='flex items-center space-x-2'>
+                    <span className='font-medium text-earth-900 dark:text-earth-100'>
                       {event.type === 'custom' && event.customTypeName 
                         ? event.customTypeName 
                         : stageOptions.find(opt => opt.value === event.type || (opt.isCustom && event.customTypeName === opt.label))?.label || event.type}
                     </span>
-                    <span className="text-sm text-gray-600">{event.date}</span>
+                    <span className='text-sm text-earth-600 dark:text-earth-400'>{event.date}</span>
                     <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${
-                      event.status === 'completed' ? 'bg-green-100 text-green-800' :
-                      event.status === 'scheduled' ? 'bg-blue-100 text-blue-800' :
-                      event.status === 'cancelled' ? 'bg-gray-100 text-gray-800' :
-                      'bg-yellow-100 text-yellow-800'
+                      event.status === 'completed' ? 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300' :
+                      event.status === 'scheduled' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300' :
+                      event.status === 'cancelled' ? 'bg-earth-200 text-earth-800 dark:bg-earth-600 dark:text-earth-200' :
+                      'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300'
                     }`}>
                       {event.status}
                     </span>
                   </div>
                   {event.interviewerName && (
-                    <p className="text-sm text-indigo-600 mt-1 font-medium">
+                    <p className='text-sm text-sage-600 dark:text-sage-400 mt-1 font-medium'>
                       👤 {event.interviewerName}
                     </p>
                   )}
                   {event.notes && (
-                    <p className="text-sm text-gray-600 mt-1 italic">"{event.notes}"</p>
+                    <p className='text-sm text-earth-600 dark:text-earth-400 mt-1 italic'>"{event.notes}"</p>
                   )}
                 </div>
-                <div className="flex space-x-2">
+                <div className='flex space-x-2'>
                   <button
-                    type="button"
+                    type='button'
                     onClick={() => setEditingId(event.id)}
-                    className="text-indigo-600 hover:text-indigo-800 text-sm"
+                    className='text-sage-600 hover:text-sage-800 dark:text-sage-400 dark:hover:text-sage-300 text-sm'
                   >
                     Edit
                   </button>
                   <button
-                    type="button"
+                    type='button'
                     onClick={() => handleDeleteEvent(event.id)}
-                    className="text-red-600 hover:text-red-800 text-sm"
+                    className='text-terracotta-600 hover:text-terracotta-800 dark:text-terracotta-400 dark:hover:text-terracotta-300 text-sm'
                   >
                     Delete
                   </button>
@@ -177,7 +177,7 @@ const TimelineEditor: React.FC<TimelineEditorProps> = ({ events, onChange }) => 
         )}
 
         {events.length === 0 && !isAdding && (
-          <p className="text-sm text-gray-500 text-center py-4">
+          <p className="text-sm text-earth-500 dark:text-earth-400 text-center py-4">
             No timeline events yet. Click "+ Add Event" to get started.
           </p>
         )}
@@ -270,12 +270,12 @@ const EventForm: React.FC<EventFormProps> = ({ event, stageOptions, statusOption
     <div className="space-y-3" role="group" aria-label="Timeline event form">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         <div>
-          <label htmlFor="stage-type" className="block text-xs font-medium text-gray-700 mb-1">Stage Type</label>
+          <label htmlFor="stage-type" className="block text-xs font-medium text-earth-700 dark:text-earth-300 mb-1">Stage Type</label>
           <select
             id="stage-type"
             value={type}
             onChange={(e) => handleTypeChange(e.target.value)}
-            className="w-full text-sm rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border"
+            className='w-full text-sm rounded border-earth-300 dark:border-earth-600 shadow-sm focus:border-sage-500 dark:focus:border-sage-400 focus:ring-sage-500 dark:focus:ring-sage-400 p-2 border bg-white dark:bg-earth-800 text-earth-900 dark:text-earth-100'
           >
             {stageOptions.map(opt => (
               <option key={opt.value} value={opt.value}>
@@ -286,24 +286,24 @@ const EventForm: React.FC<EventFormProps> = ({ event, stageOptions, statusOption
         </div>
 
         <div>
-          <label htmlFor="event-date" className="block text-xs font-medium text-gray-700 mb-1">Date</label>
+          <label htmlFor="event-date" className="block text-xs font-medium text-earth-700 dark:text-earth-300 mb-1">Date</label>
           <input
             id="event-date"
             type="date"
             value={date}
             onChange={(e) => dispatch({ type: 'SET_FIELD', field: 'date', value: e.target.value })}
             required
-            className="w-full text-sm rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border"
+            className='w-full text-sm rounded border-earth-300 dark:border-earth-600 shadow-sm focus:border-sage-500 dark:focus:border-sage-400 focus:ring-sage-500 dark:focus:ring-sage-400 p-2 border bg-white dark:bg-earth-800 text-earth-900 dark:text-earth-100'
           />
         </div>
 
         <div>
-          <label htmlFor="event-status" className="block text-xs font-medium text-gray-700 mb-1">Status</label>
+          <label htmlFor="event-status" className="block text-xs font-medium text-earth-700 dark:text-earth-300 mb-1">Status</label>
           <select
             id="event-status"
             value={status}
             onChange={(e) => dispatch({ type: 'SET_FIELD', field: 'status', value: e.target.value as EventStatus })}
-            className="w-full text-sm rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border"
+            className='w-full text-sm rounded border-earth-300 dark:border-earth-600 shadow-sm focus:border-sage-500 dark:focus:border-sage-400 focus:ring-sage-500 dark:focus:ring-sage-400 p-2 border bg-white dark:bg-earth-800 text-earth-900 dark:text-earth-100'
           >
             {statusOptions.map(opt => (
               <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -314,7 +314,7 @@ const EventForm: React.FC<EventFormProps> = ({ event, stageOptions, statusOption
 
       {(type === 'custom' || type.startsWith('custom:')) && (
         <div>
-          <label htmlFor="custom-type-name" className="block text-xs font-medium text-gray-700 mb-1">
+          <label htmlFor="custom-type-name" className="block text-xs font-medium text-earth-700 dark:text-earth-300 mb-1">
             {type.startsWith('custom:') ? 'Event Name (from your custom events)' : 'Custom Type Name'}
           </label>
           <input
@@ -324,38 +324,34 @@ const EventForm: React.FC<EventFormProps> = ({ event, stageOptions, statusOption
             onChange={(e) => dispatch({ type: 'SET_FIELD', field: 'customType', value: e.target.value })}
             placeholder="Enter custom event name"
             disabled={type.startsWith('custom:')}
-            className={`w-full text-sm rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border ${
-              type.startsWith('custom:') ? 'bg-gray-100' : ''
+            className={`w-full text-sm rounded border-earth-300 shadow-sm focus:border-sage-500 focus:ring-sage-500 p-2 border ${
+              type.startsWith('custom:') ? 'bg-earth-100 dark:bg-earth-700' : ''
             }`}
           />
           {type.startsWith('custom:') && (
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-earth-500 dark:text-earth-400 mt-1">
               This event name is managed in Settings. To change it, go to Settings → Interview Events.
             </p>
           )}
         </div>
-      )}
-
-      <div>
-        <label htmlFor="event-notes" className="block text-xs font-medium text-gray-700 mb-1">Notes (optional)</label>
+      )}        <div>
+          <label htmlFor="event-notes" className="block text-xs font-medium text-earth-700 dark:text-earth-300 mb-1">Notes (optional)</label>
         <textarea
           id="event-notes"
           value={notes}
           onChange={(e) => dispatch({ type: 'SET_FIELD', field: 'notes', value: e.target.value })}
           rows={2}
-          className="w-full text-sm rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border"
+          className='w-full text-sm rounded border-earth-300 dark:border-earth-600 shadow-sm focus:border-sage-500 dark:focus:border-sage-400 focus:ring-sage-500 dark:focus:ring-sage-400 p-2 border bg-white dark:bg-earth-800 text-earth-900 dark:text-earth-100'
         />
-      </div>
-
-      <div>
-        <label htmlFor="interviewer-name" className="block text-xs font-medium text-gray-700 mb-1">Interviewer Name (optional)</label>
+      </div>        <div>
+          <label htmlFor="interviewer-name" className="block text-xs font-medium text-earth-700 dark:text-earth-300 mb-1">Interviewer Name (optional)</label>
         <input
           id="interviewer-name"
           type="text"
           value={interviewerName}
           onChange={(e) => dispatch({ type: 'SET_FIELD', field: 'interviewerName', value: e.target.value })}
           placeholder="John Doe"
-          className="w-full text-sm rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border"
+          className='w-full text-sm rounded border-earth-300 dark:border-earth-600 shadow-sm focus:border-sage-500 dark:focus:border-sage-400 focus:ring-sage-500 dark:focus:ring-sage-400 p-2 border bg-white dark:bg-earth-800 text-earth-900 dark:text-earth-100'
         />
       </div>
 
@@ -363,14 +359,14 @@ const EventForm: React.FC<EventFormProps> = ({ event, stageOptions, statusOption
         <button
           type="button"
           onClick={onCancel}
-          className="px-3 py-1 text-sm border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition"
+          className='px-3 py-1 text-sm border border-earth-300 rounded text-earth-700 dark:text-earth-300 hover:bg-earth-50 dark:hover:bg-earth-700 transition'
         >
           Cancel
         </button>
         <button
           type="button"
           onClick={handleSave}
-          className="px-3 py-1 text-sm bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition"
+          className='px-3 py-1 text-sm bg-sage-600 text-white rounded hover:bg-sage-700 transition'
         >
           Save
         </button>

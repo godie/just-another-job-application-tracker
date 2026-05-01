@@ -3,7 +3,9 @@ import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { type PageType } from '../App';
 import { useOpportunitiesStore } from '../stores/opportunitiesStore';
+import { useIsLoggedIn } from '../hooks/useIsLoggedIn';
 import { Button, Badge } from './ui';
+import SyncNavIcon from './sync/SyncNavIcon';
 
 interface SidebarProps {
   currentPage?: PageType;
@@ -13,6 +15,7 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ currentPage = 'applications', onNavigate, isOpen = true }) => {
   const { t } = useTranslation();
+  const isLoggedIn = useIsLoggedIn();
   const opportunities = useOpportunitiesStore((state) => state.opportunities);
   const loadOpportunities = useOpportunitiesStore((state) => state.loadOpportunities);
   const refreshOpportunities = useOpportunitiesStore((state) => state.refreshOpportunities);
@@ -45,9 +48,10 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPage = 'applications', onNavig
     }
   };
 
-  const navItems: { page: PageType; label: string; showBadge?: boolean }[] = [
+  const navItems: { page: PageType; label: string; showBadge?: boolean; icon?: React.ReactNode }[] = [
     { page: 'applications', label: t('nav.applications') },
     { page: 'opportunities', label: t('nav.opportunities'), showBadge: true },
+    { page: 'backup-sync', label: t('nav.backupSync'), icon: <SyncNavIcon isLoggedIn={isLoggedIn} className='w-5 h-5' /> },
     { page: 'settings', label: t('nav.settings') },
     { page: 'insights', label: t('nav.insights') },
     { page: 'support', label: t('nav.support') },
@@ -56,30 +60,31 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPage = 'applications', onNavig
 
   return (
     <nav
-      aria-label="Sidebar"
-      className={`fixed left-0 top-16 h-[calc(100vh-4rem)] bg-gray-50 dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 p-4 flex flex-col transition-transform duration-300 ease-in-out z-40 ${
+      aria-label='Sidebar'
+      className={`fixed left-0 top-16 h-[calc(100vh-4rem)] bg-earth-50 dark:bg-earth-800 border-r border-earth-200 dark:border-earth-700 p-4 flex flex-col transition-transform duration-300 ease-in-out z-40 ${
         isOpen ? 'translate-x-0' : '-translate-x-full'
       } w-64`}
     >
-      <ul className="flex-1">
+      <ul className='flex-1'>
         {navItems.map((item) => (
-          <li key={item.page} className="mb-4">
+          <li key={item.page} className='mb-4'>
             <Button
               variant={currentPage === item.page ? 'secondary' : 'ghost'}
-              size="lg"
+              size='lg'
               onClick={() => handleNavigation(item.page)}
               aria-current={currentPage === item.page ? 'page' : undefined}
               className={`w-full justify-start text-lg relative ${
                 currentPage === item.page
-                  ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white'
+                  ? 'bg-earth-200 dark:bg-earth-700 text-earth-900 dark:text-earth-100'
                   : ''
               }`}
             >
+              {item.icon && <span className='mr-2'>{item.icon}</span>}
               {item.label}
               {item.showBadge && opportunitiesCount > 0 && (
                 <Badge
-                  variant="danger"
-                  className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center rounded-full font-bold"
+                  variant='danger'
+                  className='absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center rounded-full font-bold'
                 >
                   {opportunitiesCount > 9 ? '9+' : opportunitiesCount}
                 </Badge>

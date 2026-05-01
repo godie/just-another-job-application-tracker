@@ -41,9 +41,9 @@ const ApplicationTable: React.FC<ApplicationTableProps> = ({ columns, data, onEd
   return (
     <>
       {/* Mobile Card View */}
-      <div className="md:hidden space-y-3" data-testid="application-cards">
+      <div className='md:hidden space-y-3' data-testid='application-cards'>
         {data.length === 0 ? (
-          <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-xl border border-gray-100 dark:border-gray-700 text-center text-gray-600 dark:text-gray-400 italic text-sm font-medium">
+          <div className='bg-earth-50 dark:bg-earth-800 p-8 border border-earth-200 dark:border-earth-700 text-center text-earth-600 dark:text-earth-400 italic text-sm font-medium'>
             {t('home.noApplications')}
           </div>
         ) : (
@@ -60,27 +60,27 @@ const ApplicationTable: React.FC<ApplicationTableProps> = ({ columns, data, onEd
       </div>
 
       {/* Desktop Table View */}
-      <Card className="hidden md:block overflow-hidden shadow-xl">
-        <Table data-testid="application-table">
+      <Card className='hidden md:block overflow-hidden border border-earth-200 dark:border-earth-700'>
+        <Table data-testid='application-table'>
           <TableHeader>
-            <TableRow className="hover:bg-transparent">
+            <TableRow className='hover:bg-transparent'>
               {columns.map((column) => (
                 <TableHead
                   key={column.id}
-                  className="px-4 sm:px-6 py-3 text-[11px] sm:text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider bg-indigo-50 dark:bg-indigo-900/50 whitespace-nowrap"
+                  className='px-4 sm:px-6 py-3 text-[11px] sm:text-xs font-semibold text-earth-700 dark:text-earth-300 uppercase tracking-wide bg-sage-50 dark:bg-sage-900/30 whitespace-nowrap'
                 >
                   {column.label}
                 </TableHead>
               ))}
-              <TableHead className="relative px-4 sm:px-6 py-3 w-1 bg-indigo-50 dark:bg-indigo-900/50">
-                <span className="sr-only">{t('common.actions')}</span>
+              <TableHead className='relative px-4 sm:px-6 py-3 w-1 bg-sage-50 dark:bg-sage-900/30'>
+                <span className='sr-only'>{t('common.actions')}</span>
               </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {data.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={columns.length + 1} className="px-4 sm:px-6 py-10 text-center text-gray-600 dark:text-gray-400 italic text-sm font-medium">
+                <TableCell colSpan={columns.length + 1} className='px-4 sm:px-6 py-10 text-center text-earth-600 dark:text-earth-400 italic text-sm font-medium' role='status' aria-live='polite'>
                   {t('home.noApplications')}
                 </TableCell>
               </TableRow>
@@ -107,7 +107,7 @@ const ApplicationTable: React.FC<ApplicationTableProps> = ({ columns, data, onEd
         })}
         confirmText={t('common.delete')}
         cancelText={t('common.cancel')}
-        type="warning"
+        type='warning'
         onConfirm={() => {
           if (deleteConfirm.application) {
             onDelete(deleteConfirm.application);
@@ -116,7 +116,7 @@ const ApplicationTable: React.FC<ApplicationTableProps> = ({ columns, data, onEd
         }}
         onCancel={() => setDeleteConfirm({ isOpen: false, application: null })}
       />
-   </>
+    </>
   );
 };
 

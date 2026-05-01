@@ -37,9 +37,9 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, currentPage, onNaviga
   };
 
   return (
-    <div className="flex flex-col h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="flex flex-col h-screen bg-earth-100 dark:bg-earth-900">
       {/* Header always on top, full width */}
-      <Header onToggleSidebar={toggleSidebar} />
+      <Header onToggleSidebar={toggleSidebar} onNavigate={onNavigate} />
       
       {/* Main content area with sidebar */}
       <div className="flex flex-1 overflow-hidden mt-16">
@@ -60,11 +60,11 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, currentPage, onNaviga
           />
         )}
         <div 
-          className={`flex-1 overflow-hidden bg-white dark:bg-gray-900 transition-all duration-300 ${
+          className={`flex-1 overflow-hidden transition-all duration-300 ${
             isSidebarOpen ? 'md:ml-64' : 'ml-0'
           }`}
         >
-          <main className="h-full overflow-y-auto p-8 bg-white dark:bg-gray-900 pb-16 md:pb-8">
+          <main className="h-full overflow-y-auto p-8 pb-16 md:pb-8">
             {children}
           </main>
         </div>

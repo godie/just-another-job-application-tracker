@@ -28,7 +28,7 @@ const EmailScanSettings: React.FC<EmailScanSettingsProps> = ({
               <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
             </svg>
           </div>
-          <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+          <h3 className="text-lg font-bold text-earth-800 dark:text-earth-100">
             {t('settings.emailScan.defaultPeriod')}
           </h3>
         </div>
@@ -38,10 +38,10 @@ const EmailScanSettings: React.FC<EmailScanSettingsProps> = ({
             <button
               key={months}
               onClick={() => onEmailScanMonthsChange(months)}
-              className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all ${
+              className={`flex flex-col items-center justify-center p-4 rounded border-2 transition-all ${
                 emailScanMonths === months
-                  ? 'border-indigo-600 bg-indigo-50/50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300'
-                  : 'border-gray-100 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:border-gray-200 dark:hover:border-gray-600'
+                  ? 'border-sage-600 bg-sage-50/50 dark:bg-sage-900/20 text-sage-700 dark:text-sage-300'
+                  : 'border-earth-200 dark:border-earth-700 text-earth-500 dark:text-earth-400 hover:border-earth-300 dark:hover:border-earth-600'
               }`}
             >
               <span className="text-2xl font-bold">{months}</span>
@@ -49,7 +49,7 @@ const EmailScanSettings: React.FC<EmailScanSettingsProps> = ({
             </button>
           ))}
         </div>
-        <p className="mt-4 text-sm text-gray-500 dark:text-gray-400 italic">
+        <p className="mt-4 text-sm text-earth-500 dark:text-earth-400 italic">
           {t('settings.emailScan.subtitle')}
         </p>
       </section>
@@ -61,7 +61,7 @@ const EmailScanSettings: React.FC<EmailScanSettingsProps> = ({
               <path fillRule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zm-4 0H9v2h2V9z" clipRule="evenodd" />
             </svg>
           </div>
-          <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+          <h3 className="text-lg font-bold text-earth-800 dark:text-earth-100">
             {t('settings.emailScan.enabledChatbots')}
           </h3>
         </div>
@@ -72,19 +72,19 @@ const EmailScanSettings: React.FC<EmailScanSettingsProps> = ({
             return (
               <label
                 key={chatbot.id}
-                className={`flex items-center gap-4 p-4 rounded-xl border-2 cursor-pointer transition-all ${
+                className={`flex items-center gap-4 p-4 rounded border-2 cursor-pointer transition-all ${
                   isEnabled
-                    ? 'border-indigo-600 bg-indigo-50/50 dark:bg-indigo-900/20'
-                    : 'border-gray-100 dark:border-gray-700 hover:border-gray-200 dark:hover:border-gray-600'
+                    ? 'border-sage-600 bg-sage-50/50 dark:bg-sage-900/20'
+                    : 'border-earth-200 dark:border-earth-700 hover:border-earth-300 dark:hover:border-earth-600'
                 }`}
               >
                 <input
                   type="checkbox"
                   checked={isEnabled}
                   onChange={() => onChatbotToggle(chatbot.id)}
-                  className="h-5 w-5 text-indigo-600 border-gray-300 dark:border-gray-600 rounded focus:ring-indigo-500"
+                  className='h-5 w-5 text-sage-600 border-earth-300 dark:border-earth-600 rounded focus:ring-sage-500'
                 />
-                <span className={`font-bold ${isEnabled ? 'text-indigo-700 dark:text-indigo-300' : 'text-gray-700 dark:text-gray-300'}`}>
+                <span className={`font-bold ${isEnabled ? 'text-sage-700 dark:text-sage-300' : 'text-earth-700 dark:text-earth-300'}`}>
                   {chatbot.name}
                 </span>
               </label>
