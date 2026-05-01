@@ -337,6 +337,7 @@
   },
   "tools": {
     "csv": {
+      "heading": "CSV",
       "title": "Importar / Exportar CSV",
       "desc": "Exporta tus aplicaciones a formato CSV o importa aplicaciones desde un archivo CSV."
     },
@@ -345,20 +346,30 @@
       "desc": "Crea un backup completo de todos tus datos o restaura desde un backup anterior.",
       "create": "Crear Backup",
       "restore": "Restaurar Backup",
+      "exportJson": "Exportar Datos (JSON)",
+      "importJson": "Importar Datos (JSON)",
+      "importing": "Importando...",
       "warning": "Restaurar un backup reemplazará todos los datos actuales. Asegúrate de tener un backup actualizado antes de continuar."
     },
     "debug": {
       "title": "Debug / Datos Crudos",
       "desc": "Ve los datos JSON sin procesar almacenados en tu navegador. Útil para troubleshooting.",
       "show": "Mostrar Datos",
-      "hide": "Ocultar Datos"
+      "hide": "Ocultar Datos",
+      "showInfo": "Mostrar Info de Debug"
     },
     "danger": {
       "title": "Zona de Peligro",
       "desc": "Estas acciones no se pueden deshacer. Procede con precaución.",
+      "warning": "Estas acciones son irreversibles. Asegúrate de tener un backup antes de continuar.",
       "clear": "Borrar Todos los Datos"
     },
-    "clearConfirm": "¿Estás seguro de que quieres borrar TODOS los datos? Esta acción no se puede deshacer."
+    "clearConfirm": "¿Estás seguro de que quieres borrar TODOS los datos? Esta acción no se puede deshacer.",
+    "exportSuccess": "Datos exportados con éxito",
+    "exportError": "Error al exportar datos",
+    "importSuccess": "Datos importados con éxito",
+    "importError": "Error al importar datos. Formato de archivo inválido.",
+    "clearSuccess": "Todos los datos borrados"
   },
   "insights": {
     "title": "Análisis",
