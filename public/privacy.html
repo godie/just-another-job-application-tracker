@@ -235,6 +235,16 @@
                     <li><strong>Browser localStorage:</strong> To store your application data and preferences locally on your device</li>
                     <li><strong>Chrome Storage (extension):</strong> To store captured opportunities in the extension</li>
                 </ul>
+
+                <h3>2.6. Gmail Data (Optional Feature)</h3>
+                <p>If you choose to use the Gmail Scan feature, we:</p>
+                <ul>
+                    <li><strong>Read email content:</strong> Access emails in your Gmail account that match job application-related search queries (e.g., "interview", "application confirmation", "hiring")</li>
+                    <li><strong>Extract job information:</strong> Parse email content to identify company names, position titles, dates, and other relevant job application data</li>
+                    <li><strong>Process client-side:</strong> All email data is processed in your browser and is NOT transmitted to or stored on our servers</li>
+                    <li><strong>Temporary processing only:</strong> Email content is only held temporarily in browser memory during the scan session and is discarded after you close the page</li>
+                    <li><strong>User-initiated scans:</strong> Gmail scanning only occurs when you explicitly navigate to the Gmail Scan page and click the scan button</li>
+                </ul>
             </section>
 
             <section>
@@ -295,6 +305,10 @@
                     <li><strong>Google OAuth:</strong> For authentication. Google may receive information about your use of the service. 
                         For more information, see Google's <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>.</li>
                     <li><strong>Google Sheets API:</strong> For optional synchronization. Your data is stored in your own Google Drive account.</li>
+                    <li><strong>Gmail API:</strong> For the optional Gmail Scan feature. When you explicitly choose to scan your Gmail, 
+                        we read email content to extract job application-related information. This data is processed client-side only 
+                        and is NOT stored on our servers. You can revoke Gmail access at any time from your Google Account settings 
+                        at <a href="https://myaccount.google.com/permissions" target="_blank" rel="noopener noreferrer">myaccount.google.com/permissions</a>.</li>
                 </ul>
 
                 <h3>5.2. Service Providers</h3>
@@ -404,19 +418,56 @@
             </section>
 
             <section>
-                <h2>12. Contact</h2>
+                <h2>12. Gmail Scan Feature (Optional)</h2>
+                <p>
+                    If you choose to use the Gmail Scan feature, the following additional terms apply:
+                </p>
+                <ul>
+                    <li><strong>Purpose:</strong> The Gmail Scan feature helps you discover job application-related emails (confirmation receipts, interview invitations, rejection notices) and automatically proposes additions or updates to your job application tracker</li>
+                    <li><strong>Scope of Access:</strong> We request read-only access to your Gmail account. We do NOT send emails, modify emails, or delete emails</li>
+                    <li><strong>Data Processing:</strong> All email content is processed locally in your browser. Email data is NOT transmitted to our servers or any third-party servers</li>
+                    <li><strong>Data Retention:</strong> Email content is held temporarily in browser memory only during the scan session. We do NOT store email content in localStorage or any persistent storage</li>
+                    <li><strong>User Control:</strong> You must explicitly navigate to the Gmail Scan page and initiate each scan. Scans do not occur automatically</li>
+                    <li><strong>Security:</strong> We use Gmail API search queries to find relevant emails. The search queries look for keywords related to job applications in both English and Spanish</li>
+                    <li><strong>Revocation:</strong> You can revoke Gmail access at any time from your Google Account settings at <a href="https://myaccount.google.com/permissions" target="_blank" rel="noopener noreferrer">myaccount.google.com/permissions</a></li>
+                </ul>
+                <div class="highlight">
+                    <p><strong>Important:</strong> The Gmail Scan feature is completely optional. You can use all other features of the application without enabling Gmail access.</p>
+                </div>
+            </section>
+
+            <section>
+                <h2>13. Data Deletion Request</h2>
+                <p>
+                    If you wish to request deletion of any data associated with your use of the Service, you can:
+                </p>
+                <ul>
+                    <li><strong>Clear browser data:</strong> Delete your browser's localStorage and cookies through your browser settings</li>
+                    <li><strong>Uninstall extension:</strong> Remove the Chrome extension to delete extension-stored data</li>
+                    <li><strong>Delete Google Sheets:</strong> Delete any synced spreadsheets from your Google Drive</li>
+                    <li><strong>Revoke Google access:</strong> Visit <a href="https://myaccount.google.com/permissions" target="_blank" rel="noopener noreferrer">myaccount.google.com/permissions</a> to revoke all access permissions</li>
+                    <li><strong>Contact us:</strong> Email us at <a href="mailto:godie.mendoza@gmail.com">godie.mendoza@gmail.com</a> with your deletion request (if applicable)</li>
+                </ul>
+                <p>
+                    Upon receiving a valid deletion request, we will respond within 30 days.
+                </p>
+            </section>
+
+            <section>
+                <h2>14. Contact</h2>
                 <p>If you have questions or concerns about this Privacy Policy, you can contact us:</p>
                 <div class="contact-info">
                     <p>
                         <strong>Job Application Tracker</strong><br>
                         Website: <a href="https://jajat.godieboy.com">https://jajat.godieboy.com</a><br>
-                        Privacy policy page: <a href="https://jajat.godieboy.com/privacy.html">https://jajat.godieboy.com/privacy.html</a>
+                        Privacy policy page: <a href="https://jajat.godieboy.com/privacy.html">https://jajat.godieboy.com/privacy.html</a><br>
+                        Email: <a href="mailto:godie.mendoza@gmail.com">godie.mendoza@gmail.com</a>
                     </p>
                 </div>
             </section>
 
             <section>
-                <h2>13. Acceptance of Terms</h2>
+                <h2>15. Acceptance of Terms</h2>
                 <p>
                     By using Job Application Tracker, you acknowledge that you have read and understood this Privacy Policy 
                     and agree to all the practices described in it. If you do not agree with this policy, 
@@ -497,6 +548,16 @@
                     <li><strong>localStorage del navegador:</strong> Para almacenar sus datos de aplicaciones y preferencias localmente en su dispositivo</li>
                     <li><strong>Chrome Storage (extensión):</strong> Para almacenar oportunidades capturadas en la extensión</li>
                 </ul>
+
+                <h3>2.6. Datos de Gmail (Función Opcional)</h3>
+                <p>Si elige utilizar la función de Escaneo de Gmail:</p>
+                <ul>
+                    <li><strong>Leemos el contenido del correo:</strong> Accedemos a correos en su cuenta de Gmail que coinciden con búsquedas relacionadas con aplicaciones de trabajo (ej. "entrevista", "confirmación de solicitud", "contratación")</li>
+                    <li><strong>Extraemos información de empleo:</strong> Analizamos el contenido del correo para identificar nombres de compañías, títulos de posiciones, fechas y otros datos relevantes de aplicaciones de empleo</li>
+                    <li><strong>Procesamiento del lado del cliente:</strong> Todos los datos de correo se procesan en su navegador y NO se transmiten ni almacenan en nuestros servidores</li>
+                    <li><strong>Solo procesamiento temporal:</strong> El contenido del correo solo se mantiene temporalmente en la memoria del navegador durante la sesión de escaneo y se descarta después de cerrar la página</li>
+                    <li><strong>Escaneos iniciados por el usuario:</strong> El escaneo de Gmail solo ocurre cuando usted navega explícitamente a la página de Escaneo de Gmail y hace clic en el botón de escanear</li>
+                </ul>
             </section>
 
             <section>
@@ -549,7 +610,7 @@
             <section>
                 <h2>5. Compartir Información con Terceros</h2>
                 
-                <h3>5.1. Google Services</h3>
+                <h3>5.1. Servicios de Google</h3>
                 <p>
                     Utilizamos los siguientes servicios de Google:
                 </p>
@@ -557,6 +618,10 @@
                     <li><strong>Google OAuth:</strong> Para autenticación. Google puede recibir información sobre su uso del servicio. 
                         Para más información, consulte la <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Política de Privacidad de Google</a>.</li>
                     <li><strong>Google Sheets API:</strong> Para sincronización opcional. Sus datos se almacenan en su propia cuenta de Google Drive.</li>
+                    <li><strong>Gmail API:</strong> Para la función opcional de Escaneo de Gmail. Cuando elige explícitamente escanear su Gmail, 
+                        leemos el contenido de correos para extraer información relacionada con aplicaciones de empleo. Estos datos se procesan 
+                        solo del lado del cliente y NO se almacenan en nuestros servidores. Puede revocar el acceso a Gmail en cualquier momento 
+                        desde la configuración de su Cuenta de Google en <a href="https://myaccount.google.com/permissions" target="_blank" rel="noopener noreferrer">myaccount.google.com/permissions</a>.</li>
                 </ul>
 
                 <h3>5.2. Proveedores de Servicios</h3>
@@ -666,19 +731,56 @@
             </section>
 
             <section>
-                <h2>12. Contacto</h2>
+                <h2>12. Función de Escaneo de Gmail (Opcional)</h2>
+                <p>
+                    Si elige utilizar la función de Escaneo de Gmail, se aplican los siguientes términos adicionales:
+                </p>
+                <ul>
+                    <li><strong>Propósito:</strong> La función de Escaneo de Gmail le ayuda a descubrir correos relacionados con aplicaciones de empleo (confirmaciones de recepción, invitaciones a entrevistas, notificaciones de rechazo) y propone automáticamente adiciones o actualizaciones a su rastreador de aplicaciones de trabajo</li>
+                    <li><strong>Alcance del Acceso:</strong> Solicitamos acceso de solo lectura a su cuenta de Gmail. NO enviamos correos, modificamos correos ni eliminamos correos</li>
+                    <li><strong>Procesamiento de Datos:</strong> Todo el contenido de correos se procesa localmente en su navegador. Los datos de correo NO se transmiten a nuestros servidores ni a servidores de terceros</li>
+                    <li><strong>Retención de Datos:</strong> El contenido de correos se mantiene temporalmente en la memoria del navegador solo durante la sesión de escaneo. NO almacenamos contenido de correos en localStorage ni en ningún almacenamiento persistente</li>
+                    <li><strong>Control del Usuario:</strong> Debe navegar explícitamente a la página de Escaneo de Gmail e iniciar cada escaneo. Los escaneos no ocurren automáticamente</li>
+                    <li><strong>Seguridad:</strong> Utilizamos consultas de búsqueda de Gmail API para encontrar correos relevantes. Las consultas de búsqueda buscan palabras clave relacionadas con aplicaciones de empleo en inglés y español</li>
+                    <li><strong>Revocación:</strong> Puede revocar el acceso a Gmail en cualquier momento desde la configuración de su Cuenta de Google en <a href="https://myaccount.google.com/permissions" target="_blank" rel="noopener noreferrer">myaccount.google.com/permissions</a></li>
+                </ul>
+                <div class="highlight">
+                    <p><strong>Importante:</strong> La función de Escaneo de Gmail es completamente opcional. Puede usar todas las demás funciones de la aplicación sin habilitar el acceso a Gmail.</p>
+                </div>
+            </section>
+
+            <section>
+                <h2>13. Solicitud de Eliminación de Datos</h2>
+                <p>
+                    Si desea solicitar la eliminación de cualquier dato asociado con su uso del Servicio, puede:
+                </p>
+                <ul>
+                    <li><strong>Limpiar datos del navegador:</strong> Eliminar el localStorage y las cookies de su navegador a través de la configuración de su navegador</li>
+                    <li><strong>Desinstalar extensión:</strong> Eliminar la extensión de Chrome para borrar los datos almacenados por la extensión</li>
+                    <li><strong>Eliminar Google Sheets:</strong> Eliminar cualquier hoja de cálculo sincronizada de su Google Drive</li>
+                    <li><strong>Revocar acceso de Google:</strong> Visite <a href="https://myaccount.google.com/permissions" target="_blank" rel="noopener noreferrer">myaccount.google.com/permissions</a> para revocar todos los permisos de acceso</li>
+                    <li><strong>Contáctenos:</strong> Envíenos un correo a <a href="mailto:godie.mendoza@gmail.com">godie.mendoza@gmail.com</a> con su solicitud de eliminación (si corresponde)</li>
+                </ul>
+                <p>
+                    Al recibir una solicitud de eliminación válida, responderemos dentro de 30 días.
+                </p>
+            </section>
+
+            <section>
+                <h2>14. Contacto</h2>
                 <p>Si tiene preguntas o inquietudes sobre esta Política de Privacidad, puede contactarnos:</p>
                 <div class="contact-info">
                     <p>
                         <strong>Job Application Tracker</strong><br>
                         Sitio web: <a href="https://jajat.godieboy.com">https://jajat.godieboy.com</a><br>
-                        Página de política de privacidad: <a href="https://jajat.godieboy.com/privacy.html">https://jajat.godieboy.com/privacy.html</a>
+                        Página de política de privacidad: <a href="https://jajat.godieboy.com/privacy.html">https://jajat.godieboy.com/privacy.html</a><br>
+                        Correo: <a href="mailto:godie.mendoza@gmail.com">godie.mendoza@gmail.com</a>
                     </p>
                 </div>
             </section>
 
             <section>
-                <h2>13. Aceptación de Términos</h2>
+                <h2>15. Aceptación de Términos</h2>
                 <p>
                     Al utilizar Job Application Tracker, usted reconoce que ha leído y entendido esta Política de Privacidad 
                     y acepta todas las prácticas descritas en ella. Si no está de acuerdo con esta política, 
