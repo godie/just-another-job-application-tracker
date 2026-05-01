@@ -4,22 +4,63 @@ export default {
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {
-        primary: {
-          light: '#ffffff',
-          dark: '#1a202c',
+        // Natural/Organic palette
+        earth: {
+          50: '#faf8f5',
+          100: '#f5f0e8',
+          200: '#e8dfd3',
+          300: '#d4c4ae',
+          400: '#b8a088',
+          500: '#9a7d5e',
+          600: '#7a6048',
+          700: '#5c4835',
+          800: '#3d302a',
+          900: '#1f1915',
         },
-        secondary: {
-          light: '#f7fafc',
-          dark: '#2d3748',
+        sage: {
+          50: '#f4f7f4',
+          100: '#e6ece6',
+          200: '#ccd9cc',
+          300: '#a3b8a3',
+          400: '#7a947a',
+          500: '#5a7a5a',
+          600: '#456145',
+          700: '#374c37',
+          800: '#2a3a2a',
+          900: '#1d261d',
         },
-        text: {
-          light: '#2d3748',
-          dark: '#f7fafc',
-        }
-      }
+        terracotta: {
+          50: '#fdf5f2',
+          100: '#fce8e0',
+          200: '#f9d0c2',
+          300: '#f4ab95',
+          400: '#ec8567',
+          500: '#df5f3a',
+          600: '#c44a2a',
+          700: '#a03a22',
+          800: '#7c2f1e',
+          900: '#5c2419',
+        },
+      },
+      fontFamily: {
+        serif: ['Georgia', 'Cambria', 'Times New Roman', 'serif'],
+        sans: ['system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+      },
+      borderRadius: {
+        'sm': '2px',
+        'DEFAULT': '4px',
+        'md': '6px',
+        'lg': '8px',
+      },
+      spacing: {
+        '18': '4.5rem',
+        '22': '5.5rem',
+        '30': '7.5rem',
+      },
     },
   },
   plugins: [],

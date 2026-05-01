@@ -54,7 +54,8 @@ export default defineConfig({
         format: 'es',
         generatedCode: {
           constBindings: true,
-        },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } as any,
       },
     },
     // Use modern target to avoid eval in production
