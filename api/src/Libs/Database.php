@@ -6,6 +6,7 @@ namespace OverPHP\Libs;
 
 use OverPHP\Libs\Drivers\DriverInterface;
 use OverPHP\Libs\Drivers\MysqlDriver;
+use OverPHP\Libs\Drivers\PostgresDriver;
 use OverPHP\Libs\Drivers\SqliteDriver;
 
 final class Database
@@ -15,8 +16,9 @@ final class Database
 
     /** @var array<string, class-string<DriverInterface>> */
     private array $driverMap = [
-        'mysql'  => MysqlDriver::class,
-        'sqlite' => SqliteDriver::class,
+        'mysql'    => MysqlDriver::class,
+        'postgres' => PostgresDriver::class,
+        'sqlite'   => SqliteDriver::class,
     ];
 
     private ?\PDO $connection = null;

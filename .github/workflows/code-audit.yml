@@ -67,19 +67,21 @@ jobs:
             const report = JSON.parse(fs.readFileSync(reportPath, 'utf8'));
             const { summary } = report;
             
-            const body = `## Code Audit Summary
-            
-| Metric | Count |
-|--------|-------|
-| Total Issues | ${summary.total} |
-| Critical | ${summary.critical} |
-| High | ${summary.high} |
-| Medium | ${summary.medium} |
-| Low | ${summary.low} |
-
-${summary.total > 0 ? '⚠️ Please review the audit report and address the issues.' : '✅ No significant issues found!'}
-
-*This audit was automatically generated*`;
+            const body = [
+              '## Code Audit Summary',
+              '',
+              '| Metric | Count |',
+              '|--------|-------|',
+              `| Total Issues | ${summary.total} |`,
+              `| Critical | ${summary.critical} |`,
+              `| High | ${summary.high} |`,
+              `| Medium | ${summary.medium} |`,
+              `| Low | ${summary.low} |`,
+              '',
+              summary.total > 0 ? '⚠️ Please review the audit report and address the issues.' : '✅ No significant issues found!',
+              '',
+              '*This audit was automatically generated*',
+            ].join('\n');
             
             await github.rest.issues.createComment({
               issue_number: context.issue.number,
