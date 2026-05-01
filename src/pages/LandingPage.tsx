@@ -65,8 +65,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
         </button>
         <div className='flex items-center gap-4'>
           <div className='hidden sm:flex items-center gap-3 text-sm'>
-            <a href='/privacy.html' className='text-earth-600 dark:text-earth-300 hover:text-earth-800 dark:hover:text-earth-100 transition-colors'>Privacy Policy</a>
-            <a href='/terms.html' className='text-earth-600 dark:text-earth-300 hover:text-earth-800 dark:hover:text-earth-100 transition-colors'>Terms of Use</a>
+            <a href='/privacy.html' className='text-earth-600 dark:text-earth-300 hover:text-earth-800 dark:hover:text-earth-100 transition-colors'>{t('common.footer.privacyPolicy')}</a>
+            <a href='/terms.html' className='text-earth-600 dark:text-earth-300 hover:text-earth-800 dark:hover:text-earth-100 transition-colors'>{t('common.footer.termsOfUse')}</a>
           </div>
           <div className='flex items-center gap-2' aria-label='Language selector'>
             <button
@@ -403,9 +403,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
               {t('landing.footer')}
             </p>
             <div className='flex items-center gap-4 text-sm text-earth-500 dark:text-earth-400'>
-              <a href='/privacy.html' className='hover:text-earth-700 dark:hover:text-earth-200 transition-colors'>Privacy</a>
+              <a href='/privacy.html' className='hover:text-earth-700 dark:hover:text-earth-200 transition-colors'>{t('common.footer.privacyPolicy')}</a>
               <span>•</span>
-              <a href='/terms.html' className='hover:text-earth-700 dark:hover:text-earth-200 transition-colors'>Terms</a>
+              <a href='/terms.html' className='hover:text-earth-700 dark:hover:text-earth-200 transition-colors'>{t('common.footer.termsOfUse')}</a>
             </div>
           </div>
         </div>

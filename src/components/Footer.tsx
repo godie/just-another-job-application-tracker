@@ -10,21 +10,23 @@ const Footer: React.FC<FooterProps> = ({ version }) => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 py-4 mt-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <p className="text-center text-sm text-gray-600 dark:text-gray-400">
+    <footer className='bg-earth-50 dark:bg-earth-900 border-t border-earth-200 dark:border-earth-700 py-4 mt-8'>
+      <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
+        <p className='text-center text-sm text-earth-600 dark:text-earth-400'>
             <Trans
-              i18nKey="common.footer.vibecoded"
+              i18nKey='common.footer.vibecoded'
               values={{ version, year: currentYear }}
               components={{
-                link: <a className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 font-medium" href="https://github.com/godie" target="_blank" rel="noopener noreferrer" aria-label="Github godie" />
+                link: <a className='text-sage-600 dark:text-sage-400 hover:text-sage-700 dark:hover:text-sage-300 font-medium' href='https://github.com/godie' target='_blank' rel='noopener noreferrer' aria-label='Github godie' />
               }}
             />
         </p>
-        <p className="text-center text-xs text-gray-600 dark:text-gray-400 mt-2">
-          <a className="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200" href="/terms.html" target="_blank" rel="noopener noreferrer">{t('common.footer.terms')}</a>
+        <p className='text-center text-xs text-earth-500 dark:text-earth-500 mt-2'>
+          <a className='text-earth-600 dark:text-earth-400 hover:text-earth-800 dark:hover:text-earth-200' href='/terms.html' target='_blank' rel='noopener noreferrer'>{t('common.footer.termsOfUse')}</a>
           {' | '}
-          <a className="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200" href="/privacy.html" target="_blank" rel="noopener noreferrer">{t('common.footer.privacy')}</a>
+          <a className='text-earth-600 dark:text-earth-400 hover:text-earth-800 dark:hover:text-earth-200' href='/privacy.html' target='_blank' rel='noopener noreferrer'>{t('common.footer.privacyPolicy')}</a>
+          {' | '}
+          <a className='text-earth-600 dark:text-earth-400 hover:text-earth-800 dark:hover:text-earth-200' href='/?page=landing'>{t('nav.about')}</a>
         </p>
       </div>
     </footer>
