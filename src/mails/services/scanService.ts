@@ -37,13 +37,6 @@ async function fetchMessagesInChunks(
   return results;
 }
 
-/** @deprecated Use scanEmails + applyScanPreview for manual flow. Kept for future automatic flow. */
-export interface ScanResult {
-  totalEvents: number;
-  added: number;
-  updated: number;
-}
-
 /**
  * Scans the email provider and returns proposed additions/updates for the user to review.
  * Does not modify the store.
@@ -133,16 +126,3 @@ export function applyScanPreview(
   return { added, updated };
 }
 
-/**
- * Automatic flow: scan and apply all without review.
- * @deprecated Prefer manual flow (scanEmails + user review + applyScanPreview).
- */
-export async function scanEmailsAndApply(provider: EmailProvider): Promise<ScanResult> {
-  const preview = await scanEmails(provider);
-  const result = applyScanPreview(preview.proposedAdditions, preview.proposedUpdates);
-  return {
-    totalEvents: preview.proposedAdditions.length + preview.proposedUpdates.length,
-    added: result.added,
-    updated: result.updated,
-  };
-}
