@@ -117,6 +117,76 @@ Add your frontend origin (e.g. `http://localhost:5173`, `https://yourdomain.com`
 
 Run the frontend and PHP API in separate terminals.
 
+### Option 1: Docker (Recommended)
+
+The easiest way to run the entire stack with Docker.
+
+**Prerequisites:** Docker and Docker Compose must be installed.
+
+```bash
+# SQLite only (default)
+docker compose up -d
+
+# With MySQL (adds MySQL service on port 3306)
+docker compose -f docker-compose.yml -f docker-compose.mysql.yml up -d
+
+# With PostgreSQL (adds PostgreSQL service on port 5432)
+docker compose -f docker-compose.yml -f docker-compose.postgres.yml up -d
+```
+
+> **Note:** Run these commands from the project root directory.
+
+Access the app at `http://localhost:5173` (frontend) and API at `http://localhost:8080`.
+
+#### Environment Configuration
+
+Copy `.env.docker.example` to `.env` (or use `--env-file` flag):
+
+```bash
+cp .env.docker.example .env
+```
+
+Customize the database credentials in `.env`:
+
+```bash
+# MySQL configuration
+MYSQL_ROOT_PASSWORD=rootpassword
+MYSQL_USER=jatuser
+MYSQL_PASSWORD=jatpassword
+DB_NAME=jajat
+
+# PostgreSQL configuration (alternative to MySQL)
+POSTGRES_USER=jatuser
+POSTGRES_PASSWORD=jatpassword
+```
+
+#### Docker Services
+
+| Service   | Port  | Description                      |
+|-----------|-------|----------------------------------|
+| frontend  | 5173  | React + Vite dev server          |
+| api       | 8080  | PHP + OverPHP API                |
+| mysql     | 3306  | MySQL 8.4 (with mysql override)  |
+| postgres  | 5432  | PostgreSQL 16 (with pg override) |
+
+#### Docker Commands
+
+```bash
+# View logs
+docker compose logs -f
+
+# Stop services
+docker compose down
+
+# Rebuild containers
+docker compose build --no-cache
+
+# Remove volumes (clean slate)
+docker compose down -v
+```
+
+### Option 2: Manual Setup
+
 1. Start the frontend from the project root:
 
 ```bash
@@ -453,13 +523,24 @@ job-application-tracker/
 │   ├── index.php                // Single entry: CORS, session, router
 │   ├── Router.php               // Method + path → controller action
 │   ├── config.php               // CORS origins, cookie names, OAuth env
+│   ├── Dockerfile               // Docker image for PHP + Apache
+│   ├── data/
+│   │   ├── mysql-init/          // MySQL schema initialization scripts
+│   │   └── postgres-init/       // PostgreSQL schema initialization scripts
 │   ├── controllers/             // AuthController, CaptchaController, SuggestionsController, GoogleSheetsController
 │   ├── helpers/                 // cors.php, auth.php (token resolve + refresh)
 │   └── ...                      // Legacy .php scripts can be removed once new routes are confirmed
 └── ../job-application-tracker-extension/ // Independent Chrome extension project (separate package.json)
 ├── .env.local                   // Stores VITE_GOOGLE_CLIENT_ID (Ignored by Git).
+├── .env.docker.example          // Environment variables template for Docker
 ├── .nvmrc                       // Node version specification (v22)
 ├── CHROME_EXTENSION.md          // Pointer doc to external extension project
+├── docker-compose.yml           // Docker Compose (SQLite default)
+├── docker-compose.mysql.yml     // Docker Compose override for MySQL
+├── docker-compose.postgres.yml  // Docker Compose override for PostgreSQL
+├── Dockerfile.frontend          // Docker image for React + Vite frontend
+├── .dockerignore                 // Docker build context exclusion (root)
+├── api/.dockerignore             // Docker build context exclusion (api)
 └── tailwind.config.js
 ```
 
