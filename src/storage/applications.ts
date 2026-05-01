@@ -6,7 +6,7 @@ import type { JobApplication, LegacyJobApplication, InterviewEvent, InterviewSta
 
 const WORK_TYPES: WorkType[] = ['remote', 'on-site', 'hybrid'];
 
-const toWorkType = (s: string | undefined): WorkType | undefined =>
+export const toWorkType = (s: string | undefined): WorkType | undefined =>
   s && WORK_TYPES.includes(s as WorkType) ? (s as WorkType) : undefined;
 
 /**
