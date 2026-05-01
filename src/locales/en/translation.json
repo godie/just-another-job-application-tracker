@@ -337,6 +337,7 @@
   },
   "tools": {
     "csv": {
+      "heading": "CSV",
       "title": "CSV Import / Export",
       "desc": "Export your applications to CSV format or import applications from a CSV file."
     },
@@ -345,20 +346,30 @@
       "desc": "Create a full backup of all your data or restore from a previous backup.",
       "create": "Create Backup",
       "restore": "Restore Backup",
+      "exportJson": "Export Data (JSON)",
+      "importJson": "Import Data (JSON)",
+      "importing": "Importing...",
       "warning": "Restoring a backup will replace all current data. Make sure you have a current backup before proceeding."
     },
     "debug": {
       "title": "Debug / Raw Data",
       "desc": "View the raw JSON data stored in your browser. Useful for troubleshooting.",
       "show": "Show Data",
-      "hide": "Hide Data"
+      "hide": "Hide Data",
+      "showInfo": "Show Debug Info"
     },
     "danger": {
       "title": "Danger Zone",
       "desc": "These actions cannot be undone. Proceed with caution.",
+      "warning": "These actions are irreversible. Please make sure you have a backup before proceeding.",
       "clear": "Clear All Data"
     },
-    "clearConfirm": "Are you sure you want to delete ALL data? This action cannot be undone."
+    "clearConfirm": "Are you sure you want to delete ALL data? This action cannot be undone.",
+    "exportSuccess": "Data exported successfully",
+    "exportError": "Failed to export data",
+    "importSuccess": "Data imported successfully",
+    "importError": "Failed to import data. Invalid file format.",
+    "clearSuccess": "All data cleared"
   },
   "insights": {
     "title": "Insights",
