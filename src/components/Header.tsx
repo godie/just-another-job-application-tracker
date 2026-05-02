@@ -234,7 +234,7 @@ const Header: React.FC<HeaderProps> = ({ onToggleSidebar, onNavigate }) => {
         {/* Login/Account Button */}
         {isLoggedIn ? (
           <button
-            onClick={() => onNavigate?.('settings')}
+            onClick={() => onNavigate?.('backup-sync')}
             className='flex items-center gap-2 px-2 md:px-3 py-1.5 rounded-full border border-sage-200 dark:border-sage-700 bg-sage-50 dark:bg-sage-900/20 hover:bg-sage-100 dark:hover:bg-sage-900/40 transition-colors'
             data-testid='user-avatar-button'
             aria-label={t('nav.backupSync')}

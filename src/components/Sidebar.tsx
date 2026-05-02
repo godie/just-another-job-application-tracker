@@ -2,6 +2,8 @@
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { type PageType } from '../App';
+import { useIsLoggedIn } from '../hooks/useIsLoggedIn';
+import SyncNavIcon from './sync/SyncNavIcon';
 import { useOpportunitiesStore } from '../stores/opportunitiesStore';
 import { Button, Badge } from './ui';
 
@@ -14,6 +16,7 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ currentPage = 'applications', onNavigate, isOpen = true }) => {
   const { t } = useTranslation();
+  const isLoggedIn = useIsLoggedIn();
   const opportunities = useOpportunitiesStore((state) => state.opportunities);
   const loadOpportunities = useOpportunitiesStore((state) => state.loadOpportunities);
   const refreshOpportunities = useOpportunitiesStore((state) => state.refreshOpportunities);
@@ -49,6 +52,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPage = 'applications', onNavig
   const navItems: { page: PageType; label: string; showBadge?: boolean; icon?: React.ReactNode }[] = [
     { page: 'applications', label: t('nav.applications') },
     { page: 'opportunities', label: t('nav.opportunities'), showBadge: true },
+    { page: 'backup-sync', label: t('nav.backupSync'), icon: <SyncNavIcon isLoggedIn={isLoggedIn} className="w-5 h-5" /> },
 
     { page: 'settings', label: t('nav.settings') },
     { page: 'insights', label: t('nav.insights') },
