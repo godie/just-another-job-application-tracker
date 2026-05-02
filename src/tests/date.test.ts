@@ -35,8 +35,8 @@ describe('parseLocalDate', () => {
   });
 
   test('should return current date for null/undefined-like values', () => {
-    const date1 = parseLocalDate(null as unknown as string);
-    const date2 = parseLocalDate(undefined as unknown as string);
+    const date1 = parseLocalDate(null);
+    const date2 = parseLocalDate(undefined);
     
     expect(date1).toBeInstanceOf(Date);
     expect(date2).toBeInstanceOf(Date);

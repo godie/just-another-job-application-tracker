@@ -6,27 +6,24 @@ const config: KnipConfig = {
   ignore: [
     'src/vite-env.d.ts',
     'src/pwa.d.ts',
-    'src/i18n.ts',  // side-effect import in main.tsx
-    'src/**/*.test.ts',
-    'src/**/*.test.tsx',
+    'src/i18n.ts',
     'src/setupTests.ts',
     'src/locales/**/*',
   ],
   ignoreExportsUsedInFile: true,
   ignoreDependencies: [
-    // Used at runtime via barrel re-exports or dynamic imports
     '@googleapis/sheets',
     '@types/dompurify',
     '@types/recharts',
-    // Dev tools used in other CI workflows or Playwright
     '@axe-core/playwright',
     '@vitest/coverage-v8',
+    '@testing-library/jest-dom',
     'autoprefixer',
     'axe-playwright',
     'baseline-browser-mapping',
     'postcss',
   ],
-  ignoreBinaries: [],
+  ignoreBinaries: ['eslint', 'knip'],
 };
 
 export default config;
