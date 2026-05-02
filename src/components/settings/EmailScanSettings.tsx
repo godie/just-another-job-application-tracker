@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { CHATBOTS } from '../../utils/constants';
+import { GeminiKeyModal } from '../GeminiKeyModal';
+import { hasKeyStored, clearStoredKey } from '../../hooks/useCrypto';
 
 interface EmailScanSettingsProps {
   emailScanMonths: number;
@@ -16,11 +18,84 @@ const EmailScanSettings: React.FC<EmailScanSettingsProps> = ({
   onChatbotToggle,
 }) => {
   const { t } = useTranslation();
+  const [showGeminiModal, setShowGeminiModal] = useState(false);
+  const [, forceUpdate] = useState(0);
+  const keyConfigured = hasKeyStored();
+
+  const handleGeminiKeySuccess = () => {
+    setShowGeminiModal(false);
+  };
+
+  const handleRemoveKey = () => {
+    clearStoredKey();
+    forceUpdate(n => n + 1);
+  };
 
   const monthOptions = [3, 6, 9, 12];
 
   return (
     <div className="space-y-10">
+      <section>
+        <div className="flex items-center gap-2 mb-6">
+          <div className="p-2 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 rounded-lg">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+            </svg>
+          </div>
+          <h3 className="text-lg font-bold text-earth-800 dark:text-earth-100">
+            {t('settings.emailScan.geminiApiKey')}
+          </h3>
+        </div>
+
+        <div className="bg-earth-50 dark:bg-earth-700/50 rounded-lg border border-earth-200 dark:border-earth-600 p-5">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              {keyConfigured ? (
+                <>
+                  <div className="w-8 h-8 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
+                    <svg className="w-4 h-4 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-earth-800 dark:text-earth-100">{t('settings.emailScan.geminiKeyConfigured')}</p>
+                    <p className="text-xs text-earth-500 dark:text-earth-400">{t('settings.emailScan.geminiKeyConfiguredDesc')}</p>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="w-8 h-8 bg-amber-100 dark:bg-amber-900/30 rounded-full flex items-center justify-center">
+                    <svg className="w-4 h-4 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-earth-800 dark:text-earth-100">{t('settings.emailScan.geminiKeyNotConfigured')}</p>
+                    <p className="text-xs text-earth-500 dark:text-earth-400">{t('settings.emailScan.geminiKeyNotConfiguredDesc')}</p>
+                  </div>
+                </>
+              )}
+            </div>
+            <div className="flex items-center gap-2">
+              {keyConfigured && (
+                <button
+                  onClick={handleRemoveKey}
+                  className="px-3 py-1.5 text-xs font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded border border-red-200 dark:border-red-800 transition"
+                >
+                  {t('settings.emailScan.geminiKeyRemove')}
+                </button>
+              )}
+              <button
+                onClick={() => setShowGeminiModal(true)}
+                className="px-4 py-2 text-sm font-medium bg-sage-600 text-white hover:bg-sage-700 rounded transition"
+              >
+                {keyConfigured ? t('settings.emailScan.geminiKeyChange') : t('settings.emailScan.geminiKeySetup')}
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section>
         <div className="flex items-center gap-2 mb-6">
           <div className="p-2 bg-amber-100 dark:bg-amber-900/30 text-amber-600 rounded-lg">
@@ -92,6 +167,12 @@ const EmailScanSettings: React.FC<EmailScanSettingsProps> = ({
           })}
         </div>
       </section>
+
+      <GeminiKeyModal
+        isOpen={showGeminiModal}
+        onClose={() => setShowGeminiModal(false)}
+        onSuccess={handleGeminiKeySuccess}
+      />
     </div>
   );
 };

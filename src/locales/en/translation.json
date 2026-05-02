@@ -341,7 +341,15 @@
       "processWithGeminiAction": "Process with Gemini",
       "geminiProcessing": "Processing with Gemini…",
       "geminiSuccess": "Processed with Gemini: {{count}} item(s) extracted",
-      "geminiError": "Failed to process with Gemini. Try again."
+      "geminiError": "Failed to process with Gemini. Try again.",
+      "geminiApiKey": "Gemini API Key",
+      "geminiKeyConfigured": "API Key configured",
+      "geminiKeyConfiguredDesc": "Your key is encrypted and stored securely. Use it to process emails directly via Gemini API.",
+      "geminiKeyNotConfigured": "No API Key configured",
+      "geminiKeyNotConfiguredDesc": "Set up your Gemini API key to enable direct API processing for email scanning.",
+      "geminiKeySetup": "Set up",
+      "geminiKeyChange": "Change",
+      "geminiKeyRemove": "Remove"
     },
     "success": "Settings saved successfully!"
   },

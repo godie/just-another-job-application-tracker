@@ -110,3 +110,7 @@ export async function decryptKey(masterPassword: string): Promise<string> {
 export function hasKeyStored(): boolean {
   return localStorage.getItem(VAULT_KEY) !== null;
 }
+
+export function clearStoredKey(): void {
+  localStorage.removeItem(VAULT_KEY);
+}
