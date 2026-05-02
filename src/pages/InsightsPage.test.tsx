@@ -56,6 +56,8 @@ const mockApplications: JobApplication[] = [
   },
 ];
 
+const mockNavigate = vi.fn();
+
 vi.mock('../stores/applicationsStore', () => ({
   useApplicationsStore: (selector: (state: { applications: JobApplication[] }) => unknown) =>
     selector({ applications: mockApplications }),
@@ -89,19 +91,24 @@ describe('InsightsPage', () => {
     expect(screen.getByText('Insights')).toBeInTheDocument();
   });
 
-  it('displays correct stats', () => {
-    render(<InsightsPage />);
-    const totalApplicationsTitle = screen.getByText('Total Applications');
-    expect(totalApplicationsTitle.nextElementSibling).toHaveTextContent('3');
+  it('displays correct stats in asymmetric layout', () => {
+    render(<InsightsPage onNavigate={mockNavigate} />);
 
-    const totalInterviewsTitle = screen.getByText('Total Interviews');
-    expect(totalInterviewsTitle.nextElementSibling).toHaveTextContent('1');
+    // Total Applications — dominant metric
+    expect(screen.getByText('Total Applications')).toBeInTheDocument();
+    const allThrees = screen.getAllByText('3');
+    expect(allThrees.length).toBeGreaterThanOrEqual(1);
 
-    const rejectedApplicationsTitle = screen.getByText('Rejected Applications');
-    expect(rejectedApplicationsTitle.nextElementSibling).toHaveTextContent('1');
+    // Total Interviews — compact metric
+    expect(screen.getByText('Total Interviews')).toBeInTheDocument();
+    const allOnes = screen.getAllByText('1');
+    expect(allOnes.length).toBeGreaterThanOrEqual(1);
 
-    const rejectionPercentageTitle = screen.getByText('Rejection Percentage');
-    expect(rejectionPercentageTitle.nextElementSibling).toHaveTextContent('33.33%');
+    // Rejected Applications — compact metric with percentage inline
+    expect(screen.getByText('Rejected Applications')).toBeInTheDocument();
+
+    // Rejection percentage shown inline under rejected count
+    expect(screen.getByText(/33.33%/)).toBeInTheDocument();
   });
 
   it('renders both charts', async () => {
@@ -118,5 +125,15 @@ describe('InsightsPage', () => {
     await waitFor(() => {
       expect(screen.getByText('Interviews by Type')).toBeInTheDocument();
     });
+  });
+
+  it('renders Add Entry CTA when onNavigate is provided', () => {
+    render(<InsightsPage onNavigate={mockNavigate} />);
+    expect(screen.getByText('+ Add Entry')).toBeInTheDocument();
+  });
+
+  it('does not render CTA when onNavigate is not provided', () => {
+    render(<InsightsPage />);
+    expect(screen.queryByText('+ Add Entry')).not.toBeInTheDocument();
   });
 });

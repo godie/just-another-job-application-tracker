@@ -9,11 +9,11 @@ export interface InputProps
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ({ className = '', type, label, error, id, ...props }, ref) => {
     return (
-      <div className="w-full">
+      <div className='w-full'>
         {label && (
           <label
             htmlFor={id}
-            className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1"
+            className='block text-xs font-semibold text-earth-600 dark:text-earth-400 mb-1'
           >
             {label}
           </label>
@@ -21,12 +21,12 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
         <input
           id={id}
           type={type}
-          className={`w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:border-indigo-500 focus:ring-indigo-500 disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
+          className={`w-full rounded border border-earth-300 dark:border-earth-600 px-3 py-2 text-sm bg-white dark:bg-earth-800 text-earth-900 dark:text-earth-100 placeholder-earth-400 dark:placeholder-earth-500 focus:border-sage-500 dark:focus:border-sage-400 focus:ring-sage-500 dark:focus:ring-sage-400 disabled:cursor-not-allowed disabled:opacity-50 transition-colors ${className}`}
           ref={ref}
           {...props}
         />
         {error && (
-          <p className="mt-1 text-xs text-red-600 dark:text-red-400">{error}</p>
+          <p className='mt-1 text-xs text-terracotta-600 dark:text-terracotta-400'>{error}</p>
         )}
       </div>
     );

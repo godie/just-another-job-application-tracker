@@ -60,12 +60,12 @@ const SuggestionsViewerPage: React.FC<SuggestionsViewerPageProps> = ({ onNavigat
         <div>
           <button
             onClick={() => onNavigate('support')}
-            className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 hover:underline mb-2 cursor-pointer"
+            className='flex items-center gap-2 text-sage-600 dark:text-sage-400 hover:underline mb-2 cursor-pointer'
           >
             <FaArrowLeft size={14} />
             <span>{t('support.suggestionsViewer.back')}</span>
           </button>
-          <h1 className="text-3xl font-bold text-gray-800 dark:text-white">{t('support.suggestionsViewer.title')}</h1>
+          <h1 className='text-3xl font-bold text-earth-800 dark:text-earth-100'>{t('support.suggestionsViewer.title')}</h1>
         </div>
         <Button
           onClick={() => void fetchSuggestions()}
@@ -80,11 +80,11 @@ const SuggestionsViewerPage: React.FC<SuggestionsViewerPageProps> = ({ onNavigat
 
       {isLoading ? (
         <div className="flex justify-center py-12">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+          <div className='animate-spin rounded-full h-12 w-12 border-b-2 border-sage-600'></div>
         </div>
       ) : suggestions.length === 0 ? (
         <Card className="p-12 text-center">
-          <p className="text-gray-500 dark:text-gray-400">{t('support.suggestionsViewer.noSuggestions')}</p>
+          <p className="text-earth-500 dark:text-earth-400">{t('support.suggestionsViewer.noSuggestions')}</p>
         </Card>
       ) : (
         <div className="grid grid-cols-1 gap-4">
@@ -95,18 +95,18 @@ const SuggestionsViewerPage: React.FC<SuggestionsViewerPageProps> = ({ onNavigat
                   {suggestion.types.map((type) => (
                     <span
                       key={type}
-                      className="px-2 py-1 bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 text-xs font-semibold rounded-full"
+                      className='px-2 py-1 bg-sage-100 dark:bg-sage-900/40 text-sage-700 dark:text-sage-300 text-xs font-semibold rounded'
                     >
                       {t(`support.types.${type}`, { defaultValue: type })}
                     </span>
                   ))}
                 </div>
-                <div className="text-xs text-gray-500 dark:text-gray-400 flex flex-col items-end">
+                <div className="text-xs text-earth-500 dark:text-earth-400 flex flex-col items-end">
                   <span>{new Date(suggestion.created_at).toLocaleString()}</span>
                   <span>{suggestion.ip_address}</span>
                 </div>
               </div>
-              <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{suggestion.explanation}</p>
+              <p className='text-earth-700 dark:text-earth-300 whitespace-pre-wrap'>{suggestion.explanation}</p>
             </Card>
           ))}
         </div>

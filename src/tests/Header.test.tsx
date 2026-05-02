@@ -2,9 +2,16 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { expect, test, describe, beforeEach, vi } from 'vitest';
 import Header from '../components/Header';
 import { AlertProvider } from '../components/AlertProvider';
-import * as localStorageUtils from '../utils/localStorage';
 import * as api from '../utils/api';
 import { useIsLoggedIn } from '../hooks/useIsLoggedIn';
+
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key: string) => key,
+    i18n: { language: 'en', changeLanguage: vi.fn() },
+  }),
+  Trans: ({ children }: { children: React.ReactNode }) => children,
+}));
 
 
 // =========================================================================
@@ -54,6 +61,25 @@ vi.mock('../utils/localStorage', () => {
     getOpportunities: vi.fn(() => []),
   };
 });
+
+// Mock the auth store
+vi.mock('../stores/authStore', () => ({
+  useAuthStore: vi.fn(() => ({
+    user: localStorageStore['isLoggedIn'] === 'true'
+      ? { id: 1, email: 'test@example.com', name: 'Test User' }
+      : null,
+    logout: vi.fn(async () => {
+      await fetch('/api/auth/logout', { method: 'DELETE' });
+    }),
+    checkAuth: vi.fn(),
+    setAuthenticated: vi.fn(),
+    setUser: vi.fn(),
+    setError: vi.fn(),
+    isAuthenticated: localStorageStore['isLoggedIn'] === 'true',
+    isLoading: false,
+    error: null,
+  })),
+}));
 
 // Mock the @react-oauth/google hook (auth-code flow: onSuccess receives { code })
 const mockGoogleLogin = vi.fn();
@@ -146,38 +172,23 @@ describe('Header Component', () => {
 
   // --- Initial State Tests ---
 
-  test('should render Login button when initially logged out', () => {
+  test('should render Sign In button when initially logged out', () => {
     localStorageStore['isLoggedIn'] = 'false';
     renderWithProviders(<Header onToggleSidebar={mockToggleSidebar} />);
     const loginButton = screen.getByTestId('login-button');
-    expect(loginButton).toHaveTextContent('Login with Google');
-    expect(loginButton).toHaveAttribute('aria-label', 'Login with Google');
+    expect(loginButton).toHaveTextContent('common.signIn');
   });
 
-  test('should render Logout button when initially logged in', () => {
+  test('should render avatar button when initially logged in', () => {
     localStorageStore['isLoggedIn'] = 'true';
     vi.mocked(useIsLoggedIn).mockReturnValue(true);
     renderWithProviders(<Header onToggleSidebar={mockToggleSidebar} />);
-    const logoutButton = screen.getByTestId('login-button');
-    expect(logoutButton).toHaveTextContent('Logout');
-    expect(logoutButton).toHaveAttribute('aria-label', 'Logout');
+    const avatarButton = screen.getByTestId('user-avatar-button');
+    expect(avatarButton).toBeInTheDocument();
+    expect(avatarButton).toHaveAttribute('aria-label', 'nav.backupSync');
   });
 
   // --- Login/Logout Logic Tests ---
-
-  test('Logout action should call setLoginStatus(false)', async () => {
-    localStorageStore['isLoggedIn'] = 'true';
-    vi.mocked(useIsLoggedIn).mockReturnValue(true);
-    renderWithProviders(<Header onToggleSidebar={mockToggleSidebar} />);
-    
-    const logoutButton = screen.getByTestId('login-button');
-    fireEvent.click(logoutButton);
-    
-    // Wait for async operations to complete
-    await waitFor(() => {
-      expect(localStorageUtils.setLoginStatus).toHaveBeenCalledWith(false);
-    });
-  });
 
   test('Login action should call googleLogin function', () => {
     localStorageStore['isLoggedIn'] = 'false';
@@ -201,24 +212,20 @@ describe('Header Component', () => {
 
   // --- Responsive Design Tests ---
 
-  test('should render Google icon SVG in mobile login button', () => {
+  test('should render user icon SVG in mobile Sign In button', () => {
     localStorageStore['isLoggedIn'] = 'false';
     renderWithProviders(<Header onToggleSidebar={mockToggleSidebar} />);
     
-    // Mobile version should show Google "G" icon (hidden on desktop via md:hidden)
-    const googleIcon = document.querySelector('svg[aria-hidden="true"]');
-    expect(googleIcon).toBeInTheDocument();
-    
-    // Desktop version should show text "Login with Google" (hidden on mobile)
+    // Mobile version should show user icon (hidden on desktop via md:hidden)
     const loginButton = screen.getByTestId('login-button');
     expect(loginButton).toBeInTheDocument();
     
-    // Should contain both mobile icon and desktop text
-    const desktopText = screen.getByText('Login with Google', { exact: false });
+    const desktopText = loginButton.querySelector('.hidden.md\\:inline');
     expect(desktopText).toBeInTheDocument();
+    expect(desktopText).toHaveTextContent('common.signIn');
   });
 
-  test('should render full "Login with Google" text for desktop view', () => {
+  test('should render full "Sign In" text for desktop view', () => {
     localStorageStore['isLoggedIn'] = 'false';
     renderWithProviders(<Header onToggleSidebar={mockToggleSidebar} />);
     
@@ -226,6 +233,18 @@ describe('Header Component', () => {
     // Desktop text should be present (hidden on mobile via md:hidden class)
     const desktopText = loginButton.querySelector('.hidden.md\\:inline');
     expect(desktopText).toBeInTheDocument();
-    expect(desktopText).toHaveTextContent('Login with Google');
+    expect(desktopText).toHaveTextContent('common.signIn');
+  });
+
+  test('should navigate to settings when avatar is clicked', () => {
+    localStorageStore['isLoggedIn'] = 'true';
+    vi.mocked(useIsLoggedIn).mockReturnValue(true);
+    const mockNavigate = vi.fn();
+    renderWithProviders(<Header onToggleSidebar={mockToggleSidebar} onNavigate={mockNavigate} />);
+    
+    const avatarButton = screen.getByTestId('user-avatar-button');
+    fireEvent.click(avatarButton);
+    
+    expect(mockNavigate).toHaveBeenCalledWith('settings');
   });
 });

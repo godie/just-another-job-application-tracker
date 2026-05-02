@@ -12,8 +12,10 @@ import GmailScanPage from './pages/GmailScanPage';
 import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+
 import PWAReloadPrompt from './components/PWAReloadPrompt';
 import MainLayout from './layouts/MainLayout';
+
 import { useApplicationsStore } from './stores/applicationsStore';
 import { useAuthStore } from './stores/authStore';
 import { useCloudSync } from './hooks/useCloudSync';
@@ -108,13 +110,14 @@ function App() {
       case 'settings':
         return <SettingsPage onNavigate={setCurrentPage} />;
       case 'insights':
-        return <InsightsPage />;
+        return <InsightsPage onNavigate={setCurrentPage} />;
       case 'support':
         return <SupportPage onNavigate={setCurrentPage} />;
       case 'suggestions':
         return <SuggestionsViewerPage onNavigate={setCurrentPage} />;
       case 'gmail-scan':
         return <GmailScanPage onNavigate={setCurrentPage} />;
+
       case 'landing':
         return <LandingPage onNavigate={setCurrentPage} />;
       case 'login':
@@ -139,6 +142,7 @@ function App() {
           </MainLayout>
         )}
         <PWAReloadPrompt />
+
       </AlertProvider>
     </GoogleOAuthProvider>
   );

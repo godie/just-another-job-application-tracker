@@ -86,7 +86,7 @@ const Alert: React.FC<AlertProps> = ({ type, message, onClose, duration = 5000 }
               setIsVisible(false);
               setTimeout(onClose, 300);
             }}
-            className="ml-4 flex-shrink-0 text-gray-400 hover:text-gray-600 transition-colors"
+            className="ml-4 flex-shrink-0 text-earth-400 hover:text-earth-600 dark:text-earth-400 dark:hover:text-earth-200 transition-colors"
             aria-label="Close alert"
           >
             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">

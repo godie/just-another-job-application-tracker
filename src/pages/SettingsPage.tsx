@@ -13,7 +13,9 @@ import CustomFieldsSettings from '../components/settings/CustomFieldsSettings';
 import InterviewingSettings from '../components/settings/InterviewingSettings';
 import EmailScanSettings from '../components/settings/EmailScanSettings';
 import ATSSearchSettings from '../components/settings/ATSSearchSettings';
+
 import Footer from '../components/Footer';
+import { Card } from '../components/ui';
 import packageJson from '../../package.json';
 
 interface SettingsPageProps {
@@ -70,7 +72,7 @@ function settingsReducer(state: SettingsState, action: SettingsAction): Settings
 const SettingsPageContent: React.FC<SettingsPageProps> = ({ onNavigate }) => {
   const { t } = useTranslation();
   const { preferences, updatePreferences, resetPreferences } = usePreferencesStore();
-  const { user, logout, isAuthenticated } = useAuthStore();
+  const { user, isAuthenticated } = useAuthStore();
   const { showSuccess } = useAlert();
   const [state, dispatch] = useReducer(settingsReducer, initialState);
 
@@ -197,14 +199,19 @@ const SettingsPageContent: React.FC<SettingsPageProps> = ({ onNavigate }) => {
       sections: ['view', 'date'],
     },
     {
-      id: 'customization',
-      label: t('settings.categories.customization'),
+      id: 'data',
+      label: t('settings.categories.data'),
       sections: ['fields', 'custom', 'interviewing'],
     },
     {
-      id: 'integrations',
-      label: t('settings.categories.integrations'),
-      sections: ['atsSearch', 'emailScan'],
+      id: 'sync',
+      label: t('settings.categories.sync'),
+      sections: ['emailScan'],
+    },
+    {
+      id: 'tools',
+      label: t('settings.categories.tools'),
+      sections: ['atsSearch'],
     },
     {
       id: 'account',
@@ -313,55 +320,41 @@ const SettingsPageContent: React.FC<SettingsPageProps> = ({ onNavigate }) => {
         );
       case 'cloud':
         return (
-          <div className="space-y-8">
-            <div className="bg-indigo-50 dark:bg-indigo-900/10 border border-indigo-100 dark:border-indigo-900/30 rounded-2xl p-8">
+          <div className='space-y-8'>
+            <div className='bg-sage-50 dark:bg-sage-900/20 border border-sage-200 dark:border-sage-700 p-8'>
               {isAuthenticated ? (
-                <div className="flex flex-col sm:flex-row items-center gap-6">
-                  <div className="w-16 h-16 bg-indigo-600 rounded-full flex items-center justify-center text-white text-2xl font-bold shadow-lg">
+                <div className='flex flex-col sm:flex-row items-center gap-6'>
+                  <div className='w-16 h-16 bg-sage-600 rounded flex items-center justify-center text-white text-2xl font-bold'>
                     {user?.email?.charAt(0).toUpperCase()}
                   </div>
-                  <div className="flex-1 text-center sm:text-left">
-                    <p className="text-sm font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">{t('settings.categories.account')}</p>
-                    <p className="text-xl font-bold text-gray-900 dark:text-white mt-1">{user?.email}</p>
-                    <div className="flex items-center justify-center sm:justify-start gap-2 mt-2 text-green-600 dark:text-green-400">
-                       <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  <div className='flex-1 text-center sm:text-left'>
+                    <p className='text-sm font-semibold text-sage-600 dark:text-sage-400 uppercase tracking-wider'>{t('settings.categories.account')}</p>
+                    <p className='font-serif text-xl font-bold text-earth-900 dark:text-earth-100 mt-1'>{user?.email}</p>
+                    <div className='flex items-center justify-center sm:justify-start gap-2 mt-2 text-sage-600 dark:text-sage-400'>
+                       <svg xmlns='http://www.w3.org/2000/svg' className='h-5 w-5' viewBox='0 0 20 20' fill='currentColor'>
+                        <path fillRule='evenodd' d='M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z' clipRule='evenodd' />
                       </svg>
-                      <span className="text-sm font-medium">Synced & Secure</span>
+                      <span className='text-sm font-medium'>{t('backupSync.loggedIn.syncedSecure')}</span>
                     </div>
                   </div>
                   <button
-                    onClick={() => {
-                      logout();
-                      showSuccess('Logged out successfully');
-                    }}
-                    className="px-6 py-2.5 bg-white dark:bg-gray-800 border border-red-200 dark:border-red-900/30 text-red-600 dark:text-red-400 rounded-xl text-sm font-bold hover:bg-red-50 dark:hover:bg-red-900/20 shadow-sm transition-all"
+                    onClick={() => onNavigate?.('settings')}
+                    className='px-6 py-2.5 bg-sage-600 text-white text-sm font-semibold hover:bg-sage-700 transition-colors'
                   >
-                    Logout
+                    {t('settings.title')} →
                   </button>
                 </div>
               ) : (
-                <div className="text-center py-6">
-                  <div className="w-16 h-16 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center text-gray-400 mx-auto mb-4">
-                     <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                <div className='text-center py-6'>
+                  <div className='w-16 h-16 bg-earth-100 dark:bg-earth-700 rounded flex items-center justify-center text-earth-400 mx-auto mb-4'>
+                     <svg xmlns='http://www.w3.org/2000/svg' className='h-8 w-8' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
+                      <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z' />
                     </svg>
                   </div>
-                  <h4 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Sync is currently disabled</h4>
-                  <p className="text-gray-600 dark:text-gray-400 mb-8 max-w-md mx-auto">Log in to keep your applications and opportunities in sync across all your devices.</p>
-                  <div className="flex flex-col sm:flex-row justify-center gap-4">
-                    <button
-                      onClick={() => onNavigate?.('login')}
-                      className="px-6 py-2 bg-indigo-600 text-white rounded-md text-sm font-medium hover:bg-indigo-700 shadow-sm"
-                    >
-                      Login
-                    </button>
-                    <button
-                      onClick={() => onNavigate?.('register')}
-                      className="px-6 py-2 bg-white dark:bg-gray-800 border border-gray-300 text-gray-700 dark:text-gray-200 rounded-md text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700"
-                    >
-                      Create Account
-                    </button>
+                  <h4 className='font-serif text-lg font-bold text-earth-900 dark:text-earth-100 mb-2'>{t('backupSync.notLoggedIn.title')}</h4>
+                  <p className='text-earth-600 dark:text-earth-400 mb-8 max-w-md mx-auto'>{t('backupSync.notLoggedIn.description')}</p>
+                  <div className='flex flex-col sm:flex-row justify-center gap-4'>
+
                   </div>
                 </div>
               )}
@@ -374,26 +367,33 @@ const SettingsPageContent: React.FC<SettingsPageProps> = ({ onNavigate }) => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="mb-10 text-center sm:text-left">
-        <h1 className="text-4xl font-black text-gray-900 dark:text-white tracking-tight">
+    <div className='max-w-6xl mx-auto px-6 lg:px-8 py-8'>
+      {/* Page header - editorial style */}
+      <header className='mb-12'>
+        <div className='flex items-center gap-3 mb-4'>
+          <div className='w-10 h-0.5 bg-sage-500'></div>
+          <span className='text-sage-600 dark:text-sage-400 text-sm font-medium tracking-wider uppercase'>
+            Configuration
+          </span>
+        </div>
+        <h1 className='font-serif text-4xl md:text-5xl font-bold text-earth-900 dark:text-earth-50'>
           {t('settings.title')}
         </h1>
-        <p className="mt-2 text-lg text-gray-500 dark:text-gray-400 font-medium">
+        <p className='mt-4 text-lg text-earth-600 dark:text-earth-300 max-w-2xl'>
           {t('settings.subtitle')}
         </p>
-      </div>
+      </header>
 
-      <div className="lg:grid lg:grid-cols-12 lg:gap-x-12">
+      <div className='lg:grid lg:grid-cols-12 lg:gap-x-12'>
         {/* Sidebar Navigation */}
-        <aside className="py-6 lg:col-span-3">
-          <nav className="space-y-10">
+        <aside className='py-6 lg:col-span-3'>
+          <nav className='space-y-8'>
             {categories.map((category) => (
               <div key={category.id}>
-                <h3 className="px-4 text-xs font-black text-gray-400 dark:text-gray-500 uppercase tracking-[0.2em] mb-4">
+                <h3 className='px-4 text-xs font-semibold text-earth-500 dark:text-earth-400 uppercase tracking-wider mb-3'>
                   {category.label}
                 </h3>
-                <div className="space-y-1">
+                <div className='space-y-1'>
                   {category.sections.map((sectionId) => {
                     const section = sections.find((s) => s.id === sectionId);
                     if (!section) return null;
@@ -402,20 +402,20 @@ const SettingsPageContent: React.FC<SettingsPageProps> = ({ onNavigate }) => {
                       <button
                         key={sectionId}
                         onClick={() => dispatch({ type: 'SET_FIELD', field: 'activeSection', value: sectionId })}
-                        className={`group flex items-center px-4 py-3 text-sm font-bold rounded-xl w-full transition-all duration-200 ${
+                        className={`group flex items-center px-4 py-3 text-sm font-semibold w-full transition-colors ${
                           isActive
-                            ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200 dark:shadow-none ring-4 ring-indigo-50 dark:ring-indigo-900/20'
-                            : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800/50 hover:text-gray-900 dark:hover:text-white'
+                            ? 'bg-sage-600 text-white'
+                            : 'text-earth-600 dark:text-earth-400 hover:bg-earth-100 dark:hover:bg-earth-800 hover:text-earth-900 dark:hover:text-earth-100'
                         }`}
                       >
-                        <span className={`mr-3 text-xl transition-transform duration-200 group-hover:scale-110 ${isActive ? 'text-white' : 'text-gray-400 group-hover:text-gray-600'}`}>
+                        <span className={`mr-3 text-xl ${isActive ? 'text-white' : 'text-earth-400 group-hover:text-earth-600'}`}>
                           {section.icon}
                         </span>
-                        <span className="truncate">{section.label}</span>
+                        <span className='truncate'>{section.label}</span>
                         {isActive && (
-                          <span className="ml-auto">
-                             <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                              <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                          <span className='ml-auto'>
+                             <svg xmlns='http://www.w3.org/2000/svg' className='h-4 w-4' viewBox='0 0 20 20' fill='currentColor'>
+                              <path fillRule='evenodd' d='M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z' clipRule='evenodd' />
                             </svg>
                           </span>
                         )}
@@ -429,42 +429,42 @@ const SettingsPageContent: React.FC<SettingsPageProps> = ({ onNavigate }) => {
         </aside>
 
         {/* Main Content Area */}
-        <div className="lg:col-span-9 mt-8 lg:mt-0">
+        <div className='lg:col-span-9 mt-8 lg:mt-0'>
           {/* Header for current section */}
-          <div className="bg-white dark:bg-gray-800 shadow-xl shadow-gray-100 dark:shadow-none border border-gray-100 dark:border-gray-700 rounded-2xl mb-8 overflow-hidden">
-            <div className={`p-8 ${activeSection === 'atsSearch' ? 'bg-indigo-50/30 dark:bg-indigo-900/5 border-l-8 border-indigo-600' : ''}`}>
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-4">
-                <div className="flex items-center gap-4">
-                  <div className="w-14 h-14 bg-gray-50 dark:bg-gray-700 rounded-2xl flex items-center justify-center text-3xl shadow-inner">
+          <Card className={`mb-8 overflow-hidden ${activeSection === 'atsSearch' ? 'border-l-4 border-l-sage-600' : ''}`}>
+            <div className='p-8'>
+              <div className='flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-4'>
+                <div className='flex items-center gap-4'>
+                  <div className='w-14 h-14 bg-earth-50 dark:bg-earth-700 rounded flex items-center justify-center text-3xl'>
                     {currentSection?.icon}
                   </div>
                   <div>
-                    <h2 className="text-2xl font-black text-gray-900 dark:text-white">
+                    <h2 className='font-serif text-2xl font-bold text-earth-900 dark:text-earth-100'>
                       {currentSection?.label}
                     </h2>
-                    <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mt-1">
+                    <p className='text-sm text-earth-600 dark:text-earth-400 mt-1'>
                       {currentSection?.description}
                     </p>
                   </div>
                 </div>
 
                 {/* Save/Reset Controls for desktop inside the header */}
-                <div className="hidden sm:flex items-center gap-4">
+                <div className='hidden sm:flex items-center gap-4'>
                   <button
-                    type="button"
+                    type='button'
                     onClick={handleReset}
-                    className="px-5 py-2.5 text-sm font-bold text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-800 border-2 border-gray-100 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-all"
+                    className='px-5 py-2.5 text-sm font-semibold text-earth-600 dark:text-earth-400 bg-white dark:bg-earth-800 border border-earth-200 dark:border-earth-700 hover:bg-earth-50 dark:hover:bg-earth-700 transition-colors'
                   >
                     {t('settings.resetDefault')}
                   </button>
                   <button
-                    type="button"
+                    type='button'
                     onClick={handleSave}
                     disabled={!hasChanges}
-                    className={`inline-flex items-center px-6 py-2.5 border border-transparent text-sm font-bold rounded-xl shadow-lg transition-all ${
+                    className={`inline-flex items-center px-6 py-2.5 border border-transparent text-sm font-semibold transition-colors ${
                       hasChanges
-                        ? 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-indigo-200 dark:shadow-none'
-                        : 'bg-gray-200 text-gray-400 cursor-not-allowed shadow-none'
+                        ? 'bg-sage-600 text-white hover:bg-sage-700'
+                        : 'bg-earth-200 text-earth-400 dark:text-earth-500 cursor-not-allowed'
                     }`}
                   >
                     {t('settings.saveChanges')}
@@ -472,47 +472,47 @@ const SettingsPageContent: React.FC<SettingsPageProps> = ({ onNavigate }) => {
                 </div>
               </div>
               {hasChanges && (
-                <div className="flex items-center gap-2 mt-4 px-4 py-2 bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-900/30 rounded-lg w-fit">
-                   <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
-                   <span className="text-xs text-amber-700 dark:text-amber-400 font-bold uppercase tracking-wider">
+                <div className='flex items-center gap-2 mt-4 px-4 py-2 bg-terracotta-50 dark:bg-terracotta-900/20 border border-terracotta-200 dark:border-terracotta-700 w-fit'>
+                   <div className='w-2 h-2 rounded-full bg-terracotta-500' />
+                   <span className='text-xs text-terracotta-700 dark:text-terracotta-400 font-semibold uppercase tracking-wider'>
                     {t('settings.unsavedChanges')}
                   </span>
                 </div>
               )}
             </div>
-          </div>
+          </Card>
 
           {/* Section Content Card */}
-          <div className="bg-white dark:bg-gray-800 shadow-2xl shadow-gray-200/50 dark:shadow-none border border-gray-100 dark:border-gray-700 rounded-[2rem] overflow-hidden min-h-[500px]">
-            <div className="p-8 sm:p-12">
+          <Card className='overflow-hidden min-h-[500px]'>
+            <div className='p-8 sm:p-12'>
               {renderSection()}
             </div>
-          </div>
+          </Card>
 
           {/* Mobile Save/Reset Controls */}
-          <div className="mt-8 sm:hidden bg-white dark:bg-gray-800 p-6 border border-gray-100 dark:border-gray-700 rounded-3xl shadow-xl flex flex-col gap-4">
+          <Card className='mt-8 sm:hidden flex flex-col gap-4'>
              <button
-                type="button"
+                type='button'
                 onClick={handleSave}
                 disabled={!hasChanges}
-                className={`w-full flex justify-center py-4 px-4 rounded-2xl shadow-lg text-sm font-bold transition-all ${
-                  hasChanges ? 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-indigo-200' : 'bg-gray-200 text-gray-400'
+                className={`w-full flex justify-center py-4 px-4 text-sm font-semibold transition-colors ${
+                  hasChanges ? 'bg-sage-600 text-white hover:bg-sage-700' : 'bg-earth-200 text-earth-400 dark:text-earth-500'
                 }`}
               >
                 {t('settings.saveChanges')}
               </button>
               <button
-                type="button"
+                type='button'
                 onClick={handleReset}
-                className="w-full flex justify-center py-4 px-4 border-2 border-gray-100 dark:border-gray-700 rounded-2xl text-sm font-bold text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all"
+                className='w-full flex justify-center py-4 px-4 text-sm font-semibold text-earth-700 dark:text-earth-300 bg-white dark:bg-earth-800 hover:bg-earth-50 dark:hover:bg-earth-700 transition-colors'
               >
                 {t('settings.resetDefault')}
               </button>
-          </div>
+          </Card>
         </div>
       </div>
 
-      <div className="mt-20 border-t border-gray-100 dark:border-gray-700 pt-10">
+      <div className='mt-20 border-t border-earth-200 dark:border-earth-700 pt-10'>
         <Footer version={packageJson.version} />
       </div>
     </div>

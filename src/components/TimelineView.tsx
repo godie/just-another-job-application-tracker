@@ -67,7 +67,7 @@ const TimelineView: React.FC<TimelineViewProps> = ({ applications, onEdit, onDel
 
   if (applications.length === 0) {
     return (
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-dashed border-gray-300 dark:border-gray-600 p-8 text-center text-gray-500 dark:text-gray-400">
+      <div className='bg-white dark:bg-earth-800 rounded border border-dashed border-earth-300 dark:border-earth-600 p-8 text-center text-earth-500 dark:text-earth-400'>
         <p className="font-medium">{t('timeline.noApplications')}</p>
         <p className="text-sm mt-2">{t('timeline.startAdding')}</p>
       </div>
@@ -106,7 +106,7 @@ const TimelineView: React.FC<TimelineViewProps> = ({ applications, onEdit, onDel
           <button
             onClick={() => goToPage(currentPage - 1)}
             disabled={currentPage === 1}
-            className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
+            className="px-4 py-2 text-sm font-medium text-earth-700 dark:text-earth-300 bg-white dark:bg-earth-800 border border-earth-300 dark:border-earth-600 rounded hover:bg-earth-50 dark:hover:bg-earth-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
             aria-label={t('common.previous')}
           >
             {t('common.previous')}
@@ -117,10 +117,10 @@ const TimelineView: React.FC<TimelineViewProps> = ({ applications, onEdit, onDel
               <button
                 key={page}
                 onClick={() => goToPage(page)}
-                className={`px-3 py-2 text-sm font-medium rounded-lg transition ${
+                className={`px-3 py-2 text-sm font-medium rounded transition ${
                   currentPage === page
-                    ? 'bg-indigo-600 text-white'
-                    : 'text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700'
+                    ? 'bg-sage-600 text-white'
+                    : 'text-earth-700 dark:text-earth-300 bg-white dark:bg-earth-800 border border-earth-300 dark:border-earth-600 hover:bg-earth-50 dark:hover:bg-earth-700'
                 }`}
                 aria-label={t('common.goToPage', { page })}
                 aria-current={currentPage === page ? 'page' : undefined}
@@ -133,7 +133,7 @@ const TimelineView: React.FC<TimelineViewProps> = ({ applications, onEdit, onDel
           <button
             onClick={() => goToPage(currentPage + 1)}
             disabled={currentPage === totalPages}
-            className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
+            className="px-4 py-2 text-sm font-medium text-earth-700 dark:text-earth-300 bg-white dark:bg-earth-800 border border-earth-300 dark:border-earth-600 rounded hover:bg-earth-50 dark:hover:bg-earth-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
             aria-label={t('common.next')}
           >
             {t('common.next')}

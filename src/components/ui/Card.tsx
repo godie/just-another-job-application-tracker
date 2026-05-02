@@ -6,7 +6,7 @@ export const Card = React.forwardRef<
 >(({ className = '', ...props }, ref) => (
   <div
     ref={ref}
-    className={`bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-100 dark:border-gray-700 ${className}`}
+    className={`bg-white dark:bg-earth-800 rounded border border-earth-200 dark:border-earth-700 shadow-sm ${className}`}
     {...props}
   />
 ));
@@ -30,7 +30,7 @@ export const CardTitle = React.forwardRef<
 >(({ className = '', children, ...props }, ref) => (
   <h3
     ref={ref}
-    className={`text-2xl font-semibold leading-none tracking-tight text-gray-900 dark:text-white ${className}`}
+    className={`font-serif text-2xl font-semibold leading-none tracking-tight text-earth-900 dark:text-earth-100 ${className}`}
     {...props}
   >
     {children || props['aria-label'] || 'Card Title'}
@@ -44,7 +44,7 @@ export const CardDescription = React.forwardRef<
 >(({ className = '', ...props }, ref) => (
   <p
     ref={ref}
-    className={`text-sm text-gray-500 dark:text-gray-400 ${className}`}
+    className={`text-sm text-earth-600 dark:text-earth-400 ${className}`}
     {...props}
   />
 ));

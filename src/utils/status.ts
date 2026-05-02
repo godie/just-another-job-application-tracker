@@ -11,5 +11,5 @@ export const getBadgeVariantForStatus = (status: string): BadgeProps['variant'] 
   if (statusLower === 'rejected') return 'danger';
   if (statusLower === 'offer') return 'success';
   if (statusLower === 'hold') return 'warning';
-  return 'indigo';
+  return 'default';
 };
