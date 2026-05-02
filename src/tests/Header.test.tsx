@@ -236,7 +236,7 @@ describe('Header Component', () => {
     expect(desktopText).toHaveTextContent('common.signIn');
   });
 
-  test('should navigate to settings when avatar is clicked', () => {
+  test('should navigate to backup-sync when avatar is clicked', () => {
     localStorageStore['isLoggedIn'] = 'true';
     vi.mocked(useIsLoggedIn).mockReturnValue(true);
     const mockNavigate = vi.fn();
@@ -245,6 +245,6 @@ describe('Header Component', () => {
     const avatarButton = screen.getByTestId('user-avatar-button');
     fireEvent.click(avatarButton);
     
-    expect(mockNavigate).toHaveBeenCalledWith('settings');
+    expect(mockNavigate).toHaveBeenCalledWith('backup-sync');
   });
 });

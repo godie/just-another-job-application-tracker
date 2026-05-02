@@ -2,6 +2,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { AlertProvider } from './components/AlertProvider';
+import BackupSyncPage from './pages/BackupSyncPage';
 import HomePage from './pages/HomePage';
 import OpportunitiesPage from './pages/OpportunitiesPage';
 import SettingsPage from './pages/SettingsPage';
@@ -14,6 +15,7 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 
 import PWAReloadPrompt from './components/PWAReloadPrompt';
+import MergePromptHandler from './components/sync/MergePromptHandler';
 import MainLayout from './layouts/MainLayout';
 
 import { useApplicationsStore } from './stores/applicationsStore';
@@ -23,9 +25,9 @@ import { useCloudSync } from './hooks/useCloudSync';
 // ⚡ Bolt: Provide a dummy client ID if not present to prevent crash in dev/test environments
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || 'dummy-client-id.apps.googleusercontent.com';
 
-export type PageType = 'landing' | 'applications' | 'opportunities' | 'settings' | 'insights' | 'support' | 'suggestions' | 'login' | 'register' | 'gmail-scan';
+export type PageType = 'landing' | 'applications' | 'opportunities' | 'settings' | 'insights' | 'support' | 'suggestions' | 'login' | 'register' | 'gmail-scan' | 'backup-sync';
 
-const VALID_PAGES: PageType[] = ['landing', 'applications', 'opportunities', 'settings', 'insights', 'support', 'suggestions', 'login', 'register', 'gmail-scan'];
+const VALID_PAGES: PageType[] = ['landing', 'applications', 'opportunities', 'settings', 'insights', 'support', 'suggestions', 'login', 'register', 'gmail-scan', 'backup-sync'];
 
 function App() {
   const { checkAuth } = useAuthStore();
@@ -117,6 +119,8 @@ function App() {
         return <SuggestionsViewerPage onNavigate={setCurrentPage} />;
       case 'gmail-scan':
         return <GmailScanPage onNavigate={setCurrentPage} />;
+      case 'backup-sync':
+        return <BackupSyncPage onNavigate={setCurrentPage} />;
 
       case 'landing':
         return <LandingPage onNavigate={setCurrentPage} />;
@@ -141,6 +145,7 @@ function App() {
             {content}
           </MainLayout>
         )}
+        <MergePromptHandler />
         <PWAReloadPrompt />
 
       </AlertProvider>
