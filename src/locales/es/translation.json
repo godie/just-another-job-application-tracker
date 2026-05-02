@@ -65,7 +65,8 @@
       "keepLocalDesc": "Mantén lo que está en este dispositivo. Los datos de la nube se sobrescribirán en la próxima sincronización.",
       "mergeBoth": "Fusionar Ambos (Recomendado)",
       "mergeBothDesc": "Combina datos de ambas fuentes. Los duplicados se resuelven automáticamente.",
-      "cancel": "Cancelar",
+    "cancel": "Cancelar",
+    "close": "Cerrar",
       "notSyncedBanner": "Datos no sincronizados — elige cómo manejar tus datos",
       "cloudLabel": "Nube",
       "localLabel": "Local",
@@ -331,7 +332,16 @@
       "rateLimitError": "Demasiadas solicitudes. Límite de Gmail superado. Intenta de nuevo en unos minutos.",
       "selectAtLeastOne": "Selecciona al menos un elemento para aplicar.",
       "applySuccess": "Se añadieron {{added}} aplicación(es) y {{updated}} actualización(es).",
-      "applyError": "Error al aplicar cambios. Inténtalo de nuevo."
+      "applyError": "Error al aplicar cambios. Inténtalo de nuevo.",
+      "processingModes": {
+        "manual": "Manual (Copiar y Pegar)",
+        "api": "API Directa (Gemini)"
+      },
+      "processWithGemini": "Procesar con API de Gemini",
+      "processWithGeminiAction": "Procesar con Gemini",
+      "geminiProcessing": "Procesando con Gemini…",
+      "geminiSuccess": "Procesado con Gemini: {{count}} elemento(s) extraídos",
+      "geminiError": "Error al procesar con Gemini. Inténtalo de nuevo."
     },
     "success": "¡Ajustes guardados con éxito!"
   },
@@ -447,6 +457,33 @@
       "placeholderRoles": "ej. \"software engineer\" OR \"frontend\"",
       "placeholderKeywords": "ej. \"hiring\" OR \"apply\"",
       "placeholderLocation": "ej. \"remoto\" OR \"España\""
+    }
+  },
+  "geminiKeyModal": {
+    "setupTitle": "Configurar Clave API de Gemini",
+    "setupDescription": "Ingresa tu clave API de Gemini y crea una contraseña maestra para cifrarla.",
+    "unlockTitle": "Desbloquear Clave API de Gemini",
+    "unlockDescription": "Ingresa tu contraseña maestra para desencriptar tu clave API almacenada.",
+    "apiKeyLabel": "Clave API de Gemini",
+    "confirmApiKeyLabel": "Confirmar Clave API",
+    "masterPasswordLabel": "Contraseña Maestra",
+    "masterPasswordPlaceholder": "Ingresa tu contraseña maestra",
+    "confirmMasterPasswordLabel": "Confirmar Contraseña Maestra",
+    "confirmMasterPasswordPlaceholder": "Reingresa tu contraseña maestra",
+    "showPassword": "Mostrar contraseñas",
+    "saveAction": "Guardar y Cifrar",
+    "unlockAction": "Desbloquear",
+    "saving": "Guardando…",
+    "unlocking": "Desbloqueando…",
+    "securityNote": "Tu clave API está cifrada con AES-256-GCM y almacenada localmente. La contraseña maestra nunca se almacena.",
+    "errors": {
+      "apiKeyRequired": "La clave API es obligatoria.",
+      "apiKeyMismatch": "Las claves API no coinciden.",
+      "masterPasswordRequired": "La contraseña maestra es obligatoria.",
+      "masterPasswordMismatch": "Las contraseñas maestras no coinciden.",
+      "noKeyStored": "No se encontró ninguna clave cifrada. Configura tu clave API primero.",
+      "wrongPassword": "Contraseña maestra incorrecta. Inténtalo de nuevo.",
+      "generic": "Ocurrió un error. Inténtalo de nuevo."
     }
   },
   "filters": {
