@@ -35,6 +35,7 @@
     "logoutPartial": "Logged out (some credentials may remain on server).",
     "logout": "Logout",
     "loginWithGoogle": "Login with Google",
+    "signIn": "Sign In",
     "save": "Save",
     "cancel": "Cancel",
     "delete": "Delete",
