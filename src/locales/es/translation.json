@@ -35,6 +35,7 @@
     "logoutPartial": "Sesión cerrada (algunas credenciales pueden permanecer en el servidor).",
     "logout": "Cerrar sesión",
     "loginWithGoogle": "Iniciar sesión con Google",
+    "signIn": "Iniciar Sesión",
     "save": "Guardar",
     "cancel": "Cancelar",
     "delete": "Eliminar",
