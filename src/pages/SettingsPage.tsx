@@ -13,7 +13,7 @@ import CustomFieldsSettings from '../components/settings/CustomFieldsSettings';
 import InterviewingSettings from '../components/settings/InterviewingSettings';
 import EmailScanSettings from '../components/settings/EmailScanSettings';
 import ATSSearchSettings from '../components/settings/ATSSearchSettings';
-import ToolsSettings from '../components/settings/ToolsSettings';
+
 import Footer from '../components/Footer';
 import { Card } from '../components/ui';
 import packageJson from '../../package.json';
@@ -22,7 +22,7 @@ interface SettingsPageProps {
   onNavigate?: (page: PageType) => void;
 }
 
-type SettingsSection = 'fields' | 'view' | 'date' | 'custom' | 'interviewing' | 'emailScan' | 'atsSearch' | 'tools' | 'cloud';
+type SettingsSection = 'fields' | 'view' | 'date' | 'custom' | 'interviewing' | 'emailScan' | 'atsSearch' | 'cloud';
 
 interface SettingsState {
   activeSection: SettingsSection;
@@ -211,7 +211,7 @@ const SettingsPageContent: React.FC<SettingsPageProps> = ({ onNavigate }) => {
     {
       id: 'tools',
       label: t('settings.categories.tools'),
-      sections: ['atsSearch', 'tools'],
+      sections: ['atsSearch'],
     },
     {
       id: 'account',
@@ -228,7 +228,6 @@ const SettingsPageContent: React.FC<SettingsPageProps> = ({ onNavigate }) => {
     { id: 'interviewing' as const, label: t('settings.sections.interviewing'), icon: '🎯', description: t('settings.sections.interviewingDesc') },
     { id: 'atsSearch' as const, label: t('opportunities.atsSearch.title'), icon: '🔍', description: t('settings.sections.atsSearchDesc') },
     { id: 'emailScan' as const, label: t('settings.emailScan.section'), icon: '📧', description: t('settings.sections.emailScanDesc') },
-    { id: 'tools' as const, label: t('settings.sections.tools'), icon: '🛠️', description: t('settings.sections.toolsDesc') },
     { id: 'cloud' as const, label: t('settings.sections.cloud'), icon: '☁️', description: t('settings.sections.cloudDesc') },
   ];
 
@@ -305,8 +304,6 @@ const SettingsPageContent: React.FC<SettingsPageProps> = ({ onNavigate }) => {
             }}
           />
         );
-      case 'tools':
-        return <ToolsSettings />;
       case 'interviewing':
         return (
           <InterviewingSettings
@@ -341,10 +338,10 @@ const SettingsPageContent: React.FC<SettingsPageProps> = ({ onNavigate }) => {
                     </div>
                   </div>
                   <button
-                    onClick={() => onNavigate?.('backup-sync')}
+                    onClick={() => onNavigate?.('settings')}
                     className='px-6 py-2.5 bg-sage-600 text-white text-sm font-semibold hover:bg-sage-700 transition-colors'
                   >
-                    {t('nav.backupSync')} →
+                    {t('settings.title')} →
                   </button>
                 </div>
               ) : (
@@ -357,12 +354,7 @@ const SettingsPageContent: React.FC<SettingsPageProps> = ({ onNavigate }) => {
                   <h4 className='font-serif text-lg font-bold text-earth-900 dark:text-earth-100 mb-2'>{t('backupSync.notLoggedIn.title')}</h4>
                   <p className='text-earth-600 dark:text-earth-400 mb-8 max-w-md mx-auto'>{t('backupSync.notLoggedIn.description')}</p>
                   <div className='flex flex-col sm:flex-row justify-center gap-4'>
-                    <button
-                      onClick={() => onNavigate?.('backup-sync')}
-                      className='px-6 py-2.5 bg-sage-600 text-white text-sm font-semibold hover:bg-sage-700 transition-colors'
-                    >
-                      {t('nav.backupSync')} →
-                    </button>
+
                   </div>
                 </div>
               )}

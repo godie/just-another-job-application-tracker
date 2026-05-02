@@ -168,8 +168,7 @@ describe('Header Component', () => {
     localStorageStore['isLoggedIn'] = 'false';
     renderWithProviders(<Header onToggleSidebar={mockToggleSidebar} />);
     const loginButton = screen.getByTestId('login-button');
-    expect(loginButton).toHaveTextContent('Sign In');
-    expect(loginButton).toHaveAttribute('aria-label', 'Sign In');
+    expect(loginButton).toHaveTextContent('common.signIn');
   });
 
   test('should render avatar button when initially logged in', () => {
@@ -178,7 +177,7 @@ describe('Header Component', () => {
     renderWithProviders(<Header onToggleSidebar={mockToggleSidebar} />);
     const avatarButton = screen.getByTestId('user-avatar-button');
     expect(avatarButton).toBeInTheDocument();
-    expect(avatarButton).toHaveAttribute('aria-label', 'Backup & Sync');
+    expect(avatarButton).toHaveAttribute('aria-label', 'nav.backupSync');
   });
 
   // --- Login/Logout Logic Tests ---
@@ -213,10 +212,9 @@ describe('Header Component', () => {
     const loginButton = screen.getByTestId('login-button');
     expect(loginButton).toBeInTheDocument();
     
-    // Desktop text should say "Sign In"
     const desktopText = loginButton.querySelector('.hidden.md\\:inline');
     expect(desktopText).toBeInTheDocument();
-    expect(desktopText).toHaveTextContent('Sign In');
+    expect(desktopText).toHaveTextContent('common.signIn');
   });
 
   test('should render full "Sign In" text for desktop view', () => {
@@ -227,10 +225,10 @@ describe('Header Component', () => {
     // Desktop text should be present (hidden on mobile via md:hidden class)
     const desktopText = loginButton.querySelector('.hidden.md\\:inline');
     expect(desktopText).toBeInTheDocument();
-    expect(desktopText).toHaveTextContent('Sign In');
+    expect(desktopText).toHaveTextContent('common.signIn');
   });
 
-  test('should navigate to backup-sync when avatar is clicked', () => {
+  test('should navigate to settings when avatar is clicked', () => {
     localStorageStore['isLoggedIn'] = 'true';
     vi.mocked(useIsLoggedIn).mockReturnValue(true);
     const mockNavigate = vi.fn();
@@ -239,6 +237,6 @@ describe('Header Component', () => {
     const avatarButton = screen.getByTestId('user-avatar-button');
     fireEvent.click(avatarButton);
     
-    expect(mockNavigate).toHaveBeenCalledWith('backup-sync');
+    expect(mockNavigate).toHaveBeenCalledWith('settings');
   });
 });

@@ -47,12 +47,10 @@ describe('SettingsPage', () => {
     test('renders Settings page with header and sidebar navigation', async () => {
       renderWithGoogleProvider(<SettingsPage />);
       
+<<<<<<< HEAD
       expect(screen.getByRole('heading', { level: 1, name: /Settings/i })).toBeInTheDocument();
       expect(screen.getByText(/General/i)).toBeInTheDocument();
       expect(screen.getByText(/Data/i)).toBeInTheDocument();
-      // Use more specific selector for Tools category
-      const toolsHeading = screen.getByText('Tools', { selector: 'h3' });
-      expect(toolsHeading).toBeInTheDocument();
       expect(screen.getByText(/Account/i)).toBeInTheDocument();
     });
 

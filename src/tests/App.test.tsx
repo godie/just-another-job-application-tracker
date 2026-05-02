@@ -36,6 +36,7 @@ describe('App Navigation and History', () => {
 
     render(<App />);
 
+<<<<<<< HEAD
     // In SettingsPage, we expect the h1 heading "Settings"
     // Using level:1 to avoid matching h3 category labels that may contain "settings" in raw i18n keys
     expect(screen.getByRole('heading', { level: 1, name: /Settings/i })).toBeInTheDocument();
@@ -60,6 +61,7 @@ describe('App Navigation and History', () => {
       window.dispatchEvent(new PopStateEvent('popstate', { state: { page: 'settings' } }));
     });
 
+<<<<<<< HEAD
     // Check if it navigated to settings (use level:1 to match only the page title h1)
     expect(screen.getByRole('heading', { level: 1, name: /Settings/i })).toBeInTheDocument();
   });
