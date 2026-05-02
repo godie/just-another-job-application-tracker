@@ -5,7 +5,7 @@ import App from '../App';
 
 // Mock components that might be problematic in test environment
 vi.mock('../layouts/MainLayout', () => ({
-  default: ({ children }: { children: React.ReactNode }) => <div data-testid="main-layout">{children}</div>,
+  default: ({ children }: { children: React.ReactNode }) => <div data-testid='main-layout'>{children}</div>,
 }));
 
 vi.mock('@react-oauth/google', () => ({
@@ -28,7 +28,7 @@ describe('App Navigation and History', () => {
     expect(screen.getByText(/Master Your Job Search/i)).toBeInTheDocument();
   });
 
-  it('navigates to the page specified in the URL query parameter', () => {
+  it('navigates to the page specified in the URL query parameter', async () => {
     // Set up URL with page parameter
     const url = new URL(window.location.href);
     url.searchParams.set('page', 'settings');
@@ -36,9 +36,8 @@ describe('App Navigation and History', () => {
 
     render(<App />);
 
-<<<<<<< HEAD
-    // In SettingsPage, we expect the h1 heading "Settings"
-    // Using level:1 to avoid matching h3 category labels that may contain "settings" in raw i18n keys
+    // In SettingsPage, we expect the h1 heading 'Settings'
+    // Using level:1 to avoid matching h3 category labels that may contain 'settings' in raw i18n keys
     expect(screen.getByRole('heading', { level: 1, name: /Settings/i })).toBeInTheDocument();
   });
 
@@ -61,7 +60,6 @@ describe('App Navigation and History', () => {
       window.dispatchEvent(new PopStateEvent('popstate', { state: { page: 'settings' } }));
     });
 
-<<<<<<< HEAD
     // Check if it navigated to settings (use level:1 to match only the page title h1)
     expect(screen.getByRole('heading', { level: 1, name: /Settings/i })).toBeInTheDocument();
   });

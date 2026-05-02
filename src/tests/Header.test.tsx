@@ -5,6 +5,14 @@ import { AlertProvider } from '../components/AlertProvider';
 import * as api from '../utils/api';
 import { useIsLoggedIn } from '../hooks/useIsLoggedIn';
 
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key: string) => key,
+    i18n: { language: 'en', changeLanguage: vi.fn() },
+  }),
+  Trans: ({ children }: { children: React.ReactNode }) => children,
+}));
+
 
 // =========================================================================
 // MOCKS SETUP
