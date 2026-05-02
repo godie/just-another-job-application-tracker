@@ -21,11 +21,71 @@
     "enterApp": "Enter Application",
     "footer": "© 2025 Job Application Tracker. Master your career path."
   },
+  "backupSync": {
+    "title": "Backup & Sync",
+    "subtitle": "Keep your data safe and accessible from any device.",
+    "tabs": {
+      "acrossDevices": "Across Devices",
+      "googleSheets": "Google Sheets"
+    },
+    "notLoggedIn": {
+      "title": "Sync Across Devices",
+      "description": "Keep your applications and opportunities safe and accessible from any device.",
+      "signIn": "Sign In",
+      "createAccount": "Create Account",
+      "signInWithGoogle": "Sign in with Google",
+      "orDivider": "or",
+      "privacyNote": "Your data stays in your browser by default. Creating an account enables cloud backup and cross-device sync only."
+    },
+    "loggedIn": {
+      "syncedSecure": "Synced & Secure",
+      "yourData": "Your Data",
+      "applications_one": "{{count}} Application",
+      "applications_other": "{{count}} Applications",
+      "opportunities_one": "{{count}} Opportunity",
+      "opportunities_other": "{{count}} Opportunities",
+      "lastSync": "Last Sync",
+      "syncNow": "Sync Now",
+      "syncSuccess": "Sync completed successfully!",
+      "syncingNow": "Syncing...",
+      "autoSyncNote": "Data syncs automatically when you make changes.",
+      "logout": "Sign Out",
+      "neverSynced": "Not synced yet"
+    },
+    "welcome": {
+      "title": "You're signed in!",
+      "message": "Your data will now automatically sync across all your devices. You can manage sync settings in Backup & Sync."
+    },
+    "merge": {
+      "title": "Data Conflict",
+      "description": "You have existing data on this device and in the cloud. How would you like to handle this?",
+      "useCloud": "Use Cloud Data",
+      "useCloudDesc": "Replace local data with your cloud backup. Local-only items will be lost.",
+      "keepLocal": "Keep Local Data",
+      "keepLocalDesc": "Keep what's on this device. Cloud data will be overwritten on next sync.",
+      "mergeBoth": "Merge Both (Recommended)",
+      "mergeBothDesc": "Combine data from both sources. Duplicates are resolved automatically.",
+      "cancel": "Cancel",
+      "notSyncedBanner": "Data not synced — choose how to handle your data",
+      "cloudLabel": "Cloud",
+      "localLabel": "Local",
+      "mergedLabel": "Merged",
+      "mergeSuccess": "Data merged successfully!",
+      "syncSuccess": "Data synced successfully!",
+      "resolveError": "Failed to resolve data conflict. Your local data is preserved.",
+      "syncResumed": "Sync resumed!",
+      "reopenFailed": "Failed to check cloud data. Please try again.",
+      "resolve": "Resolve"
+    },
+    "errors": {
+      "syncFailed": "Sync failed — your changes are saved locally and will sync when connection is restored."
+    }
+  },
   "common": {
     "footer": {
       "vibecoded": "Vibecoded with love ❤️ by <link>godie</link> with cursor v{{version}} ({{year}})",
-      "terms": "Terms of Service",
-      "privacy": "Privacy"
+      "privacyPolicy": "Privacy Policy",
+      "termsOfUse": "Terms of Use"
     },
     "loading": "Loading...",
     "loginSuccess": "Successful Login with Google!",
@@ -90,7 +150,8 @@
     "settings": "Settings",
     "insights": "Insights",
     "support": "Support",
-    "about": "About"
+    "about": "About",
+    "backupSync": "Backup & Sync"
   },
   "home": {
     "pipeline": "Application Pipeline",
@@ -158,8 +219,9 @@
     "subtitle": "Customize your application tracking experience. All changes are saved locally in your browser.",
     "categories": {
       "general": "General",
-      "customization": "Customization",
-      "integrations": "Integrations",
+      "data": "Data",
+      "sync": "Sync",
+      "tools": "Tools",
       "account": "Account"
     },
     "sections": {
@@ -175,6 +237,8 @@
       "fields": "Table Fields",
       "view": "Default View",
       "date": "Date Format",
+      "tools": "Tools",
+      "toolsDesc": "Data management tools: CSV, backup, restore, and debug utilities.",
       "dateDesc": "Choose how dates should be displayed throughout the application.",
       "custom": "Custom Fields",
       "interviewing": "Interview Events"
@@ -271,6 +335,42 @@
     },
     "success": "Settings saved successfully!"
   },
+  "tools": {
+    "csv": {
+      "heading": "CSV",
+      "title": "CSV Import / Export",
+      "desc": "Export your applications to CSV format or import applications from a CSV file."
+    },
+    "backup": {
+      "title": "Backup & Restore",
+      "desc": "Create a full backup of all your data or restore from a previous backup.",
+      "create": "Create Backup",
+      "restore": "Restore Backup",
+      "exportJson": "Export Data (JSON)",
+      "importJson": "Import Data (JSON)",
+      "importing": "Importing...",
+      "warning": "Restoring a backup will replace all current data. Make sure you have a current backup before proceeding."
+    },
+    "debug": {
+      "title": "Debug / Raw Data",
+      "desc": "View the raw JSON data stored in your browser. Useful for troubleshooting.",
+      "show": "Show Data",
+      "hide": "Hide Data",
+      "showInfo": "Show Debug Info"
+    },
+    "danger": {
+      "title": "Danger Zone",
+      "desc": "These actions cannot be undone. Proceed with caution.",
+      "warning": "These actions are irreversible. Please make sure you have a backup before proceeding.",
+      "clear": "Clear All Data"
+    },
+    "clearConfirm": "Are you sure you want to delete ALL data? This action cannot be undone.",
+    "exportSuccess": "Data exported successfully",
+    "exportError": "Failed to export data",
+    "importSuccess": "Data imported successfully",
+    "importError": "Failed to import data. Invalid file format.",
+    "clearSuccess": "All data cleared"
+  },
   "insights": {
     "title": "Insights",
     "applicationsByStatus": "Applications by Status",
@@ -278,6 +378,7 @@
     "totalInterviews": "Total Interviews",
     "rejectedApplications": "Rejected Applications",
     "rejectionPercentage": "Rejection Percentage",
+    "rejectionRate": "rate",
     "interviewsByStatus": "Interviews by Application Status",
     "interviewsByType": "Interviews by Type",
     "interviewTypes": {
@@ -328,6 +429,11 @@
       "added": "Opportunity \"{{position}}\" at {{company}} has been added!",
       "convertError": "Failed to convert opportunity to application. Please try again.",
       "addError": "Failed to add opportunity. Please try again."
+    },
+    "metrics": {
+      "total": "Total Opportunities",
+      "thisWeek": "This Week",
+      "remote": "Remote"
     },
     "atsSearch": {
       "title": "Direct ATS Search",
