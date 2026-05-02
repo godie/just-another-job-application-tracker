@@ -26,6 +26,7 @@ CREATE TABLE IF NOT EXISTS users (
     email VARCHAR(255) UNIQUE NOT NULL,
     password_hash VARCHAR(255),
     google_id VARCHAR(255) UNIQUE,
+    linkedin_id VARCHAR(255) UNIQUE,
     username VARCHAR(50) UNIQUE,
     display_name VARCHAR(100),
     avatar_url TEXT,

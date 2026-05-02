@@ -2,7 +2,6 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { expect, test, describe, beforeEach, vi } from 'vitest';
 import Header from '../components/Header';
 import { AlertProvider } from '../components/AlertProvider';
-import * as api from '../utils/api';
 import { useIsLoggedIn } from '../hooks/useIsLoggedIn';
 
 vi.mock('react-i18next', () => ({
@@ -65,31 +64,33 @@ vi.mock('../utils/localStorage', () => {
 // Mock the auth store
 vi.mock('../stores/authStore', () => ({
   useAuthStore: vi.fn(() => ({
-    user: localStorageStore['isLoggedIn'] === 'true'
+    currentUser: localStorageStore['isLoggedIn'] === 'true'
       ? { id: 1, email: 'test@example.com', name: 'Test User' }
       : null,
+    isAuthenticated: localStorageStore['isLoggedIn'] === 'true',
     logout: vi.fn(async () => {
       await fetch('/api/auth/logout', { method: 'DELETE' });
     }),
-    checkAuth: vi.fn(),
-    setAuthenticated: vi.fn(),
+    fetchMe: vi.fn(),
     setUser: vi.fn(),
     setError: vi.fn(),
-    isAuthenticated: localStorageStore['isLoggedIn'] === 'true',
     isLoading: false,
     error: null,
   })),
 }));
 
-// Mock the @react-oauth/google hook (auth-code flow: onSuccess receives { code })
-const mockGoogleLogin = vi.fn();
-vi.mock('@react-oauth/google', () => ({
-  useGoogleLogin: (opts: { onSuccess?: (res: { code: string }) => void }) => {
-    const loginFn = () => opts?.onSuccess?.({ code: 'mock-auth-code' });
-    mockGoogleLogin.mockImplementation(loginFn);
-    return mockGoogleLogin;
-  },
-  GoogleOAuthProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+// Mock AuthModals to track openLogin calls
+const mockOpenLogin = vi.fn();
+const mockCloseModal = vi.fn();
+vi.mock('../components/AuthModals', () => ({
+  useAuthModals: vi.fn(() => ({
+    isOpen: false,
+    initialMode: 'login',
+    openLogin: mockOpenLogin,
+    openRegister: vi.fn(),
+    closeModal: mockCloseModal,
+    AuthModal: () => null,
+  })),
 }));
 
 // =========================================================================
@@ -104,7 +105,7 @@ describe('Header Component', () => {
     Object.keys(localStorageStore).forEach(key => delete localStorageStore[key]);
     localStorageStore['isLoggedIn'] = 'false'; // Default to logged out
     vi.mocked(useIsLoggedIn).mockReturnValue(false);
-    mockGoogleLogin.mockClear();
+    mockOpenLogin.mockClear();
     mockToggleSidebar.mockClear();
     // Reset theme in localStorage
     localStorage.setItem('theme', 'light');
@@ -190,23 +191,23 @@ describe('Header Component', () => {
 
   // --- Login/Logout Logic Tests ---
 
-  test('Login action should call googleLogin function', () => {
+  test('Login action should open the auth modal', () => {
     localStorageStore['isLoggedIn'] = 'false';
     renderWithProviders(<Header onToggleSidebar={mockToggleSidebar} />);
     
     const loginButton = screen.getByTestId('login-button');
     fireEvent.click(loginButton);
     
-    expect(mockGoogleLogin).toHaveBeenCalledTimes(1);
+    expect(mockOpenLogin).toHaveBeenCalledTimes(1);
   });
 
-  test('On Google login success should call setAuthCookieWithCode with code and origin', async () => {
+  test('On login button click should open auth modal with login mode', async () => {
     localStorageStore['isLoggedIn'] = 'false';
     renderWithProviders(<Header onToggleSidebar={mockToggleSidebar} />);
     const loginButton = screen.getByTestId('login-button');
     fireEvent.click(loginButton);
     await waitFor(() => {
-      expect(api.setAuthCookieWithCode).toHaveBeenCalledWith('mock-auth-code', expect.any(String));
+      expect(mockOpenLogin).toHaveBeenCalled();
     });
   });
 

@@ -11,6 +11,7 @@ namespace OverPHP\Models;
  * @property int|null $organizationId
  * @property string $email
  * @property string|null $passwordHash
+ * @property string|null $linkedinId
  * @property string|null $googleId
  * @property string|null $username
  * @property string|null $displayName
@@ -29,6 +30,7 @@ class User
     public readonly ?int $organizationId;
     public readonly string $email;
     public readonly ?string $passwordHash;
+    public readonly ?string $linkedinId;
     public readonly ?string $googleId;
     public readonly ?string $username;
     public readonly ?string $displayName;
@@ -46,6 +48,7 @@ class User
         ?int $organizationId,
         string $email,
         ?string $passwordHash = null,
+        ?string $linkedinId = null,
         ?string $googleId = null,
         ?string $username = null,
         ?string $displayName = null,
@@ -62,6 +65,7 @@ class User
         $this->organizationId = $organizationId;
         $this->email = $email;
         $this->passwordHash = $passwordHash;
+        $this->linkedinId = $linkedinId;
         $this->googleId = $googleId;
         $this->username = $username;
         $this->displayName = $displayName;
@@ -88,6 +92,7 @@ class User
                 : null,
             email: $row["email"] ?? "",
             passwordHash: $row["password_hash"] ?? null,
+            linkedinId: $row["linkedin_id"] ?? null,
             googleId: $row["google_id"] ?? null,
             username: $row["username"] ?? null,
             displayName: $row["display_name"] ?? null,
@@ -111,6 +116,7 @@ class User
         string $email,
         ?int $organizationId = null,
         ?string $passwordHash = null,
+        ?string $linkedinId = null,
         ?string $googleId = null,
         ?string $username = null,
         ?string $displayName = null,
@@ -121,6 +127,7 @@ class User
             organizationId: $organizationId,
             email: $email,
             passwordHash: $passwordHash,
+            linkedinId: $linkedinId,
             googleId: $googleId,
             username: $username,
             displayName: $displayName,
@@ -147,12 +154,40 @@ class User
             organizationId: $organizationId,
             email: $googleUser["email"] ?? "",
             passwordHash: null,
+            linkedinId: null,
             googleId: $googleUser["google_id"] ?? ($googleUser["sub"] ?? null),
             username: $googleUser["name"] ?? null,
             displayName: $googleUser["name"] ?? null,
             avatarUrl: $googleUser["picture"] ?? null,
             isPublic: false,
             bio: $googleUser["bio"] ?? null,
+            role: "member",
+            isActive: true,
+            createdAt: null,
+            updatedAt: null,
+            lastLoginAt: null,
+        );
+    }
+
+    /**
+     * Create from LinkedIn OAuth data
+     */
+    public static function fromLinkedIn(
+        array $linkedinUser,
+        ?int $organizationId = null,
+    ): self {
+        return new self(
+            id: null,
+            organizationId: $organizationId,
+            email: $linkedinUser["email"] ?? "",
+            passwordHash: null,
+            linkedinId: $linkedinUser["linkedin_id"] ?? ($linkedinUser["sub"] ?? null),
+            googleId: null,
+            username: $linkedinUser["name"] ?? null,
+            displayName: $linkedinUser["name"] ?? null,
+            avatarUrl: $linkedinUser["picture"] ?? null,
+            isPublic: false,
+            bio: null,
             role: "member",
             isActive: true,
             createdAt: null,
@@ -170,6 +205,7 @@ class User
             "email" => $this->email,
             "organization_id" => $this->organizationId,
             "password_hash" => $this->passwordHash,
+            "linkedin_id" => $this->linkedinId,
             "google_id" => $this->googleId,
             "username" => $this->username,
             "display_name" => $this->displayName,

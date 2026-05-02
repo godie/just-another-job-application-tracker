@@ -33,6 +33,7 @@ const config: KnipConfig = {
     'src/components/ui/Select.tsx': ['types'],
     'src/components/ui/Separator.tsx': ['types'],
     'src/types/preferences.ts': ['types'],
+    'src/components/AuthModals.tsx': ['exports'],
   },
 
   // Project patterns

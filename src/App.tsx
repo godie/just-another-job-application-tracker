@@ -30,7 +30,7 @@ export type PageType = 'landing' | 'applications' | 'opportunities' | 'settings'
 const VALID_PAGES: PageType[] = ['landing', 'applications', 'opportunities', 'settings', 'insights', 'support', 'suggestions', 'login', 'register', 'gmail-scan', 'backup-sync'];
 
 function App() {
-  const { checkAuth } = useAuthStore();
+  const { fetchMe } = useAuthStore();
   useCloudSync();
 
   const getPageFromUrl = useCallback(() => {
@@ -58,8 +58,8 @@ function App() {
   const refreshApplications = useApplicationsStore((state) => state.refreshApplications);
 
   useEffect(() => {
-    checkAuth();
-  }, [checkAuth]);
+    fetchMe();
+  }, [fetchMe]);
 
   // Handle browser back/forward buttons
   useEffect(() => {

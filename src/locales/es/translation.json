@@ -1,4 +1,24 @@
 {
+  "auth": {
+    "login": "Iniciar Sesión",
+    "register": "Registrarse",
+    "logout": "Cerrar sesión",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "confirmPassword": "Confirmar Contraseña",
+    "displayName": "Nombre",
+    "loginWithGoogle": "Continuar con Google",
+    "loginWithLinkedin": "Continuar con LinkedIn",
+    "noAccount": "¿No tienes cuenta?",
+    "hasAccount": "¿Ya tienes cuenta?",
+    "errors": {
+      "invalidCredentials": "Correo o contraseña inválidos",
+      "emailTaken": "El correo ya está en uso",
+      "passwordMismatch": "Las contraseñas no coinciden",
+      "required": "Este campo es obligatorio",
+      "weakPassword": "La contraseña debe tener al menos 8 caracteres"
+    }
+  },
   "landing": {
     "heroTitle": "Domina tu Búsqueda de Empleo",
     "heroSubtitle": "La herramienta definitiva para rastrear aplicaciones, gestionar entrevistas y conseguir el trabajo de tus sueños.",
