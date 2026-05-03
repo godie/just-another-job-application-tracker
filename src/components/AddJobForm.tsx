@@ -1,9 +1,10 @@
 // src/components/AddJobForm.tsx
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { JobApplication } from '../utils/localStorage';
 import { toWorkType, buildInitialTimeline } from '../utils/applications';
 import useKeyboardEscape from '../hooks/useKeyboardEscape';
+import useFocusTrap from '../hooks/useFocusTrap';
 import TimelineEditor from './TimelineEditor';
 import { Button, Input, Select, Card } from './ui';
 
@@ -57,48 +58,7 @@ const AddJobForm: React.FC<AddJobFormProps> = ({ onSave, onCancel, initialData }
 
   // Focus trap for modal accessibility
   const modalRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    if (!modalRef.current) return;
-    
-    const modal = modalRef.current;
-    const focusableElements = modal.querySelectorAll<HTMLElement>(
-      "button, [href], input, select, textarea, [tabindex]:not([tabindex='-1'])"
-    );
-    const firstFocusable = focusableElements[0];
-    const lastFocusable = focusableElements[focusableElements.length - 1];
-
-    // Store the previously focused element
-    const previouslyFocused = document.activeElement as HTMLElement;
-
-    // Focus the first element when modal opens
-    firstFocusable?.focus();
-
-    const handleTabKey = (e: KeyboardEvent) => {
-      if (e.key !== 'Tab') return;
-      
-      if (e.shiftKey) {
-        // Shift + Tab: move backward
-        if (document.activeElement === firstFocusable) {
-          e.preventDefault();
-          lastFocusable?.focus();
-        }
-      } else {
-        // Tab: move forward
-        if (document.activeElement === lastFocusable) {
-          e.preventDefault();
-          firstFocusable?.focus();
-        }
-      }
-    };
-
-    modal.addEventListener('keydown', handleTabKey);
-
-    return () => {
-      modal.removeEventListener('keydown', handleTabKey);
-      // Restore focus to previously focused element
-      previouslyFocused?.focus();
-    };
-  }, []);
+  useFocusTrap(modalRef);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
