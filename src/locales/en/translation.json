@@ -65,7 +65,8 @@
       "keepLocalDesc": "Keep what's on this device. Cloud data will be overwritten on next sync.",
       "mergeBoth": "Merge Both (Recommended)",
       "mergeBothDesc": "Combine data from both sources. Duplicates are resolved automatically.",
-      "cancel": "Cancel",
+    "cancel": "Cancel",
+    "close": "Close",
       "notSyncedBanner": "Data not synced — choose how to handle your data",
       "cloudLabel": "Cloud",
       "localLabel": "Local",
@@ -331,7 +332,24 @@
       "rateLimitError": "Too many requests. Gmail rate limit exceeded. Please try again in a few minutes.",
       "selectAtLeastOne": "Select at least one item to apply.",
       "applySuccess": "Added {{added}} application(s) and {{updated}} update(s).",
-      "applyError": "Failed to apply changes. Try again."
+      "applyError": "Failed to apply changes. Try again.",
+      "processingModes": {
+        "manual": "Manual (Copy & Paste)",
+        "api": "Direct API (Gemini)"
+      },
+      "processWithGemini": "Process with Gemini API",
+      "processWithGeminiAction": "Process with Gemini",
+      "geminiProcessing": "Processing with Gemini…",
+      "geminiSuccess": "Processed with Gemini: {{count}} item(s) extracted",
+      "geminiError": "Failed to process with Gemini. Try again.",
+      "geminiApiKey": "Gemini API Key",
+      "geminiKeyConfigured": "API Key configured",
+      "geminiKeyConfiguredDesc": "Your key is encrypted and stored securely. Use it to process emails directly via Gemini API.",
+      "geminiKeyNotConfigured": "No API Key configured",
+      "geminiKeyNotConfiguredDesc": "Set up your Gemini API key to enable direct API processing for email scanning.",
+      "geminiKeySetup": "Set up",
+      "geminiKeyChange": "Change",
+      "geminiKeyRemove": "Remove"
     },
     "success": "Settings saved successfully!"
   },
@@ -447,6 +465,33 @@
       "placeholderRoles": "e.g. \"software engineer\" OR \"frontend\"",
       "placeholderKeywords": "e.g. \"hiring\" OR \"apply\"",
       "placeholderLocation": "e.g. \"remote\" OR \"London\""
+    }
+  },
+  "geminiKeyModal": {
+    "setupTitle": "Set Up Gemini API Key",
+    "setupDescription": "Enter your Gemini API key and create a master password to encrypt it.",
+    "unlockTitle": "Unlock Gemini API Key",
+    "unlockDescription": "Enter your master password to decrypt your stored API key.",
+    "apiKeyLabel": "Gemini API Key",
+    "confirmApiKeyLabel": "Confirm API Key",
+    "masterPasswordLabel": "Master Password",
+    "masterPasswordPlaceholder": "Enter your master password",
+    "confirmMasterPasswordLabel": "Confirm Master Password",
+    "confirmMasterPasswordPlaceholder": "Re-enter your master password",
+    "showPassword": "Show passwords",
+    "saveAction": "Save & Encrypt",
+    "unlockAction": "Unlock",
+    "saving": "Saving…",
+    "unlocking": "Unlocking…",
+    "securityNote": "Your API key is encrypted with AES-256-GCM and stored locally. The master password is never stored.",
+    "errors": {
+      "apiKeyRequired": "API key is required.",
+      "apiKeyMismatch": "API keys do not match.",
+      "masterPasswordRequired": "Master password is required.",
+      "masterPasswordMismatch": "Master passwords do not match.",
+      "noKeyStored": "No encrypted key found. Please set up your API key first.",
+      "wrongPassword": "Incorrect master password. Please try again.",
+      "generic": "An error occurred. Please try again."
     }
   },
   "filters": {

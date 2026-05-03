@@ -10,11 +10,14 @@ import { getAuthCookie } from '../utils/api';
 import { useAlert } from './AlertProvider';
 import { useApplicationsStore } from '../stores/applicationsStore';
 import { usePreferencesStore } from '../stores/preferencesStore';
+import { useGeminiKeyStore } from '../store/geminiKeyStore';
 import { CHATBOTS } from '../utils/constants';
 import { isApplicationDuplicate } from '../utils/applications';
 import { processManualScanJson } from '../utils/manualScan';
+import { callGeminiApi } from '../utils/geminiApi';
 import { ProposedAdditionItem } from './ProposedAdditionItem';
 import { ProposedUpdateItem } from './ProposedUpdateItem';
+import { GeminiKeyModal } from './GeminiKeyModal';
 import { useFormatDate } from '../hooks/useFormatDate';
 
 export function EmailScanReview() {
@@ -36,6 +39,9 @@ export function EmailScanReview() {
   } = useEmailScan();
 
   const [activeTab, setActiveTab] = useState<'automatic' | 'manual'>('automatic');
+  const [processingMode, setProcessingMode] = useState<'manual' | 'api'>('manual');
+  const [showGeminiModal, setShowGeminiModal] = useState(false);
+  const [geminiProcessing, setGeminiProcessing] = useState(false);
   const selectedAdditions = useSelection<string>();
   const selectedUpdates = useSelection<string>();
 
@@ -161,6 +167,64 @@ export function EmailScanReview() {
     }
   }, [pastedJson, applications, setPreview, showSuccess, showError, t, selectedAdditions, selectedUpdates]);
 
+  const geminiKeyInMemory = useGeminiKeyStore((state) => state.geminiKeyInMemory);
+  const setDecryptedKey = useGeminiKeyStore((state) => state.setDecryptedKey);
+
+  const handleProcessWithGemini = useCallback(async () => {
+    if (!preview || selectedEmailIds.size === 0) return;
+
+    const selectedEmails = preview.emails.filter(e => selectedEmailIds.isSelected(e.id));
+
+    const emailsData = selectedEmails.map(e => ({
+      subject: e.subject,
+      from: e.from,
+      date: e.date,
+      snippet: e.body.substring(0, snippetLength)
+    }));
+
+    const prompt = t('settings.emailScan.promptTemplate', {
+      emails: JSON.stringify(emailsData, null, 2)
+    });
+
+    const requireApiKey = (): string | null => {
+      if (geminiKeyInMemory) return geminiKeyInMemory;
+      setShowGeminiModal(true);
+      return null;
+    };
+
+    const apiKey = requireApiKey();
+    if (!apiKey) return;
+
+    setGeminiProcessing(true);
+    try {
+      const response = await callGeminiApi(apiKey, prompt, {
+        generationConfig: { responseMimeType: 'application/json' },
+      });
+
+      const { additions, updates } = processManualScanJson(response, applications);
+
+      setPreview(prev => ({
+        proposedAdditions: [...(prev?.proposedAdditions || []), ...additions],
+        proposedUpdates: [...(prev?.proposedUpdates || []), ...updates],
+        emails: prev?.emails || []
+      }));
+
+      selectedAdditions.selectAll(additions.map(a => a.id));
+      selectedUpdates.selectAll(updates.map(u => u.id));
+      showSuccess(t('settings.emailScan.geminiSuccess', { count: additions.length + updates.length }));
+    } catch (err) {
+      const message = err instanceof Error ? err.message : t('settings.emailScan.geminiError');
+      showError(message);
+    } finally {
+      setGeminiProcessing(false);
+    }
+  }, [preview, selectedEmailIds, snippetLength, geminiKeyInMemory, applications, setPreview, selectedAdditions, selectedUpdates, showSuccess, showError, t]);
+
+  const handleGeminiKeySuccess = useCallback((apiKey: string) => {
+    setShowGeminiModal(false);
+    setDecryptedKey(apiKey);
+  }, [setDecryptedKey]);
+
   const selectAllEmails = () => {
     if (!preview) return;
     selectedEmailIds.selectAll(preview.emails.map(e => e.id));
@@ -276,6 +340,29 @@ export function EmailScanReview() {
 
         {activeTab === 'manual' && (
           <div className="space-y-6 animate-in fade-in slide-in-from-top-4 duration-300">
+            <div className="flex items-center gap-2 bg-earth-100 dark:bg-earth-700/50 rounded-lg p-1 w-fit">
+              <button
+                onClick={() => setProcessingMode('manual')}
+                className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
+                  processingMode === 'manual'
+                    ? 'bg-white dark:bg-earth-800 text-earth-900 dark:text-earth-100 shadow-sm'
+                    : 'text-earth-500 dark:text-earth-400 hover:text-earth-700 dark:hover:text-earth-300'
+                }`}
+              >
+                {t('settings.emailScan.processingModes.manual')}
+              </button>
+              <button
+                onClick={() => setProcessingMode('api')}
+                className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
+                  processingMode === 'api'
+                    ? 'bg-white dark:bg-earth-800 text-earth-900 dark:text-earth-100 shadow-sm'
+                    : 'text-earth-500 dark:text-earth-400 hover:text-earth-700 dark:hover:text-earth-300'
+                }`}
+              >
+                {t('settings.emailScan.processingModes.api')}
+              </button>
+            </div>
+
             {preview && (
               <div className='bg-earth-50 dark:bg-earth-700/50 rounded p-4 space-y-4 border border-earth-200 dark:border-earth-600'>
                 <div className="flex flex-col gap-4">
@@ -294,37 +381,69 @@ export function EmailScanReview() {
                     </div>
                   </div>
 
-                  <div className="space-y-2">
-                    <label className="block text-sm font-medium text-earth-700 dark:text-earth-300">
-                      {t('settings.emailScan.generatePrompt')}
-                    </label>
-                    <div className="flex flex-wrap gap-2">
-                      <button
-                        onClick={() => handleGeneratePrompt()}
-                        disabled={selectedEmailIds.size === 0}
-                        className='px-4 py-2 rounded font-medium border border-sage-200 text-sage-700 hover:bg-sage-50 dark:border-sage-900/30 dark:text-sage-300 dark:hover:bg-sage-900/20 transition flex items-center gap-2'
-                      >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
-                        </svg>
-                        {t('common.copy')}
-                      </button>
-
-                      {CHATBOTS.filter(cb => (preferences.enabledChatbots || ['ChatGPT', 'Claude', 'Gemini']).includes(cb.id)).map(chatbot => (
+                  {processingMode === 'manual' && (
+                    <div className="space-y-2">
+                      <label className="block text-sm font-medium text-earth-700 dark:text-earth-300">
+                        {t('settings.emailScan.generatePrompt')}
+                      </label>
+                      <div className="flex flex-wrap gap-2">
                         <button
-                          key={chatbot.id}
-                          onClick={() => handleGeneratePrompt(chatbot)}
+                          onClick={() => handleGeneratePrompt()}
                           disabled={selectedEmailIds.size === 0}
-                          className='px-4 py-2 rounded font-medium bg-sage-600 text-white hover:bg-sage-700 transition flex items-center gap-2'
+                          className='px-4 py-2 rounded font-medium border border-sage-200 text-sage-700 hover:bg-sage-50 dark:border-sage-900/30 dark:text-sage-300 dark:hover:bg-sage-900/20 transition flex items-center gap-2'
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
                           </svg>
-                          {t('settings.emailScan.copyAndOpen', { name: chatbot.name })}
+                          {t('common.copy')}
                         </button>
-                      ))}
+
+                        {CHATBOTS.filter(cb => (preferences.enabledChatbots || ['ChatGPT', 'Claude', 'Gemini']).includes(cb.id)).map(chatbot => (
+                          <button
+                            key={chatbot.id}
+                            onClick={() => handleGeneratePrompt(chatbot)}
+                            disabled={selectedEmailIds.size === 0}
+                            className='px-4 py-2 rounded font-medium bg-sage-600 text-white hover:bg-sage-700 transition flex items-center gap-2'
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                            </svg>
+                            {t('settings.emailScan.copyAndOpen', { name: chatbot.name })}
+                          </button>
+                        ))}
+                      </div>
                     </div>
-                  </div>
+                  )}
+
+                  {processingMode === 'api' && (
+                    <div className="space-y-2">
+                      <label className="block text-sm font-medium text-earth-700 dark:text-earth-300">
+                        {t('settings.emailScan.processWithGemini')}
+                      </label>
+                      <button
+                        onClick={handleProcessWithGemini}
+                        disabled={selectedEmailIds.size === 0 || geminiProcessing}
+                        className='px-4 py-2 rounded font-medium bg-terracotta-600 text-white hover:bg-terracotta-700 disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center gap-2'
+                      >
+                        {geminiProcessing ? (
+                          <>
+                            <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                            </svg>
+                            {t('settings.emailScan.geminiProcessing')}
+                          </>
+                        ) : (
+                          <>
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                            </svg>
+                            {t('settings.emailScan.processWithGeminiAction')}
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  )}
                 </div>
 
                 <div className="space-y-2">
@@ -463,6 +582,12 @@ export function EmailScanReview() {
           </div>
         )}
       </div>
+
+      <GeminiKeyModal
+        isOpen={showGeminiModal}
+        onClose={() => setShowGeminiModal(false)}
+        onSuccess={handleGeminiKeySuccess}
+      />
     </div>
   );
 }
