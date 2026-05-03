@@ -8,17 +8,18 @@ use OverPHP\Helpers\appAuth;
 use OverPHP\Models\User;
 use OverPHP\Repositories\UserRepository;
 use OverPHP\Libs\Database;
+use OverPHP\Core\Container;
 
 class AppAuthController
 {
     private UserRepository $userRepo;
     private array $config;
 
-    public function __construct()
+    public function __construct(?Database $db = null, ?Container $container = null)
     {
         $this->config = require __DIR__ . '/../../config.php';
-        $db = Database::getInstance($this->config);
-        $this->userRepo = new UserRepository($db->getConnection());
+        $database = $db ?? $container?->make(Database::class) ?? new Database($this->config);
+        $this->userRepo = new UserRepository($database->getConnection());
     }
 
     public function me(): array
