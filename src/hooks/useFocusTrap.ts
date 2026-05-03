@@ -4,7 +4,7 @@ import { useEffect, type RefObject } from 'react';
  * Custom hook to trap focus within a container element.
  * Useful for modals and dialogs to ensure accessibility.
  */
-const useFocusTrap = (ref: RefObject<HTMLElement>, isActive: boolean = true) => {
+const useFocusTrap = (ref: RefObject<HTMLElement | null>, isActive: boolean = true) => {
   useEffect(() => {
     if (!isActive || !ref.current) return;
 
