@@ -287,6 +287,113 @@ class AppAuthController
         ];
     }
 
+    public function forgot(): array
+    {
+        $json = file_get_contents('php://input') ?: '{}';
+        $data = json_decode($json, true);
+
+        if (!is_array($data)) {
+            http_response_code(400);
+            return ['success' => false, 'error' => 'Invalid JSON body'];
+        }
+
+        $email = $data['email'] ?? null;
+
+        if (!is_string($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            http_response_code(400);
+            return ['success' => false, 'error' => 'Valid email is required'];
+        }
+
+        $user = $this->userRepo->findByEmail($email);
+
+        if ($user === null) {
+            return [
+                'success' => true,
+                'message' => 'If that email exists, a reset link has been sent',
+            ];
+        }
+
+        if ($user->passwordHash === null) {
+            return [
+                'success' => true,
+                'message' => 'If that email exists, a reset link has been sent',
+            ];
+        }
+
+        $token = bin2hex(random_bytes(32));
+        $expiresAt = date('Y-m-d H:i:s', time() + 3600);
+
+        $this->userRepo->saveResetToken($user->id, $token, $expiresAt);
+
+        $resetLink = $this->buildResetLink($token);
+        $this->sendPasswordResetEmail($email, $resetLink);
+
+        return [
+            'success' => true,
+            'message' => 'If that email exists, a reset link has been sent',
+        ];
+    }
+
+    public function reset(): array
+    {
+        $json = file_get_contents('php://input') ?: '{}';
+        $data = json_decode($json, true);
+
+        if (!is_array($data)) {
+            http_response_code(400);
+            return ['success' => false, 'error' => 'Invalid JSON body'];
+        }
+
+        $token = $data['token'] ?? null;
+        $password = $data['password'] ?? null;
+
+        if (!is_string($token) || $token === '') {
+            http_response_code(400);
+            return ['success' => false, 'error' => 'Token is required'];
+        }
+
+        if (!is_string($password) || strlen($password) < 8) {
+            http_response_code(400);
+            return ['success' => false, 'error' => 'Password must be at least 8 characters'];
+        }
+
+        $user = $this->userRepo->findByResetToken($token);
+        if ($user === null) {
+            http_response_code(400);
+            return ['success' => false, 'error' => 'Invalid or expired token'];
+        }
+
+        $passwordHash = User::hashPassword($password);
+        $this->userRepo->updatePassword($user->id, $passwordHash);
+        $this->userRepo->clearResetToken($user->id);
+
+        return [
+            'success' => true,
+            'message' => 'Password has been reset successfully',
+        ];
+    }
+
+    private function buildResetLink(string $token): string
+    {
+        $origin = $_SERVER['HTTP_ORIGIN'] ?? $_SERVER['ORIGIN'] ?? 'http://localhost:5173';
+        $frontendUrl = rtrim($origin, '/');
+        return $frontendUrl . '/reset-password?token=' . $token;
+    }
+
+    private function sendPasswordResetEmail(string $email, string $resetLink): void
+    {
+        $smtpHost = $this->config['smtp_host'] ?? null;
+        if ($smtpHost === null) {
+            return;
+        }
+
+        $subject = 'Reset your password';
+        $message = "Click the following link to reset your password: $resetLink\n\nThis link expires in 1 hour.";
+        $headers = ['From' => $this->config['smtp_from'] ?? 'noreply@example.com'];
+
+        mail($email, $subject, $message, $headers);
+    }
+
     private function verifyGoogleToken(string $token): array
     {
         $clientId = $this->config['google_client_id'] ?? '';

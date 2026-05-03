@@ -74,4 +74,38 @@ class UserRepository
         );
         $stmt->execute(['user_id' => $userId]);
     }
+
+    public function findByResetToken(string $token): ?User
+    {
+        $stmt = $this->db->prepare(
+            'SELECT * FROM users WHERE reset_token = :token AND reset_token_expires_at > NOW() LIMIT 1'
+        );
+        $stmt->execute(['token' => $token]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $row ? User::fromDatabase($row) : null;
+    }
+
+    public function saveResetToken(int $userId, string $token, string $expiresAt): void
+    {
+        $stmt = $this->db->prepare(
+            'UPDATE users SET reset_token = :token, reset_token_expires_at = :expires WHERE id = :id'
+        );
+        $stmt->execute(['token' => $token, 'expires' => $expiresAt, 'id' => $userId]);
+    }
+
+    public function clearResetToken(int $userId): void
+    {
+        $stmt = $this->db->prepare(
+            'UPDATE users SET reset_token = NULL, reset_token_expires_at = NULL WHERE id = :id'
+        );
+        $stmt->execute(['id' => $userId]);
+    }
+
+    public function updatePassword(int $userId, string $passwordHash): void
+    {
+        $stmt = $this->db->prepare(
+            'UPDATE users SET password_hash = :hash, updated_at = NOW() WHERE id = :id'
+        );
+        $stmt->execute(['hash' => $passwordHash, 'id' => $userId]);
+    }
 }
