@@ -1,7 +1,8 @@
 // src/components/OpportunityForm.tsx
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { type JobOpportunity } from '../utils/localStorage';
+import useFocusTrap from '../hooks/useFocusTrap';
 import { Button, Input, Card } from './ui';
 
 interface OpportunityFormProps {
@@ -27,49 +28,7 @@ const OpportunityForm: React.FC<OpportunityFormProps> = ({ isOpen, onClose, onSa
 
   // Focus trap for modal accessibility - hooks before early return
   const modalRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    if (!isOpen || !modalRef.current) return;
-    
-    const modal = modalRef.current;
-    const focusableElements = modal.querySelectorAll<HTMLElement>(
-      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-    );
-    const firstFocusable = focusableElements[0];
-    const lastFocusable = focusableElements[focusableElements.length - 1];
-
-    // Store the previously focused element
-    const previouslyFocused = document.activeElement as HTMLElement;
-
-    // Focus the first element when modal opens
-    firstFocusable?.focus();
-
-    const handleTabKey = (e: KeyboardEvent) => {
-      if (e.key !== 'Tab') return;
-      
-      if (e.shiftKey) {
-        if (document.activeElement === firstFocusable) {
-          e.preventDefault();
-          lastFocusable?.focus();
-        }
-      } else {
-        if (document.activeElement === lastFocusable) {
-          e.preventDefault();
-          firstFocusable?.focus();
-        }
-      }
-    };
-
-    modal.addEventListener('keydown', handleTabKey);
-
-    return () => {
-      modal.removeEventListener('keydown', handleTabKey);
-      try {
-        (previouslyFocused as HTMLElement | null)?.focus();
-      } catch {
-        // Element may have been removed from DOM
-      }
-    };
-  }, [isOpen]);
+  useFocusTrap(modalRef, isOpen);
 
   if (!isOpen) return null;
 
