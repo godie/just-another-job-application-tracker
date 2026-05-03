@@ -8,6 +8,7 @@ use function OverPHP\Helpers\app_session_start;
 use function OverPHP\Helpers\app_session_get_user_id;
 use function OverPHP\Helpers\app_session_set_user;
 use function OverPHP\Helpers\app_session_destroy;
+use OverPHP\Core\Security;
 use OverPHP\Models\User;
 use OverPHP\Repositories\UserRepository;
 use OverPHP\Libs\Database;
@@ -57,8 +58,7 @@ class AppAuthController
 
     public function register(): array
     {
-        $json = file_get_contents('php://input') ?: '{}';
-        $data = json_decode($json, true);
+        $data = $this->getInputJson();
 
         if (!is_array($data)) {
             http_response_code(400);
@@ -114,8 +114,7 @@ class AppAuthController
 
     public function login(): array
     {
-        $json = file_get_contents('php://input') ?: '{}';
-        $data = json_decode($json, true);
+        $data = $this->getInputJson();
 
         if (!is_array($data)) {
             http_response_code(400);
@@ -149,6 +148,7 @@ class AppAuthController
         $this->userRepo->updateLastLogin($user->id);
 
         app_session_start();
+        Security::regenerateSessionId();
         app_session_set_user($user->id, $user->organizationId, $user->role);
 
         return [
@@ -168,10 +168,15 @@ class AppAuthController
         ];
     }
 
-    public function google(): array
+    protected function getInputJson(): array
     {
         $json = file_get_contents('php://input') ?: '{}';
-        $data = json_decode($json, true);
+        return json_decode($json, true) ?? [];
+    }
+
+    public function google(): array
+    {
+        $data = $this->getInputJson();
 
         if (!is_array($data)) {
             http_response_code(400);
@@ -194,7 +199,8 @@ class AppAuthController
         if ($user === null) {
             $userByEmail = $this->userRepo->findByEmail($googleUser['email']);
             if ($userByEmail !== null) {
-                $user = $userByEmail;
+                $this->userRepo->updateGoogleId($userByEmail->id, $googleUser['sub']);
+                $user = $this->userRepo->findById($userByEmail->id);
             } else {
                 $user = User::fromGoogle($googleUser);
                 $userId = $this->userRepo->create($user);
@@ -210,6 +216,7 @@ class AppAuthController
 
         $this->userRepo->updateLastLogin($user->id);
 
+        Security::regenerateSessionId();
         app_session_start();
         app_session_set_user($user->id, $user->organizationId, $user->role);
 
@@ -222,8 +229,7 @@ class AppAuthController
 
     public function linkedin(): array
     {
-        $json = file_get_contents('php://input') ?: '{}';
-        $data = json_decode($json, true);
+        $data = $this->getInputJson();
 
         if (!is_array($data)) {
             http_response_code(400);
@@ -265,7 +271,8 @@ class AppAuthController
         if ($user === null) {
             $userByEmail = $this->userRepo->findByEmail($linkedinUser['email']);
             if ($userByEmail !== null) {
-                $user = $userByEmail;
+                $this->userRepo->updateLinkedInId($userByEmail->id, $linkedinUser['sub']);
+                $user = $this->userRepo->findById($userByEmail->id);
             } else {
                 $user = User::fromLinkedIn($linkedinUser);
                 $userId = $this->userRepo->create($user);
@@ -281,6 +288,7 @@ class AppAuthController
 
         $this->userRepo->updateLastLogin($user->id);
 
+        Security::regenerateSessionId();
         app_session_start();
         app_session_set_user($user->id, $user->organizationId, $user->role);
 
@@ -293,8 +301,7 @@ class AppAuthController
 
     public function forgot(): array
     {
-        $json = file_get_contents('php://input') ?: '{}';
-        $data = json_decode($json, true);
+        $data = $this->getInputJson();
 
         if (!is_array($data)) {
             http_response_code(400);
@@ -340,8 +347,7 @@ class AppAuthController
 
     public function reset(): array
     {
-        $json = file_get_contents('php://input') ?: '{}';
-        $data = json_decode($json, true);
+        $data = $this->getInputJson();
 
         if (!is_array($data)) {
             http_response_code(400);
@@ -398,7 +404,7 @@ class AppAuthController
         mail($email, $subject, $message, $headers);
     }
 
-    private function verifyGoogleToken(string $token): array
+    protected function verifyGoogleToken(string $token): array
     {
         $clientId = $this->config['google_client_id'] ?? '';
         if ($clientId === '') {
@@ -439,7 +445,7 @@ class AppAuthController
         ];
     }
 
-    private function exchangeLinkedInCodeForToken(string $code, string $redirectUri): array
+    protected function exchangeLinkedInCodeForToken(string $code, string $redirectUri): array
     {
         $clientId = $this->config['linkedin_client_id'] ?? '';
         $clientSecret = $this->config['linkedin_client_secret'] ?? '';
@@ -487,7 +493,7 @@ class AppAuthController
         return ['access_token' => $decoded['access_token']];
     }
 
-    private function getLinkedInUserInfo(string $accessToken): array
+    protected function getLinkedInUserInfo(string $accessToken): array
     {
         $opts = [
             'http' => [
