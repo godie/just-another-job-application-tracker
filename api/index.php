@@ -101,6 +101,8 @@ $router->add('POST', '/auth/login', 'AppAuthController@login');
 $router->add('DELETE', '/auth/logout', 'AppAuthController@logout');
 $router->add('POST', '/auth/google', 'AppAuthController@google');
 $router->add('POST', '/auth/linkedin', 'AppAuthController@linkedin');
+$router->add('POST', '/auth/forgot', 'AppAuthController@forgot');
+$router->add('POST', '/auth/reset', 'AppAuthController@reset');
 
 $router->add('GET', '/captcha', 'CaptchaController@index');
 
