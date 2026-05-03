@@ -1,9 +1,8 @@
 // src/components/Header.tsx
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useGoogleLogin } from '@react-oauth/google';
-import { setLoginStatus } from '../utils/localStorage';
-import { setAuthCookieWithCode, clearAuthCookie } from '../utils/api';
+import { useAuthModals } from './AuthModals';
+import { clearAuthCookie } from '../utils/api';
 import { useAlert } from './AlertProvider';
 import { Button } from './ui';
 import { useIsLoggedIn } from '../hooks/useIsLoggedIn';
@@ -18,7 +17,8 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({ onToggleSidebar, onNavigate }) => {
   const { t, i18n } = useTranslation();
   const isLoggedIn = useIsLoggedIn();
-  const { user } = useAuthStore();
+  const { currentUser, logout } = useAuthStore();
+  const { isOpen: isAuthOpen, initialMode, openLogin, closeModal, AuthModal } = useAuthModals();
   const [isLoading, setIsLoading] = useState(false);
   const [theme, setTheme] = useState<'light' | 'dark'>(() => {
     if (typeof window !== 'undefined') {
@@ -66,55 +66,21 @@ const Header: React.FC<HeaderProps> = ({ onToggleSidebar, onNavigate }) => {
     localStorage.setItem('theme', newTheme);
   };
 
-  const googleLogin = useGoogleLogin({
-    flow: 'auth-code',
-    scope: 'openid email profile https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/gmail.readonly',
-    onSuccess: async (codeResponse) => {
-      setIsLoading(true);
-      try {
-        const redirectUri = window.location.origin;
-        await setAuthCookieWithCode(codeResponse.code, redirectUri);
-        setLoginStatus(true);
-        window.dispatchEvent(new Event('storage'));
-        showSuccess(t('common.loginSuccess'));
-      } catch (error) {
-        console.error(t('common.loginError'), error);
-        showError(
-          error instanceof Error ? error.message : t('common.loginPartialError')
-        );
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    onError: (error) => {
-      console.error(t('common.loginFailed'), error);
-      showError(t('common.loginFailedMessage'));
-    },
-  });
-
   const handleAuth = async () => {
     if (isLoggedIn) {
       setIsLoading(true);
-      
       try {
-        // Clear cookie via PHP backend
         await clearAuthCookie();
-        
-        // Clear localStorage
-        setLoginStatus(false);
-        window.dispatchEvent(new Event('storage'));
+        logout();
         showSuccess(t('common.logoutSuccess'));
       } catch (error) {
         console.error(t('common.logoutError'), error);
-        // Still clear localStorage even if backend call fails
-        setLoginStatus(false);
-        window.dispatchEvent(new Event('storage'));
         showError(t('common.logoutPartial'));
       } finally {
         setIsLoading(false);
       }
     } else {
-      googleLogin();
+      openLogin();
     }
   };
 
@@ -240,10 +206,10 @@ const Header: React.FC<HeaderProps> = ({ onToggleSidebar, onNavigate }) => {
             aria-label={t('nav.backupSync')}
           >
             <span className='w-7 h-7 bg-sage-600 rounded-full flex items-center justify-center text-white text-sm font-bold'>
-              {user?.email?.charAt(0).toUpperCase() ?? '?'}
+              {currentUser?.email?.charAt(0).toUpperCase() ?? '?'}
             </span>
             <span className='hidden md:inline text-sm font-medium text-sage-700 dark:text-sage-300 max-w-[140px] truncate'>
-              {user?.email}
+              {currentUser?.email}
             </span>
           </button>
         ) : (
@@ -276,6 +242,11 @@ const Header: React.FC<HeaderProps> = ({ onToggleSidebar, onNavigate }) => {
           </Button>
         )}
       </div>
+      <AuthModal
+        isOpen={isAuthOpen}
+        onClose={closeModal}
+        initialMode={initialMode}
+      />
     </header>
   );
 };

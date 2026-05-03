@@ -1,5 +1,7 @@
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useAuthModals } from '../components/AuthModals';
+import { useAuthStore } from '../stores/authStore';
 import { type PageType } from '../App';
 
 interface LandingPageProps {
@@ -21,6 +23,8 @@ const OrganicShape = ({ className = '' }: { className?: string }) => (
 
 const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
   const { t, i18n } = useTranslation();
+  const { isOpen: isAuthOpen, initialMode, openLogin, closeModal, AuthModal } = useAuthModals();
+  const { isAuthenticated } = useAuthStore();
 
   useEffect(() => {
     document.documentElement.lang = i18n.language;
@@ -28,6 +32,14 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
 
   const changeLanguage = (lng: string) => {
     i18n.changeLanguage(lng);
+  };
+
+  const handleEnterApp = () => {
+    if (isAuthenticated) {
+      onNavigate('applications');
+    } else {
+      openLogin();
+    }
   };
 
   const roadmapItems = [
@@ -55,7 +67,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
       {/* Navigation / Lang Switcher + Enter CTA */}
       <nav className='relative max-w-7xl mx-auto px-6 lg:px-8 py-6 flex justify-between items-center gap-4'>
         <button
-          onClick={() => onNavigate('applications')}
+          onClick={handleEnterApp}
           className='inline-flex items-center gap-2 bg-terracotta-600 hover:bg-terracotta-700 active:bg-terracotta-800 text-white font-semibold py-2.5 px-6 rounded transition-colors shadow-sm hover:shadow-md border border-terracotta-700 hover:border-terracotta-800'
         >
           {t('landing.enterApp')}
@@ -117,7 +129,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
             
             <div className='flex flex-col sm:flex-row gap-4'>
               <button
-                onClick={() => onNavigate('applications')}
+                onClick={handleEnterApp}
                 className='inline-flex items-center justify-center gap-2 bg-terracotta-600 hover:bg-terracotta-700 active:bg-terracotta-800 text-white font-semibold py-4 px-8 text-lg rounded transition-colors shadow-sm hover:shadow-md border border-terracotta-700 hover:border-terracotta-800'
               >
                 {t('landing.getStarted')}
@@ -376,7 +388,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
             Join thousands of job seekers who have organized their search and landed their dream roles.
           </p>
           <button
-            onClick={() => onNavigate('applications')}
+            onClick={handleEnterApp}
             className='inline-flex items-center gap-3 bg-white text-terracotta-700 hover:bg-earth-100 font-bold py-4 px-10 text-lg rounded transition-colors border border-earth-200 hover:border-earth-300'
           >
             {t('landing.enterApp')}
@@ -410,6 +422,11 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
           </div>
         </div>
       </footer>
+      <AuthModal
+        isOpen={isAuthOpen}
+        onClose={closeModal}
+        initialMode={initialMode}
+      />
     </div>
   );
 };

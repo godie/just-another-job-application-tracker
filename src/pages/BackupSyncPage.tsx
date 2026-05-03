@@ -18,7 +18,7 @@ interface BackupSyncPageProps {
 
 const BackupSyncPage: React.FC<BackupSyncPageProps> = ({ onNavigate }) => {
   const { t } = useTranslation();
-  const { user, isAuthenticated } = useAuthStore();
+  const { currentUser: user, isAuthenticated } = useAuthStore();
   const applications = useApplicationsStore((state) => state.applications);
   const opportunities = useOpportunitiesStore((state) => state.opportunities);
   const { isSyncPaused } = useMergeStore();
@@ -33,8 +33,8 @@ const BackupSyncPage: React.FC<BackupSyncPageProps> = ({ onNavigate }) => {
           codeResponse.code,
           window.location.origin
         );
-        if (result.success) {
-          await useAuthStore.getState().checkAuth();
+if (result.success) {
+            await useAuthStore.getState().fetchMe();
           setLoginError(null);
         }
       } catch (err) {

@@ -95,6 +95,13 @@ $router->add('GET', '/auth/cookie', 'AuthController@show');
 $router->add('POST', '/auth/cookie', 'AuthController@store');
 $router->add('DELETE', '/auth/cookie', 'AuthController@destroy');
 
+$router->add('GET', '/auth/me', 'AppAuthController@me');
+$router->add('POST', '/auth/register', 'AppAuthController@register');
+$router->add('POST', '/auth/login', 'AppAuthController@login');
+$router->add('DELETE', '/auth/logout', 'AppAuthController@logout');
+$router->add('POST', '/auth/google', 'AppAuthController@google');
+$router->add('POST', '/auth/linkedin', 'AppAuthController@linkedin');
+
 $router->add('GET', '/captcha', 'CaptchaController@index');
 
 $router->add('GET', '/suggestions', 'SuggestionsController@index');

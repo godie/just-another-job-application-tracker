@@ -13,96 +13,120 @@ const defaultFetchOptions: RequestInit = {
   headers: { 'Content-Type': 'application/json' },
 };
 
-/**
- * Exchange authorization code for tokens and set auth cookies (includes refresh token).
- * Use with useGoogleLogin({ flow: 'auth-code', onSuccess: (res) => setAuthCookieWithCode(res.code) }).
- *
- * @param code - Authorization code from Google
- * @param redirectUri - Same redirect_uri used in the auth request (e.g. window.location.origin)
- * @returns Promise with response data
- */
-export const setAuthCookieWithCode = async (
+export interface AuthUser {
+  id: number;
+  email: string;
+  organizationId?: number;
+  username?: string;
+  displayName?: string;
+  avatarUrl?: string;
+  isPublic: boolean;
+  bio?: string;
+  role: string;
+  createdAt?: string;
+  updatedAt?: string;
+  lastLoginAt?: string;
+}
+
+interface AuthResponse {
+  success: boolean;
+  user?: AuthUser | null;
+  message?: string;
+  error?: string;
+}
+
+interface MeResponse {
+  success: boolean;
+  user: AuthUser | null;
+  isAuthenticated: boolean;
+}
+
+export async function register(
+  email: string,
+  password: string,
+  displayName?: string
+): Promise<AuthResponse> {
+  const response = await fetch(`${API_BASE_URL}/auth/register`, {
+    ...defaultFetchOptions,
+    method: 'POST',
+    body: JSON.stringify({ email, password, displayName }),
+  });
+  return response.json();
+}
+
+export async function login(
+  email: string,
+  password: string
+): Promise<AuthResponse> {
+  const response = await fetch(`${API_BASE_URL}/auth/login`, {
+    ...defaultFetchOptions,
+    method: 'POST',
+    body: JSON.stringify({ email, password }),
+  });
+  return response.json();
+}
+
+export async function loginWithGoogle(googleToken: string): Promise<AuthResponse> {
+  const response = await fetch(`${API_BASE_URL}/auth/google`, {
+    ...defaultFetchOptions,
+    method: 'POST',
+    body: JSON.stringify({ googleToken }),
+  });
+  return response.json();
+}
+
+export async function loginWithLinkedIn(
   code: string,
   redirectUri: string
-): Promise<{ success: boolean; expires_in?: number }> => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/auth/cookie`, {
-      ...defaultFetchOptions,
-      method: 'POST',
-      body: JSON.stringify({ code, redirect_uri: redirectUri }),
-    });
+): Promise<AuthResponse> {
+  const response = await fetch(`${API_BASE_URL}/auth/linkedin`, {
+    ...defaultFetchOptions,
+    method: 'POST',
+    body: JSON.stringify({ code, redirectUri }),
+  });
+  return response.json();
+}
 
-    const data = await response.json().catch(() => ({}));
+export async function logout(): Promise<{ success: boolean; message?: string }> {
+  const response = await fetch(`${API_BASE_URL}/auth/logout`, {
+    ...defaultFetchOptions,
+    method: 'DELETE',
+  });
+  return response.json();
+}
 
-    if (!response.ok) {
-      throw new Error((data as { error?: string }).error ?? `Failed to set auth cookie: ${response.statusText}`);
-    }
+export async function fetchMe(): Promise<MeResponse> {
+  const response = await fetch(`${API_BASE_URL}/auth/me`, {
+    ...defaultFetchOptions,
+    method: 'GET',
+  });
+  return response.json();
+}
 
-    return data as { success: boolean; expires_in?: number };
-  } catch (error) {
-    console.error('Error setting auth cookie with code:', error);
-    throw error;
-  }
-};
+export async function setAuthCookieWithCode(
+  code: string,
+  redirectUri: string
+): Promise<{ success: boolean; message?: string; error?: string }> {
+  const response = await fetch(`${API_BASE_URL}/auth/cookie`, {
+    ...defaultFetchOptions,
+    method: 'POST',
+    body: JSON.stringify({ code, redirect_uri: redirectUri }),
+  });
+  return response.json();
+}
 
-/**
- * Clear authentication cookie (logout). Laravel DELETE /api/auth/cookie.
- * @returns Promise with response data
- */
-export const clearAuthCookie = async (): Promise<{ success: boolean }> => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/auth/cookie`, {
-      ...defaultFetchOptions,
-      method: 'DELETE',
-    });
+export async function clearAuthCookie(): Promise<{ success: boolean; message?: string }> {
+  const response = await fetch(`${API_BASE_URL}/auth/cookie`, {
+    ...defaultFetchOptions,
+    method: 'DELETE',
+  });
+  return response.json();
+}
 
-    if (!response.ok) {
-      throw new Error(`Failed to clear auth cookie: ${response.statusText}`);
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error('Error clearing auth cookie:', error);
-    throw error;
-  }
-};
-
-/**
- * Get authentication cookie from backend (GET /api/auth/cookie).
- * Server may refresh the access token from refresh_token if expired.
- * Requires credentials so the HTTP-only cookie is sent.
- * On 401/404 returns { success: false } so callers can prompt login.
- *
- * @returns Promise with { success, access_token? }; do not throw on 401/404
- */
-export const getAuthCookie = async (): Promise<{
-  success: boolean;
-  access_token?: string;
-  error?: string;
-  message?: string;
-}> => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/auth/cookie`, {
-      ...defaultFetchOptions,
-      method: 'GET',
-    });
-
-    const data = (await response.json().catch(() => ({}))) as {
-      success: boolean;
-      access_token?: string;
-      error?: string;
-      message?: string;
-    };
-
-    if (response.ok) {
-      return data;
-    }
-    if (response.status === 401 || response.status === 404) {
-      return { ...data, success: false };
-    }
-    throw new Error((data as { error?: string }).error ?? `Failed to get auth cookie: ${response.statusText}`);
-  } catch (error) {
-    console.error('Error getting auth cookie:', error);
-    throw error;
-  }
-};
+export async function getAuthCookie(): Promise<{ success: boolean; access_token?: string }> {
+  const response = await fetch(`${API_BASE_URL}/auth/cookie`, {
+    ...defaultFetchOptions,
+    method: 'GET',
+  });
+  return response.json();
+}

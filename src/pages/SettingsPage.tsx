@@ -73,7 +73,7 @@ function settingsReducer(state: SettingsState, action: SettingsAction): Settings
 const SettingsPageContent: React.FC<SettingsPageProps> = ({ onNavigate }) => {
   const { t } = useTranslation();
   const { preferences, updatePreferences, resetPreferences } = usePreferencesStore();
-  const { user, isAuthenticated } = useAuthStore();
+  const { currentUser: user, isAuthenticated } = useAuthStore();
   const { showSuccess } = useAlert();
   const [state, dispatch] = useReducer(settingsReducer, initialState);
 

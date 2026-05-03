@@ -1,4 +1,24 @@
 {
+  "auth": {
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "displayName": "Display Name",
+    "loginWithGoogle": "Continue with Google",
+    "loginWithLinkedin": "Continue with LinkedIn",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "errors": {
+      "invalidCredentials": "Invalid email or password",
+      "emailTaken": "Email already in use",
+      "passwordMismatch": "Passwords do not match",
+      "required": "This field is required",
+      "weakPassword": "Password must be at least 8 characters"
+    }
+  },
   "landing": {
     "heroTitle": "Master Your Job Search",
     "heroSubtitle": "The ultimate tool to track applications, manage interviews, and land your dream job.",
