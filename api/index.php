@@ -28,6 +28,7 @@ if (file_exists(__DIR__ . '/vendor/autoload.php')) {
 } else {
     require_once __DIR__ . '/src/Helpers/cors.php';
     require_once __DIR__ . '/src/Helpers/database.php';
+    require_once __DIR__ . '/src/Helpers/appAuth.php';
 
     spl_autoload_register(function (string $class) use ($controllerNamespace): void {
         $prefix = 'OverPHP\\';

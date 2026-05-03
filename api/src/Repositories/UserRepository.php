@@ -63,23 +63,41 @@ class UserRepository
 
     public function updateLastLogin(int $userId): void
     {
-        $stmt = $this->db->prepare('UPDATE users SET last_login_at = NOW() WHERE id = :id');
+        $driver = $this->db->getAttribute(PDO::ATTR_DRIVER_NAME);
+        $now = $driver === 'sqlite'
+            ? "datetime('now')"
+            : 'NOW()';
+        $stmt = $this->db->prepare("UPDATE users SET last_login_at = $now WHERE id = :id");
         $stmt->execute(['id' => $userId]);
     }
 
     public function createDefaultPreferences(int $userId): void
     {
-        $stmt = $this->db->prepare(
-            'INSERT IGNORE INTO user_preferences (user_id) VALUES (:user_id)'
-        );
+        $driver = $this->db->getAttribute(PDO::ATTR_DRIVER_NAME);
+        if ($driver === 'sqlite') {
+            $stmt = $this->db->prepare(
+                'INSERT OR IGNORE INTO user_preferences (user_id) VALUES (:user_id)'
+            );
+        } else {
+            $stmt = $this->db->prepare(
+                'INSERT IGNORE INTO user_preferences (user_id) VALUES (:user_id)'
+            );
+        }
         $stmt->execute(['user_id' => $userId]);
     }
 
     public function findByResetToken(string $token): ?User
     {
-        $stmt = $this->db->prepare(
-            'SELECT * FROM users WHERE reset_token = :token AND reset_token_expires_at > NOW() LIMIT 1'
-        );
+        $driver = $this->db->getAttribute(PDO::ATTR_DRIVER_NAME);
+        if ($driver === 'sqlite') {
+            $stmt = $this->db->prepare(
+                "SELECT * FROM users WHERE reset_token = :token AND reset_token_expires_at > datetime('now') LIMIT 1"
+            );
+        } else {
+            $stmt = $this->db->prepare(
+                'SELECT * FROM users WHERE reset_token = :token AND reset_token_expires_at > NOW() LIMIT 1'
+            );
+        }
         $stmt->execute(['token' => $token]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         return $row ? User::fromDatabase($row) : null;
@@ -103,8 +121,12 @@ class UserRepository
 
     public function updatePassword(int $userId, string $passwordHash): void
     {
+        $driver = $this->db->getAttribute(PDO::ATTR_DRIVER_NAME);
+        $now = $driver === 'sqlite'
+            ? "datetime('now')"
+            : 'NOW()';
         $stmt = $this->db->prepare(
-            'UPDATE users SET password_hash = :hash, updated_at = NOW() WHERE id = :id'
+            "UPDATE users SET password_hash = :hash, updated_at = $now WHERE id = :id"
         );
         $stmt->execute(['hash' => $passwordHash, 'id' => $userId]);
     }
