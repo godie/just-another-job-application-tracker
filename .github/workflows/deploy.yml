@@ -100,6 +100,7 @@ jobs:
           DB_NAME: ${{ secrets.DB_NAME }}
           DB_USER: ${{ secrets.DB_USER }}
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_ENABLED: ${{ secrets.DB_ENABLED }}
         run: |
           python3 -c "
           import os
@@ -121,6 +122,16 @@ jobs:
             f.write(content)
           print('Secrets injected successfully')
           "
+
+      - name: Create .env file with database credentials
+        run: |
+          echo "DB_ENABLED=${{ secrets.DB_ENABLED }}" > dist/api/.env
+          echo "DB_HOST=${{ secrets.DB_HOST }}" >> dist/api/.env
+          echo "DB_PORT=${{ secrets.DB_PORT }}" >> dist/api/.env
+          echo "DB_NAME=${{ secrets.DB_NAME }}" >> dist/api/.env
+          echo "DB_USER=${{ secrets.DB_USER }}" >> dist/api/.env
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> dist/api/.env
+        working-directory: api
 
       - name: Set secure file permissions on config.php
         run: chmod 440 dist/api/config.php
