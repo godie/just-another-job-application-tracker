@@ -17,6 +17,7 @@ const config: KnipConfig = {
   // Ignore specific files
   ignoreFiles: [
     'src/pwa.d.ts',
+    '*.php',
   ],
 
   // Ignore specific issues by file patterns
@@ -34,13 +35,14 @@ const config: KnipConfig = {
     'src/components/ui/Separator.tsx': ['types'],
     'src/types/preferences.ts': ['types'],
     'src/components/AuthModals.tsx': ['exports'],
+    'src/storage/auth.ts': ['exports'],
   },
 
   // Project patterns
   project: ['src/**/*.{ts,tsx}', 'api/**/*.{ts,php}'],
 
   // Entry points
-  entry: ['src/main.tsx', 'index.html'],
+  entry: ['src/main.tsx', 'index.html', 'api/index.php'],
 };
 
 export default config;

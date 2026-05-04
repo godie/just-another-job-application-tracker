@@ -1,17 +1,12 @@
-import { useSyncExternalStore } from 'react';
-import { checkLoginStatus } from '../storage/auth';
+import { useAuthStore } from '../stores/authStore';
 
-function subscribe(callback: () => void) {
-  window.addEventListener('storage', callback);
-  // Also poll as a fallback for same-window changes if needed,
-  // but usually we can trigger a custom event or just use window.dispatchEvent
-  return () => window.removeEventListener('storage', callback);
-}
-
-function getSnapshot() {
-  return checkLoginStatus();
-}
-
-export function useIsLoggedIn() {
-  return useSyncExternalStore(subscribe, getSnapshot);
+/**
+ * Returns whether the user is currently authenticated based on the
+ * real server-side auth state (fetched from /api/auth/me).
+ *
+ * This replaces the legacy localStorage-based check with the Zustand
+ * auth store so UI always reflects the actual session.
+ */
+export function useIsLoggedIn(): boolean {
+  return useAuthStore((state) => state.isAuthenticated);
 }

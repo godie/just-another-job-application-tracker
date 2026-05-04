@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useAuthModals } from '../components/AuthModals';
-import { useAuthStore } from '../stores/authStore';
+import { setSkipAuthModal } from '../storage/auth';
 import { type PageType } from '../App';
 
 interface LandingPageProps {
@@ -23,8 +22,6 @@ const OrganicShape = ({ className = '' }: { className?: string }) => (
 
 const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
   const { t, i18n } = useTranslation();
-  const { isOpen: isAuthOpen, initialMode, openLogin, closeModal, AuthModal } = useAuthModals();
-  const { isAuthenticated } = useAuthStore();
 
   useEffect(() => {
     document.documentElement.lang = i18n.language;
@@ -35,11 +32,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
   };
 
   const handleEnterApp = () => {
-    if (isAuthenticated) {
-      onNavigate('applications');
-    } else {
-      openLogin();
-    }
+    setSkipAuthModal();
+    onNavigate('applications');
   };
 
   const roadmapItems = [
@@ -422,11 +416,6 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
           </div>
         </div>
       </footer>
-      <AuthModal
-        isOpen={isAuthOpen}
-        onClose={closeModal}
-        initialMode={initialMode}
-      />
     </div>
   );
 };
