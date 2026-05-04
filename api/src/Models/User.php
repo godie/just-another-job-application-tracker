@@ -237,6 +237,8 @@ class User
             "createdAt" => $this->createdAt,
             "updatedAt" => $this->updatedAt,
             "lastLoginAt" => $this->lastLoginAt,
+            "googleId" => $this->googleId,
+            "linkedinId" => $this->linkedinId,
         ];
     }
 
