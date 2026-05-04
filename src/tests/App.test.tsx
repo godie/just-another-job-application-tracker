@@ -3,6 +3,25 @@ import { render, screen, act } from '@testing-library/react';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import App from '../App';
 
+// Mock auth store to prevent unhandled rejections from fetchMe -> setLoginStatus
+vi.mock('../stores/authStore', () => ({
+  useAuthStore: vi.fn(() => ({
+    currentUser: null,
+    isAuthenticated: false,
+    isLoading: false,
+    error: null,
+    setUser: vi.fn(),
+    setError: vi.fn(),
+    setLoading: vi.fn(),
+    login: vi.fn(),
+    register: vi.fn(),
+    loginWithGoogle: vi.fn(),
+    loginWithLinkedIn: vi.fn(),
+    logout: vi.fn(),
+    fetchMe: vi.fn(),
+  })),
+}));
+
 // Mock components that might be problematic in test environment
 vi.mock('../layouts/MainLayout', () => ({
   default: ({ children }: { children: React.ReactNode }) => <div data-testid='main-layout'>{children}</div>,

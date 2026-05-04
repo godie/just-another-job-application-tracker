@@ -15,7 +15,32 @@ const localStorageStore: Record<string, string> = {};
 const mockWindowOpen = vi.fn();
 window.open = mockWindowOpen;
 
-// Mock the localStorage utilities
+// Auth state control for useAuthStore mock
+let mockIsAuthenticated = false;
+
+// Mock auth store — component now reads isAuthenticated from here instead of localStorage
+vi.mock('../stores/authStore', () => ({
+  useAuthStore: vi.fn((selector?: (state: Record<string, unknown>) => unknown) => {
+    const state = {
+      currentUser: mockIsAuthenticated ? { id: 1, email: 'test@example.com' } : null,
+      isAuthenticated: mockIsAuthenticated,
+      isLoading: false,
+      error: null,
+      setUser: vi.fn(),
+      setError: vi.fn(),
+      setLoading: vi.fn(),
+      login: vi.fn(),
+      register: vi.fn(),
+      loginWithGoogle: vi.fn(),
+      loginWithLinkedIn: vi.fn(),
+      logout: vi.fn(),
+      fetchMe: vi.fn(),
+    };
+    return selector ? selector(state) : state;
+  }),
+}));
+
+// Mock the localStorage utilities (still needed for type re-export)
 vi.mock('../utils/localStorage', () => ({
   checkLoginStatus: vi.fn(() => localStorageStore['isLoggedIn'] === 'true'),
   setLoginStatus: vi.fn(),
@@ -68,6 +93,7 @@ describe('GoogleSheetsSync Component', () => {
     vi.clearAllMocks();
     Object.keys(localStorageStore).forEach(key => delete localStorageStore[key]);
     localStorageStore['isLoggedIn'] = 'false';
+    mockIsAuthenticated = false;
     mockWindowOpen.mockClear();
   });
 
@@ -88,7 +114,7 @@ describe('GoogleSheetsSync Component', () => {
 
   describe('When user is logged in', () => {
     beforeEach(() => {
-      localStorageStore['isLoggedIn'] = 'true';
+      mockIsAuthenticated = true;
     });
 
     test('should show create sheet button when no spreadsheet exists', () => {
@@ -164,7 +190,7 @@ describe('GoogleSheetsSync Component', () => {
 
   describe('Create Sheet functionality', () => {
     beforeEach(() => {
-      localStorageStore['isLoggedIn'] = 'true';
+      mockIsAuthenticated = true;
     });
 
     test('should call createSpreadsheet when button is clicked', async () => {
@@ -261,7 +287,7 @@ describe('GoogleSheetsSync Component', () => {
 
   describe('Sync functionality', () => {
     beforeEach(() => {
-      localStorageStore['isLoggedIn'] = 'true';
+      mockIsAuthenticated = true;
       localStorageStore['googleSheetsSpreadsheetId'] = 'test-id-123';
     });
 
@@ -370,7 +396,7 @@ describe('GoogleSheetsSync Component', () => {
 
   describe('Open Spreadsheet functionality', () => {
     beforeEach(() => {
-      localStorageStore['isLoggedIn'] = 'true';
+      mockIsAuthenticated = true;
       localStorageStore['googleSheetsSpreadsheetId'] = 'test-id-123';
       vi.mocked(googleSheetsUtils.getSyncStatus).mockReturnValue({
         isSyncing: false,
