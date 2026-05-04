@@ -131,7 +131,6 @@ jobs:
           echo "DB_NAME=${{ secrets.DB_NAME }}" >> dist/api/.env
           echo "DB_USER=${{ secrets.DB_USER }}" >> dist/api/.env
           echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> dist/api/.env
-        working-directory: api
 
       - name: Set secure file permissions on config.php
         run: chmod 440 dist/api/config.php
