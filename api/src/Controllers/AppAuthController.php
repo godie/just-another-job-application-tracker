@@ -195,36 +195,14 @@ class AppAuthController
             return ['success' => false, 'error' => $googleUser['error']];
         }
 
-        $user = $this->userRepo->findByGoogleId($googleUser['sub']);
-        if ($user === null) {
-            $userByEmail = $this->userRepo->findByEmail($googleUser['email']);
-            if ($userByEmail !== null) {
-                $this->userRepo->updateGoogleId($userByEmail->id, $googleUser['sub']);
-                $user = $this->userRepo->findById($userByEmail->id);
-            } else {
-                $user = User::fromGoogle($googleUser);
-                $userId = $this->userRepo->create($user);
-                $this->userRepo->createDefaultPreferences($userId);
-                $user = $this->userRepo->findById($userId);
-            }
-        }
-
-        if ($user === null) {
-            http_response_code(500);
-            return ['success' => false, 'error' => 'Failed to create or find user'];
-        }
-
-        $this->userRepo->updateLastLogin($user->id);
-
-        Security::regenerateSessionId();
-        app_session_start();
-        app_session_set_user($user->id, $user->organizationId, $user->role);
-
-        return [
-            'success' => true,
-            'user' => $user->toArray(),
-            'message' => 'Google login successful',
-        ];
+        return $this->handleOAuthLogin(
+            existingUser: $this->userRepo->findByGoogleId($googleUser['sub']),
+            email: $googleUser['email'],
+            oauthId: $googleUser['sub'],
+            updateId: [$this->userRepo, 'updateGoogleId'],
+            createUser: fn () => User::fromGoogle($googleUser),
+            successMessage: 'Google login successful'
+        );
     }
 
     public function linkedin(): array
@@ -267,14 +245,45 @@ class AppAuthController
             return ['success' => false, 'error' => $linkedinUser['error']];
         }
 
-        $user = $this->userRepo->findByLinkedInId($linkedinUser['sub']);
+        return $this->handleOAuthLogin(
+            existingUser: $this->userRepo->findByLinkedInId($linkedinUser['sub']),
+            email: $linkedinUser['email'],
+            oauthId: $linkedinUser['sub'],
+            updateId: [$this->userRepo, 'updateLinkedInId'],
+            createUser: fn () => User::fromLinkedIn($linkedinUser),
+            successMessage: 'LinkedIn login successful'
+        );
+    }
+
+    /**
+     * Common OAuth login flow: find existing user by provider ID, link by email,
+     * or create a new user. Then update last login, regenerate session, and return
+     * the authenticated response.
+     *
+     * @param User|null $existingUser   User already found by provider ID (or null)
+     * @param string    $email          Email from OAuth provider
+     * @param string    $oauthId        Provider-specific user ID (sub)
+     * @param callable  $updateId       Callable(int $userId, string $oauthId): void
+     * @param callable  $createUser     Callable(): User
+     * @param string    $successMessage Message for successful login
+     */
+    private function handleOAuthLogin(
+        ?User $existingUser,
+        string $email,
+        string $oauthId,
+        callable $updateId,
+        callable $createUser,
+        string $successMessage
+    ): array {
+        $user = $existingUser;
+
         if ($user === null) {
-            $userByEmail = $this->userRepo->findByEmail($linkedinUser['email']);
+            $userByEmail = $this->userRepo->findByEmail($email);
             if ($userByEmail !== null) {
-                $this->userRepo->updateLinkedInId($userByEmail->id, $linkedinUser['sub']);
+                $updateId($userByEmail->id, $oauthId);
                 $user = $this->userRepo->findById($userByEmail->id);
             } else {
-                $user = User::fromLinkedIn($linkedinUser);
+                $user = $createUser();
                 $userId = $this->userRepo->create($user);
                 $this->userRepo->createDefaultPreferences($userId);
                 $user = $this->userRepo->findById($userId);
@@ -295,7 +304,7 @@ class AppAuthController
         return [
             'success' => true,
             'user' => $user->toArray(),
-            'message' => 'LinkedIn login successful',
+            'message' => $successMessage,
         ];
     }
 

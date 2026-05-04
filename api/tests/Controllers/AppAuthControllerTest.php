@@ -363,4 +363,111 @@ class AppAuthControllerTest extends TestCase
         $this->assertTrue($result['success']);
         $this->assertNotEquals($sessionIdBefore, $sessionIdAfter, 'Session ID should be regenerated after LinkedIn login');
     }
+
+    public function testGoogleLoginExistingUserByGoogleId(): void
+    {
+        // Create a user that already has a google_id set
+        $existingUser = $this->createTestUser(
+            email: 'google-existing@example.com',
+            password: 'password123',
+            googleId: 'google-direct-789',
+        );
+        $this->assertEquals('google-direct-789', $existingUser->googleId);
+
+        // Simulate Google login with same google_id — should find user directly
+        $this->controller->mockInput = ['googleToken' => 'mock-google-token'];
+        $this->controller->mockGoogleUser = [
+            'sub' => 'google-direct-789',
+            'email' => 'google-existing@example.com',
+            'name' => 'Updated Name',
+            'picture' => 'https://example.com/new.jpg',
+        ];
+
+        $result = $this->controller->google();
+
+        $this->assertTrue($result['success']);
+        $this->assertEquals('Google login successful', $result['message']);
+        $this->assertEquals($existingUser->id, $result['user']['id']);
+        $this->assertEquals('google-existing@example.com', $result['user']['email']);
+
+        // Verify no duplicate user was created
+        $repo = new UserRepository($this->db);
+        $allUsers = $repo->findByEmail('google-existing@example.com');
+        $this->assertNotNull($allUsers);
+        $this->assertEquals($existingUser->id, $allUsers->id);
+    }
+
+    public function testLinkedInLoginExistingUserByLinkedInId(): void
+    {
+        // Create a user that already has a linkedin_id set
+        $existingUser = $this->createTestUser(
+            email: 'linkedin-existing@example.com',
+            password: 'password123',
+            linkedinId: 'linkedin-direct-321',
+        );
+        $this->assertEquals('linkedin-direct-321', $existingUser->linkedinId);
+
+        // Simulate LinkedIn login with same linkedin_id — should find user directly
+        $this->controller->mockInput = [
+            'code' => 'mock-linkedin-code',
+            'redirectUri' => 'http://localhost:5173',
+        ];
+        $this->controller->mockLinkedInToken = ['access_token' => 'mock-access-token'];
+        $this->controller->mockLinkedInUser = [
+            'sub' => 'linkedin-direct-321',
+            'email' => 'linkedin-existing@example.com',
+            'name' => 'Updated Name',
+            'picture' => 'https://example.com/new.jpg',
+        ];
+
+        $result = $this->controller->linkedin();
+
+        $this->assertTrue($result['success']);
+        $this->assertEquals('LinkedIn login successful', $result['message']);
+        $this->assertEquals($existingUser->id, $result['user']['id']);
+        $this->assertEquals('linkedin-existing@example.com', $result['user']['email']);
+
+        // Verify no duplicate user was created
+        $repo = new UserRepository($this->db);
+        $allUsers = $repo->findByEmail('linkedin-existing@example.com');
+        $this->assertNotNull($allUsers);
+        $this->assertEquals($existingUser->id, $allUsers->id);
+    }
+
+    public function testOAuthLoginUpdatesLastLoginTimestamp(): void
+    {
+        $this->controller->mockInput = ['googleToken' => 'mock-google-token'];
+        $this->controller->mockGoogleUser = [
+            'sub' => 'google-lastlogin-test',
+            'email' => 'lastlogin@example.com',
+            'name' => 'Last Login Test',
+        ];
+
+        // First login — creates the user
+        $result = $this->controller->google();
+        $this->assertTrue($result['success']);
+
+        $repo = new UserRepository($this->db);
+        $userAfterFirstLogin = $repo->findByGoogleId('google-lastlogin-test');
+        $this->assertNotNull($userAfterFirstLogin);
+        $this->assertNotNull($userAfterFirstLogin->lastLoginAt, 'lastLoginAt should be set after first login');
+
+        $firstLoginTime = $userAfterFirstLogin->lastLoginAt;
+
+        // Wait a moment to ensure timestamp changes
+        sleep(1);
+
+        // Second login — should update last_login_at
+        $result2 = $this->controller->google();
+        $this->assertTrue($result2['success']);
+
+        $userAfterSecondLogin = $repo->findByGoogleId('google-lastlogin-test');
+        $this->assertNotNull($userAfterSecondLogin);
+        $this->assertNotNull($userAfterSecondLogin->lastLoginAt, 'lastLoginAt should be set after second login');
+        $this->assertGreaterThan(
+            $firstLoginTime,
+            $userAfterSecondLogin->lastLoginAt,
+            'lastLoginAt should be updated on subsequent login'
+        );
+    }
 }

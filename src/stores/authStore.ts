@@ -1,5 +1,4 @@
 import { create } from 'zustand';
-import { setLoginStatus } from '../storage/auth';
 import {
   login as apiLogin,
   register as apiRegister,
@@ -44,7 +43,6 @@ export const useAuthStore = create<AuthState>()((set) => ({
       const response = await apiLogin(email, password);
       if (response.success && response.user) {
         set({ currentUser: response.user, isAuthenticated: true });
-        setLoginStatus(true);
       } else {
         set({ error: response.error || 'Login failed' });
         throw new Error(response.error || 'Login failed');
@@ -64,7 +62,6 @@ export const useAuthStore = create<AuthState>()((set) => ({
       const response = await apiRegister(email, password, displayName);
       if (response.success && response.user) {
         set({ currentUser: response.user, isAuthenticated: true });
-        setLoginStatus(true);
       } else {
         set({ error: response.error || 'Registration failed' });
         throw new Error(response.error || 'Registration failed');
@@ -84,7 +81,6 @@ export const useAuthStore = create<AuthState>()((set) => ({
       const response = await apiLoginWithGoogle(googleToken);
       if (response.success && response.user) {
         set({ currentUser: response.user, isAuthenticated: true });
-        setLoginStatus(true);
       } else {
         set({ error: response.error || 'Google login failed' });
         throw new Error(response.error || 'Google login failed');
@@ -104,7 +100,6 @@ export const useAuthStore = create<AuthState>()((set) => ({
       const response = await apiLoginWithLinkedIn(code, redirectUri);
       if (response.success && response.user) {
         set({ currentUser: response.user, isAuthenticated: true });
-        setLoginStatus(true);
       } else {
         set({ error: response.error || 'LinkedIn login failed' });
         throw new Error(response.error || 'LinkedIn login failed');
@@ -123,11 +118,9 @@ export const useAuthStore = create<AuthState>()((set) => ({
     try {
       await apiLogout();
       set({ currentUser: null, isAuthenticated: false });
-      setLoginStatus(false);
     } catch (err) {
       console.error('Logout failed', err);
       set({ currentUser: null, isAuthenticated: false });
-      setLoginStatus(false);
     } finally {
       set({ isLoading: false });
     }
@@ -139,14 +132,11 @@ export const useAuthStore = create<AuthState>()((set) => ({
       const response = await apiFetchMe();
       if (response.success && response.isAuthenticated && response.user) {
         set({ currentUser: response.user, isAuthenticated: true });
-        setLoginStatus(true);
       } else {
         set({ currentUser: null, isAuthenticated: false });
-        setLoginStatus(false);
       }
     } catch {
       set({ currentUser: null, isAuthenticated: false });
-      setLoginStatus(false);
     } finally {
       set({ isLoading: false });
     }

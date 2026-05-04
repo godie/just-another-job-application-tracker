@@ -39,27 +39,11 @@ vi.mock('../hooks/useIsLoggedIn', () => ({
 }));
 
 // Mock the module that provides the utility functions
-vi.mock('../utils/localStorage', () => {
-  const checkLoginStatus = vi.fn(() => {
-    return localStorageStore['isLoggedIn'] === 'true';
-  });
-  
-  const setLoginStatus = vi.fn((status: boolean) => {
-    if (status) {
-      localStorageStore['isLoggedIn'] = 'true';
-    } else {
-      delete localStorageStore['isLoggedIn'];
-    }
-  });
-
-  return {
-    checkLoginStatus,
-    setLoginStatus,
-    getApplications: vi.fn(() => []),
-    saveApplications: vi.fn(),
-    getOpportunities: vi.fn(() => []),
-  };
-});
+vi.mock('../utils/localStorage', () => ({
+  getApplications: vi.fn(() => []),
+  saveApplications: vi.fn(),
+  getOpportunities: vi.fn(() => []),
+}));
 
 // Mock the auth store
 vi.mock('../stores/authStore', () => ({
