@@ -13,9 +13,9 @@ class RequireAuthTest extends TestCase
     {
         parent::setUp();
 
-        // Close any active session before each test
+        // Destroy any active session from previous test classes/files
         if (session_status() === PHP_SESSION_ACTIVE) {
-            session_write_close();
+            session_destroy();
         }
 
         // Clean up any existing session data

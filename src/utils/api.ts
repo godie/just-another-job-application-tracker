@@ -26,6 +26,8 @@ export interface AuthUser {
   createdAt?: string;
   updatedAt?: string;
   lastLoginAt?: string;
+  googleId?: string;
+  linkedinId?: string;
 }
 
 interface AuthResponse {

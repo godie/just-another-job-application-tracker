@@ -1,4 +1,14 @@
 RewriteEngine On
+# Proteger archivos sensibles
+<Files ".env">
+    Order allow,deny
+    Deny from all
+</Files>
+<Files "config.php">
+    Order allow,deny
+    Deny from all
+</Files>
+
 # Evita que se apliquen reglas si el archivo o carpeta real existe
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_COND_PATH} !-d

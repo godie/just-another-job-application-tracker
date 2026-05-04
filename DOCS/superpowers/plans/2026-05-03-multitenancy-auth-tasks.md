@@ -12,259 +12,107 @@
 
 ## Task 1: Session Regeneration on Login
 
-Prevents session fixation attacks. Must regenerate session ID after successful login.
+Prevents session fixation attacks. Regenerates session ID after successful login.
 
 **Files:**
-- Modify: `api/src/Controllers/AppAuthController.php:151` (login method)
+- Modify: `api/src/Controllers/AppAuthController.php` (login, google, linkedin methods)
 - Test: `api/tests/Controllers/AppAuthControllerTest.php`
 
-- [ ] **Step 1: Write failing test for session regeneration**
+- [x] **Step 1: Add session regeneration to login method**
 
-```php
-// api/tests/Controllers/AppAuthControllerTest.php
-public function testLoginRegeneratesSessionId(): void
-{
-    $controller = new AppAuthController($this->mockDb);
-    $user = $this->createTestUser(email: 'session-test@example.com', password: 'oldpassword123');
+Added `Security::regenerateSessionId()` after `updateLastLogin()` and before `app_session_start()` in `login()`. Same pattern applied to `google()` and `linkedin()` OAuth methods.
 
-    // Simulate old session
-    session_id('old-session-id');
+- [x] **Step 2: Run tests**
 
-    $result = $controller->login();
+All PHP tests pass (14 tests, 51 assertions).
 
-    $this->assertTrue($result['success']);
-    $this->assertNotEquals('old-session-id', session_id());
-}
-```
+- [x] **Step 3: Commit**
 
-- [ ] **Step 2: Run test to verify it fails**
-
-Run: `cd api && ./vendor/bin/phpunit --filter testLoginRegeneratesSessionId`
-Expected: FAIL - session IDs match
-
-- [ ] **Step 3: Add session regeneration to login method**
-
-In `api/src/Controllers/AppAuthController.php`, add after line 148 (`appAuth\app_session_start();`):
-
-```php
-use OverPHP\Core\Security;
-
-public function login(): array
-{
-    // ... existing validation ...
-
-    $this->userRepo->updateLastLogin($user->id);
-
-    Security::regenerateSessionId(); // Add this line
-    appAuth\app_session_start();
-    appAuth\app_session_set_user($user->id, $user->organizationId, $user->role);
-
-    return [
-        'success' => true,
-        'user' => $user->toArray(),
-        'message' => 'Login successful',
-    ];
-}
-```
-
-- [ ] **Step 4: Run test to verify it passes**
-
-Run: `cd api && ./vendor/bin/phpunit --filter testLoginRegeneratesSessionId`
-Expected: PASS
-
-- [ ] **Step 5: Also add regeneration to Google login**
-
-In `google()` method, add `Security::regenerateSessionId();` before `app_auth_session_start()` (around line 208)
-
-- [ ] **Step 6: Also add regeneration to LinkedIn login**
-
-In `linkedin()` method, add `Security::regenerateSessionId();` before `app_auth_session_start()` (around line 279)
-
-- [ ] **Step 7: Commit**
-
-```bash
-git add api/src/Controllers/AppAuthController.php api/tests/Controllers/AppAuthControllerTest.php
-git commit -m "feat(auth): regenerate session ID on login to prevent session fixation"
-```
+Included in Task 2 commits.
 
 ---
 
 ## Task 2: Link Google Identity to App User (Auto-Create)
 
-When user logs in with Google, if email doesn't exist, create account automatically.
+When user logs in with Google, if email doesn't exist, create account automatically. If email exists, link the Google ID to the existing account.
 
 **Files:**
-- Modify: `api/src/Controllers/AppAuthController.php:167-217` (google method)
-- Modify: `api/src/Repositories/UserRepository.php` (add findByEmail method)
+- Modify: `api/src/Controllers/AppAuthController.php` (google/linkedin methods)
+- Modify: `api/src/Repositories/UserRepository.php` (add `updateGoogleId` and `updateLinkedInId` methods)
+- Test: `api/tests/Controllers/AppAuthControllerTest.php`
 
-- [ ] **Step 1: Verify findByEmail exists in UserRepository**
+- [x] **Step 1: Add `updateGoogleId` and `updateLinkedInId` to UserRepository**
 
-Run: `grep -n "findByEmail" api/src/Repositories/UserRepository.php`
-Expected: Line with `public function findByEmail`
+Added methods that update the respective OAuth IDs on existing users, with multi-driver timestamp handling (SQLite/MySQL).
 
-- [ ] **Step 2: Review current Google login flow**
+- [x] **Step 2: Update Google login flow to link by email**
 
-Look at `api/src/Controllers/AppAuthController.php` lines 167-217
+When a user logs in with Google and the email matches an existing app user, the Google ID is now linked to that account (instead of just logging in without linking). The user is re-fetched after linking to get updated data.
 
-Current behavior:
-1. Verify Google token
-2. Find user by `google_id`
-3. If not found, find by email
-4. If email found, use that user
-5. If neither found, create new user
+- [x] **Step 3: Update LinkedIn login flow to link by email**
 
-**The current flow already supports auto-creation by email!** The issue is it only searches by `google_id` first.
+Same behavior as Google login - links the LinkedIn ID to an existing app user when the email matches.
 
-- [ ] **Step 3: Verify the flow works for new Google users**
+- [x] **Step 4: Add session regeneration to OAuth logins**
 
-Current code already does:
-```php
-$user = $this->userRepo->findByGoogleId($googleUser['sub']);
-if ($user === null) {
-    $userByEmail = $this->userRepo->findByEmail($googleUser['email']);
-    if ($userByEmail !== null) {
-        $user = $userByEmail;
-    } else {
-        $user = User::fromGoogle($googleUser);
-        // creates new user
-    }
-}
-```
+Added `Security::regenerateSessionId()` before `app_session_start()` in both Google and LinkedIn login flows to prevent session fixation attacks.
 
-This is correct - it first checks `google_id`, then falls back to email.
+- [x] **Step 5: Write tests for Google/LinkedIn auto-create and linking**
 
-- [ ] **Step 4: Commit (no changes needed)**
+Created comprehensive tests in `AppAuthControllerTest.php`:
+- Google login auto-creates new user
+- Google login links existing user by email
+- LinkedIn login auto-creates new user
+- LinkedIn login links existing user by email
+- Session regeneration on OAuth login
 
-If already working correctly, commit a verification note:
+- [x] **Step 6: Run tests**
 
-```bash
-git commit -m "docs(auth): verify Google auto-create user by email flow is correct" --allow-empty
-```
+All 9 tests pass with 39 assertions.
+
+- [x] **Step 7: Commit**
+
+Commit: `d2c8054`
 
 ---
 
 ## Task 3: Auth Middleware for Sync Routes
 
-Sync routes should require app auth, not just any session. Create middleware to verify authenticated app user.
+Sync routes require app auth. Middleware verifies authenticated app user.
 
 **Files:**
 - Create: `api/src/Middleware/RequireAuth.php`
-- Modify: `api/src/Core/Router.php`
 - Modify: `api/index.php`
 - Test: `api/tests/Middleware/RequireAuthTest.php`
 
 - [x] **Step 1: Create RequireAuth middleware**
 
-Create `api/src/Middleware/RequireAuth.php`:
+Created `api/src/Middleware/RequireAuth.php` with `handle()` and `isAuthenticated()` methods. `handle()` checks for active app session user and returns a 401 error array if not authenticated, or `null` if authenticated.
 
-```php
-<?php
+- [x] **Step 2: Write tests for middleware**
 
-declare(strict_types=1);
+Created `api/tests/Middleware/RequireAuthTest.php` with 5 tests:
+- Returns error when no session
+- Returns null when valid session
+- Returns error when session user ID is null
+- `isAuthenticated()` returns true when user ID is set
+- `isAuthenticated()` returns false when no user ID
 
-namespace OverPHP\Middleware;
+- [x] **Step 3: Wire middleware to sync routes**
 
-use OverPHP\Helpers\appAuth;
+All 4 sync routes in `api/index.php` (`/sync/applications` GET/POST, `/sync/opportunities` GET/POST) are wrapped with `RequireAuth::handle()` via closure handlers that return 401 if unauthenticated.
 
-class RequireAuth
-{
-    public static function handle(): ?array
-    {
-        appAuth\app_session_start();
-        $userId = appAuth\app_session_get_user_id();
+- [x] **Step 4: Run tests**
 
-        if ($userId === null) {
-            http_response_code(401);
-            return [
-                'success' => false,
-                'error' => 'Authentication required',
-            ];
-        }
+All 5 tests pass with 12 assertions.
 
-        return null;
-    }
-}
-```
+- [x] **Step 5: Fix cross-test session contamination**
 
-- [x] **Step 2: Write failing test for middleware**
+Replaced `session_write_close()` with `session_destroy()` in `RequireAuthTest::setUp()` to prevent session data from previous test classes (e.g. `AppAuthControllerTest`) from persisting and being reused. This fixed `testReturnsErrorWhenNoSession` which was failing because a `user_id` from a prior test leaked into the fresh session.
 
-Create `api/tests/Middleware/RequireAuthTest.php`:
+- [x] **Step 6: Commit**
 
-```php
-<?php
-
-namespace OverPHP\Tests\Middleware;
-
-use PHPUnit\Framework\TestCase;
-use OverPHP\Middleware\RequireAuth;
-
-class RequireAuthTest extends TestCase
-{
-    public function testReturnsErrorWhenNoSession(): void
-    {
-        // Clear any existing session
-        $_SESSION = [];
-
-        $result = RequireAuth::handle();
-
-        $this->assertNotNull($result);
-        $this->assertFalse($result['success']);
-        $this->assertEquals('Authentication required', $result['error']);
-    }
-
-    public function testReturnsNullWhenValidSession(): void
-    {
-        $_SESSION['user_id'] = 123;
-        $_SESSION['organization_id'] = 1;
-        $_SESSION['role'] = 'member';
-
-        $result = RequireAuth::handle();
-
-        $this->assertNull($result);
-    }
-}
-```
-
-- [x] **Step 3: Run test to verify it fails**
-
-Run: `cd api && ./vendor/bin/phpunit --filter testReturnsErrorWhenNoSession`
-Expected: FAIL - function returns array instead of null
-
-- [x] **Step 4: Implement middleware correctly**
-
-The middleware handles its own response via `http_response_code()` and returns the error array. This is the expected behavior - the router should check if result is not null.
-
-- [x] **Step 5: Wire middleware to sync routes**
-
-In `api/index.php`, modify sync routes to pass middleware:
-
-```php
-// Current (line 112-115):
-$router->add('GET', '/sync/applications', 'SyncController@getApplications');
-$router->add('POST', '/sync/applications', 'SyncController@saveApplications');
-
-// New with middleware:
-$router->add('GET', '/sync/applications', function() {
-    $result = RequireAuth::handle();
-    if ($result !== null) {
-        echo json_encode($result);
-        return;
-    }
-    return (new SyncController())->getApplications();
-});
-```
-
-- [x] **Step 6: Run tests**
-
-Run: `cd api && ./vendor/bin/phpunit`
-Expected: PASS
-
-- [x] **Step 7: Commit**
-
-```bash
-git add api/src/Middleware/RequireAuth.php api/tests/Middleware/ api/index.php
-git commit -m "feat(auth): add RequireAuth middleware for sync routes"
-```
+Commits: `9560bb3` (session fix)
 
 ---
 
@@ -273,141 +121,70 @@ git commit -m "feat(auth): add RequireAuth middleware for sync routes"
 Connect frontend React auth store to `/api/auth/me` endpoint.
 
 **Files:**
-- Modify: `src/stores/authStore.ts` or similar auth context/hook
 - Create: `src/hooks/useAuth.ts`
-- Test: `src/tests/hooks/useAuth.test.ts`
+- Modify: `src/hooks/useIsLoggedIn.ts`
+- Test: `src/hooks/useAuth.test.ts`
 
-- [ ] **Step 1: Find existing auth store**
+- [x] **Step 1: Review existing auth state management**
 
-Run: `find src -name "*auth*" -type f | grep -E "\.(ts|tsx)$"`
+`src/stores/authStore.ts` already exists with `fetchMe()` that calls `/api/auth/me` via `apiFetchMe()`. `App.tsx` already calls `fetchMe()` on mount. The auth store is already connected to the server endpoint.
 
-- [ ] **Step 2: Review current auth state management**
+- [x] **Step 2: Create `useAuth` convenience hook**
 
-Read the auth store file to understand current implementation
+Created `src/hooks/useAuth.ts` — a thin selector-based wrapper around `useAuthStore` that exposes `{ user, isAuthenticated, isLoading, error }` for cleaner consumption in components.
 
-- [ ] **Step 3: Write test for useAuth hook**
+- [x] **Step 3: Update `useIsLoggedIn` to use real auth state**
 
-Create `src/tests/hooks/useAuth.test.ts`:
+Updated `src/hooks/useIsLoggedIn.ts` to use `useAuthStore((state) => state.isAuthenticated)` instead of the legacy localStorage-based `checkLoginStatus()`. This ensures `Header`, `Sidebar`, and `BottomNav` always reflect the actual server session.
 
-```typescript
-import { renderHook, waitFor } from '@testing-library/react';
-import { useAuth } from '../../hooks/useAuth';
+- [x] **Step 4: Write tests for `useAuth` hook**
 
-describe('useAuth', () => {
-    it('returns user as null when not authenticated', async () => {
-        global.fetch = vi.fn().mockResolvedValueOnce({
-            ok: true,
-            json: () => Promise.resolve({ success: true, user: null }),
-        });
+Created `src/hooks/useAuth.test.ts` with 4 tests:
+- Returns unauthenticated state when no user is logged in
+- Returns authenticated state when user is logged in
+- Returns loading state while auth is being checked
+- Returns error state when authentication fails
 
-        const { result } = renderHook(() => useAuth());
+- [x] **Step 5: Run tests**
 
-        await waitFor(() => {
-            expect(result.current.user).toBeNull();
-        });
-    });
+All tests pass.
 
-    it('returns user data when authenticated', async () => {
-        const mockUser = { id: 1, email: 'test@example.com', displayName: 'Test' };
-        global.fetch = vi.fn().mockResolvedValueOnce({
-            ok: true,
-            json: () => Promise.resolve({ success: true, user: mockUser }),
-        });
+- [x] **Step 6: Commit**
 
-        const { result } = renderHook(() => useAuth());
+Included in Task 5 commits.
 
-        await waitFor(() => {
-            expect(result.current.user).toEqual(mockUser);
-        });
-    });
-});
-```
+---
 
-- [ ] **Step 4: Run test to verify it fails**
+## Task 5: Frontend Auth Cleanup (GoogleSheetsSync + Legacy Removal)
 
-Run: `npm test -- --filter useAuth`
-Expected: FAIL - useAuth hook doesn't exist
+Migrate remaining frontend consumers to real auth store and remove dead code.
 
-- [ ] **Step 5: Create useAuth hook**
+**Files:**
+- Modify: `src/components/GoogleSheetsSync.tsx`
+- Modify: `src/tests/App.test.tsx`
+- Modify: `src/tests/GoogleSheetsSync.test.tsx`
+- Modify: `src/stores/authStore.ts`
+- Modify: `src/storage/auth.ts`
 
-Create `src/hooks/useAuth.ts`:
+- [x] **Step 1: Migrate GoogleSheetsSync to useAuthStore**
 
-```typescript
-import { useState, useEffect } from 'react';
+Replaced `checkLoginStatus()` from `../utils/localStorage` with `useAuthStore((state) => state.isAuthenticated)` in `GoogleSheetsSync` component for real server-connected auth state. Added `isAuthenticated` to `handleSync` useCallback dependency array for correctness.
 
-interface User {
-    id: number;
-    email: string;
-    displayName: string | null;
-    organizationId: number | null;
-    role: string;
-}
+- [x] **Step 2: Fix App.test.tsx unhandled rejections**
 
-interface AuthState {
-    user: User | null;
-    isLoading: boolean;
-    isAuthenticated: boolean;
-}
+Mocked `useAuthStore` in `App.test.tsx` to eliminate 4 pre-existing unhandled rejections from `fetchMe` calling `setLoginStatus`.
 
-export function useAuth(): AuthState {
-    const [state, setState] = useState<AuthState>({
-        user: null,
-        isLoading: true,
-        isAuthenticated: false,
-    });
+- [x] **Step 3: Remove legacy localStorage auth helpers**
 
-    useEffect(() => {
-        async function checkAuth() {
-            try {
-                const response = await fetch('/api/auth/me', {
-                    credentials: 'include',
-                });
+Removed `checkLoginStatus()` and `setLoginStatus()` from `src/storage/auth.ts`. Removed all `setLoginStatus()` calls from `src/stores/authStore.ts` — auth state now flows purely through the server-connected Zustand store (`fetchMe` on mount). Cleaned up dead mocks from `Header.test.tsx` and `GoogleSheetsSync.test.tsx`.
 
-                if (response.ok) {
-                    const data = await response.json();
-                    setState({
-                        user: data.user ?? null,
-                        isLoading: false,
-                        isAuthenticated: data.user !== null,
-                    });
-                } else {
-                    setState({
-                        user: null,
-                        isLoading: false,
-                        isAuthenticated: false,
-                    });
-                }
-            } catch {
-                setState({
-                    user: null,
-                    isLoading: false,
-                    isAuthenticated: false,
-                });
-            }
-        }
+- [x] **Step 4: Run tests**
 
-        checkAuth();
-    }, []);
+All 471 frontend tests pass. All 14 PHP tests pass.
 
-    return state;
-}
-```
+- [x] **Step 5: Commit**
 
-- [ ] **Step 6: Run test to verify it passes**
-
-Run: `npm test -- --filter useAuth`
-Expected: PASS
-
-- [ ] **Step 7: Integrate with existing auth store if needed**
-
-Update existing auth store to use `useAuth` hook for server state
-
-- [ ] **Step 8: Commit**
-
-```bash
-git add src/hooks/useAuth.ts src/tests/hooks/useAuth.test.ts
-git commit -m "feat(frontend): add useAuth hook connected to /api/auth/me"
-```
+Commit: `d4d5c40`
 
 ---
 
@@ -415,13 +192,25 @@ git commit -m "feat(frontend): add useAuth hook connected to /api/auth/me"
 
 After completing all tasks, verify:
 
-- [ ] Session regenerates on login (check browser DevTools)
-- [ ] Google login creates user by email if not exists
-- [ ] Sync routes return 401 when not authenticated
-- [ ] Frontend auth store correctly reflects `/api/auth/me` state
-- [ ] All tests pass: `npm test && cd api && ./vendor/bin/phpunit`
-- [ ] Lint passes: `npm run lint`
+- [x] Session regenerates on login (Security::regenerateSessionId in login, google, linkedin)
+- [x] Google login creates user by email if not exists, links existing user
+- [x] LinkedIn login creates user by email if not exists, links existing user
+- [x] Sync routes return 401 when not authenticated (RequireAuth middleware)
+- [x] Frontend auth store correctly reflects `/api/auth/me` state (useAuthStore + fetchMe)
+- [x] GoogleSheetsSync uses real auth state (useAuthStore, not localStorage)
+- [x] Legacy localStorage auth helpers removed (checkLoginStatus, setLoginStatus)
+- [x] All tests pass: `npm test && cd api && ./vendor/bin/phpunit`
+- [x] Lint passes: `npm run lint`
 
 ---
 
-**Plan complete.**
+## Commits
+
+| Commit | Message |
+|--------|---------|
+| `d4d5c40` | chore(auth): remove legacy localStorage-based checkLoginStatus and setLoginStatus |
+| `d2c8054` | refactor(auth): extract duplicated OAuth linking logic into handleOAuthLogin |
+| `9560bb3` | fix(tests): destroy session in RequireAuthTest setUp to prevent cross-test contamination |
+| `7206957` | feat(auth): integrate GoogleSheetsSync with real auth store |
+
+**Plan complete.** ✅

@@ -4,7 +4,7 @@ import React, { useReducer, useEffect, useCallback, useRef } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import { useAlert } from './AlertProvider';
 import { Card } from './ui';
-import { checkLoginStatus } from '../utils/localStorage';
+import { useAuthStore } from '../stores/authStore';
 import {
   createSpreadsheet,
   syncToGoogleSheets,
@@ -23,7 +23,6 @@ interface GoogleSheetsSyncProps {
 }
 
 interface GoogleSheetsSyncState {
-  isLoggedIn: boolean;
   syncStatus: SyncStatus;
   isCreatingSheet: boolean;
   isSyncing: boolean;
@@ -35,7 +34,7 @@ interface GoogleSheetsSyncState {
 
 type GoogleSheetsSyncAction =
   | { type: 'SET_FIELD'; field: keyof GoogleSheetsSyncState; value: boolean | string | SyncStatus | null }
-  | { type: 'UPDATE_STATUS'; isLoggedIn: boolean; syncStatus: SyncStatus; spreadsheetUrl: string | null };
+  | { type: 'UPDATE_STATUS'; syncStatus: SyncStatus; spreadsheetUrl: string | null };
 
 const googleSheetsSyncReducer = (state: GoogleSheetsSyncState, action: GoogleSheetsSyncAction): GoogleSheetsSyncState => {
   switch (action.type) {
@@ -44,7 +43,6 @@ const googleSheetsSyncReducer = (state: GoogleSheetsSyncState, action: GoogleShe
     case 'UPDATE_STATUS':
       return {
         ...state,
-        isLoggedIn: action.isLoggedIn,
         syncStatus: action.syncStatus,
         spreadsheetUrl: action.spreadsheetUrl,
       };
@@ -60,8 +58,9 @@ const GoogleSheetsSync: React.FC<GoogleSheetsSyncProps> = ({ applications, onSyn
   applicationsRef.current = applications;
   const { showSuccess, showError } = useAlert();
 
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+
   const [state, dispatch] = useReducer(googleSheetsSyncReducer, undefined, () => ({
-    isLoggedIn: false,
     syncStatus: getSyncStatus(),
     isCreatingSheet: false,
     isSyncing: false,
@@ -72,7 +71,6 @@ const GoogleSheetsSync: React.FC<GoogleSheetsSyncProps> = ({ applications, onSyn
   }));
 
   const {
-    isLoggedIn,
     syncStatus,
     isCreatingSheet,
     isSyncing,
@@ -84,14 +82,12 @@ const GoogleSheetsSync: React.FC<GoogleSheetsSyncProps> = ({ applications, onSyn
 
   useEffect(() => {
     const updateStatus = () => {
-      const loggedIn = checkLoginStatus();
       const status = getSyncStatus();
       const spreadsheetId = getStoredSpreadsheetId();
       const url = spreadsheetId ? `https://docs.google.com/spreadsheets/d/${spreadsheetId}` : null;
 
       dispatch({
         type: 'UPDATE_STATUS',
-        isLoggedIn: loggedIn,
         syncStatus: status,
         spreadsheetUrl: url,
       });
@@ -99,27 +95,16 @@ const GoogleSheetsSync: React.FC<GoogleSheetsSyncProps> = ({ applications, onSyn
 
     updateStatus();
 
-    // Listen for storage changes (login/logout)
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'isLoggedIn') {
-        updateStatus();
-      }
-    };
-
-    window.addEventListener('storage', handleStorageChange);
-    
-    // Also check periodically in case localStorage is updated in same window
+    // Poll periodically for sync status / spreadsheet changes
     const interval = setInterval(updateStatus, 1000);
 
     return () => {
-      window.removeEventListener('storage', handleStorageChange);
       clearInterval(interval);
     };
   }, []);
 
   const handleSync = useCallback(async () => {
-    // Check login status directly instead of using state to avoid unnecessary recreations
-    if (!checkLoginStatus()) {
+    if (!isAuthenticated) {
       showError(t('sheets.loginFirst'));
       return;
     }
@@ -148,10 +133,10 @@ const GoogleSheetsSync: React.FC<GoogleSheetsSyncProps> = ({ applications, onSyn
     } finally {
       dispatch({ type: 'SET_FIELD', field: 'isSyncing', value: false });
     }
-  }, [showError, showSuccess, onSyncComplete, t]);
+  }, [isAuthenticated, showError, showSuccess, onSyncComplete, t]);
 
   const handleCreateSheet = async () => {
-    if (!checkLoginStatus()) {
+    if (!isAuthenticated) {
       showError(t('sheets.loginFirst'));
       return;
     }
@@ -216,7 +201,7 @@ const GoogleSheetsSync: React.FC<GoogleSheetsSyncProps> = ({ applications, onSyn
     dispatch({ type: 'SET_FIELD', field: 'sheetIdInput', value: '' });
   };
 
-  if (!isLoggedIn) {
+  if (!isAuthenticated) {
     return (
       <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
         <p className="text-sm text-yellow-800">

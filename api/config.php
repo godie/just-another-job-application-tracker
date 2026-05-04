@@ -38,11 +38,11 @@ return [
         'enabled' => filter_var(getenv('DB_ENABLED') ?: 'false', FILTER_VALIDATE_BOOLEAN),
         'driver' => getenv('DB_DRIVER') ?: 'mysql',
         'mysql' => [
-            'host' => getenv('DB_HOST') ?: '__DB_HOST__',
-            'port' => (int) (getenv('DB_PORT') ?: '__DB_PORT__'),
-            'database' => getenv('DB_NAME') ?: '__DB_NAME__',
-            'username' => getenv('DB_USER') ?: '__DB_USER__',
-            'password' => getenv('DB_PASSWORD') ?: '__DB_PASSWORD__',
+            'host' => getenv('DB_HOST') ?: '127.0.0.1',
+            'port' => (int) (getenv('DB_PORT') ?: 3306),
+            'database' => getenv('DB_NAME') ?: 'jajat',
+            'username' => getenv('DB_USER') ?: 'root',
+            'password' => getenv('DB_PASSWORD') ?: '',
             'charset' => getenv('DB_CHARSET') ?: 'utf8mb4',
             'options' => [],
         ],
@@ -61,6 +61,4 @@ return [
     'refresh_cookie_days' => 30,
     'google_client_id' => getenv('GOOGLE_CLIENT_ID') ?: '__VITE_GOOGLE_CLIENT_ID__',
     'google_client_secret' => getenv('GOOGLE_CLIENT_SECRET') ?: '__VITE_GOOGLE_CLIENT_SECRET__',
-    'linkedin_client_id' => getenv('LINKEDIN_CLIENT_ID') ?: '__LINKEDIN_CLIENT_ID__',
-    'linkedin_client_secret' => getenv('LINKEDIN_CLIENT_SECRET') ?: '__LINKEDIN_CLIENT_SECRET__',
 ];
