@@ -4,25 +4,6 @@ const SKIP_AUTH_COOKIE = 'jajat_skip_auth_modal';
 const COOKIE_EXPIRY_DAYS = 365;
 
 /**
- * Simula la verificación de login.
- * En un proyecto real, esto verificaría un token JWT o una sesión.
- */
-export const checkLoginStatus = (): boolean => {
-  return localStorage.getItem('isLoggedIn') === 'true';
-};
-
-/**
- * Simula el login/logout (se usará como placeholder).
- */
-export const setLoginStatus = (status: boolean): void => {
-  if (status) {
-    localStorage.setItem('isLoggedIn', 'true');
-  } else {
-    localStorage.removeItem('isLoggedIn');
-  }
-};
-
-/**
  * Set cookie to skip auth modal for a year
  */
 export function setSkipAuthModal(): void {

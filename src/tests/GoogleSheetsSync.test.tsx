@@ -42,8 +42,6 @@ vi.mock('../stores/authStore', () => ({
 
 // Mock the localStorage utilities (still needed for type re-export)
 vi.mock('../utils/localStorage', () => ({
-  checkLoginStatus: vi.fn(() => localStorageStore['isLoggedIn'] === 'true'),
-  setLoginStatus: vi.fn(),
   getApplications: vi.fn(() => []),
   saveApplications: vi.fn(),
 }));
@@ -92,7 +90,6 @@ describe('GoogleSheetsSync Component', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     Object.keys(localStorageStore).forEach(key => delete localStorageStore[key]);
-    localStorageStore['isLoggedIn'] = 'false';
     mockIsAuthenticated = false;
     mockWindowOpen.mockClear();
   });
