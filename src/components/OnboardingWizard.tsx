@@ -27,7 +27,7 @@ const STEPS: WizardStep[] = [
   { id: 'start', icon: '🚀', titleKey: 'onboarding.start.title', descriptionKey: 'onboarding.start.desc' },
 ];
 
-export const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onClose, onNavigate }) => {
+const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onClose, onNavigate }) => {
   const { t } = useTranslation();
   const [step, setStep] = useState(0);
   const [direction, setDirection] = useState<'next' | 'prev'>('next');

@@ -10,7 +10,7 @@ interface GDPRCookieBannerProps {
   onConsentChange?: (level: ConsentLevel) => void;
 }
 
-export const GDPRCookieBanner: React.FC<GDPRCookieBannerProps> = ({ onConsentChange }) => {
+const GDPRCookieBanner: React.FC<GDPRCookieBannerProps> = ({ onConsentChange }) => {
   const { t } = useTranslation();
   const [isVisible, setIsVisible] = useState(false);
   const [showDetails, setShowDetails] = useState(false);

@@ -103,8 +103,8 @@ function App() {
   const [showOnboarding, setShowOnboarding] = useState(() => !hasCompletedOnboarding());
 
   const handleConsentChange = useCallback(() => {
-    // Consent stored in localStorage by GDPRCookieBanner
-    // Analytics or additional tracking could be enabled here in the future
+    // No-op: GDPRCookieBanner persists consent directly to localStorage.
+    // Analytics or additional tracking could be enabled here in the future.
   }, []);
 
   const handleOnboardingClose = useCallback(() => {
