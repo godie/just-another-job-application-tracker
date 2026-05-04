@@ -35,6 +35,8 @@ const config: KnipConfig = {
     'src/components/ui/Separator.tsx': ['types'],
     'src/types/preferences.ts': ['types'],
     'src/components/AuthModals.tsx': ['exports'],
+    'src/components/GDPRCookieBanner.tsx': ['exports'],
+    'src/components/OnboardingWizard.tsx': ['exports'],
     'src/storage/auth.ts': ['exports'],
   },
 

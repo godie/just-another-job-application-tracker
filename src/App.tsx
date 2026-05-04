@@ -18,6 +18,11 @@ import PWAReloadPrompt from './components/PWAReloadPrompt';
 import MergePromptHandler from './components/sync/MergePromptHandler';
 import MainLayout from './layouts/MainLayout';
 
+import OnboardingWizard from './components/OnboardingWizard';
+import { hasCompletedOnboarding } from './components/OnboardingWizard.utils';
+import GDPRCookieBanner from './components/GDPRCookieBanner';
+import { hasConsent } from './components/GDPRCookieBanner.utils';
+
 import { useApplicationsStore } from './stores/applicationsStore';
 import { useAuthStore } from './stores/authStore';
 import { useCloudSync } from './hooks/useCloudSync';
@@ -94,6 +99,25 @@ function App() {
     }
   }, [currentPage, loadApplications]);
 
+  // Onboarding + GDPR banner state
+  const [showOnboarding, setShowOnboarding] = useState(() => !hasCompletedOnboarding());
+
+  const handleConsentChange = useCallback(() => {
+    // Consent stored in localStorage by GDPRCookieBanner
+    // Analytics or additional tracking could be enabled here in the future
+  }, []);
+
+  const handleOnboardingClose = useCallback(() => {
+    setShowOnboarding(false);
+  }, []);
+
+  const handleOnboardingNavigate = useCallback((page: string) => {
+    if (VALID_PAGES.includes(page as PageType)) {
+      setCurrentPage(page as PageType);
+    }
+    setShowOnboarding(false);
+  }, []);
+
   // Listen for applications added from Chrome extension (e.g. "Save as Application")
   useEffect(() => {
     const handleApplicationsUpdated = () => {
@@ -147,7 +171,12 @@ function App() {
         )}
         <MergePromptHandler />
         <PWAReloadPrompt />
-
+        {showOnboarding && (
+          <OnboardingWizard onClose={handleOnboardingClose} onNavigate={handleOnboardingNavigate} />
+        )}
+        {!showOnboarding && !hasConsent() && (
+          <GDPRCookieBanner onConsentChange={handleConsentChange} />
+        )}
       </AlertProvider>
     </GoogleOAuthProvider>
   );

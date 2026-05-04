@@ -118,6 +118,7 @@
     "loginWithGoogle": "Login with Google",
     "signIn": "Sign In",
     "save": "Save",
+    "close": "Close",
     "cancel": "Cancel",
     "delete": "Delete",
     "edit": "Edit",
@@ -658,5 +659,60 @@
       "Referral": "Referral",
       "Other": "Other"
     }
+  },
+  "onboarding": {
+    "welcome": {
+      "title": "Welcome to JAJAT!",
+      "desc": "Your personal job application tracker. Let's take a quick tour to help you get started."
+    },
+    "applications": {
+      "title": "Track Applications",
+      "desc": "Add every job you apply to. Record position, company, status, dates, and interview timeline all in one place."
+    },
+    "opportunities": {
+      "title": "Capture Opportunities",
+      "desc": "Save interesting job postings before applying. Use the Chrome extension to grab jobs from LinkedIn, Greenhouse, and more."
+    },
+    "views": {
+      "title": "Multiple Views",
+      "desc": "Switch between Table, Timeline, Kanban, and Calendar views to visualize your pipeline the way you prefer."
+    },
+    "sync": {
+      "title": "Sync & Backup",
+      "desc": "Sign in to back up your data and access it from any device. You can also sync with Google Sheets."
+    },
+    "insights": {
+      "title": "Gain Insights",
+      "desc": "See analytics on your applications, interviews, and rejection rate to understand and improve your search."
+    },
+    "extension": {
+      "title": "Chrome Extension",
+      "desc": "Install our extension to capture jobs directly from LinkedIn, Greenhouse, AshbyHQ, and other platforms with one click."
+    },
+    "start": {
+      "title": "Ready to Start?",
+      "desc": "Click the button below to begin tracking your first application. Good luck with your job search!"
+    },
+    "skip": "Skip tour",
+    "startTracking": "Start Tracking",
+    "step": "Step {{number}}"
+  },
+  "gdpr": {
+    "title": "We value your privacy",
+    "description": "We use cookies and local storage to keep your data safe and provide essential functionality. You can read more in our",
+    "essentialOnly": "Essential Only",
+    "acceptAll": "Accept All",
+    "showDetails": "Show cookie details",
+    "hideDetails": "Hide details",
+    "essentialCookies": "Essential Cookies",
+    "essentialCookiesDesc": "Required for the app to function. Includes authentication and session management.",
+    "analyticsCookies": "Analytics Cookies",
+    "analyticsCookiesDesc": "Help us understand how users interact with the app to improve the experience.",
+    "storageCookies": "Local Storage",
+    "storageCookiesDesc": "Stores your application data locally in your browser for offline access.",
+    "authCookies": "Authentication",
+    "authCookiesDesc": "Keeps you signed in across sessions when you choose to log in.",
+    "alwaysOn": "Always On",
+    "optional": "Optional"
   }
 }

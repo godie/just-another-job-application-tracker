@@ -118,6 +118,7 @@
     "loginWithGoogle": "Iniciar sesión con Google",
     "signIn": "Iniciar Sesión",
     "save": "Guardar",
+    "close": "Cerrar",
     "cancel": "Cancelar",
     "delete": "Eliminar",
     "edit": "Editar",
@@ -658,5 +659,60 @@
       "Referral": "Referido",
       "Other": "Otro"
     }
+  },
+  "onboarding": {
+    "welcome": {
+      "title": "¡Bienvenido a JAJAT!",
+      "desc": "Tu rastreador personal de aplicaciones de empleo. Hagamos un tour rápido para que empieces."
+    },
+    "applications": {
+      "title": "Rastrea Aplicaciones",
+      "desc": "Añade cada trabajo al que aplicas. Registra posición, empresa, estado, fechas y cronograma de entrevistas en un solo lugar."
+    },
+    "opportunities": {
+      "title": "Captura Oportunidades",
+      "desc": "Guarda ofertas de empleo interesantes antes de aplicar. Usa la extensión de Chrome para capturar trabajos de LinkedIn, Greenhouse y más."
+    },
+    "views": {
+      "title": "Múltiples Vistas",
+      "desc": "Cambia entre vistas de Tabla, Cronograma, Kanban y Calendario para visualizar tu pipeline como prefieras."
+    },
+    "sync": {
+      "title": "Sync y Respaldo",
+      "desc": "Inicia sesión para respaldar tus datos y acceder desde cualquier dispositivo. También puedes sincronizar con Google Sheets."
+    },
+    "insights": {
+      "title": "Obtén Análisis",
+      "desc": "Ve analíticas sobre tus aplicaciones, entrevistas y tasa de rechazo para entender y mejorar tu búsqueda."
+    },
+    "extension": {
+      "title": "Extensión de Chrome",
+      "desc": "Instala nuestra extensión para capturar trabajos directamente desde LinkedIn, Greenhouse, AshbyHQ y otras plataformas con un clic."
+    },
+    "start": {
+      "title": "¿Listo para empezar?",
+      "desc": "Haz clic en el botón de abajo para comenzar a rastrear tu primera aplicación. ¡Buena suerte en tu búsqueda!"
+    },
+    "skip": "Saltar tour",
+    "startTracking": "Empezar a rastrear",
+    "step": "Paso {{number}}"
+  },
+  "gdpr": {
+    "title": "Valoramos tu privacidad",
+    "description": "Usamos cookies y almacenamiento local para mantener tus datos seguros y proporcionar funcionalidad esencial. Puedes leer más en nuestra",
+    "essentialOnly": "Solo Esenciales",
+    "acceptAll": "Aceptar Todo",
+    "showDetails": "Mostrar detalles de cookies",
+    "hideDetails": "Ocultar detalles",
+    "essentialCookies": "Cookies Esenciales",
+    "essentialCookiesDesc": "Necesarias para que la aplicación funcione. Incluye autenticación y gestión de sesiones.",
+    "analyticsCookies": "Cookies de Análisis",
+    "analyticsCookiesDesc": "Nos ayudan a entender cómo interactúan los usuarios con la app para mejorar la experiencia.",
+    "storageCookies": "Almacenamiento Local",
+    "storageCookiesDesc": "Guarda tus datos de aplicaciones localmente en tu navegador para acceso sin conexión.",
+    "authCookies": "Autenticación",
+    "authCookiesDesc": "Mantiene tu sesión iniciada entre visitas cuando eliges iniciar sesión.",
+    "alwaysOn": "Siempre Activas",
+    "optional": "Opcionales"
   }
 }
