@@ -18,7 +18,7 @@ class RequireAuthTest extends TestCase
             session_write_close();
         }
 
-        // Clean up any existing session files
+        // Clean up any existing session data
         $_SESSION = [];
     }
 
@@ -32,30 +32,45 @@ class RequireAuthTest extends TestCase
         parent::tearDown();
     }
 
-    private function startCleanSession(): void
-    {
-        // Start a fresh session with unique ID
-        $sessionId = 'test_' . bin2hex(random_bytes(8));
-        session_id($sessionId);
-        session_start();
-    }
-
     public function testReturnsErrorWhenNoSession(): void
     {
-        // No session started - app_session_start will start one but with no user_id
-        // This simulates a fresh session with no authentication
+        // Close any open session to ensure no active session
+        if (session_status() === PHP_SESSION_ACTIVE) {
+            session_write_close();
+        }
+
+        // Reset session - no session data
+        $_SESSION = [];
+
+        // Ensure no active session BEFORE calling handle
+        $this->assertNotEquals(PHP_SESSION_ACTIVE, session_status());
 
         $result = RequireAuth::handle();
+
+        // RequireAuth calls app_session_start() which starts a new session
+        // The result should be error because there's no user_id in session
 
         $this->assertNotNull($result);
         $this->assertFalse($result['success']);
         $this->assertEquals('Authentication required', $result['error']);
+
+        // Clean up: close the session that handle() started
+        if (session_status() === PHP_SESSION_ACTIVE) {
+            session_destroy();
+        }
     }
 
     public function testReturnsNullWhenValidSession(): void
     {
-        // Start a session with user_id set
-        $this->startCleanSession();
+        // Start fresh session with authenticated user
+        $this->assertNotEquals(PHP_SESSION_ACTIVE, session_status());
+
+        session_start();
+
+        // Verify session is active
+        $this->assertEquals(PHP_SESSION_ACTIVE, session_status());
+
+        // Set authenticated user data
         $_SESSION['user_id'] = 123;
         $_SESSION['organization_id'] = 1;
         $_SESSION['role'] = 'member';
@@ -67,10 +82,9 @@ class RequireAuthTest extends TestCase
 
     public function testReturnsErrorWhenSessionUserIdIsNull(): void
     {
-        // Start session but don't set user_id
-        $this->startCleanSession();
-        $_SESSION['organization_id'] = 1;
-        $_SESSION['role'] = 'member';
+        session_start();
+        $_SESSION = [];
+        // Don't set user_id
 
         $result = RequireAuth::handle();
 
@@ -81,16 +95,15 @@ class RequireAuthTest extends TestCase
 
     public function testIsAuthenticatedReturnsTrueWhenUserIdSet(): void
     {
-        $this->startCleanSession();
-        $_SESSION['user_id'] = 42;
+        session_start();
+        $_SESSION = ['user_id' => 42];
 
         $this->assertTrue(RequireAuth::isAuthenticated());
     }
 
     public function testIsAuthenticatedReturnsFalseWhenNoUserId(): void
     {
-        // No session started
-        $this->startCleanSession();
+        session_start();
         $_SESSION = [];
 
         $this->assertFalse(RequireAuth::isAuthenticated());

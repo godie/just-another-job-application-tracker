@@ -7,6 +7,7 @@ use OverPHP\Core\Container;
 use OverPHP\Core\Router;
 use OverPHP\Core\Security;
 use OverPHP\Libs\Database;
+use OverPHP\Middleware\RequireAuth;
 use function OverPHP\Helpers\corsSendHeaders;
 
 error_reporting(~E_ALL);
@@ -112,10 +113,38 @@ $router->add('POST', '/suggestions', 'SuggestionsController@store');
 
 $router->add('POST', '/google-sheets', 'GoogleSheetsController@index');
 
-$router->add('GET', '/sync/applications', 'SyncController@getApplications');
-$router->add('POST', '/sync/applications', 'SyncController@saveApplications');
-$router->add('GET', '/sync/opportunities', 'SyncController@getOpportunities');
-$router->add('POST', '/sync/opportunities', 'SyncController@saveOpportunities');
+$router->add('GET', '/sync/applications', function() {
+    $result = RequireAuth::handle();
+    if ($result !== null) {
+        echo json_encode($result);
+        return;
+    }
+    return (new \OverPHP\Controllers\SyncController())->getApplications();
+});
+$router->add('POST', '/sync/applications', function() {
+    $result = RequireAuth::handle();
+    if ($result !== null) {
+        echo json_encode($result);
+        return;
+    }
+    return (new \OverPHP\Controllers\SyncController())->saveApplications();
+});
+$router->add('GET', '/sync/opportunities', function() {
+    $result = RequireAuth::handle();
+    if ($result !== null) {
+        echo json_encode($result);
+        return;
+    }
+    return (new \OverPHP\Controllers\SyncController())->getOpportunities();
+});
+$router->add('POST', '/sync/opportunities', function() {
+    $result = RequireAuth::handle();
+    if ($result !== null) {
+        echo json_encode($result);
+        return;
+    }
+    return (new \OverPHP\Controllers\SyncController())->saveOpportunities();
+});
 
 $router->add('GET', '/user/profile', 'UserController@profile');
 $router->add('GET', '/hello', 'HelloController@index');

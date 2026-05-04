@@ -130,4 +130,16 @@ class UserRepository
         );
         $stmt->execute(['hash' => $passwordHash, 'id' => $userId]);
     }
+
+    public function updateGoogleId(int $userId, string $googleId): void
+    {
+        $stmt = $this->db->prepare('UPDATE users SET google_id = :google_id WHERE id = :id');
+        $stmt->execute(['google_id' => $googleId, 'id' => $userId]);
+    }
+
+    public function updateLinkedInId(int $userId, string $linkedinId): void
+    {
+        $stmt = $this->db->prepare('UPDATE users SET linkedin_id = :linkedin_id WHERE id = :id');
+        $stmt->execute(['linkedin_id' => $linkedinId, 'id' => $userId]);
+    }
 }
