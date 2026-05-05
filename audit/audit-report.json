@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-05-05T22:22:29.058Z",
+  "timestamp": "2026-05-05T22:33:44.296Z",
   "branch": "jules-481363289405085070-e1e29e29",
   "summary": {
     "total": 0,
@@ -8,7 +8,7 @@
     "medium": 0,
     "low": 0,
     "warning": 0,
-    "filesAnalyzed": 193
+    "filesAnalyzed": 191
   },
   "categories": {
     "critical": [],
@@ -21,7 +21,6 @@
     "/app/audit/audit.cjs",
     "/app/eslint.config.js",
     "/app/knip.config.ts",
-    "/app/playwright.config.ts",
     "/app/src/App.tsx",
     "/app/src/components/ATSSearch.tsx",
     "/app/src/components/AddJobForm.tsx",
@@ -209,7 +208,6 @@
     "/app/src/utils/status.ts",
     "/app/src/utils/url.ts",
     "/app/tailwind.config.js",
-    "/app/verification/capture_screenshots.spec.ts",
     "/app/vite.config.ts"
   ],
   "rawResults": [
@@ -237,17 +235,6 @@
     },
     {
       "filePath": "/app/knip.config.ts",
-      "messages": [],
-      "suppressedMessages": [],
-      "errorCount": 0,
-      "fatalErrorCount": 0,
-      "warningCount": 0,
-      "fixableErrorCount": 0,
-      "fixableWarningCount": 0,
-      "usedDeprecatedRules": []
-    },
-    {
-      "filePath": "/app/playwright.config.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -2425,17 +2412,6 @@
     },
     {
       "filePath": "/app/tailwind.config.js",
-      "messages": [],
-      "suppressedMessages": [],
-      "errorCount": 0,
-      "fatalErrorCount": 0,
-      "warningCount": 0,
-      "fixableErrorCount": 0,
-      "fixableWarningCount": 0,
-      "usedDeprecatedRules": []
-    },
-    {
-      "filePath": "/app/verification/capture_screenshots.spec.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,

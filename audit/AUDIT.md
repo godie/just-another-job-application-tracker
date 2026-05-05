@@ -1,6 +1,6 @@
 # Code Audit Report
 
-**Generated:** 2026-05-05T22:22:29.058Z
+**Generated:** 2026-05-05T22:33:44.296Z
 **Branch:** jules-481363289405085070-e1e29e29
 
 ## Summary
@@ -13,7 +13,7 @@
 | Medium | 0 |
 | Low | 0 |
 | Warnings | 0 |
-| Files Analyzed | 193 |
+| Files Analyzed | 191 |
 
 ## All Issues by Category
 
@@ -22,7 +22,6 @@
 - ./audit/audit.cjs
 - ./eslint.config.js
 - ./knip.config.ts
-- ./playwright.config.ts
 - ./src/App.tsx
 - ./src/components/ATSSearch.tsx
 - ./src/components/AddJobForm.tsx
@@ -210,7 +209,6 @@
 - ./src/utils/status.ts
 - ./src/utils/url.ts
 - ./tailwind.config.js
-- ./verification/capture_screenshots.spec.ts
 - ./vite.config.ts
 
 ## Recommendations
