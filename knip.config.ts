@@ -12,6 +12,7 @@ const config: KnipConfig = {
     '@googleapis/sheets',
     '@types/dompurify',
     '@types/recharts',
+    '@playwright/test',
   ],
 
   // Ignore specific files
