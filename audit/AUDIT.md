@@ -1,7 +1,7 @@
 # Code Audit Report
 
-**Generated:** 2026-04-08T19:17:37.451Z
-**Branch:** jules-522951310453559166-518a0c30
+**Generated:** 2026-05-05T22:43:20.817Z
+**Branch:** jules-481363289405085070-e1e29e29
 
 ## Summary
 
@@ -13,7 +13,7 @@
 | Medium | 0 |
 | Low | 0 |
 | Warnings | 0 |
-| Files Analyzed | 164 |
+| Files Analyzed | 191 |
 
 ## All Issues by Category
 
@@ -21,10 +21,10 @@
 
 - ./audit/audit.cjs
 - ./eslint.config.js
-- ./playwright.config.ts
+- ./knip.config.ts
 - ./src/App.tsx
 - ./src/components/ATSSearch.tsx
-- ./src/components/AddJobComponent.tsx
+- ./src/components/AddJobForm.tsx
 - ./src/components/Alert.tsx
 - ./src/components/AlertProvider.tsx
 - ./src/components/ApplicationCard.test.tsx
@@ -35,20 +35,29 @@
 - ./src/components/ApplicationTableRow.test.tsx
 - ./src/components/ApplicationTableRow.tsx
 - ./src/components/ApplicationTimelineCard.tsx
+- ./src/components/AuthModals.tsx
 - ./src/components/BottomNav.tsx
 - ./src/components/CSVActions.tsx
 - ./src/components/CalendarView.tsx
+- ./src/components/ChartContainer.tsx
 - ./src/components/ConfirmDialog.tsx
 - ./src/components/CurrentViewRenderer.tsx
 - ./src/components/DonationSection.tsx
 - ./src/components/EmailScanReview.tsx
 - ./src/components/FiltersBar.tsx
 - ./src/components/Footer.tsx
+- ./src/components/GDPRCookieBanner.test.tsx
+- ./src/components/GDPRCookieBanner.tsx
+- ./src/components/GDPRCookieBanner.utils.ts
+- ./src/components/GeminiKeyModal.tsx
 - ./src/components/GoogleSheetsSync.tsx
 - ./src/components/Header.tsx
 - ./src/components/InterviewBarChart.tsx
 - ./src/components/KanbanView.tsx
 - ./src/components/MetricsSummary.tsx
+- ./src/components/OnboardingWizard.test.tsx
+- ./src/components/OnboardingWizard.tsx
+- ./src/components/OnboardingWizard.utils.ts
 - ./src/components/OpportunitiesEmptyState.tsx
 - ./src/components/OpportunitiesTable.tsx
 - ./src/components/OpportunityForm.tsx
@@ -57,11 +66,11 @@
 - ./src/components/ProposedUpdateItem.tsx
 - ./src/components/Sidebar.test.tsx
 - ./src/components/Sidebar.tsx
-- ./src/components/StatCard.test.tsx
-- ./src/components/StatCard.tsx
 - ./src/components/StatusBarChart.tsx
 - ./src/components/SuggestionForm.tsx
+- ./src/components/SyncActions.test.tsx
 - ./src/components/SyncActions.tsx
+- ./src/components/SyncStatusInfo.test.tsx
 - ./src/components/SyncStatusInfo.tsx
 - ./src/components/TimelineEditor.tsx
 - ./src/components/TimelineEventList.tsx
@@ -73,7 +82,14 @@
 - ./src/components/settings/EmailScanSettings.tsx
 - ./src/components/settings/FieldsSettings.tsx
 - ./src/components/settings/InterviewingSettings.tsx
+- ./src/components/settings/ToolsSettings.tsx
 - ./src/components/settings/ViewSettings.tsx
+- ./src/components/sync/MergePromptHandler.test.tsx
+- ./src/components/sync/MergePromptHandler.tsx
+- ./src/components/sync/MergePromptModal.test.tsx
+- ./src/components/sync/MergePromptModal.tsx
+- ./src/components/sync/SyncNavIcon.test.tsx
+- ./src/components/sync/SyncNavIcon.tsx
 - ./src/components/ui/Badge.test.tsx
 - ./src/components/ui/Badge.tsx
 - ./src/components/ui/Button.test.tsx
@@ -90,9 +106,12 @@
 - ./src/components/ui/Table.tsx
 - ./src/components/ui/TagInput.tsx
 - ./src/components/ui/index.ts
+- ./src/hooks/useCloudSync.test.ts
 - ./src/hooks/useCloudSync.ts
+- ./src/hooks/useCrypto.ts
 - ./src/hooks/useFilteredApplications.test.ts
 - ./src/hooks/useFilteredApplications.ts
+- ./src/hooks/useFocusTrap.ts
 - ./src/hooks/useFormatDate.ts
 - ./src/hooks/useInsightsData.ts
 - ./src/hooks/useIsLoggedIn.ts
@@ -118,6 +137,7 @@
 - ./src/mails/services/scanService.ts
 - ./src/mails/types.ts
 - ./src/main.tsx
+- ./src/pages/BackupSyncPage.tsx
 - ./src/pages/GmailScanPage.tsx
 - ./src/pages/HomePage.tsx
 - ./src/pages/InsightsPage.test.tsx
@@ -130,8 +150,6 @@
 - ./src/pages/SuggestionsViewerPage.tsx
 - ./src/pages/SupportPage.tsx
 - ./src/pwa.d.ts
-- ./src/services/api.test.ts
-- ./src/services/api.ts
 - ./src/setupTests.ts
 - ./src/storage/applications.test.ts
 - ./src/storage/applications.ts
@@ -139,13 +157,18 @@
 - ./src/storage/index.ts
 - ./src/storage/opportunities.ts
 - ./src/storage/preferences.ts
+- ./src/store/geminiKeyStore.ts
 - ./src/stores/applicationsStore.ts
 - ./src/stores/authStore.ts
+- ./src/stores/mergeStore.test.ts
+- ./src/stores/mergeStore.ts
 - ./src/stores/opportunitiesStore.ts
 - ./src/stores/preferencesStore.ts
 - ./src/tests/Alert.test.tsx
 - ./src/tests/AlertProvider.test.tsx
 - ./src/tests/App.test.tsx
+- ./src/tests/BackupSyncPage.merge.test.tsx
+- ./src/tests/BackupSyncPage.test.tsx
 - ./src/tests/CalendarView.test.tsx
 - ./src/tests/DarkModeIntegration.test.tsx
 - ./src/tests/EmailScanReview.test.tsx
@@ -164,6 +187,7 @@
 - ./src/tests/date.test.ts
 - ./src/tests/google-oauth-mock.ts
 - ./src/tests/googleSheets.test.ts
+- ./src/tests/helpers/mergeDataHelpers.ts
 - ./src/types/applications.ts
 - ./src/types/index.ts
 - ./src/types/opportunities.ts
@@ -175,10 +199,13 @@
 - ./src/utils/csv.test.ts
 - ./src/utils/csv.ts
 - ./src/utils/date.ts
+- ./src/utils/geminiApi.ts
 - ./src/utils/googleSheets.ts
 - ./src/utils/id.ts
 - ./src/utils/localStorage.ts
 - ./src/utils/manualScan.ts
+- ./src/utils/mergeData.test.ts
+- ./src/utils/mergeData.ts
 - ./src/utils/status.ts
 - ./src/utils/url.ts
 - ./tailwind.config.js

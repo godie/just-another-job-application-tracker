@@ -12,12 +12,12 @@ const config: KnipConfig = {
     '@googleapis/sheets',
     '@types/dompurify',
     '@types/recharts',
+    '@playwright/test',
   ],
 
   // Ignore specific files
   ignoreFiles: [
     'src/pwa.d.ts',
-    '*.php',
   ],
 
   // Ignore specific issues by file patterns
@@ -41,10 +41,10 @@ const config: KnipConfig = {
   },
 
   // Project patterns
-  project: ['src/**/*.{ts,tsx}', 'api/**/*.{ts,php}'],
+  project: ['src/**/*.{ts,tsx}'],
 
   // Entry points
-  entry: ['src/main.tsx', 'index.html', 'api/index.php'],
+  entry: ['index.html'],
 };
 
 export default config;
