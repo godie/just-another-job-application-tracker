@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-04-08T19:17:37.451Z",
-  "branch": "jules-522951310453559166-518a0c30",
+  "timestamp": "2026-05-05T22:22:29.058Z",
+  "branch": "jules-481363289405085070-e1e29e29",
   "summary": {
     "total": 0,
     "critical": 0,
@@ -8,7 +8,7 @@
     "medium": 0,
     "low": 0,
     "warning": 0,
-    "filesAnalyzed": 164
+    "filesAnalyzed": 193
   },
   "categories": {
     "critical": [],
@@ -20,10 +20,11 @@
   "files": [
     "/app/audit/audit.cjs",
     "/app/eslint.config.js",
+    "/app/knip.config.ts",
     "/app/playwright.config.ts",
     "/app/src/App.tsx",
     "/app/src/components/ATSSearch.tsx",
-    "/app/src/components/AddJobComponent.tsx",
+    "/app/src/components/AddJobForm.tsx",
     "/app/src/components/Alert.tsx",
     "/app/src/components/AlertProvider.tsx",
     "/app/src/components/ApplicationCard.test.tsx",
@@ -34,20 +35,29 @@
     "/app/src/components/ApplicationTableRow.test.tsx",
     "/app/src/components/ApplicationTableRow.tsx",
     "/app/src/components/ApplicationTimelineCard.tsx",
+    "/app/src/components/AuthModals.tsx",
     "/app/src/components/BottomNav.tsx",
     "/app/src/components/CSVActions.tsx",
     "/app/src/components/CalendarView.tsx",
+    "/app/src/components/ChartContainer.tsx",
     "/app/src/components/ConfirmDialog.tsx",
     "/app/src/components/CurrentViewRenderer.tsx",
     "/app/src/components/DonationSection.tsx",
     "/app/src/components/EmailScanReview.tsx",
     "/app/src/components/FiltersBar.tsx",
     "/app/src/components/Footer.tsx",
+    "/app/src/components/GDPRCookieBanner.test.tsx",
+    "/app/src/components/GDPRCookieBanner.tsx",
+    "/app/src/components/GDPRCookieBanner.utils.ts",
+    "/app/src/components/GeminiKeyModal.tsx",
     "/app/src/components/GoogleSheetsSync.tsx",
     "/app/src/components/Header.tsx",
     "/app/src/components/InterviewBarChart.tsx",
     "/app/src/components/KanbanView.tsx",
     "/app/src/components/MetricsSummary.tsx",
+    "/app/src/components/OnboardingWizard.test.tsx",
+    "/app/src/components/OnboardingWizard.tsx",
+    "/app/src/components/OnboardingWizard.utils.ts",
     "/app/src/components/OpportunitiesEmptyState.tsx",
     "/app/src/components/OpportunitiesTable.tsx",
     "/app/src/components/OpportunityForm.tsx",
@@ -56,11 +66,11 @@
     "/app/src/components/ProposedUpdateItem.tsx",
     "/app/src/components/Sidebar.test.tsx",
     "/app/src/components/Sidebar.tsx",
-    "/app/src/components/StatCard.test.tsx",
-    "/app/src/components/StatCard.tsx",
     "/app/src/components/StatusBarChart.tsx",
     "/app/src/components/SuggestionForm.tsx",
+    "/app/src/components/SyncActions.test.tsx",
     "/app/src/components/SyncActions.tsx",
+    "/app/src/components/SyncStatusInfo.test.tsx",
     "/app/src/components/SyncStatusInfo.tsx",
     "/app/src/components/TimelineEditor.tsx",
     "/app/src/components/TimelineEventList.tsx",
@@ -72,7 +82,14 @@
     "/app/src/components/settings/EmailScanSettings.tsx",
     "/app/src/components/settings/FieldsSettings.tsx",
     "/app/src/components/settings/InterviewingSettings.tsx",
+    "/app/src/components/settings/ToolsSettings.tsx",
     "/app/src/components/settings/ViewSettings.tsx",
+    "/app/src/components/sync/MergePromptHandler.test.tsx",
+    "/app/src/components/sync/MergePromptHandler.tsx",
+    "/app/src/components/sync/MergePromptModal.test.tsx",
+    "/app/src/components/sync/MergePromptModal.tsx",
+    "/app/src/components/sync/SyncNavIcon.test.tsx",
+    "/app/src/components/sync/SyncNavIcon.tsx",
     "/app/src/components/ui/Badge.test.tsx",
     "/app/src/components/ui/Badge.tsx",
     "/app/src/components/ui/Button.test.tsx",
@@ -89,9 +106,12 @@
     "/app/src/components/ui/Table.tsx",
     "/app/src/components/ui/TagInput.tsx",
     "/app/src/components/ui/index.ts",
+    "/app/src/hooks/useCloudSync.test.ts",
     "/app/src/hooks/useCloudSync.ts",
+    "/app/src/hooks/useCrypto.ts",
     "/app/src/hooks/useFilteredApplications.test.ts",
     "/app/src/hooks/useFilteredApplications.ts",
+    "/app/src/hooks/useFocusTrap.ts",
     "/app/src/hooks/useFormatDate.ts",
     "/app/src/hooks/useInsightsData.ts",
     "/app/src/hooks/useIsLoggedIn.ts",
@@ -117,6 +137,7 @@
     "/app/src/mails/services/scanService.ts",
     "/app/src/mails/types.ts",
     "/app/src/main.tsx",
+    "/app/src/pages/BackupSyncPage.tsx",
     "/app/src/pages/GmailScanPage.tsx",
     "/app/src/pages/HomePage.tsx",
     "/app/src/pages/InsightsPage.test.tsx",
@@ -129,8 +150,6 @@
     "/app/src/pages/SuggestionsViewerPage.tsx",
     "/app/src/pages/SupportPage.tsx",
     "/app/src/pwa.d.ts",
-    "/app/src/services/api.test.ts",
-    "/app/src/services/api.ts",
     "/app/src/setupTests.ts",
     "/app/src/storage/applications.test.ts",
     "/app/src/storage/applications.ts",
@@ -138,13 +157,18 @@
     "/app/src/storage/index.ts",
     "/app/src/storage/opportunities.ts",
     "/app/src/storage/preferences.ts",
+    "/app/src/store/geminiKeyStore.ts",
     "/app/src/stores/applicationsStore.ts",
     "/app/src/stores/authStore.ts",
+    "/app/src/stores/mergeStore.test.ts",
+    "/app/src/stores/mergeStore.ts",
     "/app/src/stores/opportunitiesStore.ts",
     "/app/src/stores/preferencesStore.ts",
     "/app/src/tests/Alert.test.tsx",
     "/app/src/tests/AlertProvider.test.tsx",
     "/app/src/tests/App.test.tsx",
+    "/app/src/tests/BackupSyncPage.merge.test.tsx",
+    "/app/src/tests/BackupSyncPage.test.tsx",
     "/app/src/tests/CalendarView.test.tsx",
     "/app/src/tests/DarkModeIntegration.test.tsx",
     "/app/src/tests/EmailScanReview.test.tsx",
@@ -163,6 +187,7 @@
     "/app/src/tests/date.test.ts",
     "/app/src/tests/google-oauth-mock.ts",
     "/app/src/tests/googleSheets.test.ts",
+    "/app/src/tests/helpers/mergeDataHelpers.ts",
     "/app/src/types/applications.ts",
     "/app/src/types/index.ts",
     "/app/src/types/opportunities.ts",
@@ -174,13 +199,17 @@
     "/app/src/utils/csv.test.ts",
     "/app/src/utils/csv.ts",
     "/app/src/utils/date.ts",
+    "/app/src/utils/geminiApi.ts",
     "/app/src/utils/googleSheets.ts",
     "/app/src/utils/id.ts",
     "/app/src/utils/localStorage.ts",
     "/app/src/utils/manualScan.ts",
+    "/app/src/utils/mergeData.test.ts",
+    "/app/src/utils/mergeData.ts",
     "/app/src/utils/status.ts",
     "/app/src/utils/url.ts",
     "/app/tailwind.config.js",
+    "/app/verification/capture_screenshots.spec.ts",
     "/app/vite.config.ts"
   ],
   "rawResults": [
@@ -197,6 +226,17 @@
     },
     {
       "filePath": "/app/eslint.config.js",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/app/knip.config.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -240,7 +280,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/components/AddJobComponent.tsx",
+      "filePath": "/app/src/components/AddJobForm.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -379,6 +419,35 @@
       "usedDeprecatedRules": []
     },
     {
+      "filePath": "/app/src/components/AuthModals.tsx",
+      "messages": [],
+      "suppressedMessages": [
+        {
+          "ruleId": "react-refresh/only-export-components",
+          "severity": 2,
+          "message": "Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components.",
+          "line": 254,
+          "column": 14,
+          "nodeType": "Identifier",
+          "messageId": "namedExport",
+          "endLine": 254,
+          "endColumn": 27,
+          "suppressions": [
+            {
+              "kind": "directive",
+              "justification": ""
+            }
+          ]
+        }
+      ],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
       "filePath": "/app/src/components/BottomNav.tsx",
       "messages": [],
       "suppressedMessages": [],
@@ -402,6 +471,17 @@
     },
     {
       "filePath": "/app/src/components/CalendarView.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/app/src/components/ChartContainer.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -478,6 +558,50 @@
       "usedDeprecatedRules": []
     },
     {
+      "filePath": "/app/src/components/GDPRCookieBanner.test.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/app/src/components/GDPRCookieBanner.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/app/src/components/GDPRCookieBanner.utils.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/app/src/components/GeminiKeyModal.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
       "filePath": "/app/src/components/GoogleSheetsSync.tsx",
       "messages": [],
       "suppressedMessages": [],
@@ -502,7 +626,49 @@
     {
       "filePath": "/app/src/components/InterviewBarChart.tsx",
       "messages": [],
-      "suppressedMessages": [],
+      "suppressedMessages": [
+        {
+          "ruleId": "@typescript-eslint/no-explicit-any",
+          "severity": 2,
+          "message": "Unexpected any. Specify a different type.",
+          "line": 27,
+          "column": 33,
+          "nodeType": "TSAnyKeyword",
+          "messageId": "unexpectedAny",
+          "endLine": 27,
+          "endColumn": 36,
+          "suggestions": [
+            {
+              "messageId": "suggestUnknown",
+              "fix": {
+                "range": [
+                  1048,
+                  1051
+                ],
+                "text": "unknown"
+              },
+              "desc": "Use `unknown` instead, this will force you to explicitly, and safely assert the type is correct."
+            },
+            {
+              "messageId": "suggestNever",
+              "fix": {
+                "range": [
+                  1048,
+                  1051
+                ],
+                "text": "never"
+              },
+              "desc": "Use `never` instead, this is useful when instantiating generic type parameters that you don't need to know the type of."
+            }
+          ],
+          "suppressions": [
+            {
+              "kind": "directive",
+              "justification": ""
+            }
+          ]
+        }
+      ],
       "errorCount": 0,
       "fatalErrorCount": 0,
       "warningCount": 0,
@@ -523,6 +689,39 @@
     },
     {
       "filePath": "/app/src/components/MetricsSummary.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/app/src/components/OnboardingWizard.test.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/app/src/components/OnboardingWizard.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/app/src/components/OnboardingWizard.utils.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -621,31 +820,51 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/components/StatCard.test.tsx",
-      "messages": [],
-      "suppressedMessages": [],
-      "errorCount": 0,
-      "fatalErrorCount": 0,
-      "warningCount": 0,
-      "fixableErrorCount": 0,
-      "fixableWarningCount": 0,
-      "usedDeprecatedRules": []
-    },
-    {
-      "filePath": "/app/src/components/StatCard.tsx",
-      "messages": [],
-      "suppressedMessages": [],
-      "errorCount": 0,
-      "fatalErrorCount": 0,
-      "warningCount": 0,
-      "fixableErrorCount": 0,
-      "fixableWarningCount": 0,
-      "usedDeprecatedRules": []
-    },
-    {
       "filePath": "/app/src/components/StatusBarChart.tsx",
       "messages": [],
-      "suppressedMessages": [],
+      "suppressedMessages": [
+        {
+          "ruleId": "@typescript-eslint/no-explicit-any",
+          "severity": 2,
+          "message": "Unexpected any. Specify a different type.",
+          "line": 19,
+          "column": 33,
+          "nodeType": "TSAnyKeyword",
+          "messageId": "unexpectedAny",
+          "endLine": 19,
+          "endColumn": 36,
+          "suggestions": [
+            {
+              "messageId": "suggestUnknown",
+              "fix": {
+                "range": [
+                  700,
+                  703
+                ],
+                "text": "unknown"
+              },
+              "desc": "Use `unknown` instead, this will force you to explicitly, and safely assert the type is correct."
+            },
+            {
+              "messageId": "suggestNever",
+              "fix": {
+                "range": [
+                  700,
+                  703
+                ],
+                "text": "never"
+              },
+              "desc": "Use `never` instead, this is useful when instantiating generic type parameters that you don't need to know the type of."
+            }
+          ],
+          "suppressions": [
+            {
+              "kind": "directive",
+              "justification": ""
+            }
+          ]
+        }
+      ],
       "errorCount": 0,
       "fatalErrorCount": 0,
       "warningCount": 0,
@@ -665,7 +884,29 @@
       "usedDeprecatedRules": []
     },
     {
+      "filePath": "/app/src/components/SyncActions.test.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
       "filePath": "/app/src/components/SyncActions.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/app/src/components/SyncStatusInfo.test.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -797,7 +1038,84 @@
       "usedDeprecatedRules": []
     },
     {
+      "filePath": "/app/src/components/settings/ToolsSettings.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
       "filePath": "/app/src/components/settings/ViewSettings.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/app/src/components/sync/MergePromptHandler.test.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/app/src/components/sync/MergePromptHandler.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/app/src/components/sync/MergePromptModal.test.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/app/src/components/sync/MergePromptModal.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/app/src/components/sync/SyncNavIcon.test.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/app/src/components/sync/SyncNavIcon.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -984,7 +1302,29 @@
       "usedDeprecatedRules": []
     },
     {
+      "filePath": "/app/src/hooks/useCloudSync.test.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
       "filePath": "/app/src/hooks/useCloudSync.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/app/src/hooks/useCrypto.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1007,6 +1347,17 @@
     },
     {
       "filePath": "/app/src/hooks/useFilteredApplications.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/app/src/hooks/useFocusTrap.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1292,6 +1643,17 @@
       "usedDeprecatedRules": []
     },
     {
+      "filePath": "/app/src/pages/BackupSyncPage.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
       "filePath": "/app/src/pages/GmailScanPage.tsx",
       "messages": [],
       "suppressedMessages": [],
@@ -1424,28 +1786,6 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/services/api.test.ts",
-      "messages": [],
-      "suppressedMessages": [],
-      "errorCount": 0,
-      "fatalErrorCount": 0,
-      "warningCount": 0,
-      "fixableErrorCount": 0,
-      "fixableWarningCount": 0,
-      "usedDeprecatedRules": []
-    },
-    {
-      "filePath": "/app/src/services/api.ts",
-      "messages": [],
-      "suppressedMessages": [],
-      "errorCount": 0,
-      "fatalErrorCount": 0,
-      "warningCount": 0,
-      "fixableErrorCount": 0,
-      "fixableWarningCount": 0,
-      "usedDeprecatedRules": []
-    },
-    {
       "filePath": "/app/src/setupTests.ts",
       "messages": [],
       "suppressedMessages": [],
@@ -1523,6 +1863,17 @@
       "usedDeprecatedRules": []
     },
     {
+      "filePath": "/app/src/store/geminiKeyStore.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
       "filePath": "/app/src/stores/applicationsStore.ts",
       "messages": [],
       "suppressedMessages": [],
@@ -1535,6 +1886,28 @@
     },
     {
       "filePath": "/app/src/stores/authStore.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/app/src/stores/mergeStore.test.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/app/src/stores/mergeStore.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1590,6 +1963,28 @@
     },
     {
       "filePath": "/app/src/tests/App.test.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/app/src/tests/BackupSyncPage.merge.test.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/app/src/tests/BackupSyncPage.test.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1798,6 +2193,17 @@
       "usedDeprecatedRules": []
     },
     {
+      "filePath": "/app/src/tests/helpers/mergeDataHelpers.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
       "filePath": "/app/src/types/applications.ts",
       "messages": [],
       "suppressedMessages": [],
@@ -1919,6 +2325,17 @@
       "usedDeprecatedRules": []
     },
     {
+      "filePath": "/app/src/utils/geminiApi.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
       "filePath": "/app/src/utils/googleSheets.ts",
       "messages": [],
       "suppressedMessages": [],
@@ -1963,6 +2380,28 @@
       "usedDeprecatedRules": []
     },
     {
+      "filePath": "/app/src/utils/mergeData.test.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/app/src/utils/mergeData.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
       "filePath": "/app/src/utils/status.ts",
       "messages": [],
       "suppressedMessages": [],
@@ -1996,9 +2435,62 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/vite.config.ts",
+      "filePath": "/app/verification/capture_screenshots.spec.ts",
       "messages": [],
       "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/app/vite.config.ts",
+      "messages": [],
+      "suppressedMessages": [
+        {
+          "ruleId": "@typescript-eslint/no-explicit-any",
+          "severity": 2,
+          "message": "Unexpected any. Specify a different type.",
+          "line": 58,
+          "column": 14,
+          "nodeType": "TSAnyKeyword",
+          "messageId": "unexpectedAny",
+          "endLine": 58,
+          "endColumn": 17,
+          "suggestions": [
+            {
+              "messageId": "suggestUnknown",
+              "fix": {
+                "range": [
+                  1664,
+                  1667
+                ],
+                "text": "unknown"
+              },
+              "desc": "Use `unknown` instead, this will force you to explicitly, and safely assert the type is correct."
+            },
+            {
+              "messageId": "suggestNever",
+              "fix": {
+                "range": [
+                  1664,
+                  1667
+                ],
+                "text": "never"
+              },
+              "desc": "Use `never` instead, this is useful when instantiating generic type parameters that you don't need to know the type of."
+            }
+          ],
+          "suppressions": [
+            {
+              "kind": "directive",
+              "justification": ""
+            }
+          ]
+        }
+      ],
       "errorCount": 0,
       "fatalErrorCount": 0,
       "warningCount": 0,
