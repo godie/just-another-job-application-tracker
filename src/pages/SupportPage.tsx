@@ -1,5 +1,6 @@
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
+import { useSEO } from '../seo';
 import DonationSection from '../components/DonationSection';
 import SuggestionForm from '../components/SuggestionForm';
 import { type PageType } from '../App';
@@ -10,6 +11,11 @@ interface SupportPageProps {
 
 const SupportPage: React.FC<SupportPageProps> = ({ onNavigate }) => {
   const { t } = useTranslation();
+
+  useSEO({
+    title: t('seo.support.title'),
+    description: t('seo.support.description'),
+  });
 
   return (
     <div className="max-w-4xl mx-auto p-4 sm:p-6 pb-24">

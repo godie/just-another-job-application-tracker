@@ -38,6 +38,18 @@ const config: KnipConfig = {
     'src/components/GDPRCookieBanner.tsx': ['exports'],
     'src/components/OnboardingWizard.tsx': ['exports'],
     'src/storage/auth.ts': ['exports'],
+    // Matching feature — named + default exports used in different places
+    'src/components/MatchBreakdownModal.tsx': ['exports'],
+    'src/components/MatchScoreBadge.tsx': ['exports'],
+    'src/components/ProfileSetupModal.tsx': ['exports'],
+    'src/components/RecommendationPanel.tsx': ['exports'],
+    'src/components/settings/MatchingSettings.tsx': ['exports'],
+    // Matching utils/storage — exported for future integration (T12, T14)
+    'src/storage/matching.ts': ['exports'],
+    'src/utils/geminiJobScoring.ts': ['exports'],
+    'src/utils/geminiProfile.ts': ['exports'],
+    // SEO module — barrel re-exports
+    'src/seo/index.ts': ['exports', 'types'],
   },
 
   // Project patterns

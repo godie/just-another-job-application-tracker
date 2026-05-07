@@ -1,4 +1,8 @@
 User-agent: *
 Disallow: /api/
+Disallow: /?page=login
+Disallow: /?page=register
+Disallow: /?page=suggestions
+Crawl-delay: 10
+
 Sitemap: https://jajat.godieboy.com/sitemap.xml
-    

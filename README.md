@@ -6,16 +6,17 @@ This is a modern Job Application Tracker built using React, TypeScript, and Tail
 
 # Project Status
 
-**Completion: 95%**
+**Completion: 98%**
 
-This project is feature-complete for its core functionality. Based on the project [recommendations](./RECOMMENDATIONS.md), 41 out of 41 planned features have been implemented and are fully tested. The test suite has 400+ tests (39 test files) with Vitest and React Testing Library.
+This project is feature-complete for its core functionality. Based on the project [recommendations](./DOCS/RECOMMENDATIONS.md), 48 out of 48 planned features have been implemented and are fully tested. The test suite has 680+ tests (66 test files) with Vitest and React Testing Library.
 
 ## Recent Updates
 
-- **Backend API as Mini-Framework**: The PHP API (`/api`) is now a small framework with a single entry point (`index.php`), router, controllers, and helpers. All endpoints are under `/api/*` (auth, captcha, suggestions, google-sheets). See [api/README.md](./api/README.md) for routes and structure.
+- **Backend API as Mini-Framework**: The PHP API (`/api`) is now a small framework with a single entry point (`index.php`), router, controllers, and helpers. All endpoints are under `/api/*` (auth, captcha, suggestions, google-sheets). See [DOCS/API.md](./DOCS/API.md) for routes and structure.
 - **OAuth Authorization Code + Token Refresh**: Login uses the authorization-code flow; the backend exchanges the code for access and refresh tokens and stores them in HTTP-only cookies. When the access token expires, the backend refreshes it automatically (Sheets proxy and GET `/api/auth/cookie` use a valid token). Requires `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` on the server.
 - **Application Fields: Location, Work Type, Hybrid Days**: `JobApplication` now includes optional `location`, `workType` (remote / on-site / hybrid), and when hybrid, `hybridDaysInOffice` (1–5 days per week). Form, table, and opportunity-to-application conversion support these fields.
 - **Email Scan (Gmail)**: In Settings, scan Gmail for application-related emails; preview proposed additions and updates, then apply selected items to the tracker. Handles rate limits with a clear message and chunked fetching.
+- **AI-Powered Job Matching**: Deterministic scoring engine plus Gemini AI for profile synthesis and job scoring. MatchScoreBadge, breakdown modal, profile setup wizard, and matching settings (accessible from Settings → 🤖 Matching). Core logic, types, persistence, Zustand store, and all UI components complete. Pending: UI integration on OpportunitiesPage (T12) and HomePage (T14) — see [DOCS/MATCHING_IMPLEMENTATION_TASKS.md](./DOCS/MATCHING_IMPLEMENTATION_TASKS.md).
 - **PWA**: The app is installable as a Progressive Web App (manifest, service worker). Install from the browser on desktop and mobile when served over HTTPS.
 - **i18n Test Mock**: Test setup loads the English translation JSON and flattens it for the `react-i18next` mock, avoiding duplicated translation strings in tests.
 - **Zustand State Management**: Global state with Zustand stores for applications, opportunities, preferences, and authentication.
@@ -27,12 +28,12 @@ This project is feature-complete for its core functionality. Based on the projec
 
 ## Next Steps
 
-- AI-Assisted job matching and resume optimization
+- Complete matching UI integration: add MatchScoreBadge + RecommendationPanel to OpportunitiesPage and HomePage (see [DOCS/MATCHING_IMPLEMENTATION_TASKS.md](./DOCS/MATCHING_IMPLEMENTATION_TASKS.md) T12, T14)
 - Browser notifications for interviews and follow-ups
 - Export to PDF/CSV and enhanced data import
 - Account-backed sync and multitenancy roadmap documented in [DOCS/MULTITENANCY_AND_AUTH_PLAN.md](./DOCS/MULTITENANCY_AND_AUTH_PLAN.md)
 
-For a detailed feature breakdown, please see the [recommendations document](./RECOMMENDATIONS.md).
+For a detailed feature breakdown, please see the [recommendations document](./DOCS/RECOMMENDATIONS.md).
 
 # Technology Stack
 
@@ -265,7 +266,7 @@ Requirements: the site must be served over HTTPS (or `localhost` for testing). T
 
 ## Development & Architecture
 
-- Test-Driven Development (TDD): Comprehensive testing with 190+ tests covering all core components, views, and functionality
+- Test-Driven Development (TDD): Comprehensive testing with 680+ tests across 66 test files covering all core components, views, stores, and functionality
 - Clean Architecture: Utilizes the Adapter pattern to prepare for pluggable external data sources (e.g., Google Sheets, Airtable)
 - Modular Component Design: Reusable, tested components with clear separation of concerns
 - Modular Code Organization: Separated concerns with dedicated modules for types (`src/types/`), storage logic (`src/storage/`), and utilities, ensuring maintainability and scalability
@@ -353,11 +354,11 @@ Supported interview stages include: Application Submitted, Screener Call, First 
 
 - **Secure Cookie Storage**: Google OAuth access and refresh tokens are stored in HTTP-only, Secure, SameSite cookies managed by the PHP backend.
 - **OAuth 2.0 Authorization Code Flow**: Frontend uses `@react-oauth/google` with `flow: 'auth-code'`; backend exchanges the code for access and refresh tokens. This allows the backend to refresh the access token when it expires so users stay logged in for Sheets and Gmail without re-authenticating.
-- **Backend API**: PHP mini-framework (`api/`) handles auth cookies, captcha, suggestions, and Google Sheets proxy; see [api/README.md](./api/README.md).
+- **Backend API**: PHP mini-framework (`api/`) handles auth cookies, captcha, suggestions, and Google Sheets proxy; see [DOCS/API.md](./DOCS/API.md).
 - **Scopes**: OAuth includes Google Sheets and Gmail read scope for sync and email scan.
 - **Legal Compliance**: Terms of Service and Privacy Policy (bilingual) for Google OAuth verification and production deployment.
 
-For more details on the security measures implemented in this project, please see the [SECURITY.md](./SECURITY.md) file.
+For more details on the security measures implemented in this project, please see the [DOCS/SECURITY.md](./DOCS/SECURITY.md) file.
 
 ## Legal & Compliance
 
@@ -434,7 +435,7 @@ The `/api` directory is a small PHP API with a single entry point, router, and c
 
 The backend resolves a valid Google access token (refreshing when needed) for Sheets and for GET `/api/auth/cookie`, so the frontend and Sheets sync keep working after the access token expires.
 
-For full route list, controller responsibilities, and server env vars (`GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`), see **[api/README.md](./api/README.md)**.
+For full route list, controller responsibilities, and server env vars (`GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`), see **[DOCS/API.md](./DOCS/API.md)**.
 
 # File Structure
 
@@ -534,7 +535,7 @@ job-application-tracker/
 ├── .env.local                   // Stores VITE_GOOGLE_CLIENT_ID (Ignored by Git).
 ├── .env.docker.example          // Environment variables template for Docker
 ├── .nvmrc                       // Node version specification (v22)
-├── CHROME_EXTENSION.md          // Pointer doc to external extension project
+├── DOCS/CHROME_EXTENSION.md     // Pointer doc to external extension project
 ├── docker-compose.yml           // Docker Compose (SQLite default)
 ├── docker-compose.mysql.yml     // Docker Compose override for MySQL
 ├── docker-compose.postgres.yml  // Docker Compose override for PostgreSQL
@@ -605,35 +606,29 @@ This project uses GitHub Actions for automated deployment. To configure the work
 The project includes comprehensive test coverage:
 
 ```
-Test Files: 39 passed (39)
-Tests: 401 passed (401)
+Test Files: 66 passed (66)
+Tests: 684 passed (684)
 ```
 
 ### Test Coverage Includes:
 
-- Component rendering and interactions
-- User interface functionality
+- All core components, pages, stores, and hooks
 - Data persistence and CRUD operations
 - Google OAuth authentication flow
 - Google Sheets integration (create, sync, error handling)
 - Timeline event management
 - View switching (Table, Timeline, Kanban, Calendar)
-- Filter and search functionality (including advanced status filtering)
-- Alert system and notifications
-- Chrome Extension components (content script, background, popup, webapp-content)
-- Job extractors (LinkedIn, Greenhouse, AshbyHQ, Workable, Lever.co) with comprehensive unit tests
-- Opportunity management (creation, deletion, conversion)
-- Manual opportunity form validation and submission
-- **Dark mode functionality** (theme toggle, persistence, class application)
-- **Sidebar navigation** and theme switching
-- **Theme integration tests** for localStorage and document class management
+- Chrome Extension components and job extractors
+- AI-powered job matching (types, storage, engine, Gemini, UI components)
+- Dark mode and theme functionality
+- And more — 680+ tests across 66 test files
 
 ### Testing Infrastructure:
 
 - **Test Runner**: Vitest with happy-dom environment (optimized for React component testing)
 - **Component Testing**: React Testing Library for user-centric tests
 - **Mocking**: Comprehensive mocks for localStorage, Google OAuth, and API endpoints
-- All tests can be run with `npm test` or `npm run test:watch` for TDD workflow
+- 680+ tests across 66 test files — run with `npm test` or `npm run test:watch` for TDD workflow
 
 ## AI Agent Integration
 

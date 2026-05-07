@@ -77,6 +77,15 @@ export async function loginWithGoogle(googleToken: string): Promise<AuthResponse
   return response.json();
 }
 
+export async function linkGoogleAccount(googleToken: string): Promise<AuthResponse> {
+  const response = await fetch(`${API_BASE_URL}/auth/google`, {
+    ...defaultFetchOptions,
+    method: 'POST',
+    body: JSON.stringify({ googleToken }),
+  });
+  return response.json();
+}
+
 export async function loginWithLinkedIn(
   code: string,
   redirectUri: string

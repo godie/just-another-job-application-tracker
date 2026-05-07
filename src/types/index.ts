@@ -4,4 +4,5 @@
 export * from './applications';
 export * from './opportunities';
 export * from './preferences';
+export * from './matching';
 

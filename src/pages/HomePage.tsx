@@ -1,6 +1,7 @@
 // src/pages/HomePage.tsx
 import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
+import { useSEO } from '../seo';
 import Footer from '../components/Footer';
 import ViewSwitcher, { type ViewType } from '../components/ViewSwitcher';
 import FiltersBar, { type Filters } from '../components/FiltersBar';
@@ -41,6 +42,11 @@ interface HomePageContentProps {
 const HomePageContent: React.FC<HomePageContentProps> = ({ onNavigate }) => {
   const { t } = useTranslation();
   const { showSuccess } = useAlert();
+  
+  useSEO({
+    title: t('seo.applications.title'),
+    description: t('seo.applications.description'),
+  });
   
   // Use Zustand stores
   const applications = useApplicationsStore((state) => state.applications);

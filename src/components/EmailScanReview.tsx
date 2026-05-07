@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useSelection } from '../hooks/useSelection';
@@ -9,6 +9,8 @@ import type { ProposedAddition, ProposedUpdate } from '../mails/types';
 import { getAuthCookie } from '../utils/api';
 import { useAlert } from './AlertProvider';
 import { useApplicationsStore } from '../stores/applicationsStore';
+import { useAuthStore } from '../stores/authStore';
+import { ConnectGoogleButton } from './ConnectGoogleButton';
 import { usePreferencesStore } from '../stores/preferencesStore';
 import { useGeminiKeyStore } from '../store/geminiKeyStore';
 import { CHATBOTS } from '../utils/constants';
@@ -56,7 +58,8 @@ export function EmailScanReview() {
     try {
       const res = await getAuthCookie();
       if (!res.success || !res.access_token) {
-        showError(t('settings.emailScan.signInRequired'));
+        setHasValidGoogleToken(false);
+        showError(t('settings.emailScan.googleTokenExpired'));
         return;
       }
       const provider = new GmailEmailClient(res.access_token);
@@ -169,6 +172,32 @@ export function EmailScanReview() {
 
   const geminiKeyInMemory = useGeminiKeyStore((state) => state.geminiKeyInMemory);
   const setDecryptedKey = useGeminiKeyStore((state) => state.setDecryptedKey);
+  const currentUser = useAuthStore((state) => state.currentUser);
+  const hasGoogleLinked = !!(currentUser?.googleId);
+
+  // Validate Google token on mount (checks cookie expiry + refresh)
+  const [hasValidGoogleToken, setHasValidGoogleToken] = useState(false);
+  const [tokenCheckDone, setTokenCheckDone] = useState(false);
+
+  const checkGoogleToken = useCallback(async () => {
+    try {
+      const res = await getAuthCookie();
+      setHasValidGoogleToken(res.success && !!res.access_token);
+    } catch {
+      setHasValidGoogleToken(false);
+    } finally {
+      setTokenCheckDone(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    checkGoogleToken();
+  }, [checkGoogleToken]);
+
+  // Re-check token after successful Google linking
+  const handleGoogleLinked = useCallback(() => {
+    checkGoogleToken();
+  }, [checkGoogleToken]);
 
   const handleProcessWithGemini = useCallback(async () => {
     if (!preview || selectedEmailIds.size === 0) return;
@@ -240,6 +269,60 @@ export function EmailScanReview() {
           {t('settings.emailScan.subtitle')}
         </p>
 
+        {(!tokenCheckDone) && (
+          <div className="flex items-center justify-center py-8 mb-6">
+            <span className="w-5 h-5 border-2 border-sage-400 border-t-transparent rounded-full animate-spin mr-2" />
+            <span className="text-sm text-earth-500 dark:text-earth-400">{t('common.loading')}</span>
+          </div>
+        )}
+
+        {tokenCheckDone && !hasGoogleLinked && (
+          <div className="bg-sage-50 dark:bg-sage-900/20 border border-sage-200 dark:border-sage-700 rounded-lg p-6 mb-6">
+            <div className="text-center">
+              <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-sage-100 dark:bg-sage-800 flex items-center justify-center">
+                <svg className="w-6 h-6 text-sage-600 dark:text-sage-400" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M21.35 11.1h-9.17v2.73h6.51c-.33 3.81-3.5 5.44-6.5 5.44C8.36 19.27 5 16.25 5 12c0-4.1 3.2-7.27 7.2-7.27 3.09 0 5.25 1.65 5.25 1.65l1.83-1.8S16.22 2 12.17 2C6.63 2 2 6.44 2 12c0 5.52 4.46 10 10 10 5.14 0 9.35-3.65 9.35-8.77 0-1.15-.14-2.13 0-2.13z" fill="#4285F4"/>
+                </svg>
+              </div>
+              <h4 className="text-sm font-semibold text-sage-700 dark:text-sage-300 mb-2">
+                {t('settings.emailScan.googleNotLinked')}
+              </h4>
+              <p className="text-xs text-sage-600 dark:text-sage-400 mb-4">
+                {t('settings.emailScan.googleNotLinkedDesc')}
+              </p>
+              <ConnectGoogleButton
+                label={t('settings.cloud.linkGoogle')}
+                onSuccess={handleGoogleLinked}
+                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium bg-sage-600 text-white hover:bg-sage-700 transition-colors rounded disabled:opacity-50 disabled:cursor-not-allowed"
+              />
+            </div>
+          </div>
+        )}
+
+        {tokenCheckDone && hasGoogleLinked && !hasValidGoogleToken && (
+          <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-lg p-6 mb-6">
+            <div className="text-center">
+              <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-amber-100 dark:bg-amber-800 flex items-center justify-center">
+                <svg className="w-6 h-6 text-amber-600 dark:text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m0-8v4m0 0a9 9 0 110-18 9 9 0 010 18z" />
+                </svg>
+              </div>
+              <h4 className="text-sm font-semibold text-amber-700 dark:text-amber-300 mb-2">
+                {t('settings.emailScan.googleSessionExpired')}
+              </h4>
+              <p className="text-xs text-amber-600 dark:text-amber-400 mb-4">
+                {t('settings.emailScan.googleSessionExpiredDesc')}
+              </p>
+              <ConnectGoogleButton
+                label={t('settings.cloud.linkGoogle')}
+                onSuccess={handleGoogleLinked}
+                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium bg-amber-600 text-white hover:bg-amber-700 transition-colors rounded disabled:opacity-50 disabled:cursor-not-allowed"
+              />
+            </div>
+          </div>
+        )}
+
+        {hasGoogleLinked && hasValidGoogleToken && (
         <div className="flex border-b border-earth-200 dark:border-earth-700 mb-6">
           <button
             className={`px-4 py-2 font-medium text-sm transition-colors ${
@@ -262,8 +345,9 @@ export function EmailScanReview() {
             {t('settings.emailScan.tabs.manual')}
           </button>
         </div>
+        )}
 
-        {error && (
+        {hasGoogleLinked && hasValidGoogleToken && error && (
           <div
             className="mb-4 p-3 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 text-sm"
             role="alert"
@@ -274,6 +358,7 @@ export function EmailScanReview() {
           </div>
         )}
 
+        {hasGoogleLinked && hasValidGoogleToken && (
         <div className="flex flex-wrap items-end gap-4 mb-6">
           <div className="flex flex-col gap-1.5">
             <label className="text-xs font-semibold text-earth-500 dark:text-earth-400 uppercase tracking-wider">
@@ -337,8 +422,9 @@ export function EmailScanReview() {
             </>
           )}
         </div>
+        )}
 
-        {activeTab === 'manual' && (
+        {hasGoogleLinked && hasValidGoogleToken && activeTab === 'manual' && (
           <div className="space-y-6 animate-in fade-in slide-in-from-top-4 duration-300">
             <div className="flex items-center gap-2 bg-earth-100 dark:bg-earth-700/50 rounded-lg p-1 w-fit">
               <button
@@ -497,7 +583,7 @@ export function EmailScanReview() {
           </div>
         )}
 
-        {preview && (
+        {hasGoogleLinked && hasValidGoogleToken && preview && (
           <div className="space-y-6 mt-8">
             {(preview.proposedAdditions.length > 0) && (
               <section className="animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -581,6 +667,7 @@ export function EmailScanReview() {
               )}
           </div>
         )}
+
       </div>
 
       <GeminiKeyModal

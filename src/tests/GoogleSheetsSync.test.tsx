@@ -17,12 +17,13 @@ window.open = mockWindowOpen;
 
 // Auth state control for useAuthStore mock
 let mockIsAuthenticated = false;
+let mockHasGoogleLinked = false;
 
 // Mock auth store — component now reads isAuthenticated from here instead of localStorage
 vi.mock('../stores/authStore', () => ({
   useAuthStore: vi.fn((selector?: (state: Record<string, unknown>) => unknown) => {
     const state = {
-      currentUser: mockIsAuthenticated ? { id: 1, email: 'test@example.com' } : null,
+      currentUser: mockIsAuthenticated ? { id: 1, email: 'test@example.com', googleId: mockHasGoogleLinked ? 'google-123' : undefined } : null,
       isAuthenticated: mockIsAuthenticated,
       isLoading: false,
       error: null,
@@ -44,6 +45,11 @@ vi.mock('../stores/authStore', () => ({
 vi.mock('../utils/localStorage', () => ({
   getApplications: vi.fn(() => []),
   saveApplications: vi.fn(),
+}));
+
+// Mock getAuthCookie for token validation on mount
+vi.mock('../utils/api', () => ({
+  getAuthCookie: vi.fn(() => Promise.resolve({ success: true, access_token: 'test-token' })),
 }));
 
 // Mock the googleSheets utilities
@@ -91,6 +97,7 @@ describe('GoogleSheetsSync Component', () => {
     vi.clearAllMocks();
     Object.keys(localStorageStore).forEach(key => delete localStorageStore[key]);
     mockIsAuthenticated = false;
+    mockHasGoogleLinked = false;
     mockWindowOpen.mockClear();
   });
 
@@ -112,25 +119,30 @@ describe('GoogleSheetsSync Component', () => {
   describe('When user is logged in', () => {
     beforeEach(() => {
       mockIsAuthenticated = true;
+      mockHasGoogleLinked = true;
     });
 
-    test('should show create sheet button when no spreadsheet exists', () => {
+    test('should show create sheet button when no spreadsheet exists', async () => {
       renderWithProviders(<GoogleSheetsSync applications={mockApplications} />);
       
-      expect(screen.getByText('Create Sheet')).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getByText('Create Sheet')).toBeInTheDocument();
+      });
       expect(screen.getByText(/Create a Google Sheet to sync your job applications/i)).toBeInTheDocument();
     });
 
-    test('should show sync button when spreadsheet exists', () => {
+    test('should show sync button when spreadsheet exists', async () => {
       localStorageStore['googleSheetsSpreadsheetId'] = 'test-id-123';
       
       renderWithProviders(<GoogleSheetsSync applications={mockApplications} />);
       
-      expect(screen.getByText('Sync Now')).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getByText('Sync Now')).toBeInTheDocument();
+      });
       expect(screen.queryByText('Create Sheet')).not.toBeInTheDocument();
     });
 
-    test('should show sync status when spreadsheet exists', () => {
+    test('should show sync status when spreadsheet exists', async () => {
       localStorageStore['googleSheetsSpreadsheetId'] = 'test-id-123';
       vi.mocked(googleSheetsUtils.getSyncStatus).mockReturnValue({
         isSyncing: false,
@@ -141,11 +153,13 @@ describe('GoogleSheetsSync Component', () => {
 
       renderWithProviders(<GoogleSheetsSync applications={mockApplications} />);
       
-      expect(screen.getByText(/Status:/i)).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getByText(/Status:/i)).toBeInTheDocument();
+      });
       expect(screen.getByText(/Not synced yet/i)).toBeInTheDocument();
     });
 
-    test('should show last sync time when available', () => {
+    test('should show last sync time when available', async () => {
       localStorageStore['googleSheetsSpreadsheetId'] = 'test-id-123';
       vi.mocked(googleSheetsUtils.getSyncStatus).mockReturnValue({
         isSyncing: false,
@@ -156,10 +170,12 @@ describe('GoogleSheetsSync Component', () => {
 
       renderWithProviders(<GoogleSheetsSync applications={mockApplications} />);
       
-      expect(screen.getByText(/Synced/i)).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getByText(/Synced/i)).toBeInTheDocument();
+      });
     });
 
-    test('should show error message when sync error exists', () => {
+    test('should show error message when sync error exists', async () => {
       localStorageStore['googleSheetsSpreadsheetId'] = 'test-id-123';
       vi.mocked(googleSheetsUtils.getSyncStatus).mockReturnValue({
         isSyncing: false,
@@ -170,24 +186,28 @@ describe('GoogleSheetsSync Component', () => {
 
       renderWithProviders(<GoogleSheetsSync applications={mockApplications} />);
       
-      expect(screen.getByText(/Sync Error:/i)).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getByText(/Sync Error:/i)).toBeInTheDocument();
+      });
       const errorTexts = screen.getAllByText(/Failed to sync/i);
       expect(errorTexts.length).toBeGreaterThan(0);
     });
 
-    test('should show "Open Spreadsheet" link when spreadsheet exists', () => {
+    test('should show "Open Spreadsheet" link when spreadsheet exists', async () => {
       localStorageStore['googleSheetsSpreadsheetId'] = 'test-id-123';
       
       renderWithProviders(<GoogleSheetsSync applications={mockApplications} />);
       
-      const openLink = screen.getByText('Open Spreadsheet →');
-      expect(openLink).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getByText('Open Spreadsheet →')).toBeInTheDocument();
+      });
     });
   });
 
   describe('Create Sheet functionality', () => {
     beforeEach(() => {
       mockIsAuthenticated = true;
+      mockHasGoogleLinked = true;
     });
 
     test('should call createSpreadsheet when button is clicked', async () => {
@@ -202,6 +222,9 @@ describe('GoogleSheetsSync Component', () => {
 
       renderWithProviders(<GoogleSheetsSync applications={mockApplications} />);
       
+      await waitFor(() => {
+        expect(screen.getByText('Create Sheet')).toBeInTheDocument();
+      });
       const createButton = screen.getByText('Create Sheet');
       await act(async () => {
         fireEvent.click(createButton);
@@ -215,6 +238,9 @@ describe('GoogleSheetsSync Component', () => {
 
       renderWithProviders(<GoogleSheetsSync applications={mockApplications} />);
       
+      await waitFor(() => {
+        expect(screen.getByText('Create Sheet')).toBeInTheDocument();
+      });
       const createButton = screen.getByText('Create Sheet');
       await act(async () => {
         fireEvent.click(createButton);
@@ -236,6 +262,9 @@ describe('GoogleSheetsSync Component', () => {
 
       renderWithProviders(<GoogleSheetsSync applications={mockApplications} />);
       
+      await waitFor(() => {
+        expect(screen.getByText('Create Sheet')).toBeInTheDocument();
+      });
       const createButton = screen.getByText('Create Sheet');
       await act(async () => {
         fireEvent.click(createButton);
@@ -259,6 +288,9 @@ describe('GoogleSheetsSync Component', () => {
 
       renderWithProviders(<GoogleSheetsSync applications={mockApplications} />);
       
+      await waitFor(() => {
+        expect(screen.getByText('Create Sheet')).toBeInTheDocument();
+      });
       const createButton = screen.getByText('Create Sheet');
       fireEvent.click(createButton);
 
@@ -285,6 +317,7 @@ describe('GoogleSheetsSync Component', () => {
   describe('Sync functionality', () => {
     beforeEach(() => {
       mockIsAuthenticated = true;
+      mockHasGoogleLinked = true;
       localStorageStore['googleSheetsSpreadsheetId'] = 'test-id-123';
     });
 
@@ -293,6 +326,9 @@ describe('GoogleSheetsSync Component', () => {
 
       renderWithProviders(<GoogleSheetsSync applications={mockApplications} />);
       
+      await waitFor(() => {
+        expect(screen.getByText('Sync Now')).toBeInTheDocument();
+      });
       const syncButton = screen.getByText('Sync Now');
       await act(async () => {
         fireEvent.click(syncButton);
@@ -309,6 +345,9 @@ describe('GoogleSheetsSync Component', () => {
 
       renderWithProviders(<GoogleSheetsSync applications={mockApplications} />);
       
+      await waitFor(() => {
+        expect(screen.getByText('Sync Now')).toBeInTheDocument();
+      });
       const syncButton = screen.getByText('Sync Now');
       await act(async () => {
         fireEvent.click(syncButton);
@@ -323,6 +362,9 @@ describe('GoogleSheetsSync Component', () => {
 
       renderWithProviders(<GoogleSheetsSync applications={mockApplications} />);
       
+      await waitFor(() => {
+        expect(screen.getByText('Sync Now')).toBeInTheDocument();
+      });
       const syncButton = screen.getByText('Sync Now');
       await act(async () => {
         fireEvent.click(syncButton);
@@ -343,6 +385,9 @@ describe('GoogleSheetsSync Component', () => {
         />
       );
       
+      await waitFor(() => {
+        expect(screen.getByText('Sync Now')).toBeInTheDocument();
+      });
       const syncButton = screen.getByText('Sync Now');
       await act(async () => {
         fireEvent.click(syncButton);
@@ -363,6 +408,9 @@ describe('GoogleSheetsSync Component', () => {
 
       renderWithProviders(<GoogleSheetsSync applications={mockApplications} />);
       
+      await waitFor(() => {
+        expect(screen.getByText('Sync Now')).toBeInTheDocument();
+      });
       const syncButton = screen.getByText('Sync Now');
       fireEvent.click(syncButton);
 
@@ -387,13 +435,16 @@ describe('GoogleSheetsSync Component', () => {
 
       renderWithProviders(<GoogleSheetsSync applications={mockApplications} />);
       
-      expect(screen.getByText('Create Sheet')).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getByText('Create Sheet')).toBeInTheDocument();
+      });
     });
   });
 
   describe('Open Spreadsheet functionality', () => {
     beforeEach(() => {
       mockIsAuthenticated = true;
+      mockHasGoogleLinked = true;
       localStorageStore['googleSheetsSpreadsheetId'] = 'test-id-123';
       vi.mocked(googleSheetsUtils.getSyncStatus).mockReturnValue({
         isSyncing: false,

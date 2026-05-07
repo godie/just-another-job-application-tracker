@@ -11,8 +11,9 @@ const path = require('path');
 
 const ROOT_DIR = path.join(__dirname, '..');
 const REPORT_DIR = path.join(__dirname);
+const DOCS_DIR = path.join(ROOT_DIR, 'DOCS');
 const JSON_REPORT_PATH = path.join(REPORT_DIR, 'audit-report.json');
-const MD_REPORT_PATH = path.join(REPORT_DIR, 'AUDIT.md');
+const MD_REPORT_PATH = path.join(DOCS_DIR, 'AUDIT.md');
 
 // Exclusions from the plan
 const EXCLUDED_PATTERNS = [

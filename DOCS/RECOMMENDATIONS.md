@@ -588,6 +588,7 @@ export const useAppStore = create<AppState>((set) => ({
 45. ✅ **Email Scan (Gmail)** in Settings: preview and apply selected additions/updates; rate-limit handling
 46. ✅ **PWA** (installable app; manifest and service worker)
 47. ✅ **i18n test mock** loads English translation JSON in setupTests (no duplication)
+48. ✅ **AI-Powered Job Matching** (types, storage, deterministic engine, Gemini profile synthesis + job scoring, Zustand store, MatchScoreBadge, MatchBreakdownModal, ProfileSetupModal, MatchingSettings, RecommendationPanel, Settings integration, barrel exports)
 
 **Polish & maintenance (optional):**
 - [ ] **Remove legacy PHP scripts** in `api/` once all traffic uses the new routes: `captcha.php`, `set-auth-cookie.php`, `get-auth-cookie.php`, `clear-auth-cookie.php`, `suggestions.php`, `google-sheets.php`. Keep only `index.php`, `Router.php`, `config.php`, `controllers/`, `helpers/`.
