@@ -1,6 +1,7 @@
 // src/components/AuthModals.tsx
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useGoogleLogin } from '@react-oauth/google';
 import { useAuthStore } from '../stores/authStore';
 import { Button } from './ui';
 
@@ -22,6 +23,21 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'l
   const [localError, setLocalError] = useState<string | null>(null);
 
   const { login, register, loginWithGoogle, isLoading, error } = useAuthStore();
+
+  const googleLogin = useGoogleLogin({
+    flow: 'auth-code',
+    onSuccess: async (codeResponse) => {
+      try {
+        await loginWithGoogle(codeResponse.code);
+        onClose();
+      } catch {
+        // Error is handled by store
+      }
+    },
+    onError: () => {
+      // Google OAuth error - user cancelled or failed
+    },
+  });
 
   React.useEffect(() => {
     if (isOpen) {
@@ -69,7 +85,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'l
   };
 
   const handleGoogleLogin = () => {
-    loginWithGoogle('mock-token');
+    googleLogin();
   };
 
   const switchMode = (newMode: AuthMode) => {
