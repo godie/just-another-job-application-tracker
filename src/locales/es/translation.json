@@ -349,6 +349,11 @@
       "selectAll": "Seleccionar todo",
       "nothingFound": "No se encontraron aplicaciones ni actualizaciones nuevas.",
       "signInRequired": "Inicia sesión con Google (con acceso a Gmail) para escanear correos.",
+      "googleTokenExpired": "Tu sesión de Google ha expirado. Vuelve a vincular tu cuenta.",
+      "googleNotLinked": "Vincula tu cuenta de Google para escanear Gmail",
+      "googleNotLinkedDesc": "Aunque te hayas registrado con email, puedes vincular tu cuenta de Google para habilitar el escaneo de Gmail.",
+      "googleSessionExpired": "Sesión de Google expirada — reconecta tu cuenta",
+      "googleSessionExpiredDesc": "Tu sesión de Google ha expirado o sido revocada. Vuelve a vincular tu cuenta de Google para continuar escaneando Gmail.",
       "scanError": "Error al escanear correos. Inténtalo de nuevo.",
       "rateLimitError": "Demasiadas solicitudes. Límite de Gmail superado. Intenta de nuevo en unos minutos.",
       "selectAtLeastOne": "Selecciona al menos un elemento para aplicar.",
@@ -371,6 +376,16 @@
       "geminiKeySetup": "Configurar",
       "geminiKeyChange": "Cambiar",
       "geminiKeyRemove": "Eliminar"
+    },
+    "cloud": {
+      "linkGoogle": "Vincular cuenta de Google",
+      "linking": "Vinculando...",
+      "googleLinkedSuccess": "¡Cuenta de Google vinculada correctamente!",
+      "googleLinkFailed": "No se pudo vincular la cuenta de Google",
+      "googleLinkNetworkError": "Error de conexión. Intenta de nuevo.",
+      "googleOAuthError": "Error al conectar con Google. Intenta de nuevo.",
+      "googleLinkConflict": "Esta cuenta de Google ya está vinculada a otro usuario",
+      "linkGoogleAriaLabel": "Vincular cuenta de Google para habilitar sincronización"
     },
     "success": "¡Ajustes guardados con éxito!"
   },
@@ -585,6 +600,10 @@
   "sheets": {
     "title": "Integración con Google Sheets",
     "loginRequired": "<strong>Sincronización con Google Sheets:</strong> Por favor, inicia sesión con Google para habilitar la sincronización de la hoja de cálculo.",
+    "googleNotLinked": "Vincula tu cuenta de Google para habilitar la sincronización",
+    "googleNotLinkedDesc": "Aunque te hayas registrado con email, puedes vincular tu cuenta de Google para usar la sincronización con Sheets y el escaneo de Gmail.",
+    "googleSessionExpired": "Sesión de Google expirada — reconecta tu cuenta",
+    "googleSessionExpiredDesc": "Tu sesión de Google ha expirado o sido revocada. Vuelve a vincular tu cuenta de Google para continuar usando la sincronización.",
     "loginFirst": "Por favor, inicia sesión con Google primero",
     "status": "Estado",
     "error": "Error",
@@ -714,5 +733,31 @@
     "authCookiesDesc": "Mantiene tu sesión iniciada entre visitas cuando eliges iniciar sesión.",
     "alwaysOn": "Siempre Activas",
     "optional": "Opcionales"
+  },
+  "seo": {
+    "landing": {
+      "title": "Rastrea tu Búsqueda de Empleo — Gratis y Privado",
+      "description": "JAJAT es un rastreador de solicitudes de empleo gratuito y centrado en la privacidad. Gestiona solicitudes, entrevistas y ofertas con vistas de línea de tiempo, tableros Kanban y sincronización con Google Sheets."
+    },
+    "applications": {
+      "title": "Mis Solicitudes",
+      "description": "Visualiza y gestiona todas tus solicitudes de empleo en un solo lugar."
+    },
+    "opportunities": {
+      "title": "Oportunidades",
+      "description": "Explora y gestiona oportunidades de empleo capturadas desde LinkedIn, Greenhouse y más."
+    },
+    "insights": {
+      "title": "Estadísticas y Análisis",
+      "description": "Visualiza tu embudo de búsqueda de empleo, tasas de conversión de entrevistas y tendencias de solicitudes."
+    },
+    "settings": {
+      "title": "Configuración",
+      "description": "Configura tus preferencias de JAJAT, campos personalizados e integraciones."
+    },
+    "support": {
+      "title": "Soporte y Sugerencias",
+      "description": "Obtén ayuda o comparte comentarios con el equipo de JAJAT."
+    }
   }
 }

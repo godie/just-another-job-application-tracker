@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { setSkipAuthModal } from '../storage/auth';
 import { type PageType } from '../App';
+import { useSEO } from '../seo';
 
 interface LandingPageProps {
   onNavigate: (page: PageType) => void;
@@ -22,6 +23,28 @@ const OrganicShape = ({ className = '' }: { className?: string }) => (
 
 const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
   const { t, i18n } = useTranslation();
+
+  useSEO({
+    title: t('seo.landing.title'),
+    description: t('seo.landing.description'),
+    canonicalUrl: 'https://jajat.godieboy.com/',
+    ogType: 'website',
+    structuredData: {
+      '@context': 'https://schema.org',
+      '@type': 'WebApplication',
+      name: 'JAJAT - Job Application Tracker',
+      url: 'https://jajat.godieboy.com',
+      description: t('seo.landing.description'),
+      applicationCategory: 'ProductivityApplication',
+      operatingSystem: 'Web',
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+    },
+    alternates: {
+      'en': 'https://jajat.godieboy.com/?lang=en',
+      'es': 'https://jajat.godieboy.com/?lang=es',
+      'x-default': 'https://jajat.godieboy.com/',
+    },
+  });
 
   useEffect(() => {
     document.documentElement.lang = i18n.language;

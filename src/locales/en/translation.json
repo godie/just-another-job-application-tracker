@@ -349,6 +349,11 @@
       "selectAll": "Select all",
       "nothingFound": "No new applications or updates found.",
       "signInRequired": "Sign in with Google (with Gmail access) to scan emails.",
+      "googleTokenExpired": "Your Google session has expired. Please reconnect your account.",
+      "googleNotLinked": "Connect your Google account to scan Gmail",
+      "googleNotLinkedDesc": "Even if you signed up with email, you can link your Google account to enable Gmail scanning.",
+      "googleSessionExpired": "Google session expired — reconnect your account",
+      "googleSessionExpiredDesc": "Your Google session has expired or been revoked. Re-link your Google account to continue scanning Gmail.",
       "scanError": "Failed to scan emails. Try again.",
       "rateLimitError": "Too many requests. Gmail rate limit exceeded. Please try again in a few minutes.",
       "selectAtLeastOne": "Select at least one item to apply.",
@@ -371,6 +376,16 @@
       "geminiKeySetup": "Set up",
       "geminiKeyChange": "Change",
       "geminiKeyRemove": "Remove"
+    },
+    "cloud": {
+      "linkGoogle": "Link Google account",
+      "linking": "Linking...",
+      "googleLinkedSuccess": "Google account linked successfully!",
+      "googleLinkFailed": "Could not link Google account",
+      "googleLinkNetworkError": "Connection error. Please try again.",
+      "googleOAuthError": "Error connecting to Google. Please try again.",
+      "googleLinkConflict": "This Google account is already linked to another user",
+      "linkGoogleAriaLabel": "Link Google account to enable synchronization"
     },
     "success": "Settings saved successfully!"
   },
@@ -585,6 +600,10 @@
   "sheets": {
     "title": "Google Sheets Integration",
     "loginRequired": "<strong>Google Sheets Sync:</strong> Please log in with Google to enable spreadsheet synchronization.",
+    "googleNotLinked": "Connect your Google account to enable sync",
+    "googleNotLinkedDesc": "Even if you signed up with email, you can link your Google account to use Google Sheets sync and Gmail scan.",
+    "googleSessionExpired": "Google session expired — reconnect your account",
+    "googleSessionExpiredDesc": "Your Google session has expired or been revoked. Re-link your Google account to continue using Google Sheets sync.",
     "loginFirst": "Please log in with Google first",
     "status": "Status",
     "error": "Sync Error",
@@ -714,5 +733,31 @@
     "authCookiesDesc": "Keeps you signed in across sessions when you choose to log in.",
     "alwaysOn": "Always On",
     "optional": "Optional"
+  },
+  "seo": {
+    "landing": {
+      "title": "Track Your Job Search — Free & Private",
+      "description": "JAJAT is a free, privacy-first job application tracker. Manage applications, interviews, and offers with timeline views, Kanban boards, and Google Sheets sync."
+    },
+    "applications": {
+      "title": "My Applications",
+      "description": "View and manage all your job applications in one place."
+    },
+    "opportunities": {
+      "title": "Opportunities",
+      "description": "Browse and manage job opportunities captured from LinkedIn, Greenhouse, and more."
+    },
+    "insights": {
+      "title": "Insights & Analytics",
+      "description": "Visualize your job search funnel, interview conversion rates, and application trends."
+    },
+    "settings": {
+      "title": "Settings",
+      "description": "Configure your JAJAT preferences, custom fields, and integrations."
+    },
+    "support": {
+      "title": "Support & Suggestions",
+      "description": "Get help or share feedback with the JAJAT team."
+    }
   }
 }

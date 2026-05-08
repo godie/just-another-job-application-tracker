@@ -38,3 +38,5 @@ api/config.php
 api/vendor/
 
 .agents
+.kiro
+api/.phpunit.result.cache

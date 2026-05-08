@@ -24,7 +24,7 @@ export interface JobApplication {
   platform: string;
   contactName: string;
   notes: string;
-  
+
   // New: Timeline of all events
   timeline: InterviewEvent[];
 }
@@ -37,7 +37,7 @@ export interface InterviewEvent {
   status: EventStatus; // 'completed' | 'scheduled' | 'cancelled' | 'pending'
 }
 
-export type InterviewStageType = 
+export type InterviewStageType =
   | 'application_submitted'
   | 'screener_call'
   | 'first_contact'
@@ -66,7 +66,7 @@ export type EventStatus = 'completed' | 'scheduled' | 'cancelled' | 'pending';
 ```typescript
 export interface JobApplication {
   // ... existing fields
-  
+
   currentStage: InterviewStageType;
   stageHistory: StageTransition[];
 }
@@ -88,7 +88,7 @@ export interface StageTransition {
 ```typescript
 export interface JobApplication {
   // ... existing fields
-  
+
   currentStatus: string; // Quick reference
   timeline: InterviewEvent[]; // Detailed history
   customFields: Record<string, string>; // User-defined fields

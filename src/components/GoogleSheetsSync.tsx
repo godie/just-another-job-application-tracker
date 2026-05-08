@@ -1,10 +1,12 @@
 // src/components/GoogleSheetsSync.tsx
 
-import React, { useReducer, useEffect, useCallback, useRef } from 'react';
+import React, { useReducer, useEffect, useCallback, useRef, useState } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import { useAlert } from './AlertProvider';
 import { Card } from './ui';
 import { useAuthStore } from '../stores/authStore';
+import { ConnectGoogleButton } from './ConnectGoogleButton';
+import { getAuthCookie } from '../utils/api';
 import {
   createSpreadsheet,
   syncToGoogleSheets,
@@ -58,7 +60,33 @@ const GoogleSheetsSync: React.FC<GoogleSheetsSyncProps> = ({ applications, onSyn
   applicationsRef.current = applications;
   const { showSuccess, showError } = useAlert();
 
+  const currentUser = useAuthStore((state) => state.currentUser);
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const hasGoogleLinked = !!(currentUser?.googleId);
+
+  // Validate Google token on mount (checks cookie expiry + refresh)
+  const [hasValidGoogleToken, setHasValidGoogleToken] = useState(false);
+  const [tokenCheckDone, setTokenCheckDone] = useState(false);
+
+  const checkGoogleToken = useCallback(async () => {
+    try {
+      const res = await getAuthCookie();
+      setHasValidGoogleToken(res.success && !!res.access_token);
+    } catch {
+      setHasValidGoogleToken(false);
+    } finally {
+      setTokenCheckDone(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    checkGoogleToken();
+  }, [checkGoogleToken]);
+
+  // Re-check token after successful Google linking
+  const handleGoogleLinked = useCallback(() => {
+    checkGoogleToken();
+  }, [checkGoogleToken]);
 
   const [state, dispatch] = useReducer(googleSheetsSyncReducer, undefined, () => ({
     syncStatus: getSyncStatus(),
@@ -104,7 +132,7 @@ const GoogleSheetsSync: React.FC<GoogleSheetsSyncProps> = ({ applications, onSyn
   }, []);
 
   const handleSync = useCallback(async () => {
-    if (!isAuthenticated) {
+    if (!hasGoogleLinked) {
       showError(t('sheets.loginFirst'));
       return;
     }
@@ -133,10 +161,10 @@ const GoogleSheetsSync: React.FC<GoogleSheetsSyncProps> = ({ applications, onSyn
     } finally {
       dispatch({ type: 'SET_FIELD', field: 'isSyncing', value: false });
     }
-  }, [isAuthenticated, showError, showSuccess, onSyncComplete, t]);
+  }, [hasGoogleLinked, showError, showSuccess, onSyncComplete, t]);
 
   const handleCreateSheet = async () => {
-    if (!isAuthenticated) {
+    if (!hasGoogleLinked) {
       showError(t('sheets.loginFirst'));
       return;
     }
@@ -201,6 +229,7 @@ const GoogleSheetsSync: React.FC<GoogleSheetsSyncProps> = ({ applications, onSyn
     dispatch({ type: 'SET_FIELD', field: 'sheetIdInput', value: '' });
   };
 
+  // Not authenticated at all
   if (!isAuthenticated) {
     return (
       <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
@@ -209,6 +238,68 @@ const GoogleSheetsSync: React.FC<GoogleSheetsSyncProps> = ({ applications, onSyn
             <strong>Google Sheets Sync:</strong> Please log in with Google to enable spreadsheet synchronization.
           </Trans>
         </p>
+      </div>
+    );
+  }
+
+  // Authenticated but no Google account linked
+  if (!hasGoogleLinked) {
+    return (
+      <div className="bg-sage-50 dark:bg-sage-900/20 border border-sage-200 dark:border-sage-700 rounded-lg p-6 mb-4">
+        <div className="text-center">
+          <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-sage-100 dark:bg-sage-800 flex items-center justify-center">
+            <svg className="w-6 h-6 text-sage-600 dark:text-sage-400" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M21.35 11.1h-9.17v2.73h6.51c-.33 3.81-3.5 5.44-6.5 5.44C8.36 19.27 5 16.25 5 12c0-4.1 3.2-7.27 7.2-7.27 3.09 0 5.25 1.65 5.25 1.65l1.83-1.8S16.22 2 12.17 2C6.63 2 2 6.44 2 12c0 5.52 4.46 10 10 10 5.14 0 9.35-3.65 9.35-8.77 0-1.15-.14-2.13 0-2.13z" fill="#4285F4"/>
+            </svg>
+          </div>
+          <h4 className="text-sm font-semibold text-sage-700 dark:text-sage-300 mb-2">
+            {t('sheets.googleNotLinked')}
+          </h4>
+          <p className="text-xs text-sage-600 dark:text-sage-400 mb-4">
+            {t('sheets.googleNotLinkedDesc')}
+          </p>
+          <ConnectGoogleButton
+            label={t('settings.cloud.linkGoogle')}
+            onSuccess={handleGoogleLinked}
+            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium bg-sage-600 text-white hover:bg-sage-700 transition-colors rounded disabled:opacity-50 disabled:cursor-not-allowed"
+          />
+        </div>
+      </div>
+    );
+  }
+
+  // Google account linked but token is expired/revoked
+  if (hasGoogleLinked && tokenCheckDone && !hasValidGoogleToken) {
+    return (
+      <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-lg p-6 mb-4">
+        <div className="text-center">
+          <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-amber-100 dark:bg-amber-800 flex items-center justify-center">
+            <svg className="w-6 h-6 text-amber-600 dark:text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m0-8v4m0 0a9 9 0 110-18 9 9 0 010 18z" />
+            </svg>
+          </div>
+          <h4 className="text-sm font-semibold text-amber-700 dark:text-amber-300 mb-2">
+            {t('sheets.googleSessionExpired')}
+          </h4>
+          <p className="text-xs text-amber-600 dark:text-amber-400 mb-4">
+            {t('sheets.googleSessionExpiredDesc')}
+          </p>
+          <ConnectGoogleButton
+            label={t('settings.cloud.linkGoogle')}
+            onSuccess={handleGoogleLinked}
+            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium bg-amber-600 text-white hover:bg-amber-700 transition-colors rounded disabled:opacity-50 disabled:cursor-not-allowed"
+          />
+        </div>
+      </div>
+    );
+  }
+
+  // Still checking token validity — show loading
+  if (!tokenCheckDone) {
+    return (
+      <div className="flex items-center justify-center py-6 mb-4">
+        <span className="w-5 h-5 border-2 border-sage-400 border-t-transparent rounded-full animate-spin mr-2" />
+        <span className="text-sm text-earth-500 dark:text-earth-400">{t('common.loading')}</span>
       </div>
     );
   }

@@ -1,6 +1,7 @@
 // src/pages/OpportunitiesPage.tsx
 import React, { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useSEO } from '../seo';
 import Footer from '../components/Footer';
 import { useAlert } from '../components/AlertProvider';
 import { 
@@ -26,6 +27,11 @@ interface OpportunitiesPageContentProps {
 const OpportunitiesPageContent: React.FC<OpportunitiesPageContentProps> = () => {
   const { t } = useTranslation();
   const { showSuccess, showError } = useAlert();
+
+  useSEO({
+    title: t('seo.opportunities.title'),
+    description: t('seo.opportunities.description'),
+  });
   const { formatLocaleDate } = useFormatDate();
   
   // Use Zustand stores

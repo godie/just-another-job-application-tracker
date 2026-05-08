@@ -72,10 +72,15 @@ class AppAuthControllerTest extends TestCase
         $connectionProp->setValue($database, $this->db);
 
         $this->controller = new TestableAppAuthController($database);
+        http_response_code(200);
     }
 
     protected function tearDown(): void
     {
+        if (session_status() === PHP_SESSION_ACTIVE) {
+            session_destroy();
+        }
+        $_SESSION = [];
         $this->db = null;
     }
 
@@ -469,5 +474,180 @@ class AppAuthControllerTest extends TestCase
             $userAfterSecondLogin->lastLoginAt,
             'lastLoginAt should be updated on subsequent login'
         );
+    }
+
+    // ── Task 5.3: Link Google account tests ────────────────────────────
+
+    /**
+     * With active session and free google_id: verify linking succeeds
+     * and returns success:true with the updated user (Property 5).
+     * Requirements: 3.2, 3.5
+     */
+    public function testLinkGoogleWithActiveSessionLinksSuccessfully(): void
+    {
+        // Create a user without google_id
+        $user = $this->createTestUser('link-test@example.com', 'password123');
+        $this->assertNull($user->googleId);
+
+        // Set up active session as this user
+        if (session_status() !== PHP_SESSION_ACTIVE) {
+            session_start();
+        }
+        $_SESSION['user_id'] = $user->id;
+
+        // Mock Google token and user info
+        $this->controller->mockInput = ['googleToken' => 'mock-google-token'];
+        $this->controller->mockGoogleUser = [
+            'sub' => 'google-link-new-456',
+            'email' => 'link-test@example.com',
+            'name' => 'Link Test User',
+            'picture' => 'https://example.com/photo.jpg',
+        ];
+
+        $result = $this->controller->google();
+
+        // Assert successful linking
+        $this->assertTrue($result['success']);
+        $this->assertEquals('Google account linked successfully', $result['message']);
+        $this->assertNotNull($result['user']);
+        $this->assertEquals($user->id, $result['user']['id']);
+        $this->assertEquals('google-link-new-456', $result['user']['googleId']);
+
+        // Verify the google_id was persisted in the database
+        $repo = new UserRepository($this->db);
+        $dbUser = $repo->findById($user->id);
+        $this->assertNotNull($dbUser);
+        $this->assertEquals('google-link-new-456', $dbUser->googleId);
+
+        // Clean up session
+        session_destroy();
+        $_SESSION = [];
+    }
+
+    /**
+     * With active session and google_id already in use by another user:
+     * should return 409 conflict (Req 3.3).
+     * Requirements: 3.2, 3.3
+     */
+    public function testLinkGoogleReturns409WhenGoogleIdAlreadyInUse(): void
+    {
+        // Create user A: the session user (no google_id)
+        $userA = $this->createTestUser('user-a@example.com', 'password123');
+        $this->assertNull($userA->googleId);
+
+        // Create user B: already has the google_id we are trying to link
+        $userB = $this->createTestUser(
+            email: 'user-b@example.com',
+            password: 'password456',
+            googleId: 'google-conflict-789',
+        );
+        $this->assertEquals('google-conflict-789', $userB->googleId);
+
+        // Set up active session as user A
+        if (session_status() !== PHP_SESSION_ACTIVE) {
+            session_start();
+        }
+        $_SESSION['user_id'] = $userA->id;
+
+        // Mock Google token — same sub as user B's google_id
+        $this->controller->mockInput = ['googleToken' => 'mock-google-token'];
+        $this->controller->mockGoogleUser = [
+            'sub' => 'google-conflict-789',
+            'email' => 'user-a@example.com',
+            'name' => 'User A',
+            'picture' => 'https://example.com/photo.jpg',
+        ];
+
+        $result = $this->controller->google();
+
+        // Assert 409 conflict
+        $this->assertFalse($result['success']);
+        $this->assertEquals(
+            'Esta cuenta de Google ya está vinculada a otro usuario',
+            $result['error']
+        );
+        $this->assertEquals(409, http_response_code());
+
+        // Verify user A's google_id was NOT changed
+        $repo = new UserRepository($this->db);
+        $dbUserA = $repo->findById($userA->id);
+        $this->assertNotNull($dbUserA);
+        $this->assertNull($dbUserA->googleId, 'User A google_id should remain null after conflict');
+
+        // Clean up session
+        session_destroy();
+        $_SESSION = [];
+    }
+
+    /**
+     * Without active session: the method should proceed to the normal
+     * OAuth login flow (auto-create or find user) — Req 3.4.
+     * Requirements: 3.4
+     */
+    public function testGoogleWithoutActiveSessionProceedsToNormalLogin(): void
+    {
+        // Ensure no active session
+        if (session_status() === PHP_SESSION_ACTIVE) {
+            session_destroy();
+        }
+        $_SESSION = [];
+
+        // Mock Google token for a brand new user
+        $this->controller->mockInput = ['googleToken' => 'mock-google-token'];
+        $this->controller->mockGoogleUser = [
+            'sub' => 'google-login-no-session',
+            'email' => 'nosession@example.com',
+            'name' => 'No Session User',
+            'picture' => 'https://example.com/photo.jpg',
+        ];
+
+        $result = $this->controller->google();
+
+        // Should behave as normal login (handleOAuthLogin path)
+        $this->assertTrue($result['success']);
+        $this->assertEquals('Google login successful', $result['message']);
+        $this->assertNotNull($result['user']);
+        $this->assertEquals('nosession@example.com', $result['user']['email']);
+        $this->assertEquals('No Session User', $result['user']['displayName']);
+
+        // Verify user was created with google_id
+        $repo = new UserRepository($this->db);
+        $dbUser = $repo->findByGoogleId('google-login-no-session');
+        $this->assertNotNull($dbUser);
+        $this->assertEquals('nosession@example.com', $dbUser->email);
+
+        // Clean up
+        session_destroy();
+        $_SESSION = [];
+    }
+
+    /**
+     * Missing googleToken in request body returns 400.
+     * Requirements: 3.5
+     */
+    public function testGoogleReturns400WhenGoogleTokenIsMissing(): void
+    {
+        $this->controller->mockInput = ['someOtherField' => 'value'];
+
+        $result = $this->controller->google();
+
+        $this->assertFalse($result['success']);
+        $this->assertEquals('Google token is required', $result['error']);
+        $this->assertEquals(400, http_response_code());
+    }
+
+    /**
+     * Empty googleToken in request body also returns 400.
+     * Requirements: 3.5
+     */
+    public function testGoogleReturns400WhenGoogleTokenIsEmpty(): void
+    {
+        $this->controller->mockInput = ['googleToken' => ''];
+
+        $result = $this->controller->google();
+
+        $this->assertFalse($result['success']);
+        $this->assertEquals('Google token is required', $result['error']);
+        $this->assertEquals(400, http_response_code());
     }
 }
