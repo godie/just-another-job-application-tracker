@@ -33,6 +33,8 @@ export interface ATSSearchPreferences {
   roles: string[];
   keywords: string[];
   location: string[];
+  source?: string;
+  techStack?: string[];
 }
 
 export interface UserPreferences {

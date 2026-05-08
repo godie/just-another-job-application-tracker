@@ -63,4 +63,17 @@ return [
     'google_client_secret' => getenv('GOOGLE_CLIENT_SECRET') ?: '__VITE_GOOGLE_CLIENT_SECRET__',
     'linkedin_client_id' => getenv('LINKEDIN_CLIENT_ID') ?: '__LINKEDIN_CLIENT_ID__',
     'linkedin_client_secret' => getenv('LINKEDIN_CLIENT_SECRET') ?: '__LINKEDIN_CLIENT_SECRET__',
+
+    'job_search' => [
+        'jooble_api_key' => getenv('JOOBLE_API_KEY') ?: '__JOOBLE_API_KEY__',
+        'theirstack_api_key' => getenv('THEIRSTACK_API_KEY') ?: '__THEIRSTACK_API_KEY__',
+        'adzuna_app_id' => getenv('ADZUNA_APP_ID') ?: '__ADZUNA_APP_ID__',
+        'adzuna_api_key' => getenv('ADZUNA_API_KEY') ?: '__ADZUNA_API_KEY__',
+        'careerjet_api_key' => getenv('CAREERJET_API_KEY') ?: '__CAREERJET_API_KEY__',
+        'careerjet_affid' => getenv('CAREERJET_AFFID') ?: '__CAREERJET_AFFID__',
+        'default_source' => 'jooble',
+        'results_per_page' => 20,
+        'max_results' => 200,
+        'cache_ttl_seconds' => 300,
+    ],
 ];

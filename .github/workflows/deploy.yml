@@ -101,6 +101,12 @@ jobs:
           DB_USER: ${{ secrets.DB_USER }}
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
           DB_ENABLED: ${{ secrets.DB_ENABLED }}
+          JOOBLE_API_KEY: ${{ secrets.JOOBLE_API_KEY }}
+          THEIRSTACK_API_KEY: ${{ secrets.THEIRSTACK_API_KEY }}
+          ADZUNA_APP_ID: ${{ secrets.ADZUNA_APP_ID }}
+          ADZUNA_API_KEY: ${{ secrets.ADZUNA_API_KEY }}
+          CAREERJET_API_KEY: ${{ secrets.CAREERJET_API_KEY }}
+          CAREERJET_AFFID: ${{ secrets.CAREERJET_AFFID }}
         run: |
           python3 -c "
           import os
@@ -112,6 +118,12 @@ jobs:
             '__DB_NAME__': os.environ.get('DB_NAME', ''),
             '__DB_USER__': os.environ.get('DB_USER', ''),
             '__DB_PASSWORD__': os.environ.get('DB_PASSWORD', ''),
+            '__JOOBLE_API_KEY__': os.environ.get('JOOBLE_API_KEY', ''),
+            '__THEIRSTACK_API_KEY__': os.environ.get('THEIRSTACK_API_KEY', ''),
+            '__ADZUNA_APP_ID__': os.environ.get('ADZUNA_APP_ID', ''),
+            '__ADZUNA_API_KEY__': os.environ.get('ADZUNA_API_KEY', ''),
+            '__CAREERJET_API_KEY__': os.environ.get('CAREERJET_API_KEY', ''),
+            '__CAREERJET_AFFID__': os.environ.get('CAREERJET_AFFID', ''),
           }
           path = 'dist/api/config.php'
           with open(path) as f:
