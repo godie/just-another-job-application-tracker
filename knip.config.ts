@@ -50,6 +50,8 @@ const config: KnipConfig = {
     'src/utils/geminiProfile.ts': ['exports'],
     // SEO module — barrel re-exports
     'src/seo/index.ts': ['exports', 'types'],
+    // ATS_PLATFORMS is used in SettingsPage.tsx via ATSSearchSettings (knip doesn't track dynamic references)
+    'src/utils/constants.ts': ['exports'],
   },
 
   // Project patterns
