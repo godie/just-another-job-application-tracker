@@ -1,5 +1,5 @@
 // src/components/ApplicationTable.tsx
-import React, { useState, memo, useCallback, useMemo } from 'react';
+import React, { useState, memo, useCallback, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { type JobApplication, type ApplicationWithMetadata } from '../types/applications';
 import type { TableColumn } from '../types/table';
@@ -7,6 +7,8 @@ import ConfirmDialog from './ConfirmDialog';
 import ApplicationTableRow from './ApplicationTableRow';
 import ApplicationCard from './ApplicationCard';
 import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell, Card } from './ui';
+
+const ITEMS_PER_PAGE = 20;
 
 interface ApplicationTableProps {
     columns: TableColumn[];
@@ -19,10 +21,31 @@ const PRIMARY_COLUMN_IDS = ['position', 'company', 'status'];
 
 const ApplicationTable: React.FC<ApplicationTableProps> = ({ columns, data, onEdit, onDelete }) => {
   const { t } = useTranslation();
+  const [currentPage, setCurrentPage] = useState(1);
   const [deleteConfirm, setDeleteConfirm] = useState<{ isOpen: boolean; application: JobApplication | null }>({
     isOpen: false,
     application: null,
   });
+
+  // Pagination logic
+  const totalPages = Math.ceil(data.length / ITEMS_PER_PAGE);
+  const paginatedData = useMemo(() => {
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    return data.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  }, [data, currentPage]);
+
+  // Reset to page 1 if current page is beyond available pages
+  useEffect(() => {
+    const total = Math.ceil(data.length / ITEMS_PER_PAGE);
+    if (currentPage > total && total > 0) {
+      setCurrentPage(1);
+    }
+  }, [data.length, currentPage]);
+
+  const goToPage = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   // ⚡ Bolt: Memoize column calculations.
   // By wrapping these calculations in useMemo, we ensure they are only
@@ -42,12 +65,12 @@ const ApplicationTable: React.FC<ApplicationTableProps> = ({ columns, data, onEd
     <>
       {/* Mobile Card View */}
       <div className='md:hidden space-y-3' data-testid='application-cards'>
-        {data.length === 0 ? (
+        {paginatedData.length === 0 ? (
           <div className='bg-earth-50 dark:bg-earth-800 p-8 border border-earth-200 dark:border-earth-700 text-center text-earth-600 dark:text-earth-400 italic text-sm font-medium'>
             {t('home.noApplications')}
           </div>
         ) : (
-          data.map((item) => (
+          paginatedData.map((item) => (
             <ApplicationCard
               key={item.id}
               item={item}
@@ -78,14 +101,14 @@ const ApplicationTable: React.FC<ApplicationTableProps> = ({ columns, data, onEd
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data.length === 0 ? (
+            {paginatedData.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={columns.length + 1} className='px-4 sm:px-6 py-10 text-center text-earth-600 dark:text-earth-400 italic text-sm font-medium' role='status' aria-live='polite'>
                   {t('home.noApplications')}
                 </TableCell>
               </TableRow>
             ) : (
-              data.map((item) => (
+              paginatedData.map((item) => (
                 <ApplicationTableRow
                   key={item.id}
                   item={item}
@@ -98,6 +121,46 @@ const ApplicationTable: React.FC<ApplicationTableProps> = ({ columns, data, onEd
           </TableBody>
         </Table>
       </Card>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className='flex items-center justify-center gap-2 pt-4'>
+          <button
+            onClick={() => goToPage(currentPage - 1)}
+            disabled={currentPage === 1}
+            className='px-4 py-2 text-sm font-medium text-earth-700 dark:text-earth-300 bg-white dark:bg-earth-800 border border-earth-300 dark:border-earth-600 rounded hover:bg-earth-50 dark:hover:bg-earth-700 disabled:opacity-50 disabled:cursor-not-allowed transition'
+            aria-label={t('common.previous')}
+          >
+            {t('common.previous')}
+          </button>
+
+          <div className='flex items-center gap-1'>
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+              <button
+                key={page}
+                onClick={() => goToPage(page)}
+                className={`px-3 py-1.5 text-sm font-medium rounded transition ${
+                  currentPage === page
+                    ? 'bg-sage-600 text-white'
+                    : 'text-earth-700 dark:text-earth-300 bg-white dark:bg-earth-800 border border-earth-300 dark:border-earth-600 hover:bg-earth-50 dark:hover:bg-earth-700'
+                }`}
+              >
+                {page}
+              </button>
+            ))}
+          </div>
+
+          <button
+            onClick={() => goToPage(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className='px-4 py-2 text-sm font-medium text-earth-700 dark:text-earth-300 bg-white dark:bg-earth-800 border border-earth-300 dark:border-earth-600 rounded hover:bg-earth-50 dark:hover:bg-earth-700 disabled:opacity-50 disabled:cursor-not-allowed transition'
+            aria-label={t('common.next')}
+          >
+            {t('common.next')}
+          </button>
+        </div>
+      )}
+
       <ConfirmDialog
         isOpen={deleteConfirm.isOpen}
         title={t('home.deleteConfirm.title')}

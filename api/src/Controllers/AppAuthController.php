@@ -195,6 +195,15 @@ class AppAuthController
             return ['success' => false, 'error' => $googleUser['error']];
         }
 
+        // If there's an active session, it's a link request, not a login
+        app_session_start();
+        $sessionUserId = app_session_get_user_id();
+
+        if ($sessionUserId !== null) {
+            return $this->handleLinkGoogle($sessionUserId, $googleUser);
+        }
+
+        // No session: normal OAuth login flow
         return $this->handleOAuthLogin(
             existingUser: $this->userRepo->findByGoogleId($googleUser['sub']),
             email: $googleUser['email'],
@@ -203,6 +212,31 @@ class AppAuthController
             createUser: fn () => User::fromGoogle($googleUser),
             successMessage: 'Google login successful'
         );
+    }
+
+    private function handleLinkGoogle(int $sessionUserId, array $googleUser): array
+    {
+        // Check that the google_id is not already in use by a different user
+        $existingByGoogleId = $this->userRepo->findByGoogleId($googleUser['sub']);
+        if ($existingByGoogleId !== null && $existingByGoogleId->id !== $sessionUserId) {
+            http_response_code(409);
+            return ['success' => false, 'error' => 'Esta cuenta de Google ya está vinculada a otro usuario'];
+        }
+
+        // Link the Google account to the authenticated user
+        $this->userRepo->updateGoogleId($sessionUserId, $googleUser['sub']);
+        $user = $this->userRepo->findById($sessionUserId);
+
+        if ($user === null) {
+            http_response_code(500);
+            return ['success' => false, 'error' => 'Failed to retrieve user after linking'];
+        }
+
+        return [
+            'success' => true,
+            'user' => $user->toArray(),
+            'message' => 'Google account linked successfully',
+        ];
     }
 
     public function linkedin(): array

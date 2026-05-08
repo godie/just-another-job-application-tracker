@@ -1,6 +1,7 @@
 // src/pages/InsightsPage.tsx
 import React, { lazy, Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useSEO } from '../seo';
 import { useInsightsData } from '../hooks/useInsightsData';
 
 import { type PageType } from '../App';
@@ -14,6 +15,12 @@ interface InsightsPageProps {
 
 const InsightsPage: React.FC<InsightsPageProps> = ({ onNavigate }) => {
   const { t } = useTranslation();
+
+  useSEO({
+    title: t('seo.insights.title'),
+    description: t('seo.insights.description'),
+  });
+
   const {
     totalApplications,
     totalInterviews,

@@ -1,12 +1,13 @@
-import React, { useReducer } from 'react';
+import React, { useReducer, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useGoogleLogin } from '@react-oauth/google';
+import { useSEO } from '../seo';
 import { usePreferencesStore } from '../stores/preferencesStore';
 import { useAuthStore } from '../stores/authStore';
 import { useAlert } from '../components/AlertProvider';
 import { DEFAULT_FIELDS } from '../utils/constants';
 import { type PageType } from '../App';
 import { type FieldDefinition, type ViewType, type DateFormat, type CustomInterviewEvent } from '../types/preferences';
+import type { UserMatchProfile } from '../types/matching';
 import FieldsSettings from '../components/settings/FieldsSettings';
 import ViewSettings from '../components/settings/ViewSettings';
 import DateFormatSettings from '../components/settings/DateFormatSettings';
@@ -15,6 +16,13 @@ import InterviewingSettings from '../components/settings/InterviewingSettings';
 import EmailScanSettings from '../components/settings/EmailScanSettings';
 import ATSSearchSettings from '../components/settings/ATSSearchSettings';
 import ToolsSettings from '../components/settings/ToolsSettings';
+import { MatchingSettings } from '../components/settings/MatchingSettings';
+import { ProfileSetupModal } from '../components/ProfileSetupModal';
+import { useMatchingStore } from '../stores/matchingStore';
+import { useApplicationsStore } from '../stores/applicationsStore';
+import { useOpportunitiesStore } from '../stores/opportunitiesStore';
+import { saveMatchProfile } from '../storage/matching';
+import { ConnectGoogleButton } from '../components/ConnectGoogleButton';
 
 import Footer from '../components/Footer';
 import { Card } from '../components/ui';
@@ -24,7 +32,7 @@ interface SettingsPageProps {
   onNavigate?: (page: PageType) => void;
 }
 
-type SettingsSection = 'fields' | 'view' | 'date' | 'custom' | 'interviewing' | 'emailScan' | 'atsSearch' | 'cloud' | 'tools';
+type SettingsSection = 'fields' | 'view' | 'date' | 'custom' | 'interviewing' | 'emailScan' | 'atsSearch' | 'cloud' | 'tools' | 'matching';
 
 interface SettingsState {
   activeSection: SettingsSection;
@@ -33,13 +41,15 @@ interface SettingsState {
   customFieldForm: Partial<FieldDefinition>;
   editingInterviewEvent: CustomInterviewEvent | null;
   interviewEventForm: Partial<CustomInterviewEvent>;
+  isProfileModalOpen: boolean;
 }
 
 type SettingsAction =
   | { type: 'SET_FIELD'; field: keyof SettingsState; value: unknown }
   | { type: 'SET_CUSTOM_FIELD_FORM'; value: Partial<FieldDefinition> }
   | { type: 'SET_INTERVIEW_EVENT_FORM'; value: Partial<CustomInterviewEvent> }
-  | { type: 'RESET_FORMS' };
+  | { type: 'RESET_FORMS' }
+  | { type: 'TOGGLE_PROFILE_MODAL'; value: boolean };
 
 const initialState: SettingsState = {
   activeSection: 'view',
@@ -48,6 +58,7 @@ const initialState: SettingsState = {
   customFieldForm: { type: 'text' },
   editingInterviewEvent: null,
   interviewEventForm: { id: '', label: '' },
+  isProfileModalOpen: false,
 };
 
 function settingsReducer(state: SettingsState, action: SettingsAction): SettingsState {
@@ -58,6 +69,8 @@ function settingsReducer(state: SettingsState, action: SettingsAction): Settings
       return { ...state, customFieldForm: action.value };
     case 'SET_INTERVIEW_EVENT_FORM':
       return { ...state, interviewEventForm: action.value };
+    case 'TOGGLE_PROFILE_MODAL':
+      return { ...state, isProfileModalOpen: action.value };
     case 'RESET_FORMS':
       return {
         ...state,
@@ -74,9 +87,44 @@ function settingsReducer(state: SettingsState, action: SettingsAction): Settings
 const SettingsPageContent: React.FC<SettingsPageProps> = ({ onNavigate }) => {
   const { t } = useTranslation();
   const { preferences, updatePreferences, resetPreferences } = usePreferencesStore();
+
+  useSEO({
+    title: t('seo.settings.title'),
+    description: t('seo.settings.description'),
+  });
   const { currentUser: user, isAuthenticated } = useAuthStore();
-  const { showSuccess } = useAlert();
+  const { showSuccess, showError } = useAlert();
   const [state, dispatch] = useReducer(settingsReducer, initialState);
+
+  const { applications } = useApplicationsStore();
+  const { opportunities } = useOpportunitiesStore();
+  const {
+    profile,
+    preferences: matchingPreferences,
+    isComputingProfile,
+    isComputingScores,
+    computeError,
+    lastProfileCompute,
+    loadMatchingState,
+    updatePreferences: updateMatchingPreferences,
+    buildProfile,
+    computeScores,
+    clearAllMatchingData,
+    resetError,
+  } = useMatchingStore();
+
+  // Load matching state on mount
+  useEffect(() => {
+    loadMatchingState();
+  }, [loadMatchingState]);
+
+  // Show compute errors via alert
+  useEffect(() => {
+    if (computeError) {
+      showError(computeError);
+      resetError();
+    }
+  }, [computeError, showError, resetError]);
 
   const {
     activeSection,
@@ -85,7 +133,11 @@ const SettingsPageContent: React.FC<SettingsPageProps> = ({ onNavigate }) => {
     customFieldForm,
     editingInterviewEvent,
     interviewEventForm,
+    isProfileModalOpen,
   } = state;
+
+  const profileStatus: 'none' | 'building' | 'ready' =
+    isComputingProfile ? 'building' : profile ? 'ready' : 'none';
 
   const handleToggleField = (fieldId: string) => {
     const enabledFields = preferences.enabledFields.includes(fieldId)
@@ -213,7 +265,7 @@ const SettingsPageContent: React.FC<SettingsPageProps> = ({ onNavigate }) => {
     {
       id: 'tools',
       label: t('settings.categories.tools'),
-      sections: ['atsSearch'],
+      sections: ['atsSearch', 'matching'],
     },
     {
       id: 'account',
@@ -232,6 +284,7 @@ const SettingsPageContent: React.FC<SettingsPageProps> = ({ onNavigate }) => {
     { id: 'emailScan' as const, label: t('settings.emailScan.section'), icon: '📧', description: t('settings.sections.emailScanDesc') },
     { id: 'tools' as const, label: t('settings.sections.tools'), icon: '🛠️', description: t('settings.sections.toolsDesc') },
     { id: 'cloud' as const, label: t('settings.sections.cloud'), icon: '☁️', description: t('settings.sections.cloudDesc') },
+    { id: 'matching' as const, label: 'AI Matching', icon: '🧠', description: 'Configure AI-powered job matching and manage your career profile' },
   ];
 
   const currentSection = sections.find(s => s.id === activeSection);
@@ -323,6 +376,20 @@ const SettingsPageContent: React.FC<SettingsPageProps> = ({ onNavigate }) => {
         );
       case 'tools':
         return <ToolsSettings />;
+      case 'matching':
+        return (
+          <MatchingSettings
+            preferences={matchingPreferences}
+            profileStatus={profileStatus}
+            profileLastComputed={lastProfileCompute}
+            isComputingScores={isComputingScores}
+            onUpdatePreferences={updateMatchingPreferences}
+            onBuildProfile={() => buildProfile(applications)}
+            onComputeScores={() => computeScores(opportunities, applications)}
+            onOpenProfileModal={() => dispatch({ type: 'TOGGLE_PROFILE_MODAL', value: true })}
+            onClearData={clearAllMatchingData}
+          />
+        );
       case 'cloud':
         return (
           <div className='space-y-8'>
@@ -533,54 +600,37 @@ const SettingsPageContent: React.FC<SettingsPageProps> = ({ onNavigate }) => {
       <div className='mt-20 border-t border-earth-200 dark:border-earth-700 pt-10'>
         <Footer version={packageJson.version} />
       </div>
+
+      {/* Profile Setup Modal */}
+      <ProfileSetupModal
+        isOpen={isProfileModalOpen}
+        onClose={() => dispatch({ type: 'TOGGLE_PROFILE_MODAL', value: false })}
+        existingProfile={profile}
+        onSave={(updatedProfile) => {
+          const merged: UserMatchProfile = {
+            targetRoles: updatedProfile.targetRoles ?? profile?.targetRoles ?? [],
+            seniority: updatedProfile.seniority !== undefined ? updatedProfile.seniority : (profile?.seniority ?? null),
+            topSkills: updatedProfile.topSkills ?? profile?.topSkills ?? [],
+            preferredWorkTypes: updatedProfile.preferredWorkTypes ?? profile?.preferredWorkTypes ?? [],
+            preferredLocations: updatedProfile.preferredLocations ?? profile?.preferredLocations ?? [],
+            salaryRange: updatedProfile.salaryRange !== undefined ? updatedProfile.salaryRange : (profile?.salaryRange ?? null),
+            preferredIndustries: profile?.preferredIndustries ?? [],
+            explicitRoles: profile?.explicitRoles,
+            explicitSkills: updatedProfile.explicitSkills ?? profile?.explicitSkills,
+            cvText: updatedProfile.cvText,
+            profileSummary: profile?.profileSummary ?? '',
+            successPatterns: profile?.successPatterns ?? [],
+            avoidPatterns: profile?.avoidPatterns ?? [],
+            profileVersion: (profile?.profileVersion ?? 0) + 1,
+            confidence: profile?.confidence ?? 'medium',
+            lastComputed: new Date().toISOString(),
+          };
+          saveMatchProfile(merged);
+          loadMatchingState();
+          showSuccess('Matching profile saved!');
+        }}
+      />
     </div>
-  );
-};
-
-const ConnectGoogleButton: React.FC = () => {
-  const { t } = useTranslation();
-  const { fetchMe } = useAuthStore();
-  const { showSuccess, showError } = useAlert();
-
-  const googleLogin = useGoogleLogin({
-    flow: 'auth-code',
-    onSuccess: async (codeResponse) => {
-      try {
-        const result = await fetch('/api/auth/google', {
-          method: 'POST',
-          credentials: 'include',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ googleToken: codeResponse.code }),
-        });
-        const data = await result.json();
-        if (data.success) {
-          await fetchMe();
-          showSuccess('Google account linked successfully!');
-        } else {
-          showError(data.error || 'Failed to link Google account');
-        }
-      } catch {
-        showError('Failed to link Google account');
-      }
-    },
-    onError: () => {
-      showError('Google login failed');
-    },
-  });
-
-  return (
-    <button
-      onClick={() => googleLogin()}
-      className='flex items-center gap-2 px-4 py-2 text-sm font-medium border border-sage-300 dark:border-sage-600 text-sage-700 dark:text-sage-300 hover:bg-sage-50 dark:hover:bg-sage-800 transition-colors rounded'
-    >
-      <svg className='w-5 h-5' viewBox='0 0 24 24'>
-        <path fill='#4285F4' d='M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z' />
-        <path fill='#34A853' d='M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z' />
-        <path fill='#FBBC05' d='M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z' />
-        <path fill='#EA4335' d='M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z' />
-      </svg>
-      {t('settings.connectGoogle') || 'Connect Google'}
-    </button>
   );
 };
 
