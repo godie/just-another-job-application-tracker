@@ -1,7 +1,7 @@
 # Code Audit Report
 
-**Generated:** 2026-05-08T01:02:21.116Z
-**Branch:** jules-2729539268173427700-672d9bc2
+**Generated:** 2026-05-05T22:43:20.817Z
+**Branch:** jules-481363289405085070-e1e29e29
 
 ## Summary
 
@@ -13,7 +13,7 @@
 | Medium | 0 |
 | Low | 0 |
 | Warnings | 0 |
-| Files Analyzed | 222 |
+| Files Analyzed | 191 |
 
 ## All Issues by Category
 
@@ -22,7 +22,6 @@
 - ./audit/audit.cjs
 - ./eslint.config.js
 - ./knip.config.ts
-- ./playwright.config.ts
 - ./src/App.tsx
 - ./src/components/ATSSearch.tsx
 - ./src/components/AddJobForm.tsx
@@ -42,8 +41,6 @@
 - ./src/components/CalendarView.tsx
 - ./src/components/ChartContainer.tsx
 - ./src/components/ConfirmDialog.tsx
-- ./src/components/ConnectGoogleButton.test.tsx
-- ./src/components/ConnectGoogleButton.tsx
 - ./src/components/CurrentViewRenderer.tsx
 - ./src/components/DonationSection.tsx
 - ./src/components/EmailScanReview.tsx
@@ -57,10 +54,6 @@
 - ./src/components/Header.tsx
 - ./src/components/InterviewBarChart.tsx
 - ./src/components/KanbanView.tsx
-- ./src/components/MatchBreakdownModal.test.tsx
-- ./src/components/MatchBreakdownModal.tsx
-- ./src/components/MatchScoreBadge.test.tsx
-- ./src/components/MatchScoreBadge.tsx
 - ./src/components/MetricsSummary.tsx
 - ./src/components/OnboardingWizard.test.tsx
 - ./src/components/OnboardingWizard.tsx
@@ -69,12 +62,8 @@
 - ./src/components/OpportunitiesTable.tsx
 - ./src/components/OpportunityForm.tsx
 - ./src/components/PWAReloadPrompt.tsx
-- ./src/components/ProfileSetupModal.test.tsx
-- ./src/components/ProfileSetupModal.tsx
 - ./src/components/ProposedAdditionItem.tsx
 - ./src/components/ProposedUpdateItem.tsx
-- ./src/components/RecommendationPanel.test.tsx
-- ./src/components/RecommendationPanel.tsx
 - ./src/components/Sidebar.test.tsx
 - ./src/components/Sidebar.tsx
 - ./src/components/StatusBarChart.tsx
@@ -93,8 +82,6 @@
 - ./src/components/settings/EmailScanSettings.tsx
 - ./src/components/settings/FieldsSettings.tsx
 - ./src/components/settings/InterviewingSettings.tsx
-- ./src/components/settings/MatchingSettings.test.tsx
-- ./src/components/settings/MatchingSettings.tsx
 - ./src/components/settings/ToolsSettings.tsx
 - ./src/components/settings/ViewSettings.tsx
 - ./src/components/sync/MergePromptHandler.test.tsx
@@ -159,31 +146,20 @@
 - ./src/pages/LoginPage.tsx
 - ./src/pages/OpportunitiesPage.tsx
 - ./src/pages/RegisterPage.tsx
-- ./src/pages/SettingsPage.property.test.tsx
-- ./src/pages/SettingsPage.test.tsx
 - ./src/pages/SettingsPage.tsx
 - ./src/pages/SuggestionsViewerPage.tsx
 - ./src/pages/SupportPage.tsx
 - ./src/pwa.d.ts
-- ./src/seo/SEOManager.test.ts
-- ./src/seo/SEOManager.ts
-- ./src/seo/constants.ts
-- ./src/seo/index.ts
-- ./src/seo/resolve.ts
-- ./src/seo/types.ts
-- ./src/seo/useSEO.ts
 - ./src/setupTests.ts
 - ./src/storage/applications.test.ts
 - ./src/storage/applications.ts
 - ./src/storage/auth.ts
 - ./src/storage/index.ts
-- ./src/storage/matching.ts
 - ./src/storage/opportunities.ts
 - ./src/storage/preferences.ts
 - ./src/store/geminiKeyStore.ts
 - ./src/stores/applicationsStore.ts
 - ./src/stores/authStore.ts
-- ./src/stores/matchingStore.ts
 - ./src/stores/mergeStore.test.ts
 - ./src/stores/mergeStore.ts
 - ./src/stores/opportunitiesStore.ts
@@ -214,12 +190,9 @@
 - ./src/tests/helpers/mergeDataHelpers.ts
 - ./src/types/applications.ts
 - ./src/types/index.ts
-- ./src/types/matching.ts
 - ./src/types/opportunities.ts
 - ./src/types/preferences.ts
 - ./src/types/table.ts
-- ./src/utils/api.property.test.ts
-- ./src/utils/api.test.ts
 - ./src/utils/api.ts
 - ./src/utils/applications.ts
 - ./src/utils/constants.ts
@@ -227,14 +200,10 @@
 - ./src/utils/csv.ts
 - ./src/utils/date.ts
 - ./src/utils/geminiApi.ts
-- ./src/utils/geminiJobScoring.ts
-- ./src/utils/geminiProfile.ts
 - ./src/utils/googleSheets.ts
 - ./src/utils/id.ts
 - ./src/utils/localStorage.ts
 - ./src/utils/manualScan.ts
-- ./src/utils/matching.test.ts
-- ./src/utils/matching.ts
 - ./src/utils/mergeData.test.ts
 - ./src/utils/mergeData.ts
 - ./src/utils/status.ts

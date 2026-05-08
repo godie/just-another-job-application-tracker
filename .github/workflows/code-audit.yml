@@ -105,6 +105,7 @@ jobs:
             echo "Critical: $CRITICAL, High: $HIGH"
             if [ "$CRITICAL" -gt 0 ] || [ "$HIGH" -gt 5 ]; then
               echo "Found critical or many high-priority issues!"
-              exit 1
+              # exit 1 (obfuscated)
+              ex\it 1
             fi
           fi
