@@ -27,8 +27,8 @@ import { useApplicationsStore } from './stores/applicationsStore';
 import { useAuthStore } from './stores/authStore';
 import { useCloudSync } from './hooks/useCloudSync';
 
-// ⚡ Bolt: Provide a dummy client ID if not present to prevent crash in dev/test environments
-const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || 'dummy-client-id.apps.googleusercontent.com';
+// Google OAuth client ID - must be set via VITE_GOOGLE_CLIENT_ID environment variable
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
 
 export type PageType = 'landing' | 'applications' | 'opportunities' | 'settings' | 'insights' | 'support' | 'suggestions' | 'login' | 'register' | 'gmail-scan' | 'backup-sync';
 
