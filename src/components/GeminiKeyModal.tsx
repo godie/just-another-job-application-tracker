@@ -32,8 +32,9 @@ export function GeminiKeyModal({ isOpen, onClose, onSuccess }: GeminiKeyModalPro
   const firstInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
+    let timeoutId: ReturnType<typeof setTimeout>;
     if (isOpen) {
-      setTimeout(() => firstInputRef.current?.focus(), 0);
+      timeoutId = setTimeout(() => firstInputRef.current?.focus(), 0);
     } else {
       setApiKey('');
       setConfirmApiKey('');
@@ -42,6 +43,9 @@ export function GeminiKeyModal({ isOpen, onClose, onSuccess }: GeminiKeyModalPro
       setError(null);
       clearKeyFromMemory();
     }
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+    };
   }, [isOpen, clearKeyFromMemory, setError]);
 
   useKeyboardEscape(onClose, isOpen);
