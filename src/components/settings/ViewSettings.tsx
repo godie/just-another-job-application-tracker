@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { type ViewType } from '../../utils/localStorage';
+import { type ViewType } from '../../types/preferences';
 
 interface ViewSettingsProps {
   defaultView: ViewType;

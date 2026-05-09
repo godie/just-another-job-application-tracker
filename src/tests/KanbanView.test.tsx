@@ -1,7 +1,7 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, expect, test, vi } from 'vitest';
 import KanbanView from '../components/KanbanView';
-import type { JobApplication } from '../utils/localStorage';
+import type { JobApplication } from '../types/applications';
 import type { ApplicationWithMetadata } from '../types/applications';
 
 const makeApplication = (overrides: Partial<ApplicationWithMetadata>): ApplicationWithMetadata => ({

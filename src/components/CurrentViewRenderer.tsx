@@ -5,7 +5,7 @@ import CalendarView from './CalendarView';
 import ApplicationTable from './ApplicationTable';
 import { type ViewType } from './ViewSwitcher';
 import { type ApplicationWithMetadata } from '../types/applications';
-import { type JobApplication } from '../utils/localStorage';
+import { type JobApplication } from '../types/applications';
 import { type TableColumn } from '../types/table';
 
 interface CurrentViewRendererProps {

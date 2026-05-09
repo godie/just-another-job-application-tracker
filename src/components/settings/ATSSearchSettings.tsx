@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { type UserPreferences } from '../../utils/localStorage';
+import { type UserPreferences } from '../../types/preferences';
 import { TagInput } from '../ui/TagInput';
 
 interface ATSSearchSettingsProps {

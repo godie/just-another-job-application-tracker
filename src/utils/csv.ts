@@ -128,9 +128,4 @@ export const parseCSV = (csvText: string): JobApplication[] => {
   return applications;
 };
 
-/**
- * Imports applications from a CSV string. Alias for parseCSV for backward compatibility.
- */
-export const importFromCSV = (csvText: string): JobApplication[] => {
-  return parseCSV(csvText);
-};
+

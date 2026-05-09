@@ -1,10 +1,10 @@
 import { type JobApplication, type InterviewStageType, type WorkType, type InterviewEvent, type ApplicationWithMetadata } from '../types/applications';
 import { generateId } from './id';
 
-export const WORK_TYPES: WorkType[] = ['remote', 'on-site', 'hybrid'];
+const WORK_TYPES: WorkType[] = ['remote', 'on-site', 'hybrid'];
 
 // Map column names to JobApplication properties
-export const columnToKeyMap: Record<string, keyof JobApplication> = {
+const columnToKeyMap: Record<string, keyof JobApplication> = {
   'position': 'position',
   'company': 'company',
   'location': 'location',
@@ -53,7 +53,7 @@ export const getCellValue = (item: ApplicationWithMetadata, columnId: string): s
 /**
  * Helper function to map legacy status to interview stage type
  */
-export const mapStatusToStageType = (status: string): InterviewStageType => {
+const mapStatusToStageType = (status: string): InterviewStageType => {
   const statusMap: Record<string, InterviewStageType> = {
     'Applied': 'application_submitted',
     'Interviewing': 'technical_interview',

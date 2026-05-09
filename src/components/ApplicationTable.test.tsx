@@ -2,7 +2,7 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import ApplicationTable from './ApplicationTable';
-import type { JobApplication } from '../utils/localStorage';
+import type { JobApplication } from '../types/applications';
 import type { TableColumn } from '../types/table';
 
 // Mock DOMPurify

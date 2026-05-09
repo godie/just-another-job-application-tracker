@@ -96,7 +96,7 @@ JSON Schema:
  * Synthesize a UserMatchProfile from application history using Gemini AI.
  * Sends redacted application data to protect privacy.
  */
-export async function synthesizeUserProfileWithGemini(
+async function synthesizeUserProfileWithGemini(
   apiKey: string,
   applications: JobApplication[],
   options?: {
@@ -234,5 +234,4 @@ export async function buildHybridProfile(
   }
 }
 
-// Re-export buildProfileFromHistory for convenience
-export { buildProfileFromHistory } from './matching';
+

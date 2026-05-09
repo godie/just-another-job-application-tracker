@@ -3,7 +3,7 @@
 /**
  * Configurable field definitions for applications table & forms
  */
-export type FieldType = 'text' | 'date' | 'number' | 'select' | 'checkbox' | 'url';
+type FieldType = 'text' | 'date' | 'number' | 'select' | 'checkbox' | 'url';
 
 export interface FieldDefinition {
   /**

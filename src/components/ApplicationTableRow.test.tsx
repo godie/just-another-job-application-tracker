@@ -9,7 +9,7 @@ vi.mock('dompurify', () => ({
   default: { sanitize: (html: string) => html },
 }));
 
-vi.mock('../utils/localStorage', () => ({
+vi.mock('../storage/applications', () => ({
   sanitizeUrl: (url: string) => url,
 }));
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { type DateFormat } from '../../utils/localStorage';
+import { type DateFormat } from '../../types/preferences';
 
 interface DateFormatSettingsProps {
   currentFormat: DateFormat;

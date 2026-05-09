@@ -1,6 +1,6 @@
 import React, { useMemo, useState, memo } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { JobApplication } from '../utils/localStorage';
+import type { JobApplication } from '../types/applications';
 import type { ApplicationWithMetadata } from '../types/applications';
 import ConfirmDialog from './ConfirmDialog';
 

@@ -1,7 +1,7 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, expect, test, vi } from 'vitest';
 import CalendarView from '../components/CalendarView';
-import type { JobApplication } from '../utils/localStorage';
+import type { JobApplication } from '../types/applications';
 
 const todayISO = new Date().toISOString().slice(0, 10);
 

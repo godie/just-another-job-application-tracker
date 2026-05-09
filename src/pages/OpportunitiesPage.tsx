@@ -7,10 +7,8 @@ import { JobSearchForm } from '../components/JobSearchForm';
 import { JobSearchResults } from '../components/JobSearchResults';
 import { searchJobs } from '../utils/jobSearchApi';
 import { useAlert } from '../components/AlertProvider';
-import { 
-  convertOpportunityToApplication,
-  type JobOpportunity 
-} from '../utils/localStorage';
+import { convertOpportunityToApplication } from '../storage/opportunities';
+import type { JobOpportunity } from '../types/opportunities';
 import OpportunityForm from '../components/OpportunityForm';
 import ConfirmDialog from '../components/ConfirmDialog';
 
