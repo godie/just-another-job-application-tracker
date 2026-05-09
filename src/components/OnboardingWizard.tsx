@@ -132,7 +132,7 @@ const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onClose, onNavigate
           className="absolute top-3 right-3 p-2 rounded-lg text-earth-400 hover:text-earth-600 dark:hover:text-earth-300 hover:bg-earth-100 dark:hover:bg-earth-700 transition z-10"
           aria-label={t('common.close')}
         >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
@@ -157,7 +157,7 @@ const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onClose, onNavigate
             <button
               key={s.id}
               onClick={() => goToStep(i)}
-              className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
+              className={`size-2.5 rounded-full transition-all duration-300 ${
                 i === step
                   ? 'bg-sage-500 w-6'
                   : i < step

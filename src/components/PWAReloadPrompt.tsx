@@ -30,7 +30,7 @@ const PWAReloadPrompt: React.FC = () => {
     <div className='fixed bottom-20 right-4 z-50 p-4 bg-white dark:bg-earth-800 rounded-lg border border-earth-200 dark:border-earth-700 shadow-lg flex flex-col gap-3 max-w-sm animate-in fade-in slide-in-from-bottom-4 duration-300'>
       <div className='flex items-start gap-3'>
         <div className='bg-sage-100 dark:bg-sage-900/40 p-2 rounded-full'>
-          <svg className='w-5 h-5 text-sage-600 dark:text-sage-400' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+          <svg className='size-5 text-sage-600 dark:text-sage-400' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
             <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' />
           </svg>
         </div>

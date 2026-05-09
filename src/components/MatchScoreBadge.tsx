@@ -42,9 +42,9 @@ const sizeClasses = {
 };
 
 const ringClasses = {
-  sm: 'w-5 h-5 text-[10px]',
-  md: 'w-7 h-7 text-xs',
-  lg: 'w-9 h-9 text-sm',
+  sm: 'size-5 text-[10px]',
+  md: 'size-7 text-xs',
+  lg: 'size-9 text-sm',
 };
 
 export const MatchScoreBadge: React.FC<MatchScoreBadgeProps> = ({

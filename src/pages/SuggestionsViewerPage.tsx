@@ -80,7 +80,7 @@ const SuggestionsViewerPage: React.FC<SuggestionsViewerPageProps> = ({ onNavigat
 
       {isLoading ? (
         <div className="flex justify-center py-12">
-          <div className='animate-spin rounded-full h-12 w-12 border-b-2 border-sage-600'></div>
+          <div className='animate-spin rounded-full size-12 border-b-2 border-sage-600'></div>
         </div>
       ) : suggestions.length === 0 ? (
         <Card className="p-12 text-center">

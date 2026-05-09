@@ -247,7 +247,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({ applications, onEdit }) => 
                 <span
                   className={`text-xs font-semibold ${
                     today
-                      ? 'bg-sage-600 text-white rounded-full w-6 h-6 flex items-center justify-center'
+                      ? 'bg-sage-600 text-white rounded-full size-6 flex items-center justify-center'
                       : 'text-earth-600 dark:text-earth-400'
                   }`}
                 >

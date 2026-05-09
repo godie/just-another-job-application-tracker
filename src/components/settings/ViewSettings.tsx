@@ -39,8 +39,8 @@ const ViewSettings: React.FC<ViewSettingsProps> = ({ defaultView, onDefaultViewC
             >
               <div className='flex items-center justify-between mb-3'>
                 <span className='text-3xl group-hover:scale-110 transition-transform'>{getViewIcon(view)}</span>
-                <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${isActive ? 'border-sage-600' : 'border-earth-300 dark:border-earth-600'}`}>
-                  {isActive && <div className='w-2.5 h-2.5 rounded-full bg-sage-600' />}
+                <div className={`size-5 rounded-full border-2 flex items-center justify-center ${isActive ? 'border-sage-600' : 'border-earth-300 dark:border-earth-600'}`}>
+                  {isActive && <div className='size-2.5 rounded-full bg-sage-600' />}
                 </div>
               </div>
               <div>

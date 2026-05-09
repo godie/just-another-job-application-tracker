@@ -74,7 +74,7 @@ const CSVActions: React.FC = () => {
         className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-earth-700 dark:text-earth-200 bg-white dark:bg-earth-800 border border-earth-300 dark:border-earth-600 rounded hover:bg-earth-100 dark:hover:bg-earth-700 transition-colors"
         title={t('csv.export')}
       >
-        <HiDownload className="w-4 h-4" />
+        <HiDownload className="size-4" />
         <span className="hidden sm:inline">{t('csv.export')}</span>
       </button>
 
@@ -83,7 +83,7 @@ const CSVActions: React.FC = () => {
         className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-earth-700 dark:text-earth-200 bg-white dark:bg-earth-800 border border-earth-300 dark:border-earth-600 rounded hover:bg-earth-100 dark:hover:bg-earth-700 transition-colors"
         title={t('csv.import')}
       >
-        <HiUpload className="w-4 h-4" />
+        <HiUpload className="size-4" />
         <span className="hidden sm:inline">{t('csv.import')}</span>
       </button>
 

@@ -26,7 +26,7 @@ export const ProposedUpdateItem: React.FC<ProposedUpdateItemProps> = ({
         id={update.id}
         checked={isSelected}
         onChange={onToggle}
-        className="mt-1 h-5 w-5 text-green-600 dark:text-green-400 border-earth-300 dark:border-earth-600 rounded focus:ring-green-500"
+        className="mt-1 size-5 text-green-600 dark:text-green-400 border-earth-300 dark:border-earth-600 rounded focus:ring-green-500"
       />
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-1">

@@ -97,7 +97,7 @@ const Header: React.FC<HeaderProps> = ({ onToggleSidebar, onNavigate }) => {
           data-testid='sidebar-toggle'
         >
           <svg
-            className='w-6 h-6 text-earth-700 dark:text-earth-300'
+            className='size-6 text-earth-700 dark:text-earth-300'
             fill='none'
             stroke='currentColor'
             viewBox='0 0 24 24'
@@ -115,7 +115,7 @@ const Header: React.FC<HeaderProps> = ({ onToggleSidebar, onNavigate }) => {
         <img 
           src='/jajat-logo.png' 
           alt='JAJAT'
-          className='w-10 h-10 md:hidden'
+          className='size-10 md:hidden'
           data-testid='app-logo-mobile'
         />
         {/* Title: JAJAT for tablets (768px - 1023px) */}
@@ -151,7 +151,7 @@ const Header: React.FC<HeaderProps> = ({ onToggleSidebar, onNavigate }) => {
         <div className='flex items-center gap-3'>
           {/* Sun Icon (Light Mode) */}
           <svg
-            className={`w-5 h-5 transition-colors ${
+            className={`size-5 transition-colors ${
               theme === 'light' ? 'text-yellow-500' : 'text-earth-400'
             }`}
             fill='currentColor'
@@ -179,7 +179,7 @@ const Header: React.FC<HeaderProps> = ({ onToggleSidebar, onNavigate }) => {
             suppressHydrationWarning
           >
             <span
-              className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+              className={`inline-block size-4 transform rounded-full bg-white transition-transform ${
                 theme === 'dark' ? 'translate-x-6' : 'translate-x-1'
               }`}
             />
@@ -187,7 +187,7 @@ const Header: React.FC<HeaderProps> = ({ onToggleSidebar, onNavigate }) => {
 
           {/* Moon Icon (Dark Mode) */}
           <svg
-            className={`w-5 h-5 transition-colors ${
+            className={`size-5 transition-colors ${
               theme === 'dark' ? 'text-sage-400' : 'text-earth-400'
             }`}
             fill='currentColor'
@@ -205,7 +205,7 @@ const Header: React.FC<HeaderProps> = ({ onToggleSidebar, onNavigate }) => {
             data-testid='user-avatar-button'
             aria-label={t('nav.backupSync')}
           >
-            <span className='w-7 h-7 bg-sage-600 rounded-full flex items-center justify-center text-white text-sm font-bold'>
+            <span className='size-7 bg-sage-600 rounded-full flex items-center justify-center text-white text-sm font-bold'>
               {currentUser?.email?.charAt(0).toUpperCase() ?? '?'}
             </span>
             <span className='hidden md:inline text-sm font-medium text-sage-700 dark:text-sage-300 max-w-[140px] truncate'>
@@ -228,7 +228,7 @@ const Header: React.FC<HeaderProps> = ({ onToggleSidebar, onNavigate }) => {
                 <span className='hidden md:inline'>{t('common.signIn')}</span>
                 {/* User icon for mobile */}
                 <svg
-                  className='md:hidden w-5 h-5'
+                  className='md:hidden size-5'
                   fill='none'
                   stroke='currentColor'
                   viewBox='0 0 24 24'

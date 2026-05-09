@@ -104,7 +104,7 @@ const InsightsPage: React.FC<InsightsPageProps> = ({ onNavigate }) => {
       <Suspense fallback={
         <div className='h-[300px] flex items-center justify-center bg-earth-100 dark:bg-earth-800 border border-earth-200 dark:border-earth-700'>
           <div className='flex items-center gap-3 text-earth-500 dark:text-earth-400'>
-            <svg className='animate-spin h-5 w-5 text-earth-500 dark:text-earth-400' viewBox='0 0 24 24' fill='none'>
+            <svg className='animate-spin size-5 text-earth-500 dark:text-earth-400' viewBox='0 0 24 24' fill='none'>
               <circle className='opacity-25' cx='12' cy='12' r='10' stroke='currentColor' strokeWidth='4' />
               <path className='opacity-75' fill='currentColor' d='M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z' />
             </svg>
@@ -133,8 +133,8 @@ const InsightsPage: React.FC<InsightsPageProps> = ({ onNavigate }) => {
       {/* ── FOOTER ── Organic message ── */}
       <footer className='pt-8 border-t border-earth-200 dark:border-earth-700'>
         <div className='flex items-center gap-4 text-earth-500 dark:text-earth-400'>
-          <div className='w-8 h-8 bg-sage-100 dark:bg-sage-900 rounded flex items-center justify-center'>
-            <svg className='w-4 h-4 text-sage-600 dark:text-sage-300' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+          <div className='size-8 bg-sage-100 dark:bg-sage-900 rounded flex items-center justify-center'>
+            <svg className='size-4 text-sage-600 dark:text-sage-300' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
               <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={1.5} d='M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' />
             </svg>
           </div>

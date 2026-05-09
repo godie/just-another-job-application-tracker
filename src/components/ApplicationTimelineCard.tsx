@@ -51,7 +51,7 @@ const ApplicationTimelineCard: React.FC<ApplicationTimelineCardProps> = ({
               </div>
               {nextEvent && !isExpanded && (
                 <div className='flex items-center gap-2 bg-white dark:bg-earth-700 px-3 sm:px-4 py-1.5 sm:py-2 rounded border border-earth-200 dark:border-earth-600 flex-shrink-0'>
-                  <span className='inline-block w-2 h-2 bg-sage-500 rounded-full animate-pulse'></span>
+                  <span className='inline-block size-2 bg-sage-500 rounded-full animate-pulse'></span>
                   <span className='text-xs sm:text-sm font-medium text-earth-700 dark:text-earth-300'>
                     {t('timeline.nextEvent', { date: formatDate(nextEvent.date) })}
                   </span>
@@ -69,7 +69,7 @@ const ApplicationTimelineCard: React.FC<ApplicationTimelineCardProps> = ({
             aria-expanded={isExpanded}
           >
             <svg
-              className={`w-5 h-5 text-earth-600 dark:text-earth-300 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+              className={`size-5 text-earth-600 dark:text-earth-300 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
               fill='none'
               viewBox='0 0 24 24'
               stroke='currentColor'
