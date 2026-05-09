@@ -6,7 +6,7 @@ import { expect, test, describe, beforeEach, vi } from 'vitest';
 import GoogleSheetsSync from '../components/GoogleSheetsSync';
 import { AlertProvider } from '../components/AlertProvider';
 import * as googleSheetsUtils from '../utils/googleSheets';
-import type { JobApplication } from '../utils/localStorage';
+import type { JobApplication } from '../types/applications';
 
 // Mock localStorage
 const localStorageStore: Record<string, string> = {};
@@ -42,7 +42,7 @@ vi.mock('../stores/authStore', () => ({
 }));
 
 // Mock the localStorage utilities (still needed for type re-export)
-vi.mock('../utils/localStorage', () => ({
+vi.mock('../storage/applications', () => ({
   getApplications: vi.fn(() => []),
   saveApplications: vi.fn(),
 }));

@@ -3,9 +3,7 @@ import SettingsPage from '../pages/SettingsPage';
 import { expect, test, describe, beforeEach, vi } from 'vitest';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { AlertProvider } from '../components/AlertProvider';
-import {
-  DEFAULT_PREFERENCES,
-} from '../utils/localStorage';
+import { DEFAULT_PREFERENCES } from '../utils/constants';
 
 // =========================================================================
 // 1. MOCK: Configuración del Mock para localStorage

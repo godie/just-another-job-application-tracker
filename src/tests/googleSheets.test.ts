@@ -11,7 +11,7 @@ import {
   formatLastSyncTime,
   type SyncStatus,
 } from '../utils/googleSheets';
-import type { JobApplication } from '../utils/localStorage';
+import type { JobApplication } from '../types/applications';
 
 // Mock fetch globally
 global.fetch = vi.fn();

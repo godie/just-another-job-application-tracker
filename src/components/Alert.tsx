@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 
 export type AlertType = 'success' | 'error' | 'warning' | 'info';
 
-export interface AlertProps {
+interface AlertProps {
   type: AlertType;
   message: string;
   onClose?: () => void;

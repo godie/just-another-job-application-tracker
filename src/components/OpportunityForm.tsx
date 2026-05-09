@@ -1,7 +1,7 @@
 // src/components/OpportunityForm.tsx
 import React, { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { type JobOpportunity } from '../utils/localStorage';
+import { type JobOpportunity } from '../types/opportunities';
 import useFocusTrap from '../hooks/useFocusTrap';
 import { Button, Input, Card } from './ui';
 

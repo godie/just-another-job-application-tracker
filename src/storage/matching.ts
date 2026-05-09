@@ -71,18 +71,6 @@ export function saveMatchResults(results: Record<string, JobMatchResult>): void 
   }
 }
 
-export function getMatchResult(opportunityId: string): JobMatchResult | null {
-  const results = getMatchResults();
-  const result = results[opportunityId];
-  return result ? { ...result } : null;
-}
-
-export function saveMatchResult(result: JobMatchResult): void {
-  const results = getMatchResults();
-  const updatedResults = { ...results, [result.opportunityId]: { ...result } };
-  saveMatchResults(updatedResults);
-}
-
 export function clearMatchResults(): void {
   try {
     localStorage.removeItem(MATCH_RESULTS_KEY);
@@ -135,10 +123,4 @@ export function addMatchFeedback(feedback: UserFeedbackOnMatch): void {
   }
 }
 
-export function clearMatchFeedback(): void {
-  try {
-    localStorage.removeItem(MATCH_FEEDBACK_KEY);
-  } catch (error) {
-    console.error('Error clearing match feedback from storage', error);
-  }
-}
+

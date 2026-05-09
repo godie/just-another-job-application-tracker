@@ -13,6 +13,7 @@ interface AuthModalProps {
   initialMode?: AuthMode;
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'login' }) => {
   const { t } = useTranslation();
   const [mode, setMode] = useState<AuthMode>(initialMode);
@@ -266,7 +267,6 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'l
   );
 };
 
-// eslint-disable-next-line react-refresh/only-export-components
 export const useAuthModals = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [initialMode, setInitialMode] = useState<AuthMode>('login');
@@ -295,4 +295,3 @@ export const useAuthModals = () => {
   };
 };
 
-export default AuthModal;

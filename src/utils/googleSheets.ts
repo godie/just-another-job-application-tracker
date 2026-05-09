@@ -238,7 +238,7 @@ export const setSpreadsheetId = async (spreadsheetIdOrUrl: string): Promise<Shee
 /**
  * Get spreadsheet information
  */
-export const getSpreadsheetInfo = async (spreadsheetId: string): Promise<Record<string, unknown>> => {
+const getSpreadsheetInfo = async (spreadsheetId: string): Promise<Record<string, unknown>> => {
   try {
     const response = await fetch(`${API_BASE_URL}/google-sheets`, {
       method: 'POST',

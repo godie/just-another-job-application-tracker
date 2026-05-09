@@ -3,7 +3,7 @@ import type { JobApplication } from '../../types/applications';
 import type { JobOpportunity } from '../../types/opportunities';
 import type { MergeData } from '../../utils/mergeData';
 
-export function createMockApplication(overrides: Partial<JobApplication> = {}): JobApplication {
+function createMockApplication(overrides: Partial<JobApplication> = {}): JobApplication {
   return {
     id: `app-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
     position: 'Software Engineer',
@@ -23,21 +23,13 @@ export function createMockApplication(overrides: Partial<JobApplication> = {}): 
   };
 }
 
-export function createMockOpportunity(overrides: Partial<JobOpportunity> = {}): JobOpportunity {
+function createMockOpportunity(overrides: Partial<JobOpportunity> = {}): JobOpportunity {
   return {
     id: `opp-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
     position: 'Frontend Developer',
     company: 'Opportunity Co',
     link: 'https://example.com/job',
     capturedDate: new Date().toISOString(),
-    ...overrides,
-  };
-}
-
-export function createMockMergeData(overrides: Partial<MergeData> = {}): MergeData {
-  return {
-    applications: [createMockApplication()],
-    opportunities: [createMockOpportunity()],
     ...overrides,
   };
 }

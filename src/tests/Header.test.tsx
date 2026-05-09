@@ -39,7 +39,7 @@ vi.mock('../hooks/useIsLoggedIn', () => ({
 }));
 
 // Mock the module that provides the utility functions
-vi.mock('../utils/localStorage', () => ({
+vi.mock('../storage/applications', () => ({
   getApplications: vi.fn(() => []),
   saveApplications: vi.fn(),
   getOpportunities: vi.fn(() => []),

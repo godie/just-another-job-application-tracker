@@ -1,7 +1,7 @@
 // src/components/TimelineEditor.tsx
 import React, { useState, useMemo, useReducer } from 'react';
-import type { InterviewEvent, InterviewStageType, EventStatus } from '../utils/localStorage';
-import { generateId } from '../utils/localStorage';
+import type { InterviewEvent, InterviewStageType, EventStatus } from '../types/applications';
+import { generateId } from '../utils/id';
 import { parseLocalDate } from '../utils/date';
 import { usePreferencesStore } from '../stores/preferencesStore';
 

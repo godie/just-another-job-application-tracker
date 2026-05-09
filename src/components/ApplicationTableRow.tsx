@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { type JobApplication, type ApplicationWithMetadata } from '../types/applications';
 import { getCellValue } from '../utils/applications';
 import type { TableColumn } from '../types/table';
-import { sanitizeUrl } from '../utils/localStorage';
+import { sanitizeUrl } from '../utils/url';
 import { TableRow, TableCell, Badge } from './ui';
 import { getBadgeVariantForStatus } from '../utils/status';
 

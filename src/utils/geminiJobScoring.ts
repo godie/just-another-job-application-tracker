@@ -88,7 +88,7 @@ Provide the match score and analysis as JSON.`;
 /**
  * Score a single opportunity against a profile using Gemini AI.
  */
-export async function scoreOpportunityWithGemini(
+async function scoreOpportunityWithGemini(
   apiKey: string,
   opportunity: JobOpportunity,
   profile: UserMatchProfile
@@ -148,7 +148,7 @@ export async function scoreOpportunityWithGemini(
  * Calculate a hybrid score: deterministic base + Gemini enrichment when available.
  * If Gemini fails, falls back to deterministic.
  */
-export async function calculateHybridScore(
+async function calculateHybridScore(
   apiKey: string | null,
   opportunity: JobOpportunity,
   profile: UserMatchProfile

@@ -7,9 +7,7 @@ import ViewSwitcher, { type ViewType } from '../components/ViewSwitcher';
 import FiltersBar, { type Filters } from '../components/FiltersBar';
 import MetricsSummary from '../components/MetricsSummary';
 import { useAlert } from '../components/AlertProvider';
-import {
-  type JobApplication,
-} from '../utils/localStorage';
+import type { JobApplication } from '../types/applications';
 import AddJobForm from '../components/AddJobForm';
 import CSVActions from '../components/CSVActions';
 import GoogleSheetsSync from '../components/GoogleSheetsSync';

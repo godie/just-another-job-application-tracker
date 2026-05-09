@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslation, Trans } from 'react-i18next';
-import { type JobOpportunity, sanitizeUrl } from '../utils/localStorage';
+import { type JobOpportunity } from '../types/opportunities';
+import { sanitizeUrl } from '../utils/url';
 
 interface OpportunitiesTableProps {
   opportunities: JobOpportunity[];

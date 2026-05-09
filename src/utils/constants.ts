@@ -44,17 +44,6 @@ export const CHATBOTS = [
   { id: 'Gemini', name: 'Gemini', url: 'https://gemini.google.com/app' },
 ];
 
-export const ATS_PLATFORMS = [
-  { id: 'linkedin', name: 'LinkedIn', url: 'linkedin.com/jobs' },
-  { id: 'ashby', name: 'Ashby', url: 'jobs.ashbyhq.com' },
-  { id: 'teamtailor', name: 'Teamtailor', url: '*.teamtailor.com' },
-  { id: 'workday', name: 'Workday', url: 'myworkdayjobs.com' },
-  { id: 'greenhouse', name: 'Greenhouse', url: 'boards.greenhouse.io' },
-  { id: 'lever', name: 'Lever', url: 'jobs.lever.co' },
-  { id: 'icims', name: 'iCIMS', url: '*.icims.com' },
-  { id: 'workable', name: 'Workable', url: 'apply.workable.com' },
-];
-
 export const INTERVIEW_TYPES = new Set<InterviewStageType>([
   'screener_call',
   'first_contact',

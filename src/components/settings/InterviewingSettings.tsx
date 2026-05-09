@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { type CustomInterviewEvent } from '../../utils/localStorage';
+import { type CustomInterviewEvent } from '../../types/preferences';
 
 interface InterviewingSettingsProps {
   customInterviewEvents: CustomInterviewEvent[];

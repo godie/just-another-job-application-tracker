@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { type FieldDefinition } from '../../utils/localStorage';
+import { type FieldDefinition } from '../../types/preferences';
 
 interface FieldsSettingsProps {
   orderedFields: FieldDefinition[];

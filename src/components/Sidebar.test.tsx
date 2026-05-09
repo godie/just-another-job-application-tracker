@@ -19,7 +19,7 @@ Object.defineProperty(window, 'localStorage', { value: localStorageMock });
 
 // Mock getOpportunities
 const mockGetOpportunities = vi.fn(() => []);
-vi.mock('../utils/localStorage', () => ({
+vi.mock('../storage/applications', () => ({
   getOpportunities: () => mockGetOpportunities(),
 }));
 

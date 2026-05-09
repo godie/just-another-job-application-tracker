@@ -3,7 +3,7 @@
 /**
  * Configurable field definitions for applications table & forms
  */
-export type FieldType = 'text' | 'date' | 'number' | 'select' | 'checkbox' | 'url';
+type FieldType = 'text' | 'date' | 'number' | 'select' | 'checkbox' | 'url';
 
 export interface FieldDefinition {
   /**
@@ -33,6 +33,8 @@ export interface ATSSearchPreferences {
   roles: string[];
   keywords: string[];
   location: string[];
+  source?: string;
+  techStack?: string[];
 }
 
 export interface UserPreferences {

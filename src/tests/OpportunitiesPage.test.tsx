@@ -47,9 +47,8 @@ vi.mock('../stores/applicationsStore', () => ({
     selector(mockApplicationsState),
 }));
 
-vi.mock('../utils/localStorage', () => ({
+vi.mock('../storage/opportunities', () => ({
   convertOpportunityToApplication: mockConvertOpportunityToApplication,
-  sanitizeUrl: vi.fn((url: string) => url),
 }));
 
 vi.mock('../components/Header', () => ({

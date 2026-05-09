@@ -1,7 +1,7 @@
 // src/components/AddJobForm.tsx
 import React, { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { JobApplication } from '../utils/localStorage';
+import type { JobApplication } from '../types/applications';
 import { toWorkType, buildInitialTimeline } from '../utils/applications';
 import useKeyboardEscape from '../hooks/useKeyboardEscape';
 import useFocusTrap from '../hooks/useFocusTrap';

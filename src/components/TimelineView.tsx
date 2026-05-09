@@ -3,7 +3,7 @@ import React, { useState, useMemo, useEffect, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelection } from '../hooks/useSelection';
 import { useFormatDate } from '../hooks/useFormatDate';
-import type { JobApplication } from '../utils/localStorage';
+import type { JobApplication } from '../types/applications';
 import type { ApplicationWithMetadata } from '../types/applications';
 import ConfirmDialog from './ConfirmDialog';
 import ApplicationTimelineCard from './ApplicationTimelineCard';

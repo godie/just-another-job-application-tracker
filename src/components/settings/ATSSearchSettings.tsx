@@ -1,11 +1,11 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { type UserPreferences } from '../../utils/localStorage';
+import { type UserPreferences } from '../../types/preferences';
 import { TagInput } from '../ui/TagInput';
 
 interface ATSSearchSettingsProps {
   atsSearch: UserPreferences['atsSearch'];
-  onAtsSearchChange: (key: string, value: string[]) => void;
+  onAtsSearchChange: (key: string, value: string | string[]) => void;
 }
 
 const ATSSearchSettings: React.FC<ATSSearchSettingsProps> = ({ atsSearch, onAtsSearchChange }) => {
@@ -55,6 +55,36 @@ const ATSSearchSettings: React.FC<ATSSearchSettingsProps> = ({ atsSearch, onAtsS
             onChange={(tags) => onAtsSearchChange('location', tags)}
             placeholder={t('opportunities.atsSearch.placeholderLocation')}
           />
+        </div>
+
+        <div>
+          <label className='block text-sm font-semibold text-earth-700 dark:text-earth-300 mb-2'>
+            {t('opportunities.atsSearch.source')}
+          </label>
+          <select
+            value={atsSearch?.source ?? 'both'}
+            onChange={(e) => onAtsSearchChange('source', e.target.value)}
+            className='w-full px-4 py-2.5 text-sm border border-earth-200 dark:border-earth-600 bg-white dark:bg-earth-800 text-earth-900 dark:text-earth-100 rounded focus:outline-none focus:ring-2 focus:ring-sage-500 focus:border-transparent transition-colors'
+          >
+            <option value='both'>{t('opportunities.atsSearch.sourceBoth')}</option>
+            <option value='jooble'>{t('opportunities.atsSearch.sourceJooble')}</option>
+            <option value='theirstack'>{t('opportunities.atsSearch.sourceTheirstack')}</option>
+          </select>
+          <p className='text-xs text-earth-500 dark:text-earth-400 mt-1'>
+            {t('opportunities.atsSearch.sourceHint')}
+          </p>
+        </div>
+
+        <div>
+          <TagInput
+            label={t('opportunities.atsSearch.techStack')}
+            tags={atsSearch?.techStack || []}
+            onChange={(tags) => onAtsSearchChange('techStack', tags)}
+            placeholder={t('opportunities.atsSearch.placeholderTechStack')}
+          />
+          <p className='text-xs text-earth-500 dark:text-earth-400 mt-1'>
+            {t('opportunities.atsSearch.techStackHint')}
+          </p>
         </div>
       </div>
     </div>

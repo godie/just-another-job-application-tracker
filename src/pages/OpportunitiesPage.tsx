@@ -1,17 +1,18 @@
 // src/pages/OpportunitiesPage.tsx
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSEO } from '../seo';
 import Footer from '../components/Footer';
+import { JobSearchForm } from '../components/JobSearchForm';
+import { JobSearchResults } from '../components/JobSearchResults';
+import { searchJobs } from '../utils/jobSearchApi';
 import { useAlert } from '../components/AlertProvider';
-import { 
-  convertOpportunityToApplication,
-  type JobOpportunity 
-} from '../utils/localStorage';
+import { convertOpportunityToApplication } from '../storage/opportunities';
+import type { JobOpportunity } from '../types/opportunities';
 import OpportunityForm from '../components/OpportunityForm';
 import ConfirmDialog from '../components/ConfirmDialog';
-import ATSSearch from '../components/ATSSearch';
-import packageJson from '../../package.json';
+
+
 import { useOpportunitiesStore } from '../stores/opportunitiesStore';
 import { useApplicationsStore } from '../stores/applicationsStore';
 import OpportunitiesEmptyState from '../components/OpportunitiesEmptyState';
@@ -19,6 +20,7 @@ import OpportunitiesTable from '../components/OpportunitiesTable';
 import { useFormatDate } from '../hooks/useFormatDate';
 
 import { type PageType } from '../App';
+import type { JobSearchParams, UnifiedJobResult } from '../types/jobSearch';
 
 interface OpportunitiesPageContentProps {
   onNavigate?: (page: PageType) => void;
@@ -45,6 +47,18 @@ const OpportunitiesPageContent: React.FC<OpportunitiesPageContentProps> = () => 
   
   const [searchTerm, setSearchTerm] = useState('');
   const [isFormOpen, setIsFormOpen] = useState(false);
+
+  // Job search state
+  const [searchResults, setSearchResults] = useState<UnifiedJobResult[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [searchError, setSearchError] = useState<string | null>(null);
+  const [searchTotal, setSearchTotal] = useState(0);
+  const [searchHasMore, setSearchHasMore] = useState(false);
+  const [searchErrors, setSearchErrors] = useState<Array<{ source: string; message: string }>>([]);
+  const [searchParams, setSearchParams] = useState<JobSearchParams | null>(null);
+
+  // Track IDs of jobs already saved as opportunities
+  const [savedSearchIds, setSavedSearchIds] = useState<Set<string>>(new Set());
   const [deleteConfirm, setDeleteConfirm] = useState<{
     isOpen: boolean;
     opportunity: JobOpportunity | null;
@@ -134,7 +148,7 @@ const OpportunitiesPageContent: React.FC<OpportunitiesPageContentProps> = () => 
     }
   };
 
-  const handleAddOpportunity = (opportunityData: Omit<JobOpportunity, 'id' | 'capturedDate'>) => {
+  const handleAddOpportunity = useCallback((opportunityData: Omit<JobOpportunity, 'id' | 'capturedDate'>) => {
     try {
       const newOpportunity = addOpportunity(opportunityData);
       showSuccess(t('opportunities.success.added', { position: opportunityData.position, company: opportunityData.company }));
@@ -153,7 +167,71 @@ const OpportunitiesPageContent: React.FC<OpportunitiesPageContentProps> = () => 
       console.error('Error adding opportunity:', error);
       showError(t('opportunities.success.addError'));
     }
-  };
+  }, [addOpportunity, showSuccess, showError, t]);
+
+  // ── Job Search Handlers ──
+  const handleJobSearch = useCallback(async (params: JobSearchParams) => {
+    setIsSearching(true);
+    setSearchError(null);
+    setSearchResults([]);
+    setSearchErrors([]);
+    setSearchParams(params);
+    setSearchTotal(0);
+    setSearchHasMore(false);
+
+    try {
+      const response = await searchJobs(params);
+      setSearchResults(response.results);
+      setSearchTotal(response.total);
+      setSearchHasMore(response.hasMore);
+      if (response.errors?.length) {
+        setSearchErrors(response.errors);
+      }
+    } catch (err) {
+      const error = err as { message?: string };
+      setSearchError(error.message ?? 'Search failed. Please try again.');
+    } finally {
+      setIsSearching(false);
+    }
+  }, []);
+
+  const handleLoadMore = useCallback(async () => {
+    if (!searchParams || isSearching) return;
+
+    setIsSearching(true);
+    setSearchError(null);
+
+    try {
+      const nextParams = { ...searchParams, page: searchParams.page + 1 };
+      setSearchParams(nextParams);
+      const response = await searchJobs(nextParams);
+      setSearchResults((prev) => [...prev, ...response.results]);
+      setSearchTotal(response.total);
+      setSearchHasMore(response.hasMore);
+      if (response.errors?.length) {
+        setSearchErrors((prev) => [...prev, ...response.errors]);
+      }
+    } catch (err) {
+      const error = err as { message?: string };
+      setSearchError(error.message ?? 'Failed to load more results.');
+    } finally {
+      setIsSearching(false);
+    }
+  }, [searchParams, isSearching]);
+
+  const handleSaveAsOpportunity = useCallback((job: UnifiedJobResult) => {
+    handleAddOpportunity({
+      position: job.position,
+      company: job.company,
+      link: job.url,
+      description: job.description ?? undefined,
+      location: job.location ?? undefined,
+      jobType: job.remote ? 'Remote' : undefined,
+      salary: job.salary ?? undefined,
+      postedDate: job.postedDate ?? undefined,
+    });
+    setSavedSearchIds((prev) => new Set([...prev, job.id]));
+  }, [handleAddOpportunity]);
 
   const filteredOpportunities = useMemo(() => {
     if (!searchTerm.trim()) return opportunities;
@@ -245,9 +323,23 @@ const OpportunitiesPageContent: React.FC<OpportunitiesPageContentProps> = () => 
         </div>
       </section>
 
-      {/* ── ATS SEARCH ── Component manages its own collapse state ── */}
+      {/* ── JOB SEARCH ── ── */}
       <div className='mb-8'>
-        <ATSSearch />
+        <JobSearchForm
+          onSearch={handleJobSearch}
+          isSearching={isSearching}
+        />
+        <JobSearchResults
+          results={searchResults}
+          isLoading={isSearching}
+          error={searchError}
+          totalCount={searchTotal}
+          hasMore={searchHasMore}
+          onLoadMore={handleLoadMore}
+          onSaveAsOpportunity={handleSaveAsOpportunity}
+          savedIds={savedSearchIds}
+          errors={searchErrors}
+        />
       </div>
 
       {/* ── CONTENT ── Table or Empty State ── */}
@@ -264,7 +356,6 @@ const OpportunitiesPageContent: React.FC<OpportunitiesPageContentProps> = () => 
             formatDate={formatLocaleDate}
           />
         )}
-      <Footer version={packageJson.version} />
       <OpportunityForm
         isOpen={isFormOpen}
         onClose={() => setIsFormOpen(false)}
@@ -283,6 +374,7 @@ const OpportunitiesPageContent: React.FC<OpportunitiesPageContentProps> = () => 
         onConfirm={confirmDelete}
         onCancel={() => setDeleteConfirm({ isOpen: false, opportunity: null })}
       />
+      <Footer version="2.1.4" />
     </div>
   );
 };

@@ -1,6 +1,6 @@
 import React, { useMemo, useState, memo } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { JobApplication, InterviewEvent } from '../utils/localStorage';
+import type { JobApplication, InterviewEvent } from '../types/applications';
 import type { ApplicationWithMetadata } from '../types/applications';
 import { parseLocalDate } from '../utils/date';
 
