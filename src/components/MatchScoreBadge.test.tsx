@@ -60,10 +60,10 @@ describe('MatchScoreBadge', () => {
   });
 
   it('calls onClick when clicked', () => {
-    const handleClick = vi.fn();
-    render(<MatchScoreBadge result={makeResult()} onClick={handleClick} />);
+    const handleBadgeClick = vi.fn();
+    render(<MatchScoreBadge result={makeResult()} onClick={handleBadgeClick} />);
     fireEvent.click(screen.getByRole('button'));
-    expect(handleClick).toHaveBeenCalledTimes(1);
+    expect(handleBadgeClick).toHaveBeenCalledTimes(1);
   });
 
   it('does not render as button when onClick is not provided', () => {

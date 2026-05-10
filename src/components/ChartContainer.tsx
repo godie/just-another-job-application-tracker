@@ -31,9 +31,9 @@ const ChartContainer: React.FC<ChartContainerProps> = ({ title, accentColor = 's
   const colors = accentColorMap[accentColor];
 
   return (
-    <div className={`bg-white dark:bg-earth-800 border border-earth-200 dark:border-earth-700 border-l-4 ${colors.border} rounded-lg overflow-hidden`}>
+    <div className={`bg-white dark:bg-earth-800 border border-earth-200 dark:border-earth-700 border-l-2 ${colors.border} rounded-lg overflow-hidden`}>
       <div className={`px-6 py-4 ${colors.bg} border-b border-earth-200 dark:border-earth-700`}>
-        <h3 className={`font-serif text-lg font-bold ${colors.title}`}>{title}</h3>
+        <h3 className={`font-serif text-lg font-semibold ${colors.title}`}>{title}</h3>
       </div>
       <div className='p-6 text-earth-700 dark:text-earth-300'>
         {children}

@@ -56,7 +56,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onNavigate, onSuccess }) => {
               Welcome Back
             </span>
           </div>
-          <h1 className='font-serif text-3xl font-bold text-earth-900 dark:text-earth-50'>
+          <h1 className='font-serif text-3xl font-semibold text-earth-900 dark:text-earth-50'>
             Sign in to your account
           </h1>
           <p className='mt-2 text-sm text-earth-600 dark:text-earth-400'>

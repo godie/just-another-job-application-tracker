@@ -227,7 +227,7 @@ const SuggestionForm: React.FC<SuggestionFormProps> = ({ onNavigate }) => {
           <div className='p-2 bg-sage-100 dark:bg-sage-900 rounded text-sage-600 dark:text-sage-300'>
             <FaClipboard size={24} />
           </div>
-          <h2 className='text-xl font-bold text-earth-800 dark:text-earth-100'>{t('support.suggestions')}</h2>
+          <h2 className='text-xl font-semibold text-earth-800 dark:text-earth-100'>{t('support.suggestions')}</h2>
         </div>
         {onNavigate && (
           <button

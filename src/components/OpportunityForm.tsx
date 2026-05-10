@@ -118,7 +118,7 @@ const OpportunityForm: React.FC<OpportunityFormProps> = ({ isOpen, onClose, onSa
         <Card className="max-w-2xl w-full max-h-[90vh] overflow-y-auto p-0">
         <div className="p-6">
           <div className="flex justify-between items-center mb-4">
-            <h3 id="opportunity-form-title" className="text-xl font-bold text-earth-800 dark:text-earth-100">{t('form.addOpportunityTitle')}</h3>
+            <h3 id="opportunity-form-title" className="text-xl font-semibold text-earth-800 dark:text-earth-100">{t('form.addOpportunityTitle')}</h3>
             <button
               type="button"
               onClick={handleCancel}

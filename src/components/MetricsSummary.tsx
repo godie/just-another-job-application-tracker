@@ -35,7 +35,7 @@ const MetricsSummary: React.FC<MetricsSummaryProps> = ({ applications }) => {
   return (
     <section className='grid grid-cols-2 sm:grid-cols-4 gap-4 mb-10' data-testid='metrics-summary'>
       {/* Dominant metric: Applications — spans 2 columns */}
-      <div className='col-span-2 bg-earth-50 dark:bg-earth-800 p-6 border-l-4 border-earth-400 dark:border-earth-500 transition-colors duration-300'>
+      <div className='col-span-2 bg-earth-50 dark:bg-earth-800 p-6 border-l-2 border-earth-400 dark:border-earth-500 transition-colors duration-300'>
         <p className='text-sm font-medium text-earth-500 dark:text-earth-400 tracking-wide uppercase'>
           {t('home.metrics.applications')}
         </p>
@@ -45,7 +45,7 @@ const MetricsSummary: React.FC<MetricsSummaryProps> = ({ applications }) => {
       </div>
 
       {/* Compact metric: Interviews */}
-      <div className='bg-sage-50 dark:bg-sage-900/30 p-5 border-l-4 border-sage-400 dark:border-sage-600 transition-colors duration-300'>
+      <div className='bg-sage-50 dark:bg-sage-900/30 p-5 border-l-2 border-sage-400 dark:border-sage-600 transition-colors duration-300'>
         <p className='text-xs font-medium text-sage-600 dark:text-sage-400 tracking-wide uppercase'>
           {t('home.metrics.interviews')}
         </p>
@@ -55,7 +55,7 @@ const MetricsSummary: React.FC<MetricsSummaryProps> = ({ applications }) => {
       </div>
 
       {/* Compact metric: Offers — using earth-dark to reserve terracotta for CTAs */}
-      <div className='bg-earth-100 dark:bg-earth-700/50 p-5 border-l-4 border-earth-500 dark:border-earth-500 transition-colors duration-300'>
+      <div className='bg-earth-100 dark:bg-earth-700/50 p-5 border-l-2 border-earth-500 dark:border-earth-500 transition-colors duration-300'>
         <p className='text-xs font-medium text-earth-600 dark:text-earth-300 tracking-wide uppercase'>
           {t('home.metrics.offers')}
         </p>

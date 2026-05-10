@@ -31,7 +31,7 @@ const InterviewingSettings: React.FC<InterviewingSettingsProps> = ({
     <div className='space-y-8'>
       {/* Form Section */}
       <div className='bg-earth-50 dark:bg-earth-800/50 rounded p-6 border border-earth-200 dark:border-earth-700'>
-        <h3 className='text-lg font-bold text-earth-900 dark:text-earth-100 mb-6 flex items-center gap-2'>
+        <h3 className='text-lg font-semibold text-earth-900 dark:text-earth-100 mb-6 flex items-center gap-2'>
           <span className='p-1.5 bg-sage-100 dark:bg-sage-900/40 text-sage-600 dark:text-sage-400 rounded'>
             <svg xmlns='http://www.w3.org/2000/svg' className='size-5' viewBox='0 0 20 20' fill='currentColor'>
               <path fillRule='evenodd' d='M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z' clipRule='evenodd' />
@@ -98,7 +98,7 @@ const InterviewingSettings: React.FC<InterviewingSettingsProps> = ({
 
       {/* List Section */}
       <div className='space-y-4'>
-        <h3 className='text-sm font-bold text-earth-500 dark:text-earth-400 uppercase tracking-wider px-1'>
+        <h3 className='text-sm font-semibold text-earth-500 dark:text-earth-400 uppercase tracking-wider px-1'>
           {t('settings.interviewing.title')}
         </h3>
 

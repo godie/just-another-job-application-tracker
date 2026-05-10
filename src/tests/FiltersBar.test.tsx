@@ -22,11 +22,11 @@ describe('FiltersBar', () => {
   });
 
   test('calls onFiltersChange when search input changes', () => {
-    const handleChange = vi.fn();
+    const handleFiltersChange = vi.fn();
     render(
       <FiltersBar
         filters={defaultFilters}
-        onFiltersChange={handleChange}
+        onFiltersChange={handleFiltersChange}
         availableStatuses={['Applied']}
         availablePlatforms={['LinkedIn']}
         onClear={vi.fn()}
@@ -34,11 +34,11 @@ describe('FiltersBar', () => {
     );
 
     fireEvent.change(screen.getByLabelText(/Search/i), { target: { value: 'frontend' } });
-    expect(handleChange).not.toHaveBeenCalled();
+    expect(handleFiltersChange).not.toHaveBeenCalled();
     act(() => {
       vi.advanceTimersByTime(300);
     });
-    expect(handleChange).toHaveBeenCalledWith({ ...defaultFilters, search: 'frontend' });
+    expect(handleFiltersChange).toHaveBeenCalledWith({ ...defaultFilters, search: 'frontend' });
   });
 
   test('calls onClear when clear button clicked', () => {

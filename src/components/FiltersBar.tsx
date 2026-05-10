@@ -78,7 +78,7 @@ const FiltersBar: React.FC<FiltersBarProps> = React.memo(({ filters, onFiltersCh
     return () => clearTimeout(timerId);
   }, [searchTerm]);
 
-  const handleChange = (key: keyof Filters) => (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const createFilterChangeHandler = (key: keyof Filters) => (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     onFiltersChange({ ...filters, [key]: event.target.value });
   };
 
@@ -191,7 +191,7 @@ const FiltersBar: React.FC<FiltersBarProps> = React.memo(({ filters, onFiltersCh
             id='platform-filter'
             label={t('filters.platform')}
             value={filters.platform}
-            onChange={handleChange('platform')}
+            onChange={createFilterChangeHandler('platform')}
           >
             <option value=''>{t('filters.all')}</option>
             {availablePlatforms.map((platform) => (
@@ -207,7 +207,7 @@ const FiltersBar: React.FC<FiltersBarProps> = React.memo(({ filters, onFiltersCh
               label={t('filters.from')}
               type='date'
               value={filters.dateFrom}
-              onChange={handleChange('dateFrom')}
+              onChange={createFilterChangeHandler('dateFrom')}
             />
           </div>
           <div className='min-w-[140px]'>
@@ -216,7 +216,7 @@ const FiltersBar: React.FC<FiltersBarProps> = React.memo(({ filters, onFiltersCh
               label={t('filters.to')}
               type='date'
               value={filters.dateTo}
-              onChange={handleChange('dateTo')}
+              onChange={createFilterChangeHandler('dateTo')}
             />
           </div>
         </div>

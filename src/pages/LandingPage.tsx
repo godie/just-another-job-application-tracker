@@ -136,7 +136,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
             </div>
             
             {/* Main heading - Serif for editorial feel */}
-            <h1 className='font-serif text-5xl md:text-6xl lg:text-7xl font-bold leading-tight mb-8 text-earth-900 dark:text-earth-50'>
+            <h1 className='font-serif text-5xl md:text-6xl lg:text-7xl font-semibold leading-tight mb-8 text-earth-900 dark:text-earth-50'>
               {t('landing.heroTitle')}
             </h1>
             
@@ -189,7 +189,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
             <span className='text-terracotta-600 dark:text-terracotta-400 text-sm font-medium tracking-wider uppercase mb-4 block'>
               Features
             </span>
-            <h2 className='font-serif text-4xl md:text-5xl font-bold text-earth-900 dark:text-earth-50 mb-6'>
+            <h2 className='font-serif text-4xl md:text-5xl font-semibold text-earth-900 dark:text-earth-50 mb-6'>
               {t('landing.features')}
             </h2>
           </div>
@@ -199,7 +199,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
             {/* Feature 1 - Left aligned */}
             <div className='relative'>
               <div className='sticky top-8'>
-                <h3 className='font-serif text-2xl md:text-3xl font-bold mb-6 text-earth-800 dark:text-earth-100'>
+                <h3 className='font-serif text-2xl md:text-3xl font-semibold mb-6 text-earth-800 dark:text-earth-100'>
                   {t('landing.feature1Title')}
                 </h3>
                 <p className='text-lg text-earth-600 dark:text-earth-300 mb-8 leading-relaxed'>
@@ -249,7 +249,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
             {/* Feature 3 - Content */}
             <div className='relative'>
               <div className='sticky top-8'>
-                <h3 className='font-serif text-2xl md:text-3xl font-bold mb-6 text-earth-800 dark:text-earth-100'>
+                <h3 className='font-serif text-2xl md:text-3xl font-semibold mb-6 text-earth-800 dark:text-earth-100'>
                   {t('landing.feature3Title')}
                 </h3>
                 <p className='text-lg text-earth-600 dark:text-earth-300 mb-8 leading-relaxed'>
@@ -356,7 +356,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
             <span className='text-terracotta-600 dark:text-terracotta-400 text-sm font-medium tracking-wider uppercase mb-4 block'>
               Roadmap
             </span>
-            <h2 className='font-serif text-3xl md:text-4xl font-bold text-earth-900 dark:text-earth-50 mb-6'>
+            <h2 className='font-serif text-3xl md:text-4xl font-semibold text-earth-900 dark:text-earth-50 mb-6'>
               What's Coming Next
             </h2>
             <p className='text-earth-600 dark:text-earth-300 leading-relaxed'>
@@ -398,7 +398,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
         </div>
         
         <div className='relative max-w-4xl mx-auto px-6 lg:px-8 text-center'>
-          <h2 className='font-serif text-3xl md:text-5xl font-bold mb-8'>
+          <h2 className='font-serif text-3xl md:text-5xl font-semibold mb-8'>
             {t('landing.ready')}
           </h2>
           <p className='text-xl text-white/90 mb-12 max-w-2xl mx-auto'>

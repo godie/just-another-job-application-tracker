@@ -9,10 +9,10 @@ describe('Button', () => {
   });
 
   it('calls onClick when clicked', () => {
-    const handleClick = vi.fn();
-    render(<Button onClick={handleClick}>Click me</Button>);
+    const handleButtonClick = vi.fn();
+    render(<Button onClick={handleButtonClick}>Click me</Button>);
     fireEvent.click(screen.getByRole('button', { name: /click me/i }));
-    expect(handleClick).toHaveBeenCalledTimes(1);
+    expect(handleButtonClick).toHaveBeenCalledTimes(1);
   });
 
   it('is disabled when the disabled prop is true', () => {

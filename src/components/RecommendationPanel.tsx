@@ -124,7 +124,7 @@ export const RecommendationPanel: React.FC<RecommendationPanelProps> = ({
               <div className="flex flex-wrap gap-1.5 mt-2">
                 {matchResult.strengths.slice(0, 2).map((strength, i) => (
                   <span
-                    key={i}
+                    key={`strength-${i}-${strength.slice(0, 20)}`}
                     className="inline-flex items-center px-2 py-0.5 rounded text-xs bg-sage-50 dark:bg-sage-900/20 text-sage-700 dark:text-sage-300"
                   >
                     {strength}

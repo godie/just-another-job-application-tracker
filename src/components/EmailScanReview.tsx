@@ -262,7 +262,7 @@ export function EmailScanReview() {
   return (
     <div className="space-y-6">
       <div className='bg-white dark:bg-earth-800 rounded p-6 border border-earth-100 dark:border-earth-700'>
-        <h2 className="text-2xl font-bold text-earth-800 dark:text-earth-100 mb-2">
+        <h2 className="text-2xl font-semibold text-earth-800 dark:text-earth-100 mb-2">
           {t('settings.emailScan.title')}
         </h2>
         <p className="text-sm text-earth-500 dark:text-earth-400 mb-6">

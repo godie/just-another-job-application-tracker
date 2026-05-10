@@ -65,7 +65,7 @@ if (result.success) {
               Cloud
             </span>
           </div>
-          <h1 className='font-serif text-4xl md:text-5xl font-bold text-earth-900 dark:text-earth-50'>
+          <h1 className='font-serif text-4xl md:text-5xl font-semibold text-earth-900 dark:text-earth-50'>
             {t('backupSync.title')}
           </h1>
           <p className='mt-4 text-lg text-earth-600 dark:text-earth-300 max-w-2xl'>
@@ -77,7 +77,7 @@ if (result.success) {
           <div className='size-20 bg-sage-50 dark:bg-sage-900/20 rounded-2xl flex items-center justify-center text-4xl mx-auto mb-6'>
             ☁️
           </div>
-          <h2 className='font-serif text-2xl font-bold text-earth-900 dark:text-earth-100 mb-3'>
+          <h2 className='font-serif text-2xl font-semibold text-earth-900 dark:text-earth-100 mb-3'>
             {t('backupSync.notLoggedIn.title')}
           </h2>
           <p className='text-earth-600 dark:text-earth-400 mb-8 max-w-md mx-auto'>
@@ -133,7 +133,7 @@ if (result.success) {
             Cloud
           </span>
         </div>
-        <h1 className='font-serif text-4xl md:text-5xl font-bold text-earth-900 dark:text-earth-50'>
+        <h1 className='font-serif text-4xl md:text-5xl font-semibold text-earth-900 dark:text-earth-50'>
           {t('backupSync.title')}
         </h1>
         <p className='mt-4 text-lg text-earth-600 dark:text-earth-300 max-w-2xl'>

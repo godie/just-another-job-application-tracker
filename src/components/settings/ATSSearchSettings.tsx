@@ -21,7 +21,7 @@ const ATSSearchSettings: React.FC<ATSSearchSettingsProps> = ({ atsSearch, onAtsS
             </svg>
           </div>
           <div>
-            <h3 className='text-lg font-bold text-earth-900 dark:text-earth-100'>
+            <h3 className='text-lg font-semibold text-earth-900 dark:text-earth-100'>
               {t('opportunities.atsSearch.title')}
             </h3>
             <p className='text-sm text-earth-600 dark:text-earth-400 mt-1'>

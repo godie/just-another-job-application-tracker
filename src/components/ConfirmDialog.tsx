@@ -53,7 +53,7 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
 
   return (
     <div className='fixed inset-0 z-50 flex items-center justify-center bg-earth-900/80 backdrop-blur-sm'>
-      <div className={`${styles.bg} ${styles.border} border-l-4 rounded max-w-md w-full mx-4`}>
+      <div className={`${styles.bg} ${styles.border} border-l-2 rounded max-w-md w-full mx-4`}>
         <div className='p-6'>
           <div className='flex items-start'>
             <div className={`flex-shrink-0 mr-4 ${styles.iconColor}`}>
