@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useSelection } from '../hooks/useSelection';
@@ -21,11 +21,13 @@ import { ProposedAdditionItem } from './ProposedAdditionItem';
 import { ProposedUpdateItem } from './ProposedUpdateItem';
 import { GeminiKeyModal } from './GeminiKeyModal';
 import { useFormatDate } from '../hooks/useFormatDate';
+import { useGoogleToken } from '../hooks/useGoogleToken';
 
 export function EmailScanReview() {
   const { t } = useTranslation();
   const { formatShortDate } = useFormatDate();
   const { showSuccess, showError } = useAlert();
+  const { hasValidToken, isChecking, checkToken } = useGoogleToken();
   const applications = useApplicationsStore((state) => state.applications);
   const preferences = usePreferencesStore((state) => state.preferences);
 
@@ -58,7 +60,7 @@ export function EmailScanReview() {
     try {
       const res = await getAuthCookie();
       if (!res.success || !res.access_token) {
-        setHasValidGoogleToken(false);
+        checkToken();
         showError(t('settings.emailScan.googleTokenExpired'));
         return;
       }
@@ -175,30 +177,6 @@ export function EmailScanReview() {
   const currentUser = useAuthStore((state) => state.currentUser);
   const hasGoogleLinked = !!(currentUser?.googleId);
 
-  // Validate Google token on mount (checks cookie expiry + refresh)
-  const [hasValidGoogleToken, setHasValidGoogleToken] = useState(false);
-  const [tokenCheckDone, setTokenCheckDone] = useState(false);
-
-  const checkGoogleToken = useCallback(async () => {
-    try {
-      const res = await getAuthCookie();
-      setHasValidGoogleToken(res.success && !!res.access_token);
-    } catch {
-      setHasValidGoogleToken(false);
-    } finally {
-      setTokenCheckDone(true);
-    }
-  }, []);
-
-  useEffect(() => {
-    checkGoogleToken();
-  }, [checkGoogleToken]);
-
-  // Re-check token after successful Google linking
-  const handleGoogleLinked = useCallback(() => {
-    checkGoogleToken();
-  }, [checkGoogleToken]);
-
   const handleProcessWithGemini = useCallback(async () => {
     if (!preview || selectedEmailIds.size === 0) return;
 
@@ -269,14 +247,14 @@ export function EmailScanReview() {
           {t('settings.emailScan.subtitle')}
         </p>
 
-        {(!tokenCheckDone) && (
+        {isChecking && (
           <div className="flex items-center justify-center py-8 mb-6">
             <span className="size-5 border-2 border-sage-400 border-t-transparent rounded-full animate-spin mr-2" />
             <span className="text-sm text-earth-500 dark:text-earth-400">{t('common.loading')}</span>
           </div>
         )}
 
-        {tokenCheckDone && !hasGoogleLinked && (
+        {!isChecking && !hasGoogleLinked && (
           <div className="bg-sage-50 dark:bg-sage-900/20 border border-sage-200 dark:border-sage-700 rounded-lg p-6 mb-6">
             <div className="text-center">
               <div className="size-12 mx-auto mb-3 rounded-full bg-sage-100 dark:bg-sage-800 flex items-center justify-center">
@@ -292,14 +270,14 @@ export function EmailScanReview() {
               </p>
               <ConnectGoogleButton
                 label={t('settings.cloud.linkGoogle')}
-                onSuccess={handleGoogleLinked}
+                onSuccess={checkToken}
                 className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium bg-sage-600 text-white hover:bg-sage-700 transition-colors rounded disabled:opacity-50 disabled:cursor-not-allowed"
               />
             </div>
           </div>
         )}
 
-        {tokenCheckDone && hasGoogleLinked && !hasValidGoogleToken && (
+        {!isChecking && hasGoogleLinked && !hasValidToken && (
           <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-lg p-6 mb-6">
             <div className="text-center">
               <div className="size-12 mx-auto mb-3 rounded-full bg-amber-100 dark:bg-amber-800 flex items-center justify-center">
@@ -315,14 +293,14 @@ export function EmailScanReview() {
               </p>
               <ConnectGoogleButton
                 label={t('settings.cloud.linkGoogle')}
-                onSuccess={handleGoogleLinked}
+                onSuccess={checkToken}
                 className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium bg-amber-600 text-white hover:bg-amber-700 transition-colors rounded disabled:opacity-50 disabled:cursor-not-allowed"
               />
             </div>
           </div>
         )}
 
-        {hasGoogleLinked && hasValidGoogleToken && (
+        {hasGoogleLinked && hasValidToken && (
         <div className="flex border-b border-earth-200 dark:border-earth-700 mb-6">
           <button
             className={`px-4 py-2 font-medium text-sm transition-colors ${
@@ -347,7 +325,7 @@ export function EmailScanReview() {
         </div>
         )}
 
-        {hasGoogleLinked && hasValidGoogleToken && error && (
+        {hasGoogleLinked && hasValidToken && error && (
           <div
             className="mb-4 p-3 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 text-sm"
             role="alert"
@@ -358,7 +336,7 @@ export function EmailScanReview() {
           </div>
         )}
 
-        {hasGoogleLinked && hasValidGoogleToken && (
+        {hasGoogleLinked && hasValidToken && (
         <div className="flex flex-wrap items-end gap-4 mb-6">
           <div className="flex flex-col gap-1.5">
             <label className="text-xs font-semibold text-earth-500 dark:text-earth-400 uppercase tracking-wider">
@@ -424,7 +402,7 @@ export function EmailScanReview() {
         </div>
         )}
 
-        {hasGoogleLinked && hasValidGoogleToken && activeTab === 'manual' && (
+        {hasGoogleLinked && hasValidToken && activeTab === 'manual' && (
           <div className="space-y-6 animate-in fade-in slide-in-from-top-4 duration-300">
             <div className="flex items-center gap-2 bg-earth-100 dark:bg-earth-700/50 rounded-lg p-1 w-fit">
               <button
@@ -583,7 +561,7 @@ export function EmailScanReview() {
           </div>
         )}
 
-        {hasGoogleLinked && hasValidGoogleToken && preview && (
+        {hasGoogleLinked && hasValidToken && preview && (
           <div className="space-y-6 mt-8">
             {(preview.proposedAdditions.length > 0) && (
               <section className="animate-in fade-in slide-in-from-bottom-4 duration-500">

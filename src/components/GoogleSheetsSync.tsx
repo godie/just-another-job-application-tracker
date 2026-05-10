@@ -1,12 +1,12 @@
 // src/components/GoogleSheetsSync.tsx
 
-import React, { useReducer, useEffect, useCallback, useRef, useState } from 'react';
+import React, { useReducer, useEffect, useCallback, useRef } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import { useAlert } from './AlertProvider';
 import { Card } from './ui';
 import { useAuthStore } from '../stores/authStore';
 import { ConnectGoogleButton } from './ConnectGoogleButton';
-import { getAuthCookie } from '../utils/api';
+import { useGoogleToken } from '../hooks/useGoogleToken';
 import {
   createSpreadsheet,
   syncToGoogleSheets,
@@ -64,29 +64,7 @@ const GoogleSheetsSync: React.FC<GoogleSheetsSyncProps> = ({ applications, onSyn
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const hasGoogleLinked = !!(currentUser?.googleId);
 
-  // Validate Google token on mount (checks cookie expiry + refresh)
-  const [hasValidGoogleToken, setHasValidGoogleToken] = useState(false);
-  const [tokenCheckDone, setTokenCheckDone] = useState(false);
-
-  const checkGoogleToken = useCallback(async () => {
-    try {
-      const res = await getAuthCookie();
-      setHasValidGoogleToken(res.success && !!res.access_token);
-    } catch {
-      setHasValidGoogleToken(false);
-    } finally {
-      setTokenCheckDone(true);
-    }
-  }, []);
-
-  useEffect(() => {
-    checkGoogleToken();
-  }, [checkGoogleToken]);
-
-  // Re-check token after successful Google linking
-  const handleGoogleLinked = useCallback(() => {
-    checkGoogleToken();
-  }, [checkGoogleToken]);
+  const { hasValidToken, isChecking, checkToken } = useGoogleToken();
 
   const [state, dispatch] = useReducer(googleSheetsSyncReducer, undefined, () => ({
     syncStatus: getSyncStatus(),
@@ -260,7 +238,7 @@ const GoogleSheetsSync: React.FC<GoogleSheetsSyncProps> = ({ applications, onSyn
           </p>
           <ConnectGoogleButton
             label={t('settings.cloud.linkGoogle')}
-            onSuccess={handleGoogleLinked}
+            onSuccess={checkToken}
             className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium bg-sage-600 text-white hover:bg-sage-700 transition-colors rounded disabled:opacity-50 disabled:cursor-not-allowed"
           />
         </div>
@@ -269,7 +247,7 @@ const GoogleSheetsSync: React.FC<GoogleSheetsSyncProps> = ({ applications, onSyn
   }
 
   // Google account linked but token is expired/revoked
-  if (hasGoogleLinked && tokenCheckDone && !hasValidGoogleToken) {
+  if (hasGoogleLinked && !isChecking && !hasValidToken) {
     return (
       <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-lg p-6 mb-4">
         <div className="text-center">
@@ -286,7 +264,7 @@ const GoogleSheetsSync: React.FC<GoogleSheetsSyncProps> = ({ applications, onSyn
           </p>
           <ConnectGoogleButton
             label={t('settings.cloud.linkGoogle')}
-            onSuccess={handleGoogleLinked}
+            onSuccess={checkToken}
             className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium bg-amber-600 text-white hover:bg-amber-700 transition-colors rounded disabled:opacity-50 disabled:cursor-not-allowed"
           />
         </div>
@@ -295,7 +273,7 @@ const GoogleSheetsSync: React.FC<GoogleSheetsSyncProps> = ({ applications, onSyn
   }
 
   // Still checking token validity — show loading
-  if (!tokenCheckDone) {
+  if (isChecking) {
     return (
       <div className="flex items-center justify-center py-6 mb-4">
         <span className="size-5 border-2 border-sage-400 border-t-transparent rounded-full animate-spin mr-2" />
