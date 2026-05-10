@@ -78,7 +78,7 @@ export function EmailScanReview() {
         : (err instanceof Error ? err.message : t('settings.emailScan.scanError'));
       showError(message);
     }
-  }, [scan, scanMonths, showError, t, selectedAdditions, selectedUpdates, selectedEmailIds]);
+  }, [scan, scanMonths, showError, t, selectedAdditions, selectedUpdates, selectedEmailIds, checkToken]);
 
   const selectAllAdditions = useCallback(() => {
     if (!preview) return;
