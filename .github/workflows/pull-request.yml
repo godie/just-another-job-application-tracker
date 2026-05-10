@@ -105,3 +105,6 @@ jobs:
           base: main
           head: HEAD
           extra_args: --only-verified
+
+      - name: Scan for secrets with local script
+        run: bash scripts/scan-secrets.sh --ci
