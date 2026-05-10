@@ -29,10 +29,29 @@ fi
 cat > "$HOOK_FILE" << 'EOF'
 #!/bin/sh
 #
-# Pre-commit hook to run ESLint, build, and tests before committing
-# This ensures code quality and prevents build errors in production
+# Pre-commit hook to run secret scan, ESLint, build, and tests before committing
+# This ensures code quality and prevents build errors and secret leaks in production
 #
 SECONDS=0
+echo "🔐 Scanning for secrets in staged files..."
+
+# Run secret scanner
+if [ -f "scripts/scan-secrets.sh" ]; then
+  bash scripts/scan-secrets.sh
+  SCAN_EXIT_CODE=$?
+else
+  echo "⚠️  Secret scanner script not found. Skipping secret scan."
+  SCAN_EXIT_CODE=0
+fi
+
+if [ $SCAN_EXIT_CODE -ne 0 ]; then
+  echo ""
+  echo "❌ Secret scan failed. Please remove exposed secrets before committing."
+  exit 1
+fi
+
+echo "✅ Secret scan passed!"
+echo ""
 echo "🔍 Running ESLint before commit..."
 
 # Run ESLint

@@ -63,7 +63,7 @@ const Alert: React.FC<AlertProps> = ({ type, message, onClose, duration = 5000 }
       role="alert"
       className={`
         ${styles[type]} 
-        border-l-4 
+        border-l-2 
         p-4 
         rounded-lg 
         shadow-md 

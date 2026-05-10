@@ -129,14 +129,14 @@ export function GeminiKeyModal({ isOpen, onClose, onSuccess }: GeminiKeyModalPro
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="gemini-key-modal-title"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
     >
       <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="gemini-key-modal-title"
         ref={modalRef}
         className="w-full max-w-md mx-4 bg-white dark:bg-earth-800 rounded-xl shadow-2xl border border-earth-200 dark:border-earth-700 p-6 space-y-5 animate-in fade-in zoom-in-95 duration-200"
         onKeyDown={handleKeyDown}

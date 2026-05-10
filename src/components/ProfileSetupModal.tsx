@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import useFocusTrap from '../hooks/useFocusTrap';
+import useKeyboardEscape from '../hooks/useKeyboardEscape';
 import type { UserMatchProfile, SeniorityLevel } from '../types/matching';
 
 interface ProfileSetupModalProps {
@@ -36,6 +37,7 @@ export const ProfileSetupModal: React.FC<ProfileSetupModalProps> = ({
 }) => {
   const modalRef = useRef<HTMLDivElement>(null);
   useFocusTrap(modalRef, isOpen);
+  useKeyboardEscape(onClose, isOpen);
 
   const [targetRoles, setTargetRoles] = useState('');
   const [seniority, setSeniority] = useState<SeniorityLevel | ''>('');
@@ -117,14 +119,14 @@ export const ProfileSetupModal: React.FC<ProfileSetupModalProps> = ({
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="profile-setup-title"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
     >
       <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="profile-setup-title"
         ref={modalRef}
         className="w-full max-w-2xl bg-white dark:bg-earth-800 rounded-xl shadow-2xl border border-earth-200 dark:border-earth-700 overflow-hidden animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] flex flex-col"
         onKeyDown={handleKeyDown}
@@ -132,7 +134,7 @@ export const ProfileSetupModal: React.FC<ProfileSetupModalProps> = ({
         {/* Header */}
         <div className="px-6 py-4 border-b border-earth-200 dark:border-earth-700 flex items-center justify-between flex-shrink-0">
           <div>
-            <h2 id="profile-setup-title" className="text-xl font-bold text-earth-900 dark:text-earth-100">
+            <h2 id="profile-setup-title" className="text-xl font-semibold text-earth-900 dark:text-earth-100">
               Matching Profile Setup
             </h2>
             <p className="text-sm text-earth-500 dark:text-earth-400 mt-0.5">
@@ -253,9 +255,9 @@ export const ProfileSetupModal: React.FC<ProfileSetupModalProps> = ({
 
             {/* Work Types */}
             <div className="space-y-1.5">
-              <label className="block text-sm font-semibold text-earth-700 dark:text-earth-300">
+              <span className="block text-sm font-semibold text-earth-700 dark:text-earth-300">
                 Preferred Work Arrangement
-              </label>
+              </span>
               <div className="flex gap-3">
                 {WORK_TYPE_OPTIONS.map((opt) => (
                   <label

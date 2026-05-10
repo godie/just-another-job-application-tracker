@@ -73,7 +73,7 @@ const SuggestionsViewerPage: React.FC<SuggestionsViewerPageProps> = ({ onNavigat
             <FaArrowLeft size={14} />
             <span>{t('support.suggestionsViewer.back')}</span>
           </button>
-          <h1 className='text-3xl font-bold text-earth-800 dark:text-earth-100'>{t('support.suggestionsViewer.title')}</h1>
+          <h1 className='text-3xl font-semibold text-earth-800 dark:text-earth-100'>{t('support.suggestionsViewer.title')}</h1>
         </div>
         <Button
           onClick={() => void fetchSuggestions()}

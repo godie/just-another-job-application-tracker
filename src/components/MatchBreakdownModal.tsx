@@ -162,7 +162,7 @@ export const MatchBreakdownModal: React.FC<MatchBreakdownModalProps> = ({
               <ul className="space-y-1">
                 {result.strengths.map((s, i) => (
                   <li
-                    key={i}
+                    key={`strength-${i}-${s.slice(0, 20)}`}
                     className="text-sm text-earth-700 dark:text-earth-300 pl-6 relative before:content-['•'] before:absolute before:left-2 before:text-sage-500"
                   >
                     {s}
@@ -183,7 +183,7 @@ export const MatchBreakdownModal: React.FC<MatchBreakdownModalProps> = ({
               <ul className="space-y-1">
                 {result.gaps.map((g, i) => (
                   <li
-                    key={i}
+                    key={`gap-${i}-${g.slice(0, 20)}`}
                     className="text-sm text-earth-600 dark:text-earth-400 pl-6 relative before:content-['•'] before:absolute before:left-2 before:text-earth-400"
                   >
                     {g}

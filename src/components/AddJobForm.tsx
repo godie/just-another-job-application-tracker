@@ -73,7 +73,7 @@ const AddJobForm: React.FC<AddJobFormProps> = ({ onSave, onCancel, initialData }
   const modalRef = useRef<HTMLDivElement>(null);
   useFocusTrap(modalRef);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+  const updateFormField = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     if (name === 'hybridDaysInOffice') {
       const num = value === '' ? undefined : parseInt(value, 10);
@@ -126,7 +126,7 @@ const AddJobForm: React.FC<AddJobFormProps> = ({ onSave, onCancel, initialData }
     >
       <div ref={modalRef}>
         <Card className='w-full max-w-4xl p-8 overflow-y-auto max-h-[90vh] border border-earth-200 dark:border-earth-700'>
-        <h2 id='add-job-form-title' className='font-serif text-3xl font-bold mb-8 text-earth-800 dark:text-earth-100'>
+        <h2 id='add-job-form-title' className='font-serif text-3xl font-semibold mb-8 text-earth-800 dark:text-earth-100'>
             {isEditing ? t('form.editTitle') : t('form.addTitle')}
         </h2>
         <form onSubmit={handleSubmit} data-testid='job-form'>
@@ -142,7 +142,7 @@ const AddJobForm: React.FC<AddJobFormProps> = ({ onSave, onCancel, initialData }
               type='text'
               name='position'
               value={formData.position}
-              onChange={handleChange}
+              onChange={updateFormField}
               required
               maxLength={200}
               data-testid='form-position'
@@ -153,7 +153,7 @@ const AddJobForm: React.FC<AddJobFormProps> = ({ onSave, onCancel, initialData }
               type='text'
               name='company'
               value={formData.company}
-              onChange={handleChange}
+              onChange={updateFormField}
               required
               maxLength={200}
               data-testid='form-company'
@@ -165,7 +165,7 @@ const AddJobForm: React.FC<AddJobFormProps> = ({ onSave, onCancel, initialData }
                 type='text'
                 name='location'
                 value={formData.location ?? ''}
-                onChange={handleChange}
+                onChange={updateFormField}
                 placeholder='e.g. Remote, San Francisco'
                 maxLength={200}
                 className='w-full rounded border-earth-300 dark:border-earth-600 focus:border-sage-500 dark:focus:border-sage-400 focus:ring-sage-500 dark:focus:ring-sage-400 p-2.5 border bg-white dark:bg-earth-800 text-earth-900 dark:text-earth-100 transition-colors'
@@ -178,7 +178,7 @@ const AddJobForm: React.FC<AddJobFormProps> = ({ onSave, onCancel, initialData }
               <select
                 name='workType'
                 value={formData.workType ?? ''}
-                onChange={handleChange}
+                onChange={updateFormField}
                 className='w-full rounded border-earth-300 dark:border-earth-600 shadow-sm focus:border-sage-500 dark:focus:border-sage-400 focus:ring-sage-500 dark:focus:ring-sage-400 p-2.5 border bg-white dark:bg-earth-800 text-earth-900 dark:text-earth-100 transition-colors'
                 data-testid='form-work-type'
               >
@@ -195,7 +195,7 @@ const AddJobForm: React.FC<AddJobFormProps> = ({ onSave, onCancel, initialData }
                 <select
                   name='hybridDaysInOffice'
                   value={formData.hybridDaysInOffice ?? ''}
-                  onChange={handleChange}
+                  onChange={updateFormField}
                   className='w-full rounded border-earth-300 dark:border-earth-600 shadow-sm focus:border-sage-500 dark:focus:border-sage-400 focus:ring-sage-500 dark:focus:ring-sage-400 p-2.5 border bg-white dark:bg-earth-800 text-earth-900 dark:text-earth-100 transition-colors'
                   data-testid='form-hybrid-days'
                 >
@@ -220,7 +220,7 @@ const AddJobForm: React.FC<AddJobFormProps> = ({ onSave, onCancel, initialData }
               data-testid='form-application-date'
               name='applicationDate'
               value={formData.applicationDate}
-              onChange={handleChange}
+              onChange={updateFormField}
               required
             />
 
@@ -229,7 +229,7 @@ const AddJobForm: React.FC<AddJobFormProps> = ({ onSave, onCancel, initialData }
               name='status'
               value={formData.status || 'Applied'}
               data-testid='form-status'
-              onChange={handleChange}
+              onChange={updateFormField}
               required
             >
               {['Applied', 'Interviewing', 'Offer', 'Rejected', 'Hold'].map(s => (
@@ -242,7 +242,7 @@ const AddJobForm: React.FC<AddJobFormProps> = ({ onSave, onCancel, initialData }
               type='text'
               name='salary'
               value={formData.salary}
-              onChange={handleChange}
+              onChange={updateFormField}
               maxLength={100}
             />
 
@@ -251,7 +251,7 @@ const AddJobForm: React.FC<AddJobFormProps> = ({ onSave, onCancel, initialData }
               type='date'
               name='interviewDate'
               value={formData.interviewDate}
-              onChange={handleChange}
+              onChange={updateFormField}
             />
 
             <Input
@@ -259,7 +259,7 @@ const AddJobForm: React.FC<AddJobFormProps> = ({ onSave, onCancel, initialData }
               type='date'
               name='followUpDate'
               value={formData.followUpDate}
-              onChange={handleChange}
+              onChange={updateFormField}
             />
 
             <Input
@@ -267,7 +267,7 @@ const AddJobForm: React.FC<AddJobFormProps> = ({ onSave, onCancel, initialData }
               type='url'
               name='link'
               value={formData.link}
-              onChange={handleChange}
+              onChange={updateFormField}
               maxLength={500}
             />
 
@@ -281,7 +281,7 @@ const AddJobForm: React.FC<AddJobFormProps> = ({ onSave, onCancel, initialData }
               data-testid='form-platform'
               name='platform'
               value={formData.platform}
-              onChange={handleChange}
+              onChange={updateFormField}
             >
               {['LinkedIn', 'Indeed', 'Company Website', 'Referral', 'Other'].map(p => (
                 <option key={p} value={p}>{t(`form.platforms.${p}`)}</option>
@@ -294,7 +294,7 @@ const AddJobForm: React.FC<AddJobFormProps> = ({ onSave, onCancel, initialData }
               name='contactName'
               data-testid='form-contact-name'
               value={formData.contactName}
-              onChange={handleChange}
+              onChange={updateFormField}
               maxLength={100}
               placeholder="e.g., John Smith"
             />
@@ -306,7 +306,7 @@ const AddJobForm: React.FC<AddJobFormProps> = ({ onSave, onCancel, initialData }
               <textarea
                 name='notes'
                 value={formData.notes}
-                onChange={handleChange}
+                onChange={updateFormField}
                 rows={3}
                 maxLength={2000}
                 className='w-full rounded border-earth-300 dark:border-earth-600 px-3 py-2.5 text-sm bg-white dark:bg-earth-700 text-earth-900 dark:text-earth-100 placeholder-earth-400 dark:placeholder-earth-500 focus:border-sage-500 focus:ring-sage-500 transition-colors resize-none'

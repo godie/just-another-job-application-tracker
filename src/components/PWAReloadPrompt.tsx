@@ -35,7 +35,7 @@ const PWAReloadPrompt: React.FC = () => {
           </svg>
         </div>
         <div>
-          <h4 className='text-sm font-bold text-earth-900 dark:text-earth-100'>
+          <h4 className='text-sm font-semibold text-earth-900 dark:text-earth-100'>
             {offlineReady ? 'App ready to work offline' : 'Update available!'}
           </h4>
           <p className='text-xs text-earth-500 dark:text-earth-400 mt-1'>

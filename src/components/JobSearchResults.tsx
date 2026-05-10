@@ -58,7 +58,7 @@ export const JobSearchResults: React.FC<JobSearchResultsProps> = ({
     return (
       <div className="mb-8 space-y-4" data-testid="job-search-loading">
         {[1, 2, 3].map((i) => (
-          <Card key={i} className="p-5 animate-pulse">
+          <Card key={`skeleton-${i}`} className="p-5 animate-pulse">
             <div className="h-5 bg-earth-200 dark:bg-earth-700 rounded w-3/4 mb-3" />
             <div className="h-4 bg-earth-100 dark:bg-earth-700/50 rounded w-1/2 mb-2" />
             <div className="h-4 bg-earth-100 dark:bg-earth-700/50 rounded w-2/3" />
@@ -72,7 +72,7 @@ export const JobSearchResults: React.FC<JobSearchResultsProps> = ({
   if (error && results.length === 0) {
     return (
       <div className="mb-8" data-testid="job-search-error">
-        <Card className="p-6 border-l-4 border-l-red-500 bg-red-50 dark:bg-red-900/20">
+        <Card className="p-6 border-l-2 border-l-red-500 bg-red-50 dark:bg-red-900/20">
           <div className="flex items-start gap-3">
             <svg xmlns="http://www.w3.org/2000/svg" className="size-5 text-red-500 mt-0.5 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
               <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
@@ -147,13 +147,13 @@ export const JobSearchResults: React.FC<JobSearchResultsProps> = ({
           return (
             <Card
               key={job.id}
-              className={`p-4 transition-all hover:shadow-md ${isSaved ? 'border-l-4 border-l-sage-500 opacity-70' : ''}`}
+              className={`p-4 transition-all hover:shadow-md ${isSaved ? 'border-l-2 border-l-sage-500 opacity-70' : ''}`}
             >
               <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
                 {/* Left: job details */}
                 <div className="flex-1 min-w-0">
                   {/* Position — clickable */}
-                  <h3 className="text-base font-bold text-earth-900 dark:text-earth-50 mb-1">
+                  <h3 className="text-base font-semibold text-earth-900 dark:text-earth-50 mb-1">
                     <a
                       href={job.url}
                       target="_blank"

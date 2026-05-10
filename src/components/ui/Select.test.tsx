@@ -21,10 +21,10 @@ describe('Select', () => {
   });
 
   it('calls onChange when selection changes', () => {
-    const handleChange = vi.fn();
-    render(<Select label="Choices" id="choices" options={options} onChange={handleChange} />);
+    const handleSelectChange = vi.fn();
+    render(<Select label="Choices" id="choices" options={options} onChange={handleSelectChange} />);
     fireEvent.change(screen.getByLabelText(/choices/i), { target: { value: 'option2' } });
-    expect(handleChange).toHaveBeenCalledTimes(1);
+    expect(handleSelectChange).toHaveBeenCalledTimes(1);
   });
 
   it('renders error message when error prop is provided', () => {

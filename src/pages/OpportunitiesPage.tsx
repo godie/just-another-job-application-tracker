@@ -276,7 +276,7 @@ const OpportunitiesPageContent: React.FC<OpportunitiesPageContentProps> = () => 
                 Pipeline
               </span>
             </div>
-            <h1 className='font-serif text-4xl md:text-5xl font-bold text-earth-900 dark:text-earth-50'>
+            <h1 className='font-serif text-4xl md:text-5xl font-semibold text-earth-900 dark:text-earth-50'>
               {t('opportunities.title')}
             </h1>
             <p className='mt-3 text-base text-earth-600 dark:text-earth-300'>
@@ -295,7 +295,7 @@ const OpportunitiesPageContent: React.FC<OpportunitiesPageContentProps> = () => 
       {/* ── METRICS ── Asymmetric layout: Opportunities dominant, Recent & Remote compact ── */}
       <section className='grid grid-cols-2 sm:grid-cols-4 gap-4 mb-10' data-testid='opportunities-metrics'>
         {/* Dominant metric: Total Opportunities — spans 2 columns */}
-        <div className='col-span-2 bg-earth-50 dark:bg-earth-800 p-6 border-l-4 border-earth-400 dark:border-earth-500 transition-colors duration-300'>
+        <div className='col-span-2 bg-earth-50 dark:bg-earth-800 p-6 border-l-2 border-earth-400 dark:border-earth-500 transition-colors duration-300'>
           <p className='text-sm font-medium text-earth-500 dark:text-earth-400 tracking-wide uppercase'>
             {t('opportunities.metrics.total', 'Total Opportunities')}
           </p>
@@ -305,7 +305,7 @@ const OpportunitiesPageContent: React.FC<OpportunitiesPageContentProps> = () => 
         </div>
 
         {/* Compact metric: Recent (last 7 days) */}
-        <div className='bg-sage-50 dark:bg-sage-900/30 p-5 border-l-4 border-sage-400 dark:border-sage-600 transition-colors duration-300'>
+        <div className='bg-sage-50 dark:bg-sage-900/30 p-5 border-l-2 border-sage-400 dark:border-sage-600 transition-colors duration-300'>
           <p className='text-xs font-medium text-sage-600 dark:text-sage-400 tracking-wide uppercase'>
             {t('opportunities.metrics.thisWeek', 'This Week')}
           </p>
@@ -315,7 +315,7 @@ const OpportunitiesPageContent: React.FC<OpportunitiesPageContentProps> = () => 
         </div>
 
         {/* Compact metric: Remote */}
-        <div className='bg-earth-100 dark:bg-earth-700/50 p-5 border-l-4 border-earth-500 dark:border-earth-500 transition-colors duration-300'>
+        <div className='bg-earth-100 dark:bg-earth-700/50 p-5 border-l-2 border-earth-500 dark:border-earth-500 transition-colors duration-300'>
           <p className='text-xs font-medium text-earth-600 dark:text-earth-300 tracking-wide uppercase'>
             {t('opportunities.metrics.remote', 'Remote')}
           </p>

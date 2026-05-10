@@ -50,7 +50,7 @@ export const MatchingSettings: React.FC<MatchingSettingsProps> = ({
               </svg>
             </div>
             <div>
-              <h3 className="text-lg font-bold text-earth-800 dark:text-earth-100">
+              <h3 className="text-lg font-semibold text-earth-800 dark:text-earth-100">
                 AI-Powered Job Matching
               </h3>
               <p className="text-sm text-earth-500 dark:text-earth-400">
@@ -58,15 +58,16 @@ export const MatchingSettings: React.FC<MatchingSettingsProps> = ({
               </p>
             </div>
           </div>
-          <label className="relative inline-flex items-center cursor-pointer">
-            <input
-              type="checkbox"
-              role="switch"
-              aria-checked={preferences.enabled}
-              checked={preferences.enabled}
-              onChange={() => handleToggle('enabled')}
-              className="sr-only peer"
-            />
+          <label htmlFor="matching-enabled" className="relative inline-flex items-center cursor-pointer">
+                <input
+                  id="matching-enabled"
+                  type="checkbox"
+                  role="switch"
+                  aria-checked={preferences.enabled}
+                  checked={preferences.enabled}
+                  onChange={() => handleToggle('enabled')}
+                  className="sr-only peer"
+                />
             <div
               aria-hidden="true"
               className="w-11 h-6 bg-earth-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-sage-300 dark:peer-focus:ring-sage-800 rounded-full peer dark:bg-earth-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-earth-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-earth-600 peer-checked:bg-sage-600"
@@ -88,8 +89,9 @@ export const MatchingSettings: React.FC<MatchingSettingsProps> = ({
                   Enable AI-enhanced semantic analysis (requires Gemini API key)
                 </p>
               </div>
-              <label className="relative inline-flex items-center cursor-pointer">
+              <label htmlFor="matching-gemini" className="relative inline-flex items-center cursor-pointer">
                 <input
+                  id="matching-gemini"
                   type="checkbox"
                   role="switch"
                   aria-checked={preferences.useGemini}
@@ -111,8 +113,9 @@ export const MatchingSettings: React.FC<MatchingSettingsProps> = ({
               Data Sources
             </h4>
             <div className="space-y-3">
-              <label className="flex items-center gap-3 cursor-pointer">
+              <label htmlFor="matching-timeline" className="flex items-center gap-3 cursor-pointer">
                 <input
+                  id="matching-timeline"
                   type="checkbox"
                   checked={preferences.includeTimeline}
                   onChange={() => handleToggle('includeTimeline')}
@@ -126,8 +129,9 @@ export const MatchingSettings: React.FC<MatchingSettingsProps> = ({
                 </div>
               </label>
 
-              <label className="flex items-center gap-3 cursor-pointer">
+              <label htmlFor="matching-notes" className="flex items-center gap-3 cursor-pointer">
                 <input
+                  id="matching-notes"
                   type="checkbox"
                   checked={preferences.includeNotes}
                   onChange={() => handleToggle('includeNotes')}
@@ -141,8 +145,9 @@ export const MatchingSettings: React.FC<MatchingSettingsProps> = ({
                 </div>
               </label>
 
-              <label className="flex items-center gap-3 cursor-pointer">
+              <label htmlFor="matching-cv" className="flex items-center gap-3 cursor-pointer">
                 <input
+                  id="matching-cv"
                   type="checkbox"
                   checked={preferences.includeCvText}
                   onChange={() => handleToggle('includeCvText')}
@@ -165,8 +170,9 @@ export const MatchingSettings: React.FC<MatchingSettingsProps> = ({
             </h4>
 
             <div className="space-y-4">
-              <label className="flex items-center gap-3 cursor-pointer">
+              <label htmlFor="matching-auto-compute" className="flex items-center gap-3 cursor-pointer">
                 <input
+                  id="matching-auto-compute"
                   type="checkbox"
                   checked={preferences.autoComputeOnOpportunityAdd}
                   onChange={() => handleToggle('autoComputeOnOpportunityAdd')}
@@ -179,8 +185,9 @@ export const MatchingSettings: React.FC<MatchingSettingsProps> = ({
                 </div>
               </label>
 
-              <label className="flex items-center gap-3 cursor-pointer">
+              <label htmlFor="matching-prioritize-remote" className="flex items-center gap-3 cursor-pointer">
                 <input
+                  id="matching-prioritize-remote"
                   type="checkbox"
                   checked={preferences.prioritizeRemote}
                   onChange={() => handleToggle('prioritizeRemote')}

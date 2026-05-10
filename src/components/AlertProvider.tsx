@@ -1,5 +1,5 @@
 // src/components/AlertProvider.tsx
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, { createContext, use, useState, useCallback } from 'react';
 import type { ReactNode } from 'react';
 import Alert from './Alert';
 import type { AlertType } from './Alert';
@@ -78,7 +78,7 @@ export const AlertProvider: React.FC<AlertProviderProps> = ({ children }) => {
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const useAlert = (): AlertContextType => {
-  const context = useContext(AlertContext);
+  const context = use(AlertContext);
   if (!context) {
     throw new Error('useAlert must be used within an AlertProvider');
   }

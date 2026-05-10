@@ -432,7 +432,7 @@ const SettingsPageContent: React.FC<SettingsPageProps> = ({ onNavigate }) => {
                       <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z' />
                     </svg>
                   </div>
-                  <h4 className='font-serif text-lg font-bold text-earth-900 dark:text-earth-100 mb-2'>{t('backupSync.notLoggedIn.title')}</h4>
+                  <h4 className='font-serif text-lg font-semibold text-earth-900 dark:text-earth-100 mb-2'>{t('backupSync.notLoggedIn.title')}</h4>
                   <p className='text-earth-600 dark:text-earth-400 mb-8 max-w-md mx-auto'>{t('backupSync.notLoggedIn.description')}</p>
                   <div className='flex flex-col sm:flex-row justify-center gap-4'>
                     <button
@@ -462,7 +462,7 @@ const SettingsPageContent: React.FC<SettingsPageProps> = ({ onNavigate }) => {
             Configuration
           </span>
         </div>
-        <h1 className='font-serif text-4xl md:text-5xl font-bold text-earth-900 dark:text-earth-50'>
+        <h1 className='font-serif text-4xl md:text-5xl font-semibold text-earth-900 dark:text-earth-50'>
           {t('settings.title')}
         </h1>
         <p className='mt-4 text-lg text-earth-600 dark:text-earth-300 max-w-2xl'>
@@ -517,7 +517,7 @@ const SettingsPageContent: React.FC<SettingsPageProps> = ({ onNavigate }) => {
         {/* Main Content Area */}
         <div className='lg:col-span-9 mt-8 lg:mt-0'>
           {/* Header for current section */}
-          <Card className={`mb-8 overflow-hidden ${activeSection === 'atsSearch' ? 'border-l-4 border-l-sage-600' : ''}`}>
+          <Card className={`mb-8 overflow-hidden ${activeSection === 'atsSearch' ? 'border-l-2 border-l-sage-600' : ''}`}>
             <div className='p-8'>
               <div className='flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-4'>
                 <div className='flex items-center gap-4'>
@@ -525,7 +525,7 @@ const SettingsPageContent: React.FC<SettingsPageProps> = ({ onNavigate }) => {
                     {currentSection?.icon}
                   </div>
                   <div>
-                    <h2 className='font-serif text-2xl font-bold text-earth-900 dark:text-earth-100'>
+                    <h2 className='font-serif text-2xl font-semibold text-earth-900 dark:text-earth-100'>
                       {currentSection?.label}
                     </h2>
                     <p className='text-sm text-earth-600 dark:text-earth-400 mt-1'>

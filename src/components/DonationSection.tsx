@@ -12,7 +12,7 @@ const DonationSection: React.FC = () => {
         <div className='p-2 bg-terracotta-100 dark:bg-terracotta-900/40 rounded text-terracotta-600 dark:text-terracotta-400'>
           <FaHeart size={24} />
         </div>
-        <h2 className='text-xl font-bold text-earth-800 dark:text-earth-100'>{t('support.donations')}</h2>
+        <h2 className='text-xl font-semibold text-earth-800 dark:text-earth-100'>{t('support.donations')}</h2>
       </div>
       <p className='text-earth-600 dark:text-earth-400 mb-6'>{t('support.donationsDesc')}</p>
       <a
