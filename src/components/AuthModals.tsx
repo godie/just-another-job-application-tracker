@@ -103,7 +103,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'l
       <div className="w-full max-w-md bg-white dark:bg-earth-800 rounded-lg shadow-xl border border-earth-200 dark:border-earth-700 overflow-hidden">
         <div className="p-6">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-earth-800 dark:text-earth-100">
+            <h2 className="text-2xl font-semibold text-earth-800 dark:text-earth-100">
               {mode === 'login' ? t('auth.login') : t('auth.register')}
             </h2>
             <button

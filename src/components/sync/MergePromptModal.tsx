@@ -84,7 +84,7 @@ const MergePromptModal: React.FC<MergePromptModalProps> = ({ onClose }) => {
           <div className='flex items-center gap-3'>
             <span className='text-2xl'>⚠️</span>
             <div>
-              <h2 className='font-serif text-xl font-bold text-terracotta-700 dark:text-terracotta-300'>
+              <h2 className='font-serif text-xl font-semibold text-terracotta-700 dark:text-terracotta-300'>
                 {t('backupSync.merge.title')}
               </h2>
               <p className='text-sm text-terracotta-600 dark:text-terracotta-400 mt-1'>

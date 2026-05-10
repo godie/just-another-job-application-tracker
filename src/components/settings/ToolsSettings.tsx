@@ -89,7 +89,7 @@ const ToolsSettings: React.FC = () => {
     <div className='space-y-8'>
       {/* CSV Actions */}
       <div>
-        <h3 className='font-serif text-lg font-bold text-earth-900 dark:text-earth-100 mb-4'>
+        <h3 className='font-serif text-lg font-semibold text-earth-900 dark:text-earth-100 mb-4'>
           {t('tools.csv.heading')}
         </h3>
         <CSVActions />
@@ -97,7 +97,7 @@ const ToolsSettings: React.FC = () => {
 
       {/* Backup & Restore */}
       <div>
-        <h3 className='font-serif text-lg font-bold text-earth-900 dark:text-earth-100 mb-4'>
+        <h3 className='font-serif text-lg font-semibold text-earth-900 dark:text-earth-100 mb-4'>
           {t('tools.backup.title')}
         </h3>
         <div className='flex flex-col sm:flex-row gap-4'>
@@ -129,7 +129,7 @@ const ToolsSettings: React.FC = () => {
 
       {/* Danger Zone */}
       <div>
-        <h3 className='font-serif text-lg font-bold text-terracotta-700 dark:text-terracotta-300 mb-4'>
+        <h3 className='font-serif text-lg font-semibold text-terracotta-700 dark:text-terracotta-300 mb-4'>
           {t('tools.danger.title')}
         </h3>
         <div className='bg-terracotta-50 dark:bg-terracotta-900/20 border border-terracotta-200 dark:border-terracotta-700 rounded-lg p-6'>

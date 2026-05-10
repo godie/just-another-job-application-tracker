@@ -110,15 +110,17 @@ export function calculateRoleSimilarity(title: string, targetRoles: string[]): n
   return Math.min(100, Math.round(bestScore));
 }
 
+const SKILL_REGEXES = COMMON_TECH_SKILLS.map(
+  (skill) => new RegExp(`\\b${skill.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i')
+);
+
 export function extractSkillsFromDescription(description: string | undefined): string[] {
   if (!description) return [];
   const lowerDesc = description.toLowerCase();
   const found: string[] = [];
-  for (const skill of COMMON_TECH_SKILLS) {
-    // Match whole word or common separators
-    const regex = new RegExp(`\\b${skill.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i');
-    if (regex.test(lowerDesc)) {
-      found.push(skill);
+  for (let i = 0; i < COMMON_TECH_SKILLS.length; i++) {
+    if (SKILL_REGEXES[i].test(lowerDesc)) {
+      found.push(COMMON_TECH_SKILLS[i]);
     }
   }
   return [...new Set(found)];

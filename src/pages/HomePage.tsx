@@ -185,7 +185,7 @@ const HomePageContent: React.FC<HomePageContentProps> = ({ onNavigate }) => {
                 Dashboard
               </span>
             </div>
-            <h1 className='font-serif text-4xl md:text-5xl font-bold text-earth-900 dark:text-earth-50'>
+            <h1 className='font-serif text-4xl md:text-5xl font-semibold text-earth-900 dark:text-earth-50'>
               {t('home.pipeline')}
             </h1>
             <p className='mt-3 text-base text-earth-600 dark:text-earth-300'>

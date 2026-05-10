@@ -63,7 +63,7 @@ const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate, onSuccess }) =>
               Get Started
             </span>
           </div>
-          <h1 className='font-serif text-3xl font-bold text-earth-900 dark:text-earth-50'>
+          <h1 className='font-serif text-3xl font-semibold text-earth-900 dark:text-earth-50'>
             Create your account
           </h1>
           <p className='mt-2 text-sm text-earth-600 dark:text-earth-400'>

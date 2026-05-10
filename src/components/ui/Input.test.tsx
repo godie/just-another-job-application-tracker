@@ -10,10 +10,10 @@ describe('Input', () => {
   });
 
   it('calls onChange when text is entered', () => {
-    const handleChange = vi.fn();
-    render(<Input label="Username" id="username" onChange={handleChange} />);
+    const handleInputChange = vi.fn();
+    render(<Input label="Username" id="username" onChange={handleInputChange} />);
     fireEvent.change(screen.getByLabelText(/username/i), { target: { value: 'johndoe' } });
-    expect(handleChange).toHaveBeenCalledTimes(1);
+    expect(handleInputChange).toHaveBeenCalledTimes(1);
   });
 
   it('renders error message when error prop is provided', () => {
