@@ -12,29 +12,17 @@ const DateFormatSettings: React.FC<DateFormatSettingsProps> = ({ currentFormat, 
 
   const formats: DateFormat[] = ['DD/MM/YYYY', 'MM/DD/YYYY', 'YYYY-MM-DD'];
 
+  const formatExamples: Record<DateFormat, string> = {
+    'DD/MM/YYYY': '15/01/2025',
+    'MM/DD/YYYY': '01/15/2025',
+    'YYYY-MM-DD': '2025-01-15',
+  };
+
   return (
     <div className='space-y-4'>
       <div className='grid grid-cols-1 gap-4'>
         {formats.map((format) => {
-          const exampleDate = new Date('2025-01-15');
-          let example = '';
-          const [day, month, year] = [
-            String(exampleDate.getDate()).padStart(2, '0'),
-            String(exampleDate.getMonth() + 1).padStart(2, '0'),
-            exampleDate.getFullYear(),
-          ];
-          switch (format) {
-            case 'DD/MM/YYYY':
-              example = `${day}/${month}/${year}`;
-              break;
-            case 'MM/DD/YYYY':
-              example = `${month}/${day}/${year}`;
-              break;
-            case 'YYYY-MM-DD':
-              example = `${year}-${month}-${day}`;
-              break;
-          }
-
+          const example = formatExamples[format];
           const isActive = currentFormat === format;
 
           return (
@@ -48,8 +36,8 @@ const DateFormatSettings: React.FC<DateFormatSettingsProps> = ({ currentFormat, 
               }`}
             >
               <div className='flex items-center gap-4'>
-                <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${isActive ? 'border-sage-600' : 'border-earth-300 dark:border-earth-600'}`}>
-                  {isActive && <div className='w-2.5 h-2.5 rounded-full bg-sage-600' />}
+                <div className={`size-5 rounded-full border-2 flex items-center justify-center ${isActive ? 'border-sage-600' : 'border-earth-300 dark:border-earth-600'}`}>
+                  {isActive && <div className='size-2.5 rounded-full bg-sage-600' />}
                 </div>
                 <div>
                   <div className='font-bold text-earth-900 dark:text-earth-100'>{format}</div>
@@ -60,7 +48,7 @@ const DateFormatSettings: React.FC<DateFormatSettingsProps> = ({ currentFormat, 
               </div>
               {isActive && (
                 <span className='text-sage-600'>
-                  <svg xmlns='http://www.w3.org/2000/svg' className='h-6 w-6' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
+                  <svg xmlns='http://www.w3.org/2000/svg' className='size-6' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
                     <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M5 13l4 4L19 7' />
                   </svg>
                 </span>

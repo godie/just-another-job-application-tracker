@@ -1,8 +1,10 @@
-import { useMemo, useRef } from 'react';
+import { useMemo, useRef, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { type JobApplication, type ApplicationWithMetadata } from '../types/applications';
 import { type Filters } from '../components/FiltersBar';
 import { parseLocalDate } from '../utils/date';
+
+const EPOCH = new Date(2000, 0, 1);
 
 /**
  * Custom hook to process and filter job applications.
@@ -25,6 +27,11 @@ export const useFilteredApplications = (applications: JobApplication[], filters:
   // renders. This is crucial for preventing unnecessary re-renders of memoized
   // components like ApplicationTableRow and ApplicationCard.
   const cacheRef = useRef<Map<JobApplication, ApplicationWithMetadata>>(new Map());
+  const [currentTime, setCurrentTime] = useState<Date>(EPOCH);
+
+  useEffect(() => {
+    setCurrentTime(new Date());
+  }, []);
 
   // ⚡ Bolt: Stability refs for derived data.
   // These refs allow us to maintain referential identity for arrays like
@@ -116,9 +123,8 @@ export const useFilteredApplications = (applications: JobApplication[], filters:
           )
         : [];
 
-      const now = new Date();
       const nextEvent = sortedTimeline.find(e =>
-        (e.status === 'scheduled' || e.status === 'pending') && parseLocalDate(e.date) >= now
+        (e.status === 'scheduled' || e.status === 'pending') && parseLocalDate(e.date) >= currentTime
       ) || null;
 
       // Calculate Interviewing Sub-status (Logic moved from KanbanView for performance)
@@ -189,7 +195,7 @@ export const useFilteredApplications = (applications: JobApplication[], filters:
       availablePlatforms: availablePlatformsRef.current,
       nonDeletedApplications: nonDeletedApplicationsRef.current,
     };
-  }, [applications, t]);
+  }, [applications, t, currentTime]);
 
   const filteredApplications = useMemo(() => {
     const normalizedSearch = filters.search.trim().toLowerCase();

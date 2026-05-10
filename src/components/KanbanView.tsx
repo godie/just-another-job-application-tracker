@@ -159,7 +159,7 @@ const KanbanView: React.FC<KanbanViewProps> = ({ applications, onEdit, onDelete 
                               and better performance in the Kanban view. */}
                           {application.sortedTimeline.slice(0, 2).map((event) => (
                             <li key={event.id} className='flex items-center gap-1'>
-                              <span className='w-2 h-2 bg-sage-400 rounded-full'></span>
+                              <span className='size-2 bg-sage-400 rounded-full'></span>
                               <span className='font-medium'>
                                 {event.type === 'custom' && event.customTypeName
                                   ? event.customTypeName

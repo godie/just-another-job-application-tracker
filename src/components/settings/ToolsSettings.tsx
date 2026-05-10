@@ -5,6 +5,7 @@ import { useApplicationsStore } from '../../stores/applicationsStore';
 import { useOpportunitiesStore } from '../../stores/opportunitiesStore';
 import { useAlert } from '../AlertProvider';
 import CSVActions from '../CSVActions';
+import { getCurrentISOString, getCurrentDateKey } from '../../utils/dateHelpers';
 
 const ToolsSettings: React.FC = () => {
   const { t } = useTranslation();
@@ -17,12 +18,12 @@ const ToolsSettings: React.FC = () => {
     try {
       const apps = useApplicationsStore.getState().applications;
       const opps = useOpportunitiesStore.getState().opportunities;
-      const data = { applications: apps, opportunities: opps, exportDate: new Date().toISOString() };
+      const data = { applications: apps, opportunities: opps, exportDate: getCurrentISOString() };
       const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `jat-backup-${new Date().toISOString().split('T')[0]}.json`;
+      a.download = `jat-backup-${getCurrentDateKey()}.json`;
       a.click();
       URL.revokeObjectURL(url);
       showSuccess(t('tools.exportSuccess'));
@@ -78,7 +79,7 @@ const ToolsSettings: React.FC = () => {
         preferences: localStorage.getItem('userPreferences')?.length ?? 0,
       },
       userAgent: navigator.userAgent,
-      timestamp: new Date().toISOString(),
+      timestamp: getCurrentISOString(),
     };
     console.log('Debug Info:', info);
     alert(JSON.stringify(info, null, 2));

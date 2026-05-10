@@ -22,6 +22,7 @@ import { useMatchingStore } from '../stores/matchingStore';
 import { useApplicationsStore } from '../stores/applicationsStore';
 import { useOpportunitiesStore } from '../stores/opportunitiesStore';
 import { saveMatchProfile } from '../storage/matching';
+import { getCurrentISOString } from '../utils/dateHelpers';
 import { ConnectGoogleButton } from '../components/ConnectGoogleButton';
 
 import Footer from '../components/Footer';
@@ -396,14 +397,14 @@ const SettingsPageContent: React.FC<SettingsPageProps> = ({ onNavigate }) => {
             <div className='bg-sage-50 dark:bg-sage-900/20 border border-sage-200 dark:border-sage-700 p-8'>
               {isAuthenticated ? (
                 <div className='flex flex-col sm:flex-row items-center gap-6'>
-                  <div className='w-16 h-16 bg-sage-600 rounded flex items-center justify-center text-white text-2xl font-bold'>
+                  <div className='size-16 bg-sage-600 rounded flex items-center justify-center text-white text-2xl font-bold'>
                     {user?.email?.charAt(0).toUpperCase()}
                   </div>
                   <div className='flex-1 text-center sm:text-left'>
                     <p className='text-sm font-semibold text-sage-600 dark:text-sage-400 uppercase tracking-wider'>{t('settings.categories.account')}</p>
                     <p className='font-serif text-xl font-bold text-earth-900 dark:text-earth-100 mt-1'>{user?.email}</p>
                     <div className='flex items-center justify-center sm:justify-start gap-2 mt-2 text-sage-600 dark:text-sage-400'>
-                       <svg xmlns='http://www.w3.org/2000/svg' className='h-5 w-5' viewBox='0 0 20 20' fill='currentColor'>
+                       <svg xmlns='http://www.w3.org/2000/svg' className='size-5' viewBox='0 0 20 20' fill='currentColor'>
                         <path fillRule='evenodd' d='M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z' clipRule='evenodd' />
                       </svg>
                       <span className='text-sm font-medium'>{t('backupSync.loggedIn.syncedSecure')}</span>
@@ -426,8 +427,8 @@ const SettingsPageContent: React.FC<SettingsPageProps> = ({ onNavigate }) => {
                 </div>
               ) : (
                 <div className='text-center py-6'>
-                  <div className='w-16 h-16 bg-earth-100 dark:bg-earth-700 rounded flex items-center justify-center text-earth-400 mx-auto mb-4'>
-                     <svg xmlns='http://www.w3.org/2000/svg' className='h-8 w-8' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
+                  <div className='size-16 bg-earth-100 dark:bg-earth-700 rounded flex items-center justify-center text-earth-400 mx-auto mb-4'>
+                     <svg xmlns='http://www.w3.org/2000/svg' className='size-8' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
                       <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z' />
                     </svg>
                   </div>
@@ -499,7 +500,7 @@ const SettingsPageContent: React.FC<SettingsPageProps> = ({ onNavigate }) => {
                         <span className='truncate'>{section.label}</span>
                         {isActive && (
                           <span className='ml-auto'>
-                             <svg xmlns='http://www.w3.org/2000/svg' className='h-4 w-4' viewBox='0 0 20 20' fill='currentColor'>
+                             <svg xmlns='http://www.w3.org/2000/svg' className='size-4' viewBox='0 0 20 20' fill='currentColor'>
                               <path fillRule='evenodd' d='M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z' clipRule='evenodd' />
                             </svg>
                           </span>
@@ -520,7 +521,7 @@ const SettingsPageContent: React.FC<SettingsPageProps> = ({ onNavigate }) => {
             <div className='p-8'>
               <div className='flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-4'>
                 <div className='flex items-center gap-4'>
-                  <div className='w-14 h-14 bg-earth-50 dark:bg-earth-700 rounded flex items-center justify-center text-3xl'>
+                  <div className='size-14 bg-earth-50 dark:bg-earth-700 rounded flex items-center justify-center text-3xl'>
                     {currentSection?.icon}
                   </div>
                   <div>
@@ -558,7 +559,7 @@ const SettingsPageContent: React.FC<SettingsPageProps> = ({ onNavigate }) => {
               </div>
               {hasChanges && (
                 <div className='flex items-center gap-2 mt-4 px-4 py-2 bg-terracotta-50 dark:bg-terracotta-900/20 border border-terracotta-200 dark:border-terracotta-700 w-fit'>
-                   <div className='w-2 h-2 rounded-full bg-terracotta-500' />
+                   <div className='size-2 rounded-full bg-terracotta-500' />
                    <span className='text-xs text-terracotta-700 dark:text-terracotta-400 font-semibold uppercase tracking-wider'>
                     {t('settings.unsavedChanges')}
                   </span>
@@ -623,7 +624,7 @@ const SettingsPageContent: React.FC<SettingsPageProps> = ({ onNavigate }) => {
             avoidPatterns: profile?.avoidPatterns ?? [],
             profileVersion: (profile?.profileVersion ?? 0) + 1,
             confidence: profile?.confidence ?? 'medium',
-            lastComputed: new Date().toISOString(),
+            lastComputed: getCurrentISOString(),
           };
           saveMatchProfile(merged);
           loadMatchingState();

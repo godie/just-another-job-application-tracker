@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { getCurrentLocaleString } from '../utils/dateHelpers';
 import { useTranslation } from 'react-i18next';
 import { FaArrowLeft, FaSync } from 'react-icons/fa';
 import { Card, Button } from '../components/ui';
@@ -27,6 +28,7 @@ const SuggestionsViewerPage: React.FC<SuggestionsViewerPageProps> = ({ onNavigat
   const { showError } = useAlert();
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [formattedDates, setFormattedDates] = useState<Record<number, string>>({});
 
   const fetchSuggestions = useCallback(async () => {
     setIsLoading(true);
@@ -41,7 +43,13 @@ const SuggestionsViewerPage: React.FC<SuggestionsViewerPageProps> = ({ onNavigat
         throw new Error(data.error || 'Failed to fetch suggestions');
       }
 
-      setSuggestions(data.suggestions || []);
+      const loaded = data.suggestions || [];
+      setSuggestions(loaded);
+      const dates: Record<number, string> = {};
+      loaded.forEach((s: Suggestion) => {
+        dates[s.id] = getCurrentLocaleString(s.created_at);
+      });
+      setFormattedDates(dates);
     } catch (error) {
       console.error('Error fetching suggestions:', error);
       showError(error instanceof Error ? error.message : 'Error fetching suggestions');
@@ -80,7 +88,7 @@ const SuggestionsViewerPage: React.FC<SuggestionsViewerPageProps> = ({ onNavigat
 
       {isLoading ? (
         <div className="flex justify-center py-12">
-          <div className='animate-spin rounded-full h-12 w-12 border-b-2 border-sage-600'></div>
+          <div className='animate-spin rounded-full size-12 border-b-2 border-sage-600'></div>
         </div>
       ) : suggestions.length === 0 ? (
         <Card className="p-12 text-center">
@@ -102,7 +110,7 @@ const SuggestionsViewerPage: React.FC<SuggestionsViewerPageProps> = ({ onNavigat
                   ))}
                 </div>
                 <div className="text-xs text-earth-500 dark:text-earth-400 flex flex-col items-end">
-                  <span>{new Date(suggestion.created_at).toLocaleString()}</span>
+                  <span>{formattedDates[suggestion.id]}</span>
                   <span>{suggestion.ip_address}</span>
                 </div>
               </div>

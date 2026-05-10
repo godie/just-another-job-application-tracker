@@ -21,6 +21,7 @@ import { useFormatDate } from '../hooks/useFormatDate';
 
 import { type PageType } from '../App';
 import type { JobSearchParams, UnifiedJobResult } from '../types/jobSearch';
+import { getTodayDate, parseDateString } from '../utils/dateHelpers';
 
 interface OpportunitiesPageContentProps {
   onNavigate?: (page: PageType) => void;
@@ -246,13 +247,14 @@ const OpportunitiesPageContent: React.FC<OpportunitiesPageContentProps> = () => 
   }, [opportunities, searchTerm]);
 
   // Derived metrics — asymmetric layout
-  const recentCount = useMemo(() => {
-    const oneWeekAgo = new Date();
+  const [recentCount, setRecentCount] = useState(0);
+  useEffect(() => {
+    const oneWeekAgo = getTodayDate();
     oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-    return opportunities.filter(opp => {
-      const captured = opp.capturedDate ? new Date(opp.capturedDate) : null;
+    setRecentCount(opportunities.filter(opp => {
+      const captured = opp.capturedDate ? parseDateString(opp.capturedDate) : null;
       return captured && captured >= oneWeekAgo;
-    }).length;
+    }).length);
   }, [opportunities]);
 
   const remoteCount = useMemo(() => {

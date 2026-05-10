@@ -1,5 +1,6 @@
-import React, { memo } from 'react';
+import React, { memo, useState, useEffect } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
+import { getCurrentYear } from '../utils/dateHelpers';
 
 interface FooterProps {
   version: string;
@@ -7,7 +8,11 @@ interface FooterProps {
 
 const Footer: React.FC<FooterProps> = ({ version }) => {
   const { t } = useTranslation();
-  const currentYear = new Date().getFullYear();
+  const [currentYear, setCurrentYear] = useState('');
+
+  useEffect(() => {
+    setCurrentYear(String(getCurrentYear()));
+  }, []);
 
   return (
     <footer className='bg-earth-50 dark:bg-earth-900 border-t border-earth-200 dark:border-earth-700 py-4 mt-8'>

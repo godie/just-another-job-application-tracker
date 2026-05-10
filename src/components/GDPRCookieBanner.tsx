@@ -50,7 +50,7 @@ const GDPRCookieBanner: React.FC<GDPRCookieBannerProps> = ({ onConsentChange }) 
         <div className="p-5 md:p-6">
           <div className="flex flex-col md:flex-row md:items-start gap-4">
             {/* Icon */}
-            <div className="flex-shrink-0 w-10 h-10 rounded-full bg-sage-100 dark:bg-sage-900/30 flex items-center justify-center text-xl">
+            <div className="flex-shrink-0 size-10 rounded-full bg-sage-100 dark:bg-sage-900/30 flex items-center justify-center text-xl">
               🍪
             </div>
 

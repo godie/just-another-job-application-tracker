@@ -125,7 +125,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onNavigate, onSuccess }) => {
             className='w-full inline-flex justify-center py-2.5 px-4 border border-earth-300 dark:border-earth-600 bg-white dark:bg-earth-800 text-sm font-medium text-earth-700 dark:text-earth-300 hover:bg-earth-100 dark:hover:bg-earth-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-sage-500 rounded transition-colors'
           >
             <span className='sr-only'>Sign in with Google</span>
-            <svg className='w-5 h-5' aria-hidden='true' fill='currentColor' viewBox='0 0 24 24'>
+            <svg className='size-5' aria-hidden='true' fill='currentColor' viewBox='0 0 24 24'>
               <path d='M12.48 10.92v3.28h4.78c-.19 1.06-.92 1.96-1.91 2.59l2.72 2.11c1.59-1.47 2.49-3.62 2.49-6.09 0-.47-.04-.92-.12-1.36l-8.48-.53-.51 2.01z' />
               <path d='M12 23c2.97 0 5.46-.98 7.28-2.66l-2.72-2.11c-.75.5-1.71.81-2.77.81-2.13 0-3.93-1.44-4.58-3.39l-2.82 2.18C8.1 20.37 10.15 23 12 23z' />
               <path d='M7.42 15.65c-.17-.5-.26-1.04-.26-1.65s.09-1.15.26-1.65l-2.82-2.18C4.1 11.1 3.5 12.5 3.5 14s.6 2.9 1.1 3.83l2.82-2.18z' />

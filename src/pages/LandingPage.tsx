@@ -71,13 +71,13 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
       {/* Subtle organic background pattern */}
       <div className='fixed inset-0 pointer-events-none overflow-hidden' aria-hidden='true'>
         <div className='absolute top-20 left-10 opacity-30 dark:opacity-20'>
-          <LeafPattern className='w-32 h-32 text-sage-500' />
+          <LeafPattern className='size-32 text-sage-500' />
         </div>
         <div className='absolute top-40 right-20 opacity-20 dark:opacity-10'>
-          <OrganicShape className='w-64 h-64 text-terracotta-400' />
+          <OrganicShape className='size-64 text-terracotta-400' />
         </div>
         <div className='absolute bottom-40 left-1/4 opacity-20 dark:opacity-10'>
-          <LeafPattern className='w-24 h-24 text-sage-400 rotate-45' />
+          <LeafPattern className='size-24 text-sage-400 rotate-45' />
         </div>
       </div>
 
@@ -88,7 +88,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
           className='inline-flex items-center gap-2 bg-terracotta-600 hover:bg-terracotta-700 active:bg-terracotta-800 text-white font-semibold py-2.5 px-6 rounded transition-colors shadow-sm hover:shadow-md border border-terracotta-700 hover:border-terracotta-800'
         >
           {t('landing.enterApp')}
-          <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+          <svg className='size-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
             <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M17 8l4 4m0 0l-4 4m4-4H3' />
           </svg>
         </button>
@@ -150,7 +150,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                 className='inline-flex items-center justify-center gap-2 bg-terracotta-600 hover:bg-terracotta-700 active:bg-terracotta-800 text-white font-semibold py-4 px-8 text-lg rounded transition-colors shadow-sm hover:shadow-md border border-terracotta-700 hover:border-terracotta-800'
               >
                 {t('landing.getStarted')}
-                <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                <svg className='size-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                   <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M17 8l4 4m0 0l-4 4m4-4H3' />
                 </svg>
               </button>
@@ -279,8 +279,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
           <div className='space-y-6'>
             {/* Feature 2 - Chrome Extension */}
             <div className='group flex items-start gap-8 bg-white dark:bg-earth-800 p-8 border border-earth-200 dark:border-earth-700 hover:border-sage-400 dark:hover:border-sage-600 transition-colors duration-300'>
-              <div className='flex-shrink-0 w-16 h-16 bg-terracotta-100 dark:bg-terracotta-900 flex items-center justify-center'>
-                <svg className='w-8 h-8 text-terracotta-600 dark:text-terracotta-300' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+              <div className='flex-shrink-0 size-16 bg-terracotta-100 dark:bg-terracotta-900 flex items-center justify-center'>
+                <svg className='size-8 text-terracotta-600 dark:text-terracotta-300' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                   <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={1.5} d='M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9' />
                 </svg>
               </div>
@@ -302,8 +302,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
 
             {/* Feature 4 - Email Integration */}
             <div className='group flex items-start gap-8 bg-white dark:bg-earth-800 p-8 border border-earth-200 dark:border-earth-700 hover:border-sage-400 dark:hover:border-sage-600 transition-colors duration-300'>
-              <div className='flex-shrink-0 w-16 h-16 bg-sage-100 dark:bg-sage-900 flex items-center justify-center'>
-                <svg className='w-8 h-8 text-sage-600 dark:text-sage-300' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+              <div className='flex-shrink-0 size-16 bg-sage-100 dark:bg-sage-900 flex items-center justify-center'>
+                <svg className='size-8 text-sage-600 dark:text-sage-300' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                   <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={1.5} d='M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z' />
                 </svg>
               </div>
@@ -317,8 +317,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
 
             {/* Feature 5 - Google Sheets */}
             <div className='group flex items-start gap-8 bg-white dark:bg-earth-800 p-8 border border-earth-200 dark:border-earth-700 hover:border-sage-400 dark:hover:border-sage-600 transition-colors duration-300'>
-              <div className='flex-shrink-0 w-16 h-16 bg-earth-200 dark:bg-earth-700 flex items-center justify-center'>
-                <svg className='w-8 h-8 text-earth-600 dark:text-earth-300' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+              <div className='flex-shrink-0 size-16 bg-earth-200 dark:bg-earth-700 flex items-center justify-center'>
+                <svg className='size-8 text-earth-600 dark:text-earth-300' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                   <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={1.5} d='M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' />
                 </svg>
               </div>
@@ -332,8 +332,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
 
             {/* Feature 6 - Calendar */}
             <div className='group flex items-start gap-8 bg-white dark:bg-earth-800 p-8 border border-earth-200 dark:border-earth-700 hover:border-sage-400 dark:hover:border-sage-600 transition-colors duration-300'>
-              <div className='flex-shrink-0 w-16 h-16 bg-terracotta-100 dark:bg-terracotta-900 flex items-center justify-center'>
-                <svg className='w-8 h-8 text-terracotta-600 dark:text-terracotta-300' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+              <div className='flex-shrink-0 size-16 bg-terracotta-100 dark:bg-terracotta-900 flex items-center justify-center'>
+                <svg className='size-8 text-terracotta-600 dark:text-terracotta-300' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                   <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={1.5} d='M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z' />
                 </svg>
               </div>
@@ -372,7 +372,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                   key={item} 
                   className='group flex items-center gap-6 py-6 border-b border-earth-200 dark:border-earth-700 last:border-b-0'
                 >
-                  <div className='flex-shrink-0 w-10 h-10 bg-sage-100 dark:bg-sage-900 flex items-center justify-center font-serif text-lg font-bold text-sage-600 dark:text-sage-300 group-hover:bg-sage-600 group-hover:text-white transition-colors duration-300'>
+                  <div className='flex-shrink-0 size-10 bg-sage-100 dark:bg-sage-900 flex items-center justify-center font-serif text-lg font-bold text-sage-600 dark:text-sage-300 group-hover:bg-sage-600 group-hover:text-white transition-colors duration-300'>
                     {String(i + 1).padStart(2, '0')}
                   </div>
                   <p className='text-lg font-medium text-earth-700 dark:text-earth-200 group-hover:text-earth-900 dark:group-hover:text-earth-50 transition-colors'>
@@ -409,7 +409,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
             className='inline-flex items-center gap-3 bg-white text-terracotta-700 hover:bg-earth-100 font-bold py-4 px-10 text-lg rounded transition-colors border border-earth-200 hover:border-earth-300'
           >
             {t('landing.enterApp')}
-            <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+            <svg className='size-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
               <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M17 8l4 4m0 0l-4 4m4-4H3' />
             </svg>
           </button>
@@ -421,8 +421,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
         <div className='max-w-7xl mx-auto px-6 lg:px-8'>
           <div className='flex flex-col md:flex-row justify-between items-center gap-6'>
             <div className='flex items-center gap-3'>
-              <div className='w-8 h-8 bg-sage-600 rounded flex items-center justify-center'>
-                <svg className='w-4 h-4 text-white' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+              <div className='size-8 bg-sage-600 rounded flex items-center justify-center'>
+                <svg className='size-4 text-white' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                   <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2' />
                 </svg>
               </div>

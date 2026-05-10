@@ -214,7 +214,7 @@ const HomePageContent: React.FC<HomePageContentProps> = ({ onNavigate }) => {
           aria-expanded={isDataToolsOpen}
         >
           <svg
-            className={`w-4 h-4 transform transition-transform ${isDataToolsOpen ? 'rotate-90' : ''}`}
+            className={`size-4 transform transition-transform ${isDataToolsOpen ? 'rotate-90' : ''}`}
             fill='none' viewBox='0 0 24 24' stroke='currentColor'
           >
             <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M9 5l7 7-7 7' />
@@ -230,7 +230,7 @@ const HomePageContent: React.FC<HomePageContentProps> = ({ onNavigate }) => {
                 onClick={() => onNavigate?.('gmail-scan')}
                 className='flex items-center gap-2 px-4 py-2 text-sm font-medium text-sage-700 dark:text-sage-300 bg-sage-50 dark:bg-sage-900/30 rounded hover:bg-sage-100 dark:hover:bg-sage-900/50 transition-colors border border-sage-200 dark:border-sage-700'
               >
-                <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                <svg className='size-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                   <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z' />
                 </svg>
                 {t('settings.emailScan.scanGmail')}

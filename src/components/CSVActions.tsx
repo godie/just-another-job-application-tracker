@@ -2,6 +2,7 @@ import React, { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useApplicationsStore } from '../stores/applicationsStore';
 import { exportToCSV, parseCSV } from '../utils/csv';
+import { getCurrentDateKey } from '../utils/dateHelpers';
 import { useAlert } from './AlertProvider';
 import { HiDownload, HiUpload } from 'react-icons/hi';
 
@@ -23,7 +24,7 @@ const CSVActions: React.FC = () => {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.setAttribute('href', url);
-    link.setAttribute('download', `jajat_applications_${new Date().toISOString().split('T')[0]}.csv`);
+    link.setAttribute('download', `jajat_applications_${getCurrentDateKey()}.csv`);
     link.style.visibility = 'hidden';
     document.body.appendChild(link);
     link.click();
@@ -74,7 +75,7 @@ const CSVActions: React.FC = () => {
         className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-earth-700 dark:text-earth-200 bg-white dark:bg-earth-800 border border-earth-300 dark:border-earth-600 rounded hover:bg-earth-100 dark:hover:bg-earth-700 transition-colors"
         title={t('csv.export')}
       >
-        <HiDownload className="w-4 h-4" />
+        <HiDownload className="size-4" />
         <span className="hidden sm:inline">{t('csv.export')}</span>
       </button>
 
@@ -83,7 +84,7 @@ const CSVActions: React.FC = () => {
         className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-earth-700 dark:text-earth-200 bg-white dark:bg-earth-800 border border-earth-300 dark:border-earth-600 rounded hover:bg-earth-100 dark:hover:bg-earth-700 transition-colors"
         title={t('csv.import')}
       >
-        <HiUpload className="w-4 h-4" />
+        <HiUpload className="size-4" />
         <span className="hidden sm:inline">{t('csv.import')}</span>
       </button>
 

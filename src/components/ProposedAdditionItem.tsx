@@ -38,7 +38,7 @@ export const ProposedAdditionItem: React.FC<ProposedAdditionItemProps> = ({
         checked={isSelected}
         onChange={onToggle}
         disabled={disabled}
-        className='mt-1 h-5 w-5 text-sage-600 border-earth-300 dark:border-earth-600 rounded focus:ring-sage-500 disabled:opacity-30'
+        className='mt-1 size-5 text-sage-600 border-earth-300 dark:border-earth-600 rounded focus:ring-sage-500 disabled:opacity-30'
       />
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between mb-1">
@@ -53,7 +53,7 @@ export const ProposedAdditionItem: React.FC<ProposedAdditionItemProps> = ({
         {duplicate && (
           <div className="flex flex-col gap-2 mt-2 mb-3">
             <div className="flex items-center gap-1.5 text-amber-600 dark:text-amber-400 text-xs font-medium">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
               </svg>
               {t('settings.emailScan.duplicateWarning')}
@@ -63,7 +63,7 @@ export const ProposedAdditionItem: React.FC<ProposedAdditionItemProps> = ({
                 type="checkbox"
                 checked={isForced}
                 onChange={(e) => onToggleForce(e.target.checked)}
-                className='h-3.5 w-3.5 rounded border-earth-300 dark:border-earth-600 text-sage-600'
+                className='size-3.5 rounded border-earth-300 dark:border-earth-600 text-sage-600'
               />
               {t('settings.emailScan.addAnyway')}
             </label>

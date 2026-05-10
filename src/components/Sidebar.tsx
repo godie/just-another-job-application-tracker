@@ -52,7 +52,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPage = 'applications', onNavig
   const navItems: { page: PageType; label: string; showBadge?: boolean; icon?: React.ReactNode }[] = [
     { page: 'applications', label: t('nav.applications') },
     { page: 'opportunities', label: t('nav.opportunities'), showBadge: true },
-    { page: 'backup-sync', label: t('nav.backupSync'), icon: <SyncNavIcon isLoggedIn={isLoggedIn} className="w-5 h-5" /> },
+    { page: 'backup-sync', label: t('nav.backupSync'), icon: <SyncNavIcon isLoggedIn={isLoggedIn} className="size-5" /> },
 
     { page: 'settings', label: t('nav.settings') },
     { page: 'insights', label: t('nav.insights') },
@@ -86,7 +86,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPage = 'applications', onNavig
               {item.showBadge && opportunitiesCount > 0 && (
                 <Badge
                   variant='danger'
-                  className='absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center rounded-full font-bold'
+                  className='absolute -top-1 -right-1 size-5 p-0 flex items-center justify-center rounded-full font-bold'
                 >
                   {opportunitiesCount > 9 ? '9+' : opportunitiesCount}
                 </Badge>
