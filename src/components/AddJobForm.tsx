@@ -1,5 +1,6 @@
 // src/components/AddJobForm.tsx
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import { getLocalDateString } from '../utils/dateHelpers';
 import { useTranslation } from 'react-i18next';
 import type { JobApplication } from '../types/applications';
 import { toWorkType, buildInitialTimeline } from '../utils/applications';
@@ -22,7 +23,7 @@ const initialFormData: Omit<JobApplication, 'id'> = {
   hybridDaysInOffice: undefined,
   salary: '',
   status: 'Applied',
-  applicationDate: new Date().toLocaleDateString('en-CA'),
+  applicationDate: '',
   interviewDate: '',
   notes: '',
   link: '',
@@ -53,7 +54,19 @@ const AddJobForm: React.FC<AddJobFormProps> = ({ onSave, onCancel, initialData }
   const [formData, setFormData] = useState<Omit<JobApplication, 'id'> | JobApplication>(
     () => getInitialFormData()
   );
-  
+
+  useEffect(() => {
+    if (!initialData) {
+      setFormData(prev => {
+        const p = prev as Omit<JobApplication, 'id'>;
+        if (!p.applicationDate) {
+          return { ...p, applicationDate: getLocalDateString() };
+        }
+        return prev;
+      });
+    }
+  }, [initialData]);
+
   useKeyboardEscape(onCancel, true);
 
   // Focus trap for modal accessibility

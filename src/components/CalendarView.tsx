@@ -1,4 +1,5 @@
-import React, { useMemo, useState, memo } from 'react';
+import React, { useMemo, useState, memo, useEffect } from 'react';
+import { getTodayDate, cloneDate } from '../utils/dateHelpers';
 import { useTranslation } from 'react-i18next';
 import type { JobApplication, InterviewEvent } from '../types/applications';
 import type { ApplicationWithMetadata } from '../types/applications';
@@ -30,7 +31,7 @@ const addMonths = (date: Date, amount: number) =>
 const isSameDay = (a: Date, b: Date) =>
   a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
 
-const isToday = (date: Date) => isSameDay(date, new Date());
+// isToday helper removed — use isSameDay(date, referenceDate) directly in component
 
 /**
  * Formats a Date object into a YYYY-MM-DD string for map keying.
@@ -110,20 +111,20 @@ const getEventStyles = (status: string, isPast: boolean) => {
   };
 };
 
-// Calculate days difference between two dates
-const getDaysDifference = (eventDate: Date): number => {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+// Calculate days difference between two dates (referenceDate prevents hydration mismatch)
+const getDaysDifference = (eventDate: Date, referenceDate: Date): number => {
+  const ref = new Date(referenceDate);
+  ref.setHours(0, 0, 0, 0);
   const event = new Date(eventDate);
   event.setHours(0, 0, 0, 0);
-  const diffTime = event.getTime() - today.getTime();
+  const diffTime = event.getTime() - ref.getTime();
   return Math.round(diffTime / (1000 * 60 * 60 * 24));
 };
 
 // Format relative time indicator
-const formatRelativeTime = (eventDate: Date, t: TranslateFn): string => {
-  const daysDiff = getDaysDifference(eventDate);
-  
+const formatRelativeTime = (eventDate: Date, referenceDate: Date, t: TranslateFn): string => {
+  const daysDiff = getDaysDifference(eventDate, referenceDate);
+
   if (daysDiff === 0) {
     return t('calendar.relative.today');
   } else if (daysDiff === 1) {
@@ -140,13 +141,18 @@ const formatRelativeTime = (eventDate: Date, t: TranslateFn): string => {
 // Memoized to prevent re-renders when filteredApplications reference changes but content is the same
 const CalendarView: React.FC<CalendarViewProps> = ({ applications, onEdit }) => {
   const { t, i18n } = useTranslation();
-  const [focusMonth, setFocusMonth] = useState(() => startOfMonth(new Date()));
+  const EPOCH = new Date(2000, 0, 1);
+  const [focusMonth, setFocusMonth] = useState(() => startOfMonth(EPOCH));
+  const [today, setToday] = useState<Date>(EPOCH);
+
+  useEffect(() => {
+    setFocusMonth(startOfMonth(getTodayDate()));
+    setToday(getTodayDate());
+  }, []);
 
   const calendar = useMemo(() => {
-    const start = startOfMonth(focusMonth);
-
-    const startDay = new Date(start);
-    startDay.setDate(start.getDate() - start.getDay());
+    const start = startOfMonth(focusMonth);      const startDay = cloneDate(start);
+      startDay.setDate(start.getDate() - start.getDay());
 
     const days: CalendarDay[] = [];
 
@@ -172,7 +178,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({ applications, onEdit }) => 
     });
 
     for (let i = 0; i < 42; i += 1) {
-      const current = new Date(startDay);
+      const current = cloneDate(startDay);
       current.setDate(startDay.getDate() + i);
 
       // ⚡ Bolt: Use the same helper for grid date formatting
@@ -205,7 +211,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({ applications, onEdit }) => 
           </button>
           <button
             type='button'
-            onClick={() => setFocusMonth(startOfMonth(new Date()))}
+            onClick={() => setFocusMonth(startOfMonth(getTodayDate()))}
             className='px-3 py-1.5 rounded border border-sage-300 dark:border-sage-600 bg-sage-50 dark:bg-sage-900/30 text-sage-700 dark:text-sage-300 hover:bg-sage-100 dark:hover:bg-sage-900/50 transition'
           >
             {t('calendar.today')}
@@ -231,12 +237,12 @@ const CalendarView: React.FC<CalendarViewProps> = ({ applications, onEdit }) => 
 
       <div className='grid grid-cols-1 sm:grid-cols-7 divide-y sm:divide-y-0 sm:divide-x'>
         {calendar.map((day) => {
-          const today = isToday(day.date);
+          const isToday = isSameDay(day.date, today);
           return (
             <div
               key={day.date.toISOString()}
               className={`min-h-[80px] sm:min-h-[110px] px-2 sm:px-3 py-1.5 sm:py-2 border-earth-200 ${
-                today
+                isToday
                   ? 'bg-sage-50 dark:bg-sage-900/30 border-2 border-sage-400 dark:border-sage-500'
                   : day.isCurrentMonth
                   ? 'bg-white dark:bg-earth-800'
@@ -246,7 +252,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({ applications, onEdit }) => 
               <div className='flex justify-between items-center'>
                 <span
                   className={`text-xs font-semibold ${
-                    today
+                    isToday
                       ? 'bg-sage-600 text-white rounded-full size-6 flex items-center justify-center'
                       : 'text-earth-600 dark:text-earth-400'
                   }`}
@@ -260,8 +266,8 @@ const CalendarView: React.FC<CalendarViewProps> = ({ applications, onEdit }) => 
               <ul className='mt-1 space-y-0.5 sm:space-y-1'>
                 {day.events.slice(0, 3).map(({ application, event }) => {
                   const eventDate = parseLocalDate(event.date);
-                  const relativeTime = formatRelativeTime(eventDate, t);
-                  const daysDiff = getDaysDifference(eventDate);
+                  const relativeTime = formatRelativeTime(eventDate, today, t);
+                  const daysDiff = getDaysDifference(eventDate, today);
                   const isPast = daysDiff < 0;
                   
                   const styles = getEventStyles(application.status, isPast);

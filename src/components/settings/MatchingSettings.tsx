@@ -2,6 +2,7 @@
 
 import React from 'react';
 import type { MatchingPreferences } from '../../types/matching';
+import { getLocaleDateString } from '../../utils/dateHelpers';
 
 interface MatchingSettingsProps {
   preferences: MatchingPreferences;
@@ -270,7 +271,7 @@ export const MatchingSettings: React.FC<MatchingSettingsProps> = ({
             </div>
             {profileLastComputed && (
               <p className="text-xs text-earth-500 dark:text-earth-400 mt-3">
-                Last profile update: {new Date(profileLastComputed).toLocaleDateString()}
+                Last profile update: {getLocaleDateString(profileLastComputed)}
               </p>
             )}
           </section>

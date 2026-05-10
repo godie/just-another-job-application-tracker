@@ -12,29 +12,17 @@ const DateFormatSettings: React.FC<DateFormatSettingsProps> = ({ currentFormat, 
 
   const formats: DateFormat[] = ['DD/MM/YYYY', 'MM/DD/YYYY', 'YYYY-MM-DD'];
 
+  const formatExamples: Record<DateFormat, string> = {
+    'DD/MM/YYYY': '15/01/2025',
+    'MM/DD/YYYY': '01/15/2025',
+    'YYYY-MM-DD': '2025-01-15',
+  };
+
   return (
     <div className='space-y-4'>
       <div className='grid grid-cols-1 gap-4'>
         {formats.map((format) => {
-          const exampleDate = new Date('2025-01-15');
-          let example = '';
-          const [day, month, year] = [
-            String(exampleDate.getDate()).padStart(2, '0'),
-            String(exampleDate.getMonth() + 1).padStart(2, '0'),
-            exampleDate.getFullYear(),
-          ];
-          switch (format) {
-            case 'DD/MM/YYYY':
-              example = `${day}/${month}/${year}`;
-              break;
-            case 'MM/DD/YYYY':
-              example = `${month}/${day}/${year}`;
-              break;
-            case 'YYYY-MM-DD':
-              example = `${year}-${month}-${day}`;
-              break;
-          }
-
+          const example = formatExamples[format];
           const isActive = currentFormat === format;
 
           return (

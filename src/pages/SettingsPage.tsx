@@ -22,6 +22,7 @@ import { useMatchingStore } from '../stores/matchingStore';
 import { useApplicationsStore } from '../stores/applicationsStore';
 import { useOpportunitiesStore } from '../stores/opportunitiesStore';
 import { saveMatchProfile } from '../storage/matching';
+import { getCurrentISOString } from '../utils/dateHelpers';
 import { ConnectGoogleButton } from '../components/ConnectGoogleButton';
 
 import Footer from '../components/Footer';
@@ -623,7 +624,7 @@ const SettingsPageContent: React.FC<SettingsPageProps> = ({ onNavigate }) => {
             avoidPatterns: profile?.avoidPatterns ?? [],
             profileVersion: (profile?.profileVersion ?? 0) + 1,
             confidence: profile?.confidence ?? 'medium',
-            lastComputed: new Date().toISOString(),
+            lastComputed: getCurrentISOString(),
           };
           saveMatchProfile(merged);
           loadMatchingState();

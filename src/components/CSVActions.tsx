@@ -2,6 +2,7 @@ import React, { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useApplicationsStore } from '../stores/applicationsStore';
 import { exportToCSV, parseCSV } from '../utils/csv';
+import { getCurrentDateKey } from '../utils/dateHelpers';
 import { useAlert } from './AlertProvider';
 import { HiDownload, HiUpload } from 'react-icons/hi';
 
@@ -23,7 +24,7 @@ const CSVActions: React.FC = () => {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.setAttribute('href', url);
-    link.setAttribute('download', `jajat_applications_${new Date().toISOString().split('T')[0]}.csv`);
+    link.setAttribute('download', `jajat_applications_${getCurrentDateKey()}.csv`);
     link.style.visibility = 'hidden';
     document.body.appendChild(link);
     link.click();

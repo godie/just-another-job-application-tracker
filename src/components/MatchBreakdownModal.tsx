@@ -3,6 +3,7 @@
 import React, { useRef, useEffect } from 'react';
 import type { JobMatchResult } from '../types/matching';
 import useFocusTrap from '../hooks/useFocusTrap';
+import { getLocaleDateString } from '../utils/dateHelpers';
 
 interface MatchBreakdownModalProps {
   isOpen: boolean;
@@ -196,7 +197,7 @@ export const MatchBreakdownModal: React.FC<MatchBreakdownModalProps> = ({
         {/* Footer */}
         <div className="px-6 py-4 bg-earth-50 dark:bg-earth-800/50 border-t border-earth-200 dark:border-earth-700 flex justify-between items-center">
           <span className="text-xs text-earth-500 dark:text-earth-400">
-            Computed {new Date(result.computedAt).toLocaleDateString()} · {result.computationMethod}
+            Computed {getLocaleDateString(result.computedAt)} · {result.computationMethod}
           </span>
           <button
             onClick={onClose}
