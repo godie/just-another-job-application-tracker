@@ -12,7 +12,8 @@
     "test": "vitest run",
     "test:watch": "vitest --watch",
     "test:cov": "vitest run --coverage",
-    "knip": "knip"
+    "knip": "knip",
+    "scan:secrets": "bash scripts/scan-secrets.sh --ci"
   },
   "dependencies": {
     "@googleapis/sheets": "^12.0.0",
