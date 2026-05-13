@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { Button } from './ui';
+import useFocusTrap from '../hooks/useFocusTrap';
+import useKeyboardEscape from '../hooks/useKeyboardEscape';
 
 interface ConfirmDialogProps {
   isOpen: boolean;
@@ -22,6 +24,11 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   onCancel,
   type = 'warning',
 }) => {
+  const dialogRef = useRef<HTMLDivElement>(null);
+
+  useFocusTrap(dialogRef, isOpen);
+  useKeyboardEscape(onCancel, isOpen);
+
   if (!isOpen) return null;
 
   const typeStyles = {
@@ -52,18 +59,33 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   const styles = typeStyles[type];
 
   return (
-    <div className='fixed inset-0 z-50 flex items-center justify-center bg-earth-900/80 backdrop-blur-sm'>
-      <div className={`${styles.bg} ${styles.border} border-l-2 rounded max-w-md w-full mx-4`}>
+    <div
+      className='fixed inset-0 z-50 flex items-center justify-center bg-earth-900/80 backdrop-blur-sm'
+      role='presentation'
+      onClick={(e) => {
+        if (e.target === e.currentTarget) {
+          onCancel();
+        }
+      }}
+    >
+      <div
+        ref={dialogRef}
+        role='alertdialog'
+        aria-modal='true'
+        aria-labelledby='confirm-dialog-title'
+        aria-describedby='confirm-dialog-message'
+        className={`${styles.bg} ${styles.border} border-l-2 rounded max-w-md w-full mx-4`}
+      >
         <div className='p-6'>
           <div className='flex items-start'>
-            <div className={`flex-shrink-0 mr-4 ${styles.iconColor}`}>
+            <div className={`flex-shrink-0 mr-4 ${styles.iconColor}`} aria-hidden='true'>
               {styles.icon}
             </div>
             <div className='flex-1'>
-              <h3 className={`text-lg font-semibold ${styles.text} mb-2`}>
+              <h3 id='confirm-dialog-title' className={`text-lg font-semibold ${styles.text} mb-2`}>
                 {title}
               </h3>
-              <p className='text-sm text-earth-600 dark:text-earth-400 mb-5'>
+              <p id='confirm-dialog-message' className='text-sm text-earth-600 dark:text-earth-400 mb-5'>
                 {message}
               </p>
               <div className='flex justify-end gap-3'>
@@ -71,6 +93,7 @@ const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
                   variant='outline'
                   type='button'
                   onClick={onCancel}
+                  autoFocus
                 >
                   {cancelText}
                 </Button>
