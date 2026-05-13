@@ -27,6 +27,16 @@ const KanbanView: React.FC<KanbanViewProps> = ({ applications, onEdit, onDelete 
     application: null,
   });
 
+  // Keyboard navigation: move application to a different status
+  const handleMoveApplication = (application: JobApplication, newStatus: string) => {
+    // Create updated application with new status
+    const updatedApp: JobApplication = {
+      ...application,
+      status: newStatus,
+    };
+    onEdit?.(updatedApp);
+  };
+
   const grouped = useMemo(() => {
     const byStatus = new Map<string, ApplicationWithMetadata[]>();
     const statuses = new Set<string>();
@@ -111,12 +121,18 @@ const KanbanView: React.FC<KanbanViewProps> = ({ applications, onEdit, onDelete 
           displayStatus = t(`statuses.${status.toLowerCase()}`, status);
         }
 
+        const statusOptions = DEFAULT_STATUS_ORDER.filter(s => s !== 'Interviewing' && s !== status);
+
         return (
-        <section key={status} className='bg-earth-50 dark:bg-earth-800 border border-earth-200 dark:border-earth-700 rounded flex flex-col w-80 flex-shrink-0'>
+        <section
+          key={status}
+          className='bg-earth-50 dark:bg-earth-800 border border-earth-200 dark:border-earth-700 rounded flex flex-col w-80 flex-shrink-0'
+          aria-label={`${displayStatus} column`}
+        >
           <header className='px-4 py-3 border-b border-earth-200 dark:border-earth-700 bg-white dark:bg-earth-800 rounded-t'>
             <h3 className='text-sm font-semibold uppercase tracking-wide text-earth-600 dark:text-earth-400 flex items-center justify-between'>
               <span>{displayStatus}</span>
-              <span className='text-xs font-semibold text-sage-600 dark:text-sage-400 bg-sage-100 dark:bg-sage-900 rounded-full px-2 py-0.5'>{items.length}</span>
+              <span className='text-xs font-semibold text-sage-600 dark:text-sage-400 bg-sage-100 dark:bg-sage-900 rounded-full px-2 py-0.5' aria-label={`${items.length} items`}>{items.length}</span>
             </h3>
           </header>
           <div className='flex-1 px-4 py-3 space-y-3'>
@@ -175,17 +191,37 @@ const KanbanView: React.FC<KanbanViewProps> = ({ applications, onEdit, onDelete 
                       </div>
                     )}
                   </div>
-                  <footer className='px-4 py-2 border-t border-earth-200 dark:border-earth-600 bg-earth-50 dark:bg-earth-800 rounded-b flex justify-end'>
-                    <button
-                      type='button'
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setDeleteConfirm({ isOpen: true, application });
-                      }}
-                      className='text-xs font-semibold text-terracotta-600 hover:text-terracotta-800 dark:text-terracotta-400 dark:hover:text-terracotta-300'
-                    >
-                      {t('common.delete')}
-                    </button>
+                  <footer className='px-4 py-2 border-t border-earth-200 dark:border-earth-600 bg-earth-50 dark:bg-earth-800 rounded-b flex flex-col gap-2'>
+                    {/* Keyboard accessible status change buttons */}
+                    <div className='flex flex-wrap gap-1' role='group' aria-label={t('kanban.moveToStatus')}>
+                      {statusOptions.slice(0, 3).map((targetStatus) => (
+                        <button
+                          key={targetStatus}
+                          type='button'
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleMoveApplication(application, targetStatus);
+                          }}
+                          className='text-xs px-2 py-1 bg-earth-200 dark:bg-earth-600 text-earth-700 dark:text-earth-300 rounded hover:bg-earth-300 dark:hover:bg-earth-500 focus:outline-none focus:ring-2 focus:ring-sage-500'
+                          aria-label={t('kanban.moveTo', { status: targetStatus })}
+                        >
+                          → {targetStatus}
+                        </button>
+                      ))}
+                    </div>
+                    <div className='flex justify-end'>
+                      <button
+                        type='button'
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setDeleteConfirm({ isOpen: true, application });
+                        }}
+                        className='text-xs font-semibold text-terracotta-600 hover:text-terracotta-800 dark:text-terracotta-400 dark:hover:text-terracotta-300 focus:outline-none focus:ring-2 focus:ring-terracotta-500 rounded px-2 py-1'
+                        aria-label={t('kanban.deleteApp', { position: application.position, company: application.company })}
+                      >
+                        {t('common.delete')}
+                      </button>
+                    </div>
                   </footer>
                 </article>
               ))
