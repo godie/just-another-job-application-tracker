@@ -17,6 +17,7 @@ import RegisterPage from './pages/RegisterPage';
 import PWAReloadPrompt from './components/PWAReloadPrompt';
 import MergePromptHandler from './components/sync/MergePromptHandler';
 import MainLayout from './layouts/MainLayout';
+import KeyboardHelp from './components/KeyboardHelp';
 
 import OnboardingWizard from './components/OnboardingWizard';
 import { hasCompletedOnboarding } from './components/OnboardingWizard.utils';
@@ -26,6 +27,7 @@ import { hasConsent } from './components/GDPRCookieBanner.utils';
 import { useApplicationsStore } from './stores/applicationsStore';
 import { useAuthStore } from './stores/authStore';
 import { useCloudSync } from './hooks/useCloudSync';
+import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 
 // Google OAuth client ID - must be set via VITE_GOOGLE_CLIENT_ID environment variable
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
@@ -118,6 +120,32 @@ function App() {
     setShowOnboarding(false);
   }, []);
 
+  // Keyboard shortcuts help modal
+  const [showKeyboardHelp, setShowKeyboardHelp] = useState(false);
+
+  // Setup keyboard shortcuts
+  useKeyboardShortcuts({
+    onSearchFocus: () => {
+      // Focus search input if on applications page
+      const searchInput = document.querySelector('[data-testid="search-input"]') as HTMLInputElement;
+      if (searchInput) {
+        searchInput.focus();
+      }
+    },
+    onNewEntry: () => {
+      // Navigate to applications and trigger new entry
+      if (currentPage !== 'applications') {
+        setCurrentPage('applications');
+      }
+      // Dispatch custom event that HomePage can listen to
+      window.dispatchEvent(new CustomEvent('triggerNewEntry'));
+    },
+    onShowHelp: () => {
+      setShowKeyboardHelp(true);
+    },
+    enabled: !showOnboarding, // Disable when onboarding is open
+  });
+
   // Listen for applications added from Chrome extension (e.g. "Save as Application")
   useEffect(() => {
     const handleApplicationsUpdated = () => {
@@ -177,6 +205,7 @@ function App() {
         {!showOnboarding && !hasConsent() && (
           <GDPRCookieBanner onConsentChange={handleConsentChange} />
         )}
+        <KeyboardHelp isOpen={showKeyboardHelp} onClose={() => setShowKeyboardHelp(false)} />
       </AlertProvider>
     </GoogleOAuthProvider>
   );
