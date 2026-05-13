@@ -39,7 +39,8 @@ describe('Alert Accessibility', () => {
     render(<Alert type="info" message="Test message" onClose={() => {}} />);
 
     const closeButton = screen.getByLabelText('Close alert');
-    expect(closeButton).toHaveAttribute('tabIndex', '0');
+    // Buttons are natively focusable; tabIndex is not required
+    expect(closeButton.tagName.toLowerCase()).toBe('button');
     expect(closeButton.className).toContain('focus');
   });
 

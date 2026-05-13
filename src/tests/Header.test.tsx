@@ -110,7 +110,7 @@ describe('Header Component', () => {
     const mobileLogo = screen.getByTestId('app-logo-mobile');
     expect(mobileLogo).toBeInTheDocument();
     expect(mobileLogo).toHaveAttribute('src', '/jajat-logo.png');
-    expect(mobileLogo).toHaveAttribute('alt', 'JAJAT');
+    expect(mobileLogo).toHaveAttribute('alt', 'Just Another Job Application Tracker - Home');
   });
 
   test('should render tablet title "JAJAT"', () => {

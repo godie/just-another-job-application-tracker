@@ -1,14 +1,20 @@
+import React from 'react';
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import MainLayout from '../../layouts/MainLayout';
+import { AlertProvider } from '../../components/AlertProvider';
 
 /**
  * Accessibility tests for MainLayout component
  * These tests verify landmark navigation and skip links
  */
+const renderWithProvider = (ui: React.ReactElement) => {
+  return render(<AlertProvider>{ui}</AlertProvider>);
+};
+
 describe('MainLayout Accessibility', () => {
   it('renders skip navigation link', () => {
-    render(
+    renderWithProvider(
       <MainLayout currentPage="applications">
         <div>Test content</div>
       </MainLayout>
@@ -22,7 +28,7 @@ describe('MainLayout Accessibility', () => {
   });
 
   it('main content has landmark role', () => {
-    render(
+    renderWithProvider(
       <MainLayout currentPage="applications">
         <div>Test content</div>
       </MainLayout>
@@ -34,7 +40,7 @@ describe('MainLayout Accessibility', () => {
   });
 
   it('main content has negative tabindex for focus management', () => {
-    render(
+    renderWithProvider(
       <MainLayout currentPage="applications">
         <div>Test content</div>
       </MainLayout>
@@ -45,7 +51,7 @@ describe('MainLayout Accessibility', () => {
   });
 
   it('sidebar has navigation landmark', () => {
-    render(
+    renderWithProvider(
       <MainLayout currentPage="applications">
         <div>Test content</div>
       </MainLayout>
@@ -56,7 +62,7 @@ describe('MainLayout Accessibility', () => {
   });
 
   it('header has banner landmark', () => {
-    render(
+    renderWithProvider(
       <MainLayout currentPage="applications">
         <div>Test content</div>
       </MainLayout>
