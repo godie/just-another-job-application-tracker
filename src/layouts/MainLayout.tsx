@@ -38,6 +38,13 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, currentPage, onNaviga
 
   return (
     <div className="flex flex-col h-screen bg-earth-100 dark:bg-earth-900">
+      {/* Skip navigation link for keyboard users */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] bg-sage-600 text-white px-4 py-2 rounded shadow-lg transition-all"
+      >
+        Skip to main content
+      </a>
       {/* Header always on top, full width */}
       <Header onToggleSidebar={toggleSidebar} onNavigate={onNavigate} />
       
@@ -59,12 +66,12 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, currentPage, onNaviga
             aria-hidden="true"
           />
         )}
-        <div 
+        <div
           className={`flex-1 overflow-hidden transition-all duration-300 ${
             isSidebarOpen ? 'md:ml-64' : 'ml-0'
           }`}
         >
-          <main className="h-full overflow-y-auto p-8 pb-16 md:pb-8">
+          <main id="main-content" role="main" className="h-full overflow-y-auto p-8 pb-16 md:pb-8" tabIndex={-1}>
             {children}
           </main>
         </div>
