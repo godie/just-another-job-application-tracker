@@ -60,7 +60,13 @@ export const AlertProvider: React.FC<AlertProviderProps> = ({ children }) => {
     <AlertContext.Provider value={{ showAlert, showSuccess, showError, showWarning, showInfo }}>
       {children}
       {/* Alert container - positioned fixed at top right */}
-      <div className="fixed top-4 right-4 z-50 w-full max-w-md space-y-2 pointer-events-none">
+      <div
+        role="region"
+        aria-label="Notifications"
+        aria-live="polite"
+        aria-atomic="false"
+        className="fixed top-4 right-4 z-50 w-full max-w-md space-y-2 pointer-events-none"
+      >
         {alerts.map((alert) => (
           <div key={alert.id} className="pointer-events-auto">
             <Alert

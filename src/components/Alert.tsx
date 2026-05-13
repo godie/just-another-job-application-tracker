@@ -61,14 +61,16 @@ const Alert: React.FC<AlertProps> = ({ type, message, onClose, duration = 5000 }
   return (
     <div
       role="alert"
+      aria-live="polite"
+      aria-atomic="true"
       className={`
-        ${styles[type]} 
-        border-l-2 
-        p-4 
-        rounded-lg 
-        shadow-md 
-        mb-4 
-        transition-all 
+        ${styles[type]}
+        border-l-2
+        p-4
+        rounded-lg
+        shadow-md
+        mb-4
+        transition-all
         duration-300
         ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'}
       `}
