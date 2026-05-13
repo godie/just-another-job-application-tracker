@@ -85,7 +85,7 @@ const Header: React.FC<HeaderProps> = ({ onToggleSidebar, onNavigate }) => {
   };
 
   return (
-    <header className='flex items-center justify-between p-4 border-b border-earth-200 dark:border-earth-700 bg-white dark:bg-earth-800 fixed top-0 left-0 right-0 z-50 h-16'>
+    <header role="banner" className='flex items-center justify-between p-4 border-b border-earth-200 dark:border-earth-700 bg-white dark:bg-earth-800 fixed top-0 left-0 right-0 z-50 h-16'>
       <div className='flex items-center gap-4'>
         {/* Hamburger menu button - Hidden on mobile, visible on desktop */}
         <Button
@@ -112,9 +112,9 @@ const Header: React.FC<HeaderProps> = ({ onToggleSidebar, onNavigate }) => {
           </svg>
         </Button>
         {/* Logo/Icon for mobile (< 768px) */}
-        <img 
-          src='/jajat-logo.png' 
-          alt='JAJAT'
+        <img
+          src='/jajat-logo.png'
+          alt='Just Another Job Application Tracker - Home'
           className='size-10 md:hidden'
           data-testid='app-logo-mobile'
         />
