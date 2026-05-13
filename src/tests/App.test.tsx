@@ -57,7 +57,8 @@ describe('App Navigation and History', () => {
 
     // In SettingsPage, we expect the h1 heading 'Settings'
     // Using level:1 to avoid matching h3 category labels that may contain 'settings' in raw i18n keys
-    expect(screen.getByRole('heading', { level: 1, name: /Settings/i })).toBeInTheDocument();
+    // Wait for lazy-loaded SettingsPage to resolve
+    expect(await screen.findByRole('heading', { level: 1, name: /Settings/i })).toBeInTheDocument();
   });
 
   it('updates the URL when the page changes', async () => {
@@ -80,6 +81,7 @@ describe('App Navigation and History', () => {
     });
 
     // Check if it navigated to settings (use level:1 to match only the page title h1)
-    expect(screen.getByRole('heading', { level: 1, name: /Settings/i })).toBeInTheDocument();
+    // Wait for lazy-loaded SettingsPage to resolve
+    expect(await screen.findByRole('heading', { level: 1, name: /Settings/i })).toBeInTheDocument();
   });
 });

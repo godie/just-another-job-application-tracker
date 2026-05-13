@@ -85,7 +85,7 @@ describe('HomePage - Full Integration Suite', () => {
   });
 
   // --- TEST DE VISUALIZACIÓN (Fix Final V2 adaptado) ---
-  test('Muestra aplicaciones en la tabla correctamente', () => {
+  test('Muestra aplicaciones en la tabla correctamente', async () => {
     getMockedState().mockReturnValue({
       applications: [{ id: '1', position: 'Senior Dev', company: 'Google', status: 'Applied' }],
       loadApplications: vi.fn(),
@@ -94,8 +94,8 @@ describe('HomePage - Full Integration Suite', () => {
 
     renderWithProviders(<HomePage />);
 
-    expect(screen.getByRole('cell', { name: /Senior Dev/i })).toBeInTheDocument();
-    expect(screen.getAllByText(/Google/i).length).toBeGreaterThanOrEqual(1);
+    expect(await screen.findByRole('cell', { name: /Senior Dev/i })).toBeInTheDocument();
+    expect((await screen.findAllByText(/Google/i)).length).toBeGreaterThanOrEqual(1);
   });
 
   // --- TEST DE FLUJO COMPLETO (Fix Final V2) ---
@@ -122,7 +122,7 @@ describe('HomePage - Full Integration Suite', () => {
     });
 
     renderWithProviders(<HomePage />); // Re-render para confirmar persistencia visual
-    expect(screen.getAllByText(/Software Engineer/i).length).toBeGreaterThan(0);
+    expect((await screen.findAllByText(/Software Engineer/i)).length).toBeGreaterThan(0);
   });
 
   // --- TEST DE FILTROS (Lógica original recuperada) ---

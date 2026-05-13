@@ -56,6 +56,21 @@ export default defineConfig({
           constBindings: true,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } as any,
+        manualChunks(id) {
+          // Split vendor libraries into separate cacheable chunks
+          if (id.includes('node_modules')) {
+            if (id.includes('recharts')) return 'recharts';
+            if (id.includes('react-dom')) return 'react';
+            if (id.includes('/react/')) return 'react';
+            if (id.includes('i18next') || id.includes('react-i18next')) return 'i18n';
+            if (id.includes('@react-oauth')) return 'google-auth';
+            if (id.includes('@googleapis')) return 'google-sheets';
+            if (id.includes('react-icons')) return 'react-icons';
+            if (id.includes('zustand')) return 'vendor';
+            if (id.includes('dompurify')) return 'vendor';
+            return 'vendor';
+          }
+        },
       },
     },
     // Use modern target to avoid eval in production

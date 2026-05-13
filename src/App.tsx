@@ -1,18 +1,20 @@
 // src/App.tsx
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, lazy, Suspense } from 'react';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { AlertProvider } from './components/AlertProvider';
-import BackupSyncPage from './pages/BackupSyncPage';
-import HomePage from './pages/HomePage';
-import OpportunitiesPage from './pages/OpportunitiesPage';
-import SettingsPage from './pages/SettingsPage';
-import InsightsPage from './pages/InsightsPage';
-import SupportPage from './pages/SupportPage';
-import SuggestionsViewerPage from './pages/SuggestionsViewerPage';
-import GmailScanPage from './pages/GmailScanPage';
 import LandingPage from './pages/LandingPage';
-import LoginPage from './pages/LoginPage';
-import RegisterPage from './pages/RegisterPage';
+
+// Lazy-load all non-landing pages to reduce initial bundle size
+const HomePage = lazy(() => import('./pages/HomePage'));
+const OpportunitiesPage = lazy(() => import('./pages/OpportunitiesPage'));
+const SettingsPage = lazy(() => import('./pages/SettingsPage'));
+const InsightsPage = lazy(() => import('./pages/InsightsPage'));
+const SupportPage = lazy(() => import('./pages/SupportPage'));
+const SuggestionsViewerPage = lazy(() => import('./pages/SuggestionsViewerPage'));
+const GmailScanPage = lazy(() => import('./pages/GmailScanPage'));
+const BackupSyncPage = lazy(() => import('./pages/BackupSyncPage'));
+const LoginPage = lazy(() => import('./pages/LoginPage'));
+const RegisterPage = lazy(() => import('./pages/RegisterPage'));
 
 import PWAReloadPrompt from './components/PWAReloadPrompt';
 import MergePromptHandler from './components/sync/MergePromptHandler';
@@ -191,10 +193,24 @@ function App() {
     <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
       <AlertProvider>
         {['landing', 'login', 'register'].includes(currentPage) ? (
-          <main id="app-main-landmark">{content}</main>
+          <main id="app-main-landmark">
+            <Suspense fallback={
+              <div className="flex items-center justify-center h-screen bg-earth-100 dark:bg-earth-900">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-sage-600"></div>
+              </div>
+            }>
+              {content}
+            </Suspense>
+          </main>
         ) : (
           <MainLayout currentPage={currentPage} onNavigate={setCurrentPage}>
-            {content}
+            <Suspense fallback={
+              <div className="flex items-center justify-center h-full">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-sage-600"></div>
+              </div>
+            }>
+              {content}
+            </Suspense>
           </MainLayout>
         )}
         <MergePromptHandler />
