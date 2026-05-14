@@ -174,7 +174,7 @@ const HomePageContent: React.FC<HomePageContentProps> = ({ onNavigate }) => {
   const tableColumns = useTableColumns(preferences);
 
   return (
-    <div className='max-w-7xl mx-auto px-6 lg:px-8 py-8'>
+    <div className='max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-8'>
       {/* ── HERO ZONE ── Header + Add Job CTA + Metrics ── */}
       <header className='mb-10'>
         <div className='flex flex-col sm:flex-row sm:items-start sm:justify-between gap-6'>

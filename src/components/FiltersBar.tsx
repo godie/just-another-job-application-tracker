@@ -111,7 +111,7 @@ const FiltersBar: React.FC<FiltersBarProps> = React.memo(({ filters, onFiltersCh
   const statusExclude = filters.statusExclude || [];
 
   return (
-    <Card className='p-5 border border-earth-200 dark:border-earth-700 space-y-4'>
+    <Card className='p-4 md:p-5 border border-earth-200 dark:border-earth-700 space-y-4'>
       <div className='md:flex md:flex-wrap md:items-end md:gap-5'>
         <div className='flex-1 min-w-[180px]'>
           <Input

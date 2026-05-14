@@ -82,7 +82,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
       </div>
 
       {/* Navigation / Lang Switcher + Enter CTA */}
-      <nav className='relative max-w-7xl mx-auto px-6 lg:px-8 py-6 flex justify-between items-center gap-4'>
+      <nav className='relative max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-6 flex justify-between items-center gap-4'>
         <button
           onClick={handleEnterApp}
           className='inline-flex items-center gap-2 bg-terracotta-600 hover:bg-terracotta-700 active:bg-terracotta-800 text-white font-semibold py-2.5 px-6 rounded transition-colors shadow-sm hover:shadow-md border border-terracotta-700 hover:border-terracotta-800'
@@ -123,7 +123,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
       </nav>
 
       {/* Hero Section - Asymmetric, Editorial */}
-      <header className='relative max-w-7xl mx-auto px-6 lg:px-8 pt-8 pb-24 lg:pt-12 lg:pb-32'>
+      <header className='relative max-w-7xl mx-auto px-4 md:px-6 lg:px-8 pt-8 pb-24 lg:pt-12 lg:pb-32'>
         <div className='grid lg:grid-cols-12 gap-12 lg:gap-16 items-center'>
           {/* Left side - Content */}
           <div className='lg:col-span-7'>
@@ -167,7 +167,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
           <div className='lg:col-span-5 relative'>
             <div className='relative'>
               {/* Organic blob shape background */}
-              <div className='absolute -inset-4 bg-gradient-to-br from-sage-200 via-terracotta-100 to-earth-100 dark:from-sage-900 dark:via-terracotta-900 dark:to-earth-800 rounded transform rotate-3'></div>
+              <div className='absolute inset-0 md:-inset-4 bg-gradient-to-br from-sage-200 via-terracotta-100 to-earth-100 dark:from-sage-900 dark:via-terracotta-900 dark:to-earth-800 rounded transform rotate-3'></div>
               <div className='relative aspect-square bg-gradient-to-br from-sage-100 to-earth-100 dark:from-sage-800 dark:to-earth-800 rounded overflow-hidden'>
                 <img 
                   src='/screenshots/table_view.png' 
@@ -183,7 +183,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
 
       {/* Features Section */}
       <section id='features' className='relative py-24 bg-earth-100/50 dark:bg-earth-800/30'>
-        <div className='max-w-7xl mx-auto px-6 lg:px-8'>
+        <div className='max-w-7xl mx-auto px-4 md:px-6 lg:px-8'>
           {/* Section header */}
           <div className='max-w-2xl mb-20'>
             <span className='text-terracotta-600 dark:text-terracotta-400 text-sm font-medium tracking-wider uppercase mb-4 block'>
@@ -349,7 +349,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
       </section>
 
       {/* Roadmap Section - More editorial/magazine style */}
-      <section className='py-24 max-w-7xl mx-auto px-6 lg:px-8'>
+      <section className='py-24 max-w-7xl mx-auto px-4 md:px-6 lg:px-8'>
         <div className='grid lg:grid-cols-12 gap-12 items-start'>
           {/* Left column - Section header */}
           <div className='lg:col-span-4'>
@@ -397,7 +397,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
           </svg>
         </div>
         
-        <div className='relative max-w-4xl mx-auto px-6 lg:px-8 text-center'>
+        <div className='relative max-w-4xl mx-auto px-4 md:px-6 lg:px-8 text-center'>
           <h2 className='font-serif text-3xl md:text-5xl font-semibold mb-8'>
             {t('landing.ready')}
           </h2>
@@ -418,7 +418,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
 
       {/* Footer - Minimal, natural */}
       <footer className='py-12 bg-earth-100 dark:bg-earth-800'>
-        <div className='max-w-7xl mx-auto px-6 lg:px-8'>
+        <div className='max-w-7xl mx-auto px-4 md:px-6 lg:px-8'>
           <div className='flex flex-col md:flex-row justify-between items-center gap-6'>
             <div className='flex items-center gap-3'>
               <div className='size-8 bg-sage-600 rounded flex items-center justify-center'>

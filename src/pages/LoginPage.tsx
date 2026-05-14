@@ -44,7 +44,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onNavigate, onSuccess }) => {
 
   return (
     <div className='min-h-screen flex items-center justify-center bg-earth-50 dark:bg-earth-900 px-4 py-12 sm:px-6 lg:px-8'>
-      <Card className='max-w-md w-full p-10'>
+      <Card className='max-w-md w-full p-6 sm:p-10'>
         {/* Header */}
         <div className='mb-8'>
           <div className='flex justify-center'>
