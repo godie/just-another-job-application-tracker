@@ -22,7 +22,7 @@ const shortcuts: ShortcutItem[] = [
   { key: 'Shift + Tab', description: 'Navigate backwards' },
 ];
 
-export const KeyboardHelp: React.FC<KeyboardHelpProps> = ({ isOpen, onClose }) => {
+const KeyboardHelp: React.FC<KeyboardHelpProps> = ({ isOpen, onClose }) => {
   const modalRef = useRef<HTMLDivElement>(null);
 
   useFocusTrap(modalRef, isOpen);

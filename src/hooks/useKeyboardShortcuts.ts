@@ -14,7 +14,7 @@ interface KeyboardShortcutsOptions {
  * - n : New entry
  * - ? : Show keyboard shortcuts help
  */
-export const useKeyboardShortcuts = ({
+const useKeyboardShortcuts = ({
   onSearchFocus,
   onNewEntry,
   onShowHelp,

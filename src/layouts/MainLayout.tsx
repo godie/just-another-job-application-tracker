@@ -71,7 +71,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, currentPage, onNaviga
             isSidebarOpen ? 'md:ml-64' : 'ml-0'
           }`}
         >
-          <main id="main-content" role="main" className="h-full overflow-y-auto p-8 pb-16 md:pb-8" tabIndex={-1}>
+          <main id="main-content" role="main" className="h-full overflow-y-auto p-4 md:p-8 pb-16 md:pb-8" tabIndex={-1}>
             {children}
           </main>
         </div>

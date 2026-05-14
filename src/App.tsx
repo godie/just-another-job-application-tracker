@@ -29,7 +29,7 @@ import { hasConsent } from './components/GDPRCookieBanner.utils';
 import { useApplicationsStore } from './stores/applicationsStore';
 import { useAuthStore } from './stores/authStore';
 import { useCloudSync } from './hooks/useCloudSync';
-import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
+import useKeyboardShortcuts from './hooks/useKeyboardShortcuts';
 
 // Google OAuth client ID - must be set via VITE_GOOGLE_CLIENT_ID environment variable
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
