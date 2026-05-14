@@ -20,7 +20,7 @@ describe('linkGoogleAccount — property tests', () => {
             const jsonMock = vi.fn().mockResolvedValue({ success: true });
             mockFetch.mockResolvedValue({ json: jsonMock });
 
-            await linkGoogleAccount(code);
+            await linkGoogleAccount(code, 'http://localhost:5173');
 
             expect(mockFetch).toHaveBeenCalledTimes(1);
             const [url, options] = mockFetch.mock.calls[0] as [string, RequestInit];
@@ -30,7 +30,7 @@ describe('linkGoogleAccount — property tests', () => {
             expect(options.method).toBe('POST');
             expect(options.credentials).toBe('include');
             expect(options.headers).toEqual({ 'Content-Type': 'application/json' });
-            expect(options.body).toBe(JSON.stringify({ googleToken: code }));
+            expect(options.body).toBe(JSON.stringify({ googleToken: code, redirectUri: 'http://localhost:5173' }));
 
             mockFetch.mockReset();
           }
@@ -77,7 +77,7 @@ describe('linkGoogleAccount — property tests', () => {
             const jsonMock = vi.fn().mockResolvedValue(responseData);
             mockFetch.mockResolvedValue({ json: jsonMock });
 
-            const result = await linkGoogleAccount(code);
+            const result = await linkGoogleAccount(code, 'http://localhost:5173');
 
             expect(result).toStrictEqual(responseData);
 

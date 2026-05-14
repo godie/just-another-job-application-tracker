@@ -29,7 +29,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'l
     flow: 'auth-code',
     onSuccess: async (codeResponse) => {
       try {
-        await loginWithGoogle(codeResponse.code);
+        await loginWithGoogle(codeResponse.code, window.location.origin);
         onClose();
       } catch {
         // Error is handled by store

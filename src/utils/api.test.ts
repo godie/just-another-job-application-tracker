@@ -15,7 +15,7 @@ describe('linkGoogleAccount', () => {
     };
     mockFetch.mockResolvedValue(mockResponse);
 
-    await linkGoogleAccount('auth-code-123');
+    await linkGoogleAccount('auth-code-123', 'http://localhost:5173');
 
     expect(mockFetch).toHaveBeenCalledTimes(1);
     const [url, options] = mockFetch.mock.calls[0] as [string, RequestInit];
@@ -25,7 +25,7 @@ describe('linkGoogleAccount', () => {
     expect(options.method).toBe('POST');
     expect(options.credentials).toBe('include');
     expect(options.headers).toEqual({ 'Content-Type': 'application/json' });
-    expect(options.body).toBe(JSON.stringify({ googleToken: 'auth-code-123' }));
+    expect(options.body).toBe(JSON.stringify({ googleToken: 'auth-code-123', redirectUri: 'http://localhost:5173' }));
   });
 
   it('returns the JSON response without modification for success', async () => {
@@ -38,7 +38,7 @@ describe('linkGoogleAccount', () => {
       json: vi.fn().mockResolvedValue(responseData),
     });
 
-    const result = await linkGoogleAccount('auth-code-456');
+    const result = await linkGoogleAccount('auth-code-456', 'http://localhost:5173');
 
     expect(result).toEqual(responseData);
   });
@@ -52,7 +52,7 @@ describe('linkGoogleAccount', () => {
       json: vi.fn().mockResolvedValue(errorData),
     });
 
-    const result = await linkGoogleAccount('conflict-code');
+    const result = await linkGoogleAccount('conflict-code', 'http://localhost:5173');
 
     expect(result).toEqual(errorData);
   });
