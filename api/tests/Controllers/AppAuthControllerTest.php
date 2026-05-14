@@ -755,4 +755,35 @@ class AppAuthControllerTest extends TestCase
         session_destroy();
         $_SESSION = [];
     }
+
+    /**
+     * exchangeGoogleCodeForToken returns 'Redirect URI not allowed' when
+     * redirectUri is not in allowed_origins (mirrors LinkedIn behavior).
+     * Requirements: 3.5
+     */
+    public function testExchangeGoogleCodeRejectsRedirectUriNotInAllowedOrigins(): void
+    {
+        // Use reflection to inject a limited allowed_origins config
+        // so we can test the real exchangeGoogleCodeForToken method
+        $testConfig = $this->config;
+        $testConfig['allowed_origins'] = ['https://trusted.example.com'];
+        $testConfig['google_client_id'] = 'test-client-id';
+        $testConfig['google_client_secret'] = 'test-client-secret';
+
+        // config is on the parent AppAuthController, not TestableAppAuthController
+        $reflection = new \ReflectionClass(AppAuthController::class);
+        $configProp = $reflection->getProperty('config');
+        $configProp->setAccessible(true);
+        $configProp->setValue($this->controller, $testConfig);
+
+        // Attempt exchange with an untrusted redirectUri
+        // Use reflection to invoke the protected method
+        $method = $reflection->getMethod('exchangeGoogleCodeForToken');
+        $method->setAccessible(true);
+        $result = $method->invoke($this->controller, 'any-auth-code', 'https://evil.attacker.com');
+
+        $this->assertIsArray($result);
+        $this->assertArrayHasKey('error', $result);
+        $this->assertEquals('Redirect URI not allowed', $result['error']);
+    }
 }
