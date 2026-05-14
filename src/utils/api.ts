@@ -68,20 +68,26 @@ export async function login(
   return response.json();
 }
 
-export async function loginWithGoogle(googleToken: string): Promise<AuthResponse> {
+export async function loginWithGoogle(
+  googleToken: string,
+  redirectUri: string
+): Promise<AuthResponse> {
   const response = await fetch(`${API_BASE_URL}/auth/google`, {
     ...defaultFetchOptions,
     method: 'POST',
-    body: JSON.stringify({ googleToken }),
+    body: JSON.stringify({ googleToken, redirectUri }),
   });
   return response.json();
 }
 
-export async function linkGoogleAccount(googleToken: string): Promise<AuthResponse> {
+export async function linkGoogleAccount(
+  googleToken: string,
+  redirectUri: string
+): Promise<AuthResponse> {
   const response = await fetch(`${API_BASE_URL}/auth/google`, {
     ...defaultFetchOptions,
     method: 'POST',
-    body: JSON.stringify({ googleToken }),
+    body: JSON.stringify({ googleToken, redirectUri }),
   });
   return response.json();
 }

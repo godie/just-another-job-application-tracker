@@ -17,6 +17,7 @@ class TestableAppAuthController extends AppAuthController
 {
     public ?array $mockInput = null;
     public array $mockGoogleUser = [];
+    public array $mockGoogleToken = [];
     public array $mockLinkedInToken = [];
     public array $mockLinkedInUser = [];
 
@@ -28,6 +29,11 @@ class TestableAppAuthController extends AppAuthController
     protected function verifyGoogleToken(string $token): array
     {
         return $this->mockGoogleUser;
+    }
+
+    protected function exchangeGoogleCodeForToken(string $code, string $redirectUri): array
+    {
+        return $this->mockGoogleToken;
     }
 
     protected function exchangeLinkedInCodeForToken(string $code, string $redirectUri): array
@@ -457,10 +463,19 @@ class AppAuthControllerTest extends TestCase
         $this->assertNotNull($userAfterFirstLogin);
         $this->assertNotNull($userAfterFirstLogin->lastLoginAt, 'lastLoginAt should be set after first login');
 
-        $firstLoginTime = $userAfterFirstLogin->lastLoginAt;
+        // Force an old timestamp so the next update is guaranteed to be greater
+        $this->db->prepare(
+            'UPDATE users SET last_login_at = :old WHERE google_id = :gid'
+        )->execute([
+            ':old' => '2000-01-01 00:00:00',
+            ':gid' => 'google-lastlogin-test',
+        ]);
 
-        // Wait a moment to ensure timestamp changes
-        sleep(1);
+        // Ensure no active session so the second call is treated as login, not link
+        if (session_status() === PHP_SESSION_ACTIVE) {
+            session_destroy();
+        }
+        $_SESSION = [];
 
         // Second login — should update last_login_at
         $result2 = $this->controller->google();
@@ -470,7 +485,7 @@ class AppAuthControllerTest extends TestCase
         $this->assertNotNull($userAfterSecondLogin);
         $this->assertNotNull($userAfterSecondLogin->lastLoginAt, 'lastLoginAt should be set after second login');
         $this->assertGreaterThan(
-            $firstLoginTime,
+            '2000-01-01 00:00:00',
             $userAfterSecondLogin->lastLoginAt,
             'lastLoginAt should be updated on subsequent login'
         );
@@ -649,5 +664,95 @@ class AppAuthControllerTest extends TestCase
         $this->assertFalse($result['success']);
         $this->assertEquals('Google token is required', $result['error']);
         $this->assertEquals(400, http_response_code());
+    }
+
+    /**
+     * When redirectUri is provided, the backend should exchange the auth code
+     * for an ID token before verifying.
+     * Requirements: 3.5
+     */
+    public function testGoogleLoginWithAuthCodeExchangesAndCreatesUser(): void
+    {
+        // Simulate auth-code flow: input has both googleToken (code) and redirectUri
+        $this->controller->mockInput = [
+            'googleToken' => '4/0Agoogle-auth-code',
+            'redirectUri' => 'http://localhost:5173',
+        ];
+        // Mock exchange returning an ID token
+        $this->controller->mockGoogleToken = ['id_token' => 'exchanged-id-token'];
+        // Mock ID token verification result
+        $this->controller->mockGoogleUser = [
+            'sub' => 'google-code-flow-123',
+            'email' => 'codeflow@example.com',
+            'name' => 'Code Flow User',
+            'picture' => 'https://example.com/photo.jpg',
+        ];
+
+        $result = $this->controller->google();
+
+        $this->assertTrue($result['success']);
+        $this->assertEquals('Google login successful', $result['message']);
+        $this->assertNotNull($result['user']);
+        $this->assertEquals('codeflow@example.com', $result['user']['email']);
+
+        // Verify user was created with google_id
+        $repo = new UserRepository($this->db);
+        $dbUser = $repo->findByGoogleId('google-code-flow-123');
+        $this->assertNotNull($dbUser);
+        $this->assertEquals('codeflow@example.com', $dbUser->email);
+    }
+
+    /**
+     * When redirectUri is provided but code exchange fails, return 401.
+     */
+    public function testGoogleLoginWithAuthCodeExchangeFailureReturns401(): void
+    {
+        $this->controller->mockInput = [
+            'googleToken' => 'invalid-code',
+            'redirectUri' => 'http://localhost:5173',
+        ];
+        $this->controller->mockGoogleToken = ['error' => 'Invalid authorization code'];
+
+        $result = $this->controller->google();
+
+        $this->assertFalse($result['success']);
+        $this->assertEquals('Invalid authorization code', $result['error']);
+        $this->assertEquals(401, http_response_code());
+    }
+
+    /**
+     * Link Google account via auth-code flow (redirectUri provided).
+     */
+    public function testLinkGoogleWithAuthCodeFlowLinksSuccessfully(): void
+    {
+        $user = $this->createTestUser('link-code@example.com', 'password123');
+        $this->assertNull($user->googleId);
+
+        if (session_status() !== PHP_SESSION_ACTIVE) {
+            session_start();
+        }
+        $_SESSION['user_id'] = $user->id;
+
+        $this->controller->mockInput = [
+            'googleToken' => '4/0Agoogle-link-code',
+            'redirectUri' => 'http://localhost:5173',
+        ];
+        $this->controller->mockGoogleToken = ['id_token' => 'exchanged-link-token'];
+        $this->controller->mockGoogleUser = [
+            'sub' => 'google-link-code-456',
+            'email' => 'link-code@example.com',
+            'name' => 'Link Code User',
+            'picture' => 'https://example.com/photo.jpg',
+        ];
+
+        $result = $this->controller->google();
+
+        $this->assertTrue($result['success']);
+        $this->assertEquals('Google account linked successfully', $result['message']);
+        $this->assertNotNull($result['user']);
+        $this->assertEquals('google-link-code-456', $result['user']['googleId']);
+
+        session_destroy();
+        $_SESSION = [];
     }
 }

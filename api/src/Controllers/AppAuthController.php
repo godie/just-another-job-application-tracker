@@ -189,6 +189,18 @@ class AppAuthController
             return ['success' => false, 'error' => 'Google token is required'];
         }
 
+        $redirectUri = $data['redirectUri'] ?? null;
+
+        // If redirectUri is provided, the token is an auth code that must be exchanged
+        if (is_string($redirectUri) && $redirectUri !== '') {
+            $tokenResult = $this->exchangeGoogleCodeForToken($googleToken, $redirectUri);
+            if (isset($tokenResult['error'])) {
+                http_response_code(401);
+                return ['success' => false, 'error' => $tokenResult['error']];
+            }
+            $googleToken = $tokenResult['id_token'];
+        }
+
         $googleUser = $this->verifyGoogleToken($googleToken);
         if (isset($googleUser['error'])) {
             http_response_code(401);
@@ -445,6 +457,59 @@ class AppAuthController
         $headers = ['From' => $this->config['smtp_from'] ?? 'noreply@example.com'];
 
         mail($email, $subject, $message, $headers);
+    }
+
+    protected function exchangeGoogleCodeForToken(string $code, string $redirectUri): array
+    {
+        $clientId = $this->config['google_client_id'] ?? '';
+        $clientSecret = $this->config['google_client_secret'] ?? '';
+
+        if ($clientId === '' || $clientSecret === '') {
+            return ['error' => 'Google OAuth not configured'];
+        }
+
+        $allowed = $this->config['allowed_origins'] ?? [];
+        if (!in_array($redirectUri, $allowed, true)) {
+            return ['error' => 'Redirect URI not allowed'];
+        }
+
+        $body = http_build_query([
+            'grant_type' => 'authorization_code',
+            'code' => $code,
+            'redirect_uri' => $redirectUri,
+            'client_id' => $clientId,
+            'client_secret' => $clientSecret,
+        ]);
+
+        $opts = [
+            'http' => [
+                'method' => 'POST',
+                'header' => "Content-Type: application/x-www-form-urlencoded\r\n",
+                'content' => $body,
+                'ignore_errors' => true,
+            ],
+        ];
+        $ctx = stream_context_create($opts);
+        $result = @file_get_contents('https://oauth2.googleapis.com/token', false, $ctx);
+
+        if ($result === false) {
+            return ['error' => 'Failed to exchange code with Google'];
+        }
+
+        $decoded = json_decode($result, true);
+        if (!is_array($decoded)) {
+            return ['error' => 'Invalid response from Google'];
+        }
+
+        if (isset($decoded['error'])) {
+            return ['error' => $decoded['error_description'] ?? $decoded['error']];
+        }
+
+        if (empty($decoded['id_token'])) {
+            return ['error' => 'No ID token in Google response'];
+        }
+
+        return ['id_token' => $decoded['id_token']];
     }
 
     protected function verifyGoogleToken(string $token): array

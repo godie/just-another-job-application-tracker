@@ -176,7 +176,7 @@ describe('ConnectGoogleButton', () => {
       await config.onSuccess({ code: 'test-auth-code' });
     }
 
-    expect(mockedLinkGoogleAccount).toHaveBeenCalledWith('test-auth-code');
+    expect(mockedLinkGoogleAccount).toHaveBeenCalledWith('test-auth-code', expect.any(String));
 
     await waitFor(() => {
       expect(mockFetchMe).toHaveBeenCalledTimes(1);

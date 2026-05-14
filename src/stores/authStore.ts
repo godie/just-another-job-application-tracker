@@ -21,7 +21,7 @@ interface AuthState {
 
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string, displayName?: string) => Promise<void>;
-  loginWithGoogle: (googleToken: string) => Promise<void>;
+  loginWithGoogle: (googleToken: string, redirectUri: string) => Promise<void>;
   loginWithLinkedIn: (code: string, redirectUri: string) => Promise<void>;
   logout: () => Promise<void>;
   fetchMe: () => Promise<void>;
@@ -75,10 +75,10 @@ export const useAuthStore = create<AuthState>()((set) => ({
     }
   },
 
-  loginWithGoogle: async (googleToken: string) => {
+  loginWithGoogle: async (googleToken: string, redirectUri: string) => {
     set({ isLoading: true, error: null });
     try {
-      const response = await apiLoginWithGoogle(googleToken);
+      const response = await apiLoginWithGoogle(googleToken, redirectUri);
       if (response.success && response.user) {
         set({ currentUser: response.user, isAuthenticated: true });
       } else {

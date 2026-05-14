@@ -33,7 +33,7 @@ export const ConnectGoogleButton: React.FC<ConnectGoogleButtonProps> = ({
     onSuccess: async (codeResponse) => {
       setIsLinking(true);
       try {
-        const data = await linkGoogleAccount(codeResponse.code);
+        const data = await linkGoogleAccount(codeResponse.code, window.location.origin);
         if (data.success) {
           await fetchMe();
           showSuccess(t('settings.cloud.googleLinkedSuccess'));
