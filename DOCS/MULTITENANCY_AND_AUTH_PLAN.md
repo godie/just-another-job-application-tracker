@@ -21,18 +21,21 @@ This document defines the intended product behavior, the target backend architec
 - Google service routes such as Sheets/Gmail-related flows depend on those cookies.
 - Early model layer exists for `User`, `Organization`, `Application`, `Opportunity`, `InterviewEvent`, and `UserPreferences`.
 
-### What does not exist yet as app auth
+### What exists today as app auth
 
-- No real app account session lifecycle.
-- No `GET /api/auth/me`.
-- No production-ready `POST /api/auth/login`.
-- No production-ready `POST /api/auth/register`.
-- No production-ready `DELETE /api/auth/logout`.
-- No completed flow that links Google identity to a database-backed app user session.
+- App account session lifecycle with secure session cookies.
+- `GET /api/auth/me` — returns the current authenticated user.
+- Production-ready `POST /api/auth/register` with password hashing.
+- Production-ready `POST /api/auth/login` with session regeneration.
+- Production-ready `DELETE /api/auth/logout` with session destruction.
+- Production-ready `POST /api/auth/google` that links Google identity to a database-backed app user (auto-creates user by email when missing).
+- Production-ready `POST /api/auth/linkedin` for LinkedIn OAuth login.
+- Password reset flow: `POST /api/auth/forgot` and `POST /api/auth/reset`.
+- Sync routes (`/sync/applications`, `/sync/opportunities`) already gated behind `RequireAuth` middleware.
 
 ## Important Separation
 
-There are two different auth layers and they should stay separate.
+There are two different auth layers and they stay separate.
 
 ### 1. Google service auth
 
@@ -59,15 +62,18 @@ Purpose:
 - connect user data across devices
 - attach data to a tenant / organization
 
-Target route family:
+Current route family (all implemented):
 
 - `GET /api/auth/me`
 - `POST /api/auth/register`
 - `POST /api/auth/login`
 - `DELETE /api/auth/logout`
-- optionally `POST /api/auth/google`
+- `POST /api/auth/google`
+- `POST /api/auth/linkedin`
+- `POST /api/auth/forgot`
+- `POST /api/auth/reset`
 
-## Recommended Auth Behavior
+## Current Auth Behavior
 
 ### Anonymous usage
 
@@ -87,6 +93,15 @@ Target route family:
 
 - user signs in with Google
 - backend validates Google identity
+- backend searches `users.email`
+- if user does not exist, create the account automatically
+- backend creates session
+- backend returns authenticated user
+
+### LinkedIn account for app auth
+
+- user signs in with LinkedIn
+- backend validates LinkedIn identity
 - backend searches `users.email`
 - if user does not exist, create the account automatically
 - backend creates session
@@ -157,46 +172,47 @@ Suggested rules:
 
 ### Data model
 
-- final schema for `users`
-- final schema for `organizations`
-- final schema for `user_preferences`
-- confirm whether `applications`, `opportunities`, and `timeline_events` always carry `organization_id`
-- unique constraints for tenant-safe identities
-- password hashing and reset strategy
+- ✅ final schema for `users` (implemented)
+- ✅ final schema for `organizations` (implemented)
+- ✅ final schema for `user_preferences` (implemented)
+- ✅ `applications`, `opportunities`, and `timeline_events` scoped by `user_id` via sync controller (implemented)
+- ✅ unique constraints for tenant-safe identities (implemented)
+- ✅ password hashing and reset strategy (implemented with bcrypt)
 
 ### Authentication
 
-- app session creation and destruction
-- registration endpoint
-- login endpoint
-- `auth/me`
-- Google-to-user linking flow
-- session regeneration on login
-- secure session cookie configuration
+- ✅ app session creation and destruction (implemented)
+- ✅ registration endpoint (implemented)
+- ✅ login endpoint (implemented)
+- ✅ `auth/me` (implemented)
+- ✅ Google-to-user linking flow (implemented)
+- ✅ LinkedIn-to-user linking flow (implemented)
+- ✅ session regeneration on login (implemented)
+- ✅ secure session cookie configuration (implemented)
 
 ### Authorization
 
-- all sync routes must verify authenticated app user
-- all tenant-backed queries must scope correctly
-- role rules for owner/admin/member if organizations share data
-- clear policy for personal accounts vs shared organization accounts
+- ✅ all sync routes verify authenticated app user via `RequireAuth` middleware (implemented)
+- tenant-backed queries scoped by `user_id` (implemented)
+- role rules for owner/admin/member if organizations share data (not yet implemented)
+- clear policy for personal accounts vs shared organization accounts (not yet implemented)
 
 ### Sync behavior
 
-- local-only mode must remain untouched
-- sync should be opt-in
-- first sync needs a merge policy
-- conflict strategy must be defined:
-  - local wins
-  - remote wins
-  - manual merge
+- ✅ local-only mode remains untouched (implemented)
+- ✅ sync is opt-in (implemented)
+- ✅ first sync has a merge policy UI (implemented — cloud vs local vs merge)
+- ✅ conflict strategy defined:
+  - ✅ local wins
+  - ✅ remote wins
+  - ✅ manual merge
 
 ### Backend tenancy resolution
 
 For the hosted product:
 
-- session decides current user
-- user row decides organization
+- ✅ session decides current user (implemented)
+- user row decides organization (partial — `organization_id` exists but not actively used for row-level filtering yet)
 
 For self-hosted org installs:
 

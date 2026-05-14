@@ -589,6 +589,8 @@ export const useAppStore = create<AppState>((set) => ({
 46. ✅ **PWA** (installable app; manifest and service worker)
 47. ✅ **i18n test mock** loads English translation JSON in setupTests (no duplication)
 48. ✅ **AI-Powered Job Matching** (types, storage, deterministic engine, Gemini profile synthesis + job scoring, Zustand store, MatchScoreBadge, MatchBreakdownModal, ProfileSetupModal, MatchingSettings, RecommendationPanel, Settings integration, barrel exports)
+49. ✅ **Direct ATS Search / Job Search** (JobSearchForm, JobSearchResults, PHP JobSearchController, configurable filters, search-all functionality, filter persistence)
+50. ✅ **CSV Export/Import** (exportToCSV, parseCSV, CSVActions component, merge-with-existing-dedup logic, bilingual labels)
 
 **Polish & maintenance (optional):**
 - [ ] **Remove legacy PHP scripts** in `api/` once all traffic uses the new routes: `captcha.php`, `set-auth-cookie.php`, `get-auth-cookie.php`, `clear-auth-cookie.php`, `suggestions.php`, `google-sheets.php`. Keep only `index.php`, `Router.php`, `config.php`, `controllers/`, `helpers/`.
@@ -598,10 +600,9 @@ export const useAppStore = create<AppState>((set) => ({
 - [ ] **E2E tests**: Consider adding a small E2E suite (e.g. Playwright) for critical flows (login, add application, sync Sheets) to catch regressions.
 
 **Immediate Next Steps:**
-1. **Export/Import Functionality**: Support for exporting data to CSV/JSON and importing from other trackers.
-2. **AI-Assisted Features**: Integration with LLMs for resume matching, cover letter suggestions, and interview preparation.
-3. **Enhanced Security**: Optional encryption for data stored in localStorage and sensitive field masking.
-4. **Chrome Extension enhancements**:
+1. **AI-Assisted Features (beyond matching)**: Interview preparation AI, cover letter suggestions, resume optimization feedback.
+2. **Enhanced Security**: Optional encryption for data stored in localStorage and sensitive field masking.
+3. **Chrome Extension enhancements**:
    - Extension detection and installation prompt
    - Video mini-tutorial for extension usage
 
@@ -618,12 +619,7 @@ export const useAppStore = create<AppState>((set) => ({
   - User name and email
   - Current position or positions/job titles user is seeking
   - Profile customization options
-- **Job Search Page** - Integrated job search functionality:
-  - Search vacancies across different company platforms and job boards
-  - Integration with multiple job search APIs (LinkedIn, Indeed, Glassdoor, etc.)
-  - Recommendation to install Chrome extension for easier job capture
-  - Direct conversion from search results to Opportunities or Applications
-  - One-click job application tracking from search results
+- **Advanced Job Search APIs** - Deeper integrations with third-party job boards (LinkedIn Jobs API, Indeed API, Glassdoor API) for unified search results.
 
 Your application is well-structured for these enhancements. The modular design makes it easy to add these features incrementally.
 

@@ -454,10 +454,10 @@
   },
   "opportunities": {
     "title": "Oportunidades Interesantes",
-    "subtitle": "Oportunidades de empleo capturadas de LinkedIn o añadidas manualmente. Haz clic en \"Aplicar\" para convertirlas en aplicaciones.",
+    "subtitle": "Rastrea oportunidades de empleo capturadas de LinkedIn, añadidas manualmente o descubiertas mediante la búsqueda integrada en Jooble, TheirStack, Adzuna y Careerjet. Haz clic en Aplicar para convertirlas en aplicaciones.",
     "jobSearch": {
       "title": "Búsqueda de Empleo",
-      "subtitle": "Busca en múltiples bolsas de trabajo simultáneamente.",
+      "subtitle": "Busca en Jooble, TheirStack, Adzuna y Careerjet en un solo lugar. Ingresa palabras clave y ubicación, luego usa filtros avanzados para afinar por fuente o stack tecnológico.",
       "keywords": "Palabras clave",
       "location": "Ubicación",
       "remoteOnly": "Solo remoto",
@@ -466,6 +466,8 @@
       "advancedFilters": "Filtros avanzados",
       "source": "Fuente",
       "techStack": "Tecnología",
+      "keywordsHint": "Prueba títulos de trabajo, habilidades o empresas — ej. \"react developer\", \"product manager\", \"customer success\"",
+      "locationHint": "Ciudad, país o \"remoto\"",
       "techStackHint": "Filtrar por tecnologías — usa datos de TheirStack",
       "sourceBoth": "Jooble + TheirStack",
       "sourceJooble": "Jooble",
@@ -473,7 +475,7 @@
       "sourceAdzuna": "Adzuna",
       "sourceCareerjet": "Careerjet",
       "sourceAll": "Todas (Jooble + TheirStack + Adzuna + Careerjet)",
-      "noResults": "No se encontraron empleos. Prueba palabras más amplias o elimina el filtro de ubicación.",
+      "noResults": "No se encontraron empleos. Prueba palabras más amplias, otra ubicación o cambia la fuente en los filtros avanzados.",
       "resultsCount": "{{count}} resultados",
       "saved": "¡Guardado!",
       "saveAsOpp": "Guardar como Oportunidad",
@@ -481,9 +483,9 @@
       "loadMore": "Cargar más resultados"
     },
     "addOpportunity": "+ Añadir Oportunidad",
-    "noOpportunities": "No hay oportunidades todavía",
-    "noOpportunitiesDesc": "Instala la extensión de Chrome para capturar oportunidades de empleo de LinkedIn.",
-    "searchPlaceholder": "Buscar oportunidades...",
+    "noOpportunities": "Aún no hay oportunidades guardadas",
+    "noOpportunitiesDesc": "Encuentra empleos usando la búsqueda de arriba (Jooble, TheirStack, Adzuna, Careerjet), instala la extensión de Chrome para capturar ofertas de LinkedIn y otros sitios, o añade una manualmente.",
+    "searchPlaceholder": "Filtrar oportunidades guardadas por posición, empresa o ubicación...",
     "showing": "Mostrando <bold>{{count}}</bold> de {{total}} oportunidades",
     "table": {
       "position": "Posición",

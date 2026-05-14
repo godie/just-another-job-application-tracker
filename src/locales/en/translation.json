@@ -454,10 +454,10 @@
   },
   "opportunities": {
     "title": "Interesting Opportunities",
-    "subtitle": "Job opportunities captured from LinkedIn or added manually. Click \"Apply\" to convert them into applications.",
+    "subtitle": "Track interesting job opportunities captured from LinkedIn, added manually, or discovered through the integrated job search across Jooble, TheirStack, Adzuna, and Careerjet. Click Apply to convert them into applications.",
     "jobSearch": {
       "title": "Job Search",
-      "subtitle": "Search across multiple job boards simultaneously.",
+      "subtitle": "Search across Jooble, TheirStack, Adzuna, and Careerjet in one place. Enter keywords and location, then use advanced filters to narrow by source or tech stack.",
       "keywords": "Keywords",
       "location": "Location",
       "remoteOnly": "Remote only",
@@ -466,6 +466,8 @@
       "advancedFilters": "Advanced filters",
       "source": "Source",
       "techStack": "Tech Stack",
+      "keywordsHint": "Try job titles, skills, or companies — e.g. \"react developer\", \"product manager\", \"customer success\"",
+      "locationHint": "City, country, or \"remote\"",
       "techStackHint": "Filter by technologies — uses TheirStack data",
       "sourceBoth": "Jooble + TheirStack",
       "sourceJooble": "Jooble",
@@ -473,7 +475,7 @@
       "sourceAdzuna": "Adzuna",
       "sourceCareerjet": "Careerjet",
       "sourceAll": "All (Jooble + TheirStack + Adzuna + Careerjet)",
-      "noResults": "No jobs found. Try broader keywords or remove location filter.",
+      "noResults": "No jobs found. Try broader keywords, a different location, or switch the source in advanced filters.",
       "resultsCount": "{{count}} results",
       "saved": "Saved!",
       "saveAsOpp": "Save as Opportunity",
@@ -481,9 +483,9 @@
       "loadMore": "Load more results"
     },
     "addOpportunity": "+ Add Opportunity",
-    "noOpportunities": "No opportunities yet",
-    "noOpportunitiesDesc": "Install the Chrome extension to capture job opportunities from LinkedIn.",
-    "searchPlaceholder": "Search opportunities...",
+    "noOpportunities": "No saved opportunities yet",
+    "noOpportunitiesDesc": "Find jobs by using the search above (Jooble, TheirStack, Adzuna, Careerjet), install the Chrome extension to capture listings from LinkedIn and other sites, or add one manually.",
+    "searchPlaceholder": "Filter saved opportunities by position, company, or location...",
     "showing": "Showing <bold>{{count}}</bold> of {{total}} opportunities",
     "table": {
       "position": "Position",

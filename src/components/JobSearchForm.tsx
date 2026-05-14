@@ -70,6 +70,9 @@ export const JobSearchForm: React.FC<JobSearchFormProps> = ({
             onChange={setKeywords}
             placeholder="customer success engineer, react developer"
           />
+          <p className="text-xs text-earth-400 dark:text-earth-500 mt-1">
+            {t('opportunities.jobSearch.keywordsHint', 'Try job titles, skills, or companies')}
+          </p>
         </div>
 
         {/* Location input */}
@@ -84,6 +87,9 @@ export const JobSearchForm: React.FC<JobSearchFormProps> = ({
             placeholder="remote, London, SF"
             className="w-full px-4 py-3 border border-earth-300 dark:border-earth-600 rounded focus:ring-2 focus:ring-sage-500 focus:border-sage-500 bg-white dark:bg-earth-800 text-earth-900 dark:text-earth-100 transition-all"
           />
+          <p className="text-xs text-earth-400 dark:text-earth-500 mt-1">
+            {t('opportunities.jobSearch.locationHint', 'City, country, or remote')}
+          </p>
         </div>
 
         {/* Remote toggle */}

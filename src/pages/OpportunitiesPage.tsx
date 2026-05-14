@@ -327,6 +327,14 @@ const OpportunitiesPageContent: React.FC<OpportunitiesPageContentProps> = () => 
 
       {/* ── JOB SEARCH ── ── */}
       <div className='mb-8'>
+        <div className='mb-3'>
+          <h2 className='text-xl font-semibold text-earth-800 dark:text-earth-100'>
+            {t('opportunities.jobSearch.title')}
+          </h2>
+          <p className='text-sm text-earth-500 dark:text-earth-400 mt-1'>
+            {t('opportunities.jobSearch.subtitle')}
+          </p>
+        </div>
         <JobSearchForm
           onSearch={handleJobSearch}
           isSearching={isSearching}

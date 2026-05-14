@@ -1,8 +1,12 @@
-# Job Search API Integration — Design Plan
+# Job Search API Integration
+
+> **Status: Implemented ✅**
+>
+> This document describes the architecture and design of the job search feature that is now live in the application.
 
 ## Overview
 
-Replace the current ATS Search (which opens Google search tabs in the browser) with a **real inline search experience** powered by external job board APIs (Jooble + TheirStack + Adzuna). Results are displayed directly in OpportunitiesPage, can be saved as opportunities, and fed into the existing AI matching engine.
+The application provides a **real inline search experience** powered by external job board APIs (Jooble + TheirStack + Adzuna + Careerjet). Results are displayed directly in OpportunitiesPage, can be saved as opportunities, and fed into the existing AI matching engine.
 
 ---
 
