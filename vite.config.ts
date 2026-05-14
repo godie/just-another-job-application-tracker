@@ -98,5 +98,10 @@ export default defineConfig({
           rewrite: (path) => path.replace(/^\/api/, '/api'),
       },
     },
+    headers: {
+      // Allow Google OAuth popup to check window.closed without COOP errors.
+      // 'same-origin-allow-popups' is the recommended value for OAuth popups.
+      'Cross-Origin-Opener-Policy': 'same-origin-allow-popups',
+    },
   },
 })
