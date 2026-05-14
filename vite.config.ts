@@ -62,6 +62,9 @@ export default defineConfig({
             if (id.includes('recharts')) return 'recharts';
             if (id.includes('react-dom')) return 'react';
             if (id.includes('/react/')) return 'react';
+            // scheduler is a dependency of react-dom; keep it in the react chunk
+            // to avoid circular chunk dependencies (react -> vendor -> react).
+            if (id.includes('scheduler')) return 'react';
             if (id.includes('i18next') || id.includes('react-i18next')) return 'i18n';
             if (id.includes('@react-oauth')) return 'google-auth';
             if (id.includes('@googleapis')) return 'google-sheets';
