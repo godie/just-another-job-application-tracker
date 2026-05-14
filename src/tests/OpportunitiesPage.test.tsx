@@ -80,7 +80,7 @@ describe('OpportunitiesPage', () => {
     renderWithProviders(<OpportunitiesPage />);
 
     expect(screen.getByText('Interesting Opportunities')).toBeInTheDocument();
-    expect(screen.getByText('No opportunities yet')).toBeInTheDocument();
+    expect(screen.getByText('No saved opportunities yet')).toBeInTheDocument();
     expect(screen.getByText(/Install the Chrome extension/i)).toBeInTheDocument();
   });
 
@@ -275,7 +275,7 @@ describe('OpportunitiesPage', () => {
 
     renderWithProviders(<OpportunitiesPage />);
 
-    const searchInput = screen.getByPlaceholderText('Search opportunities...');
+    const searchInput = screen.getByPlaceholderText('Filter saved opportunities by position, company, or location...');
     fireEvent.change(searchInput, { target: { value: 'Google' } });
 
     expect(screen.getByText('Software Engineer')).toBeInTheDocument();

@@ -21,6 +21,7 @@ Esta carpeta ahora usa el core actual de `OverPHP` dentro de `api/src`, mantenie
 | GET | `/suggestions` | `SuggestionsController@index` |
 | POST | `/suggestions` | `SuggestionsController@store` |
 | POST | `/google-sheets` | `GoogleSheetsController@index` |
+| POST | `/job-search` | `JobSearchController@search` |
 | GET | `/sync/applications` | `SyncController@getApplications` |
 | POST | `/sync/applications` | `SyncController@saveApplications` |
 | GET | `/sync/opportunities` | `SyncController@getOpportunities` |
