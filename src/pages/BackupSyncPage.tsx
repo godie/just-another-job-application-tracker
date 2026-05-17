@@ -10,6 +10,7 @@ import { setAuthCookieWithCode } from '../utils/api';
 import { type PageType } from '../App';
 import GoogleSheetsSync from '../components/GoogleSheetsSync';
 import Footer from '../components/Footer';
+import { PageHeader } from '../components/ui';
 import packageJson from '../../package.json';
 
 interface BackupSyncPageProps {
@@ -58,20 +59,11 @@ if (result.success) {
   if (!isAuthenticated) {
     return (
       <div className='max-w-4xl mx-auto px-6 py-12'>
-        <header className='mb-10'>
-          <div className='flex items-center gap-3 mb-4'>
-            <div className='w-10 h-0.5 bg-sage-500'></div>
-            <span className='text-sage-600 dark:text-sage-400 text-sm font-medium tracking-wider uppercase'>
-              Cloud
-            </span>
-          </div>
-          <h1 className='font-serif text-4xl md:text-5xl font-semibold text-earth-900 dark:text-earth-50'>
-            {t('backupSync.title')}
-          </h1>
-          <p className='mt-4 text-lg text-earth-600 dark:text-earth-300 max-w-2xl'>
-            {t('backupSync.subtitle')}
-          </p>
-        </header>
+        <PageHeader
+          category="Cloud"
+          title={t('backupSync.title')}
+          description={t('backupSync.subtitle')}
+        />
 
         <div className='bg-white dark:bg-earth-800 border border-earth-200 dark:border-earth-700 rounded-xl p-8 sm:p-12 text-center'>
           <div className='size-20 bg-sage-50 dark:bg-sage-900/20 rounded-2xl flex items-center justify-center text-4xl mx-auto mb-6'>
@@ -126,20 +118,11 @@ if (result.success) {
   // Logged in view
   return (
     <div className='max-w-6xl mx-auto px-6 py-12'>
-      <header className='mb-10'>
-        <div className='flex items-center gap-3 mb-4'>
-          <div className='w-10 h-0.5 bg-sage-500'></div>
-          <span className='text-sage-600 dark:text-sage-400 text-sm font-medium tracking-wider uppercase'>
-            Cloud
-          </span>
-        </div>
-        <h1 className='font-serif text-4xl md:text-5xl font-semibold text-earth-900 dark:text-earth-50'>
-          {t('backupSync.title')}
-        </h1>
-        <p className='mt-4 text-lg text-earth-600 dark:text-earth-300 max-w-2xl'>
-          {t('backupSync.subtitle')}
-        </p>
-      </header>
+      <PageHeader
+        category="Cloud"
+        title={t('backupSync.title')}
+        description={t('backupSync.subtitle')}
+      />
 
       {/* User info card */}
       <div className='bg-sage-50 dark:bg-sage-900/20 border border-sage-200 dark:border-sage-700 rounded-xl p-6 sm:p-8 mb-8'>

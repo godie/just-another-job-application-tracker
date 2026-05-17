@@ -26,7 +26,7 @@ import { getCurrentISOString } from '../utils/dateHelpers';
 import { ConnectGoogleButton } from '../components/ConnectGoogleButton';
 
 import Footer from '../components/Footer';
-import { Card } from '../components/ui';
+import { Card, PageHeader } from '../components/ui';
 import packageJson from '../../package.json';
 
 interface SettingsPageProps {
@@ -455,20 +455,12 @@ const SettingsPageContent: React.FC<SettingsPageProps> = ({ onNavigate }) => {
   return (
     <div className='max-w-6xl mx-auto px-6 lg:px-8 py-8'>
       {/* Page header - editorial style */}
-      <header className='mb-12'>
-        <div className='flex items-center gap-3 mb-4'>
-          <div className='w-10 h-0.5 bg-sage-500'></div>
-          <span className='text-sage-600 dark:text-sage-400 text-sm font-medium tracking-wider uppercase'>
-            Configuration
-          </span>
-        </div>
-        <h1 className='font-serif text-4xl md:text-5xl font-semibold text-earth-900 dark:text-earth-50'>
-          {t('settings.title')}
-        </h1>
-        <p className='mt-4 text-lg text-earth-600 dark:text-earth-300 max-w-2xl'>
-          {t('settings.subtitle')}
-        </p>
-      </header>
+      <PageHeader
+        category="Configuration"
+        title={t('settings.title')}
+        description={t('settings.subtitle')}
+        className="mb-12"
+      />
 
       <div className='lg:grid lg:grid-cols-12 lg:gap-x-12'>
         {/* Sidebar Navigation */}
