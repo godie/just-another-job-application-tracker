@@ -1,3 +1,7 @@
+# Security header: allow Google OAuth popup to check window.closed without COOP errors
+# 'same-origin-allow-popups' is the recommended value for OAuth popup flows
+Header set Cross-Origin-Opener-Policy "same-origin-allow-popups"
+
 RewriteEngine On
 # Proteger archivos sensibles
 <Files ".env">
