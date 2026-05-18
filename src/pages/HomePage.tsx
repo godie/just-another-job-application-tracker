@@ -17,6 +17,7 @@ import { usePreferencesStore } from '../stores/preferencesStore';
 import { useFilteredApplications } from '../hooks/useFilteredApplications';
 import { useTableColumns } from '../hooks/useTableColumns';
 import CurrentViewRenderer from '../components/CurrentViewRenderer';
+import { PageHeader } from '../components/ui';
 
 const VIEW_STORAGE_KEY = 'preferredView';
 const FILTERS_STORAGE_KEY = 'applicationFilters';
@@ -176,32 +177,14 @@ const HomePageContent: React.FC<HomePageContentProps> = ({ onNavigate }) => {
   return (
     <div className='max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-8'>
       {/* ── HERO ZONE ── Header + Add Job CTA + Metrics ── */}
-      <header className='mb-10'>
-        <div className='flex flex-col sm:flex-row sm:items-start sm:justify-between gap-6'>
-          <div className='flex-1'>
-            <div className='flex items-center gap-3 mb-4'>
-              <div className='w-10 h-0.5 bg-sage-500'></div>
-              <span className='text-sage-600 dark:text-sage-400 text-sm font-medium tracking-wider uppercase'>
-                Dashboard
-              </span>
-            </div>
-            <h1 className='font-serif text-4xl md:text-5xl font-semibold text-earth-900 dark:text-earth-50'>
-              {t('home.pipeline')}
-            </h1>
-            <p className='mt-3 text-base text-earth-600 dark:text-earth-300'>
-              Manage your job applications and track your progress
-            </p>
-          </div>
-          <button 
-            className='self-start sm:self-auto bg-terracotta-600 hover:bg-terracotta-700 active:bg-terracotta-800 text-white font-bold py-4 px-8 rounded transition-colors border border-terracotta-700 hover:border-terracotta-800 text-base shadow-sm hover:shadow-md'
-            onClick={handleCreateNew}
-            aria-label={t('home.addEntry')}
-            data-testid='add-entry-button'
-          >
-            + {t('home.addEntry')}
-          </button>
-        </div>
-      </header>
+      <PageHeader
+        category="Dashboard"
+        title={t('home.pipeline')}
+        description="Manage your job applications and track your progress"
+        actionLabel={`+ ${t('home.addEntry')}`}
+        onAction={handleCreateNew}
+        actionTestId="add-entry-button"
+      />
           
       <MetricsSummary applications={filteredApplications} />
 

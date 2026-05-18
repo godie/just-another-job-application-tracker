@@ -3,6 +3,7 @@ import React, { lazy, Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSEO } from '../seo';
 import { useInsightsData } from '../hooks/useInsightsData';
+import { PageHeader } from '../components/ui';
 
 import { type PageType } from '../App';
 
@@ -34,32 +35,13 @@ const InsightsPage: React.FC<InsightsPageProps> = ({ onNavigate }) => {
   return (
     <div className='max-w-7xl mx-auto px-6 lg:px-8 py-8'>
       {/* ── HERO ZONE ── Header + CTA ── */}
-      <header className='mb-10'>
-        <div className='flex flex-col sm:flex-row sm:items-start sm:justify-between gap-6'>
-          <div className='flex-1'>
-            <div className='flex items-center gap-3 mb-4'>
-              <div className='w-10 h-0.5 bg-sage-500'></div>
-              <span className='text-sage-600 dark:text-sage-400 text-sm font-medium tracking-wider uppercase'>
-                Analytics
-              </span>
-            </div>
-            <h1 className='font-serif text-4xl md:text-5xl font-semibold text-earth-900 dark:text-earth-50'>
-              {t('insights.title')}
-            </h1>
-            <p className='mt-3 text-base text-earth-600 dark:text-earth-300 max-w-2xl'>
-              Track your job search progress and understand where to focus your energy.
-            </p>
-          </div>
-          {onNavigate && (
-            <button 
-              className='self-start sm:self-auto bg-terracotta-600 hover:bg-terracotta-700 active:bg-terracotta-800 text-white font-bold py-4 px-8 rounded transition-colors border border-terracotta-700 hover:border-terracotta-800 text-base shadow-sm hover:shadow-md'
-              onClick={() => onNavigate('applications')}
-            >
-              {t('home.addEntry')}
-            </button>
-          )}
-        </div>
-      </header>
+      <PageHeader
+        category="Analytics"
+        title={t('insights.title')}
+        description="Track your job search progress and understand where to focus your energy."
+        actionLabel={onNavigate ? t('home.addEntry') : undefined}
+        onAction={onNavigate ? () => onNavigate('applications') : undefined}
+      />
 
       {/* ── METRICS ── Asymmetric layout: Total Applications dominant, 3 compact secondary ── */}
       <section aria-labelledby='stats-heading' className='mb-16'>

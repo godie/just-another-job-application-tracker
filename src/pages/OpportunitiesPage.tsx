@@ -18,6 +18,7 @@ import { useApplicationsStore } from '../stores/applicationsStore';
 import OpportunitiesEmptyState from '../components/OpportunitiesEmptyState';
 import OpportunitiesTable from '../components/OpportunitiesTable';
 import { useFormatDate } from '../hooks/useFormatDate';
+import { PageHeader } from '../components/ui';
 
 import { type PageType } from '../App';
 import type { JobSearchParams, UnifiedJobResult } from '../types/jobSearch';
@@ -267,30 +268,13 @@ const OpportunitiesPageContent: React.FC<OpportunitiesPageContentProps> = () => 
   return (
     <div className='max-w-7xl mx-auto px-6 lg:px-8 py-8'>
       {/* ── HERO ZONE ── Header + Add Opportunity CTA ── */}
-      <header className='mb-10'>
-        <div className='flex flex-col sm:flex-row sm:items-start sm:justify-between gap-6'>
-          <div className='flex-1'>
-            <div className='flex items-center gap-3 mb-4'>
-              <div className='w-10 h-0.5 bg-sage-500'></div>
-              <span className='text-sage-600 dark:text-sage-400 text-sm font-medium tracking-wider uppercase'>
-                Pipeline
-              </span>
-            </div>
-            <h1 className='font-serif text-4xl md:text-5xl font-semibold text-earth-900 dark:text-earth-50'>
-              {t('opportunities.title')}
-            </h1>
-            <p className='mt-3 text-base text-earth-600 dark:text-earth-300'>
-              {t('opportunities.subtitle')}
-            </p>
-          </div>
-          <button 
-            className='self-start sm:self-auto bg-terracotta-600 hover:bg-terracotta-700 active:bg-terracotta-800 text-white font-bold py-4 px-8 rounded transition-colors border border-terracotta-700 hover:border-terracotta-800 text-base shadow-sm hover:shadow-md'
-            onClick={() => setIsFormOpen(true)}
-          >
-            {t('opportunities.addOpportunity')}
-          </button>
-        </div>
-      </header>
+      <PageHeader
+        category="Pipeline"
+        title={t('opportunities.title')}
+        description={t('opportunities.subtitle')}
+        actionLabel={t('opportunities.addOpportunity')}
+        onAction={() => setIsFormOpen(true)}
+      />
 
       {/* ── METRICS ── Asymmetric layout: Opportunities dominant, Recent & Remote compact ── */}
       <section className='grid grid-cols-2 sm:grid-cols-4 gap-4 mb-10' data-testid='opportunities-metrics'>
