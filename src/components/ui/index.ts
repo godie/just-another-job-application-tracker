@@ -6,3 +6,4 @@ export * from './Badge';
 export * from './Table';
 export * from './Separator';
 export * from './PageHeader';
+export * from './StatCard';

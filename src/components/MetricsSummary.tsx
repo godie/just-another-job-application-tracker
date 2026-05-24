@@ -1,6 +1,7 @@
 import React, { useMemo, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { type JobApplication } from '../types/applications';
+import { StatCard } from './ui';
 
 interface MetricsSummaryProps {
   applications: JobApplication[];
@@ -34,35 +35,24 @@ const MetricsSummary: React.FC<MetricsSummaryProps> = ({ applications }) => {
 
   return (
     <section className='grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-10' data-testid='metrics-summary'>
-      {/* Dominant metric: Applications — spans 2 columns */}
-      <div className='col-span-2 bg-earth-50 dark:bg-earth-800 p-4 sm:p-6 border-l-2 border-earth-400 dark:border-earth-500 transition-colors duration-300'>
-        <p className='text-sm font-medium text-earth-500 dark:text-earth-400 tracking-wide uppercase'>
-          {t('home.metrics.applications')}
-        </p>
-        <p className='mt-2 font-serif text-5xl sm:text-6xl font-bold text-earth-900 dark:text-earth-50 leading-none'>
-          {applications.length}
-        </p>
-      </div>
+      <StatCard
+        title={t('home.metrics.applications')}
+        value={applications.length}
+        variant="earth"
+        isLarge
+      />
 
-      {/* Compact metric: Interviews */}
-      <div className='bg-sage-50 dark:bg-sage-900/30 p-4 sm:p-5 border-l-2 border-sage-400 dark:border-sage-600 transition-colors duration-300'>
-        <p className='text-xs font-medium text-sage-600 dark:text-sage-400 tracking-wide uppercase'>
-          {t('home.metrics.interviews')}
-        </p>
-        <p className='mt-1 font-serif text-3xl font-bold text-sage-800 dark:text-sage-100'>
-          {interviews}
-        </p>
-      </div>
+      <StatCard
+        title={t('home.metrics.interviews')}
+        value={interviews}
+        variant="sage"
+      />
 
-      {/* Compact metric: Offers — using earth-dark to reserve terracotta for CTAs */}
-      <div className='bg-earth-100 dark:bg-earth-700/50 p-4 sm:p-5 border-l-2 border-earth-500 dark:border-earth-500 transition-colors duration-300'>
-        <p className='text-xs font-medium text-earth-600 dark:text-earth-300 tracking-wide uppercase'>
-          {t('home.metrics.offers')}
-        </p>
-        <p className='mt-1 font-serif text-3xl font-bold text-earth-800 dark:text-earth-100'>
-          {offers}
-        </p>
-      </div>
+      <StatCard
+        title={t('home.metrics.offers')}
+        value={offers}
+        variant="earth-muted"
+      />
     </section>
   );
 };
