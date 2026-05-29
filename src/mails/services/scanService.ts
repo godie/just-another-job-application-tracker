@@ -1,6 +1,7 @@
 import type { EmailProvider } from '../providers/emailProvider';
 import type { RawEmail, Email } from '../types';
 import type { ScanPreview, ProposedAddition, ProposedUpdate, ApplyResult } from '../types';
+import type { JobApplication } from '../../types/applications';
 
 import { EmailAdapter } from '../adapter/emailAdapter';
 import { QUERIES, QUERIES_ES } from '../types';
