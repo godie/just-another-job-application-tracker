@@ -43,14 +43,15 @@ export class FakeEmailProvider implements EmailProvider {
   async search(query: string): Promise<string[]> {
     const keywords = this.keywordsFromQuery(query);
     const ids = Object.values(this.store)
-      .filter((raw) => {
+      .reduce<string[]>((acc, raw) => {
         const subject = (raw.headers['subject'] ?? '').toLowerCase();
         const body = (raw.body ?? '').toLowerCase();
         const text = `${subject} ${body}`;
-        if (keywords.length === 0) return true;
-        return keywords.some((k) => text.includes(k));
-      })
-      .map((r) => r.id);
+        if (keywords.length === 0 || keywords.some((k) => text.includes(k))) {
+          acc.push(raw.id);
+        }
+        return acc;
+      }, []);
     return Promise.resolve(ids);
   }
 

@@ -202,8 +202,12 @@ export const useMatchingStore = create<MatchingState>()((set, get) => ({
     const { preferences, matchResults } = get();
     const minScore = threshold ?? preferences.minMatchThreshold;
     return Object.entries(matchResults)
-      .map(([opportunityId, result]) => ({ opportunityId, result }))
-      .filter(({ result }) => result.overallScore >= minScore)
+      .reduce<Array<{ opportunityId: string; result: MatchResult }>>((acc, [opportunityId, result]) => {
+        if (result.overallScore >= minScore) {
+          acc.push({ opportunityId, result });
+        }
+        return acc;
+      }, [])
       .sort((a, b) => b.result.overallScore - a.result.overallScore);
   },
 

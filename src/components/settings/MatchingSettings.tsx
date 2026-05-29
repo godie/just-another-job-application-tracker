@@ -64,6 +64,7 @@ export const MatchingSettings: React.FC<MatchingSettingsProps> = ({
                   type="checkbox"
                   role="switch"
                   aria-checked={preferences.enabled}
+                  aria-label="AI-Powered Job Matching"
                   checked={preferences.enabled}
                   onChange={() => handleToggle('enabled')}
                   className="sr-only peer"
@@ -95,6 +96,7 @@ export const MatchingSettings: React.FC<MatchingSettingsProps> = ({
                   type="checkbox"
                   role="switch"
                   aria-checked={preferences.useGemini}
+                  aria-label="Use Gemini AI for Scoring"
                   checked={preferences.useGemini}
                   onChange={() => handleToggle('useGemini')}
                   className="sr-only peer"
@@ -119,6 +121,7 @@ export const MatchingSettings: React.FC<MatchingSettingsProps> = ({
                   type="checkbox"
                   checked={preferences.includeTimeline}
                   onChange={() => handleToggle('includeTimeline')}
+                  aria-label="Include Timeline Events"
                   className="size-4 text-sage-600 border-earth-300 dark:border-earth-600 rounded focus:ring-sage-500"
                 />
                 <div>
@@ -135,6 +138,7 @@ export const MatchingSettings: React.FC<MatchingSettingsProps> = ({
                   type="checkbox"
                   checked={preferences.includeNotes}
                   onChange={() => handleToggle('includeNotes')}
+                  aria-label="Include Application Notes"
                   className="size-4 text-sage-600 border-earth-300 dark:border-earth-600 rounded focus:ring-sage-500"
                 />
                 <div>
@@ -151,6 +155,7 @@ export const MatchingSettings: React.FC<MatchingSettingsProps> = ({
                   type="checkbox"
                   checked={preferences.includeCvText}
                   onChange={() => handleToggle('includeCvText')}
+                  aria-label="Include CV/Resume Text"
                   className="size-4 text-sage-600 border-earth-300 dark:border-earth-600 rounded focus:ring-sage-500"
                 />
                 <div>
@@ -176,6 +181,7 @@ export const MatchingSettings: React.FC<MatchingSettingsProps> = ({
                   type="checkbox"
                   checked={preferences.autoComputeOnOpportunityAdd}
                   onChange={() => handleToggle('autoComputeOnOpportunityAdd')}
+                  aria-label="Auto-compute scores on new opportunity"
                   className="size-4 text-sage-600 border-earth-300 dark:border-earth-600 rounded focus:ring-sage-500"
                 />
                 <div>
@@ -191,6 +197,7 @@ export const MatchingSettings: React.FC<MatchingSettingsProps> = ({
                   type="checkbox"
                   checked={preferences.prioritizeRemote}
                   onChange={() => handleToggle('prioritizeRemote')}
+                  aria-label="Prioritize remote opportunities"
                   className="size-4 text-sage-600 border-earth-300 dark:border-earth-600 rounded focus:ring-sage-500"
                 />
                 <div>
@@ -217,6 +224,7 @@ export const MatchingSettings: React.FC<MatchingSettingsProps> = ({
                   step={5}
                   value={preferences.minMatchThreshold}
                   onChange={(e) => handleSliderChange('minMatchThreshold', parseInt(e.target.value, 10))}
+                  aria-label="Minimum Match Threshold"
                   className="w-full h-2 bg-earth-200 dark:bg-earth-700 rounded-lg appearance-none cursor-pointer accent-sage-600"
                 />
                 <div className="flex justify-between text-xs text-earth-500 dark:text-earth-400 mt-1">
@@ -234,12 +242,14 @@ export const MatchingSettings: React.FC<MatchingSettingsProps> = ({
             </h4>
             <div className="flex flex-wrap gap-3">
               <button
+                type='button'
                 onClick={onOpenProfileModal}
                 className="px-4 py-2 text-sm font-medium bg-earth-100 dark:bg-earth-700 text-earth-700 dark:text-earth-300 hover:bg-earth-200 dark:hover:bg-earth-600 rounded-lg transition border border-earth-200 dark:border-earth-600"
               >
                 Edit Profile
               </button>
               <button
+                type='button'
                 onClick={onBuildProfile}
                 disabled={profileStatus === 'building'}
                 aria-busy={profileStatus === 'building'}
@@ -251,13 +261,14 @@ export const MatchingSettings: React.FC<MatchingSettingsProps> = ({
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                     </svg>
-                    Building...
+                    Building…
                   </>
                 ) : (
                   'Build Profile from History'
                 )}
               </button>
               <button
+                type='button'
                 onClick={onComputeScores}
                 disabled={isComputingScores || profileStatus === 'none'}
                 aria-busy={isComputingScores}
@@ -269,7 +280,7 @@ export const MatchingSettings: React.FC<MatchingSettingsProps> = ({
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                     </svg>
-                    Scoring...
+                    Scoring…
                   </>
                 ) : (
                   'Compute Scores'
@@ -286,6 +297,7 @@ export const MatchingSettings: React.FC<MatchingSettingsProps> = ({
           {/* Danger Zone */}
           <section className="border-t border-earth-200 dark:border-earth-700 pt-6">
             <button
+              type='button'
               onClick={onClearData}
               className="px-4 py-2 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition border border-red-200 dark:border-red-800"
             >

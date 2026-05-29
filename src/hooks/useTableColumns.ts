@@ -37,8 +37,12 @@ export const useTableColumns = (preferences: UserPreferences | null): TableColum
     });
 
     return preferences.columnOrder
-      .filter((id) => enabledSet.has(id))
-      .map((id) => fieldById.get(id))
-      .filter((column): column is TableColumn => Boolean(column));
+      .reduce<TableColumn[]>((acc, id) => {
+        if (enabledSet.has(id)) {
+          const col = fieldById.get(id);
+          if (col) acc.push(col);
+        }
+        return acc;
+      }, []);
   }, [preferences, t]);
 };

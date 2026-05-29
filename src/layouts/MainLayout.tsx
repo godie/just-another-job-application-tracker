@@ -12,20 +12,14 @@ interface MainLayoutProps {
 }
 
 const MainLayout: React.FC<MainLayoutProps> = ({ children, currentPage, onNavigate }) => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-
-  // Load sidebar preference from localStorage
-  useEffect(() => {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(() => {
     const savedSidebarState = localStorage.getItem('sidebarOpen');
-    const isMobile = window.innerWidth < 768;
-
+    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
     if (savedSidebarState !== null) {
-      setIsSidebarOpen(savedSidebarState === 'true');
-    } else if (isMobile) {
-      // Default to closed on mobile
-      setIsSidebarOpen(false);
+      return savedSidebarState === 'true';
     }
-  }, []);
+    return isMobile ? false : true;
+  });
 
   // Save sidebar preference
   useEffect(() => {
@@ -61,7 +55,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, currentPage, onNaviga
         {/* Since sidebar is currently hidden on mobile (md:block), we don't need the overlay */}
         {isSidebarOpen && (
           <div
-            className="fixed inset-0 bg-black bg-opacity-50 z-30 hidden mt-16"
+            className="fixed inset-0 bg-gray-950 bg-opacity-50 z-30 hidden mt-16"
             onClick={toggleSidebar}
             aria-hidden="true"
           />
@@ -71,7 +65,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, currentPage, onNaviga
             isSidebarOpen ? 'md:ml-64' : 'ml-0'
           }`}
         >
-          <main id="main-content" role="main" className="h-full overflow-y-auto p-4 md:p-8 pb-16 md:pb-8" tabIndex={-1}>
+          <main id="main-content" className="h-full overflow-y-auto p-4 md:p-8 pb-16 md:pb-8" tabIndex={-1}>
             {children}
           </main>
         </div>

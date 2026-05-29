@@ -3,7 +3,7 @@ import React, { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { TagInput } from './ui/TagInput';
-import { Button } from './ui';
+import { Button } from './ui/Button';
 
 import type { JobSearchParams, JobSearchSource } from '../types/jobSearch';
 
@@ -77,14 +77,16 @@ export const JobSearchForm: React.FC<JobSearchFormProps> = ({
 
         {/* Location input */}
         <div className="w-full lg:w-48 flex-shrink-0">
-          <label className="block text-sm font-bold text-earth-700 dark:text-earth-300 mb-2">
+          <label htmlFor="job-search-location" className="block text-sm font-bold text-earth-700 dark:text-earth-300 mb-2">
             {t('opportunities.jobSearch.location', 'Location')}
           </label>
           <input
+            id="job-search-location"
             type="text"
             value={location}
             onChange={(e) => setLocation(e.target.value)}
             placeholder="remote, London, SF"
+            aria-label={t('opportunities.jobSearch.location', 'Location')}
             className="w-full px-4 py-3 border border-earth-300 dark:border-earth-600 rounded focus:ring-2 focus:ring-sage-500 focus:border-sage-500 bg-white dark:bg-earth-800 text-earth-900 dark:text-earth-100 transition-all"
           />
           <p className="text-xs text-earth-400 dark:text-earth-500 mt-1">
@@ -94,11 +96,13 @@ export const JobSearchForm: React.FC<JobSearchFormProps> = ({
 
         {/* Remote toggle */}
         <div className="flex items-center gap-2 flex-shrink-0 pt-1 lg:pt-0">
-          <label className="flex items-center gap-2 cursor-pointer select-none">
+          <label htmlFor="job-search-remote" className="flex items-center gap-2 cursor-pointer select-none">
             <input
+              id="job-search-remote"
               type="checkbox"
               checked={remoteOnly}
               onChange={(e) => setRemoteOnly(e.target.checked)}
+              aria-label={t('opportunities.jobSearch.remoteOnly', 'Remote only')}
               className="size-4 rounded border-earth-300 dark:border-earth-600 text-sage-600 focus:ring-sage-500"
             />
             <span className="text-sm font-medium text-earth-700 dark:text-earth-300 whitespace-nowrap">
@@ -153,7 +157,8 @@ export const JobSearchForm: React.FC<JobSearchFormProps> = ({
             <select
               value={source}
               onChange={(e) => setSource(e.target.value as JobSearchSource)}
-              className="w-full px-3 py-3 border border-earth-300 dark:border-earth-600 rounded focus:ring-2 focus:ring-sage-500 focus:border-sage-500 bg-white dark:bg-earth-800 text-earth-900 dark:text-earth-100 transition-all text-sm"
+              aria-label={t('opportunities.jobSearch.source', 'Source')}
+              className="w-full p-3 border border-earth-300 dark:border-earth-600 rounded focus:ring-2 focus:ring-sage-500 focus:border-sage-500 bg-white dark:bg-earth-800 text-earth-900 dark:text-earth-100 transition-all text-sm"
             >
               <option value="all">{t('opportunities.jobSearch.sourceAll', 'All (Jooble + TheirStack + Adzuna + Careerjet)')}</option>
               <option value="both">{t('opportunities.jobSearch.sourceBoth', 'Both (Jooble + TheirStack)')}</option>

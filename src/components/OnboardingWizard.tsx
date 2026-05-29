@@ -32,7 +32,7 @@ const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onClose, onNavigate
   const [step, setStep] = useState(0);
   const [direction, setDirection] = useState<'next' | 'prev'>('next');
   const [isVisible, setIsVisible] = useState(false);
-  const modalRef = useRef<HTMLDivElement>(null);
+  const modalRef = useRef<HTMLDialogElement>(null);
   const closeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
@@ -101,16 +101,19 @@ const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onClose, onNavigate
     : 'animate-in slide-in-from-left-8 fade-in duration-300';
 
   return (
-    <div
+    <dialog
+      open
       ref={modalRef}
-      className={`fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm transition-opacity duration-300 ${
+      className={`fixed inset-0 z-[60] m-0 p-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300 flex items-center justify-center ${
         isVisible ? 'opacity-100' : 'opacity-0'
       }`}
-      role="dialog"
       aria-modal="true"
       aria-labelledby="onboarding-title"
       onClick={(e) => {
         if (e.target === e.currentTarget) handleClose();
+      }}
+      onKeyDown={(e) => {
+        if (e.key === 'Escape') handleClose();
       }}
     >
       <div
@@ -128,6 +131,7 @@ const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onClose, onNavigate
 
         {/* Close button */}
         <button
+          type="button"
           onClick={handleClose}
           className="absolute top-3 right-3 p-2 rounded-lg text-earth-400 hover:text-earth-600 dark:hover:text-earth-300 hover:bg-earth-100 dark:hover:bg-earth-700 transition z-10"
           aria-label={t('common.close')}
@@ -142,7 +146,7 @@ const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onClose, onNavigate
           <div className="text-6xl mb-4 select-none">{current.icon}</div>
           <h2
             id="onboarding-title"
-            className="text-2xl font-bold text-earth-900 dark:text-earth-100 mb-3"
+            className="text-2xl font-semibold text-earth-900 dark:text-earth-100 mb-3"
           >
             {t(current.titleKey)}
           </h2>
@@ -200,7 +204,7 @@ const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onClose, onNavigate
           </div>
         </div>
       </div>
-    </div>
+    </dialog>
   );
 };
 

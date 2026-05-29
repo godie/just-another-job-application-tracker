@@ -1,7 +1,7 @@
 // src/pages/HomePage.tsx
 import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
-import { useSEO } from '../seo';
+import { useSEO } from '../seo/useSEO';
 import Footer from '../components/Footer';
 import ViewSwitcher, { type ViewType } from '../components/ViewSwitcher';
 import FiltersBar, { type Filters } from '../components/FiltersBar';
@@ -17,10 +17,25 @@ import { usePreferencesStore } from '../stores/preferencesStore';
 import { useFilteredApplications } from '../hooks/useFilteredApplications';
 import { useTableColumns } from '../hooks/useTableColumns';
 import CurrentViewRenderer from '../components/CurrentViewRenderer';
-import { PageHeader } from '../components/ui';
+import { PageHeader } from '../components/ui/PageHeader';
 
 const VIEW_STORAGE_KEY = 'preferredView';
 const FILTERS_STORAGE_KEY = 'applicationFilters';
+
+// Initialize from localStorage synchronously
+function loadInitialFilters(): Filters {
+  if (typeof window === 'undefined') return defaultFilters;
+  const storedFilters = window.localStorage.getItem(FILTERS_STORAGE_KEY);
+  if (storedFilters) {
+    try {
+      const parsed = JSON.parse(storedFilters) as Filters;
+      return { ...defaultFilters, ...parsed };
+    } catch {
+      return defaultFilters;
+    }
+  }
+  return defaultFilters;
+}
 
 const defaultFilters: Filters = {
   search: '',
@@ -60,7 +75,7 @@ const HomePageContent: React.FC<HomePageContentProps> = ({ onNavigate }) => {
   
   const [currentApplication, setCurrentApplication] = useState<JobApplication | null>(null);
   const [currentView, setCurrentView] = useState<ViewType>('table');
-  const [filters, setFilters] = useState<Filters>(defaultFilters);
+  const [filters, setFilters] = useState<Filters>(loadInitialFilters);
   const [isDataToolsOpen, setIsDataToolsOpen] = useState(false);
   const isFormOpen = currentApplication !== null;
 
@@ -99,21 +114,6 @@ const HomePageContent: React.FC<HomePageContentProps> = ({ onNavigate }) => {
     }
   }, [preferences?.defaultView]);
   
-  // Load filters from localStorage only on mount
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-
-    const storedFilters = window.localStorage.getItem(FILTERS_STORAGE_KEY);
-    if (storedFilters) {
-      try {
-        const parsed = JSON.parse(storedFilters) as Filters;
-        setFilters({ ...defaultFilters, ...parsed });
-      } catch {
-        // ignore JSON parse errors
-      }
-    }
-  }, []);
-
   const handleViewChange = useCallback((view: ViewType) => {
     setCurrentView(view);
     if (typeof window !== 'undefined') {
@@ -210,6 +210,7 @@ const HomePageContent: React.FC<HomePageContentProps> = ({ onNavigate }) => {
             <div className='flex flex-col sm:flex-row sm:items-center gap-4 bg-earth-50 dark:bg-earth-800 p-4 rounded border border-earth-200 dark:border-earth-700'>
               <CSVActions />
               <button
+                type='button'
                 onClick={() => onNavigate?.('gmail-scan')}
                 className='flex items-center gap-2 px-4 py-2 text-sm font-medium text-sage-700 dark:text-sage-300 bg-sage-50 dark:bg-sage-900/30 rounded hover:bg-sage-100 dark:hover:bg-sage-900/50 transition-colors border border-sage-200 dark:border-sage-700'
               >

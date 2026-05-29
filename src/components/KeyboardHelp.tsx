@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { Button } from './ui';
+import { Button } from './ui/Button';
 import useFocusTrap from '../hooks/useFocusTrap';
 import useKeyboardEscape from '../hooks/useKeyboardEscape';
 
@@ -23,7 +23,7 @@ const shortcuts: ShortcutItem[] = [
 ];
 
 const KeyboardHelp: React.FC<KeyboardHelpProps> = ({ isOpen, onClose }) => {
-  const modalRef = useRef<HTMLDivElement>(null);
+  const modalRef = useRef<HTMLDialogElement>(null);
 
   useFocusTrap(modalRef, isOpen);
   useKeyboardEscape(onClose, isOpen);
@@ -32,16 +32,20 @@ const KeyboardHelp: React.FC<KeyboardHelpProps> = ({ isOpen, onClose }) => {
 
   return (
     <div
+      role="none"
       className="fixed inset-0 z-50 flex items-center justify-center bg-earth-900/80 backdrop-blur-sm"
       onClick={(e) => {
         if (e.target === e.currentTarget) {
           onClose();
         }
       }}
+      onKeyDown={(e) => {
+        if (e.key === 'Escape') onClose();
+      }}
     >
-      <div
+      <dialog
+        open
         ref={modalRef}
-        role="dialog"
         aria-modal="true"
         aria-labelledby="keyboard-help-title"
         className="bg-white dark:bg-earth-800 rounded-lg shadow-xl max-w-md w-full mx-4 border border-earth-200 dark:border-earth-700"
@@ -61,7 +65,7 @@ const KeyboardHelp: React.FC<KeyboardHelpProps> = ({ isOpen, onClose }) => {
               aria-label="Close keyboard shortcuts help"
               className="text-earth-500 hover:text-earth-700 dark:text-earth-400 dark:hover:text-earth-200"
             >
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+              <svg className="size-5" fill="currentColor" viewBox="0 0 20 20">
                 <path
                   fillRule="evenodd"
                   d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
@@ -97,7 +101,7 @@ const KeyboardHelp: React.FC<KeyboardHelpProps> = ({ isOpen, onClose }) => {
             </Button>
           </div>
         </div>
-      </div>
+      </dialog>
     </div>
   );
 };

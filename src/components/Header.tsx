@@ -3,8 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuthModals } from './AuthModals';
 import { clearAuthCookie } from '../utils/api';
-import { useAlert } from './AlertProvider';
-import { Button } from './ui';
+import { Button } from './ui/Button';
 import { useIsLoggedIn } from '../hooks/useIsLoggedIn';
 import { useAuthStore } from '../stores/authStore';
 import { type PageType } from '../App';
@@ -20,29 +19,15 @@ const Header: React.FC<HeaderProps> = ({ onToggleSidebar, onNavigate }) => {
   const { currentUser, logout } = useAuthStore();
   const { isOpen: isAuthOpen, initialMode, openLogin, closeModal, AuthModal } = useAuthModals();
   const [isLoading, setIsLoading] = useState(false);
-  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+const [theme, setTheme] = useState<'light' | 'dark'>(() => {
     if (typeof window !== 'undefined') {
       const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' | null;
       return savedTheme || 'light';
     }
     return 'light';
   });
-  const [mounted, setMounted] = useState(false);
-  const { showSuccess, showError } = useAlert();
-
-  // Initialize theme on mount - sync with what was applied by the inline script
-  useEffect(() => {
-    setMounted(true);
-    const root = document.documentElement;
-    const isDark = root.classList.contains('dark');
-    const currentTheme = isDark ? 'dark' : 'light';
-    setTheme(currentTheme);
-  }, []);
-
   // Apply theme when it changes
   useEffect(() => {
-    if (!mounted) return;
-    
     const root = document.documentElement;
     if (theme === 'dark') {
       root.classList.add('dark');
@@ -50,7 +35,7 @@ const Header: React.FC<HeaderProps> = ({ onToggleSidebar, onNavigate }) => {
       root.classList.remove('dark');
     }
     localStorage.setItem('theme', theme);
-  }, [theme, mounted]);
+  }, [theme]);
 
   const toggleTheme = () => {
     const newTheme = theme === 'light' ? 'dark' : 'light';
@@ -85,7 +70,7 @@ const Header: React.FC<HeaderProps> = ({ onToggleSidebar, onNavigate }) => {
   };
 
   return (
-    <header role="banner" className='flex items-center justify-between p-4 border-b border-earth-200 dark:border-earth-700 bg-white dark:bg-earth-800 fixed top-0 left-0 right-0 z-50 h-16'>
+    <header className='flex items-center justify-between p-4 border-b border-earth-200 dark:border-earth-700 bg-white dark:bg-earth-800 fixed top-0 left-0 right-0 z-50 h-16'>
       <div className='flex items-center gap-4'>
         {/* Hamburger menu button - Hidden on mobile, visible on desktop */}
         <Button
@@ -200,6 +185,7 @@ const Header: React.FC<HeaderProps> = ({ onToggleSidebar, onNavigate }) => {
         {/* Login/Account Button */}
         {isLoggedIn ? (
           <button
+            type='button'
             onClick={() => onNavigate?.('backup-sync')}
             className='flex items-center gap-2 px-2 md:px-3 py-1.5 rounded-full border border-sage-200 dark:border-sage-700 bg-sage-50 dark:bg-sage-900/20 hover:bg-sage-100 dark:hover:bg-sage-900/40 transition-colors'
             data-testid='user-avatar-button'

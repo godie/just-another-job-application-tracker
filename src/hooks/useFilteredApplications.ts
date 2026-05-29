@@ -1,10 +1,8 @@
-import { useMemo, useRef, useState, useEffect } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { type JobApplication, type ApplicationWithMetadata } from '../types/applications';
 import { type Filters } from '../components/FiltersBar';
 import { parseLocalDate } from '../utils/date';
-
-const EPOCH = new Date(2000, 0, 1);
 
 /**
  * Custom hook to process and filter job applications.
@@ -27,11 +25,7 @@ export const useFilteredApplications = (applications: JobApplication[], filters:
   // renders. This is crucial for preventing unnecessary re-renders of memoized
   // components like ApplicationTableRow and ApplicationCard.
   const cacheRef = useRef<Map<JobApplication, ApplicationWithMetadata>>(new Map());
-  const [currentTime, setCurrentTime] = useState<Date>(EPOCH);
-
-  useEffect(() => {
-    setCurrentTime(new Date());
-  }, []);
+  const [currentTime] = useState(() => new Date());
 
   // ⚡ Bolt: Stability refs for derived data.
   // These refs allow us to maintain referential identity for arrays like
@@ -118,7 +112,7 @@ export const useFilteredApplications = (applications: JobApplication[], filters:
       // O(n log n) operations run only once per change, benefiting Kanban,
       // Timeline, and Table views.
       const sortedTimeline = app.timeline?.length > 0
-        ? [...app.timeline].sort((a, b) =>
+        ? app.timeline.toSorted((a, b) =>
             parseLocalDate(a.date).getTime() - parseLocalDate(b.date).getTime()
           )
         : [];

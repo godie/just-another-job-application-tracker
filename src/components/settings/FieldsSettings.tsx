@@ -33,7 +33,7 @@ const FieldsSettings: React.FC<FieldsSettingsProps> = ({
           return (
             <div
               key={field.id}
-              className="flex items-center justify-between px-4 py-4 bg-white dark:bg-earth-800 hover:bg-earth-50 dark:hover:bg-earth-700/50 transition-colors"
+              className="flex items-center justify-between p-4 bg-white dark:bg-earth-800 hover:bg-earth-50 dark:hover:bg-earth-700/50 transition-colors"
             >
               <div className="flex items-center gap-4">
                 <div className="relative flex items-center">
@@ -43,6 +43,7 @@ const FieldsSettings: React.FC<FieldsSettingsProps> = ({
                     type="checkbox"
                     checked={isEnabled}
                     onChange={() => onToggleField(field.id)}
+                    aria-label={!isCustom ? t(`fields.${field.id}`, field.label) : field.label}
                     className='size-5 text-sage-600 border-earth-300 dark:border-earth-600 rounded focus:ring-sage-500 transition cursor-pointer'
                   />
                 </div>
@@ -68,6 +69,7 @@ const FieldsSettings: React.FC<FieldsSettingsProps> = ({
                   type="button"
                   onClick={() => handleMove(index, 'up')}
                   disabled={index === 0}
+                  aria-label="Move Up"
                   className={`p-2 rounded transition ${
                     index === 0
                       ? 'text-earth-300 dark:text-earth-600 cursor-not-allowed'
@@ -83,6 +85,7 @@ const FieldsSettings: React.FC<FieldsSettingsProps> = ({
                   type="button"
                   onClick={() => handleMove(index, 'down')}
                   disabled={index === orderedFields.length - 1}
+                  aria-label="Move Down"
                   className={`p-2 rounded transition ${
                     index === orderedFields.length - 1
                       ? 'text-earth-300 dark:text-earth-600 cursor-not-allowed'

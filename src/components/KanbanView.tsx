@@ -111,7 +111,7 @@ const KanbanView: React.FC<KanbanViewProps> = ({ applications, onEdit, onDelete 
   }
 
   return (
-    <div className='flex overflow-x-auto space-x-4'>
+    <div className='flex overflow-x-auto gap-x-4'>
       {grouped.map(({ status, items }) => {
         let displayStatus = status;
         if (status.startsWith('Interviewing - ')) {
@@ -140,7 +140,7 @@ const KanbanView: React.FC<KanbanViewProps> = ({ applications, onEdit, onDelete 
               <p className='text-sm text-earth-400 dark:text-earth-500 italic'>{t('kanban.noAppsInStage')}</p>
             ) : (
               items.map((application) => (
-                <article
+                <div
                   key={application.id}
                   className='bg-white dark:bg-earth-700 rounded border border-earth-200 dark:border-earth-600 hover:border-sage-400 dark:hover:border-sage-500 transition cursor-pointer'
                   onClick={() => onEdit?.(application)}
@@ -193,7 +193,7 @@ const KanbanView: React.FC<KanbanViewProps> = ({ applications, onEdit, onDelete 
                   </div>
                   <footer className='px-4 py-2 border-t border-earth-200 dark:border-earth-600 bg-earth-50 dark:bg-earth-800 rounded-b flex flex-col gap-2'>
                     {/* Keyboard accessible status change buttons */}
-                    <div className='flex flex-wrap gap-1' role='group' aria-label={t('kanban.moveToStatus')}>
+                    <menu className='flex flex-wrap gap-1' aria-label={t('kanban.moveToStatus')}>
                       {statusOptions.slice(0, 3).map((targetStatus) => (
                         <button
                           key={targetStatus}
@@ -208,7 +208,7 @@ const KanbanView: React.FC<KanbanViewProps> = ({ applications, onEdit, onDelete 
                           → {targetStatus}
                         </button>
                       ))}
-                    </div>
+                    </menu>
                     <div className='flex justify-end'>
                       <button
                         type='button'
@@ -223,7 +223,7 @@ const KanbanView: React.FC<KanbanViewProps> = ({ applications, onEdit, onDelete 
                       </button>
                     </div>
                   </footer>
-                </article>
+                </div>
               ))
             )}
           </div>

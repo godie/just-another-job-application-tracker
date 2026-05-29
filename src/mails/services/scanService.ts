@@ -79,6 +79,12 @@ export async function scanEmails(provider: EmailProvider, daysBack: number = 30)
   const proposedAdditions: ProposedAddition[] = [];
   const proposedUpdates: ProposedUpdate[] = [];
 
+  const appByCompany = new Map<string, JobApplication>();
+  for (const a of applications) {
+    const key = (a.company ?? '').toLowerCase();
+    if (key) appByCompany.set(key, a);
+  }
+
   for (let i = 0; i < emails.length; i++) {
     const email = emails[i];
     const event = adapter.classify(email);
@@ -86,9 +92,7 @@ export async function scanEmails(provider: EmailProvider, daysBack: number = 30)
 
     if (event.type === 'application_submitted') {
       const company = event.company?.toLowerCase();
-      const exists = applications.some((a) =>
-        (a.company ?? '').toLowerCase().includes(company ?? '')
-      );
+      const exists = company ? appByCompany.has(company) : false;
       if (!exists) {
         proposedAdditions.push({
           id: `add-${event.id}`,
@@ -98,9 +102,7 @@ export async function scanEmails(provider: EmailProvider, daysBack: number = 30)
       }
     } else {
       const company = event.company?.toLowerCase();
-      const app = applications.find((a) =>
-        (a.company ?? '').toLowerCase().includes(company ?? '')
-      );
+      const app = company ? appByCompany.get(company) : undefined;
       if (app) {
         proposedUpdates.push({
           id: `update-${app.id}-${event.id}`,
@@ -136,7 +138,8 @@ export function applyScanPreview(
   let updated = 0;
   for (const u of updates) {
     const applications = useApplicationsStore.getState().applications;
-    const app = applications.find((ap) => ap.id === u.applicationId);
+    const appById = new Map(applications.map((ap) => [ap.id, ap] as const));
+    const app = appById.get(u.applicationId);
     if (app) {
       const newTimeline = [...app.timeline, u.newEvent];
       updateApplication(u.applicationId, { timeline: newTimeline });

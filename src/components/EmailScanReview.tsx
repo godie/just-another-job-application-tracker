@@ -309,6 +309,7 @@ export function EmailScanReview() {
                 : 'text-earth-500 hover:text-earth-700 dark:text-earth-400'
             }`}
             onClick={() => setActiveTab('automatic')}
+            type="button"
           >
             {t('settings.emailScan.tabs.automatic')}
           </button>
@@ -319,6 +320,7 @@ export function EmailScanReview() {
                 : 'text-earth-500 hover:text-earth-700 dark:text-earth-400'
             }`}
             onClick={() => setActiveTab('manual')}
+            type="button"
           >
             {t('settings.emailScan.tabs.manual')}
           </button>
@@ -346,6 +348,7 @@ export function EmailScanReview() {
               value={scanMonths}
               onChange={(e) => setScanMonths(parseInt(e.target.value))}
               disabled={loading}
+              aria-label={t('settings.emailScan.scanPeriod')}
               className='px-3 py-2 rounded border-earth-300 dark:border-earth-600 bg-white dark:bg-earth-800 text-sm font-medium focus:ring-2 focus:ring-sage-500 outline-none disabled:opacity-50 transition-all'
             >
               <option value={3}>{t('settings.emailScan.months', { count: 3 })}</option>
@@ -407,6 +410,7 @@ export function EmailScanReview() {
             <div className="flex items-center gap-2 bg-earth-100 dark:bg-earth-700/50 rounded-lg p-1 w-fit">
               <button
                 onClick={() => setProcessingMode('manual')}
+                type="button"
                 className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
                   processingMode === 'manual'
                     ? 'bg-white dark:bg-earth-800 text-earth-900 dark:text-earth-100 shadow-sm'
@@ -417,6 +421,7 @@ export function EmailScanReview() {
               </button>
               <button
                 onClick={() => setProcessingMode('api')}
+                type="button"
                 className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
                   processingMode === 'api'
                     ? 'bg-white dark:bg-earth-800 text-earth-900 dark:text-earth-100 shadow-sm'
@@ -440,6 +445,7 @@ export function EmailScanReview() {
                         id="snippetLength"
                         value={snippetLength}
                         onChange={(e) => setSnippetLength(parseInt(e.target.value) || 200)}
+                        aria-label={t('settings.emailScan.snippetLength')}
                         className='w-full px-3 py-2 border border-earth-300 dark:border-earth-600 rounded bg-white dark:bg-earth-800 text-sm'
                       />
                     </div>
@@ -452,6 +458,7 @@ export function EmailScanReview() {
                       </label>
                       <div className="flex flex-wrap gap-2">
                         <button
+                          type="button"
                           onClick={() => handleGeneratePrompt()}
                           disabled={selectedEmailIds.size === 0}
                           className='px-4 py-2 rounded font-medium border border-sage-200 text-sage-700 hover:bg-sage-50 dark:border-sage-900/30 dark:text-sage-300 dark:hover:bg-sage-900/20 transition flex items-center gap-2'
@@ -462,8 +469,9 @@ export function EmailScanReview() {
                           {t('common.copy')}
                         </button>
 
-                        {CHATBOTS.filter(cb => (preferences.enabledChatbots || ['ChatGPT', 'Claude', 'Gemini']).includes(cb.id)).map(chatbot => (
+                        {(() => { const enabled = preferences.enabledChatbots || ['ChatGPT', 'Claude', 'Gemini']; const enabledSet = new Set(enabled); return CHATBOTS.filter(cb => enabledSet.has(cb.id)); })().map(chatbot => (
                           <button
+                            type="button"
                             key={chatbot.id}
                             onClick={() => handleGeneratePrompt(chatbot)}
                             disabled={selectedEmailIds.size === 0}
@@ -485,6 +493,7 @@ export function EmailScanReview() {
                         {t('settings.emailScan.processWithGemini')}
                       </label>
                       <button
+                        type="button"
                         onClick={handleProcessWithGemini}
                         disabled={selectedEmailIds.size === 0 || geminiProcessing}
                         className='px-4 py-2 rounded font-medium bg-terracotta-600 text-white hover:bg-terracotta-700 disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center gap-2'
@@ -515,7 +524,7 @@ export function EmailScanReview() {
                     <h4 className="text-sm font-semibold text-earth-700 dark:text-earth-300">
                       {t('settings.emailScan.emailsFound', { count: preview.emails.length })}
                     </h4>
-                    <button onClick={selectAllEmails} className="text-xs text-sage-600 hover:underline">
+                    <button type="button" onClick={selectAllEmails} className="text-xs text-sage-600 hover:underline">
                       {t('settings.emailScan.selectAll')}
                     </button>
                   </div>
@@ -527,6 +536,7 @@ export function EmailScanReview() {
                           checked={selectedEmailIds.isSelected(email.id)}
                           onChange={() => selectedEmailIds.toggle(email.id)}
                           className="mt-1"
+                          aria-label={`Select email: ${email.subject}`}
                         />
                         <div className="min-w-0 flex-1">
                           <p className='text-sm font-medium text-earth-900 dark:text-earth-100 truncate'>{email.subject}</p>
@@ -547,10 +557,12 @@ export function EmailScanReview() {
               <textarea
                 value={pastedJson}
                 onChange={(e) => setPastedJson(e.target.value)}
+                aria-label={t('settings.emailScan.pasteJson')}
                 className='w-full h-32 px-3 py-2 border border-earth-300 dark:border-earth-600 rounded bg-white dark:bg-earth-800 text-sm font-mono'
                 placeholder='{ "additions": [...], "updates": [...] }'
               />
               <button
+                type="button"
                 onClick={handleProcessJson}
                 disabled={!pastedJson.trim()}
                 className='w-full px-4 py-2 rounded font-medium bg-green-600 text-white hover:bg-green-700 transition'

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useRef, useState, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import useKeyboardEscape from '../hooks/useKeyboardEscape';
@@ -28,25 +28,22 @@ export function GeminiKeyModal({ isOpen, onClose, onSuccess }: GeminiKeyModalPro
   const [confirmMasterPassword, setConfirmMasterPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
-  const modalRef = useRef<HTMLDivElement>(null);
+  const modalRef = useRef<HTMLDialogElement>(null);
   const firstInputRef = useRef<HTMLInputElement>(null);
 
+  // Auto-focus the first input when the modal opens.
+  // Since the component unmounts when !isOpen, this effect runs once per open.
   useEffect(() => {
-    let timeoutId: ReturnType<typeof setTimeout>;
-    if (isOpen) {
-      timeoutId = setTimeout(() => firstInputRef.current?.focus(), 0);
-    } else {
-      setApiKey('');
-      setConfirmApiKey('');
-      setMasterPassword('');
-      setConfirmMasterPassword('');
-      setError(null);
-      clearKeyFromMemory();
-    }
+    const rafId = requestAnimationFrame(() => firstInputRef.current?.focus());
+    return () => cancelAnimationFrame(rafId);
+  }, []);
+
+  // Clear decrypted key from memory when modal unmounts
+  useEffect(() => {
     return () => {
-      if (timeoutId) clearTimeout(timeoutId);
+      clearKeyFromMemory();
     };
-  }, [isOpen, clearKeyFromMemory, setError]);
+  }, [clearKeyFromMemory]);
 
   useKeyboardEscape(onClose, isOpen);
 
@@ -128,13 +125,17 @@ export function GeminiKeyModal({ isOpen, onClose, onSuccess }: GeminiKeyModalPro
 
   return (
     <div
+      role="none"
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
+      onKeyDown={(e) => {
+        if (e.key === 'Escape') onClose();
+      }}
     >
-      <div
-        role="dialog"
+      <dialog
+        open
         aria-modal="true"
         aria-labelledby="gemini-key-modal-title"
         ref={modalRef}
@@ -158,6 +159,7 @@ export function GeminiKeyModal({ isOpen, onClose, onSuccess }: GeminiKeyModalPro
             </p>
           </div>
           <button
+            type="button"
             onClick={onClose}
             className="p-1 rounded-lg text-earth-400 hover:text-earth-600 dark:hover:text-earth-300 hover:bg-earth-100 dark:hover:bg-earth-700 transition"
             aria-label={t('common.close')}
@@ -190,14 +192,15 @@ export function GeminiKeyModal({ isOpen, onClose, onSuccess }: GeminiKeyModalPro
                 >
                   {t('geminiKeyModal.apiKeyLabel')}
                 </label>
-                <input
-                  ref={firstInputRef}
-                  id="gemini-api-key"
-                  type={showPassword ? 'text' : 'password'}
-                  value={apiKey}
-                  onChange={(e) => setApiKey(e.target.value)}
-                  placeholder="AIza..."
-                  className="w-full px-3 py-2 border border-earth-300 dark:border-earth-600 rounded-lg bg-white dark:bg-earth-900 text-earth-900 dark:text-earth-100 text-sm focus:ring-2 focus:ring-sage-500 focus:border-sage-500 outline-none transition"
+              <input
+                ref={firstInputRef}
+                id="gemini-api-key"
+                type={showPassword ? 'text' : 'password'}
+                value={apiKey}
+                onChange={(e) => setApiKey(e.target.value)}
+                placeholder="AIza..."
+                aria-label={t('geminiKeyModal.apiKeyLabel')}
+                className="w-full px-3 py-2 border border-earth-300 dark:border-earth-600 rounded-lg bg-white dark:bg-earth-900 text-earth-900 dark:text-earth-100 text-sm focus:ring-2 focus:ring-sage-500 focus:border-sage-500 outline-none transition"
                   autoComplete="off"
                   disabled={isLoading}
                 />
@@ -210,13 +213,14 @@ export function GeminiKeyModal({ isOpen, onClose, onSuccess }: GeminiKeyModalPro
                 >
                   {t('geminiKeyModal.confirmApiKeyLabel')}
                 </label>
-                <input
-                  id="confirm-api-key"
-                  type={showPassword ? 'text' : 'password'}
-                  value={confirmApiKey}
-                  onChange={(e) => setConfirmApiKey(e.target.value)}
-                  placeholder="AIza..."
-                  className="w-full px-3 py-2 border border-earth-300 dark:border-earth-600 rounded-lg bg-white dark:bg-earth-900 text-earth-900 dark:text-earth-100 text-sm focus:ring-2 focus:ring-sage-500 focus:border-sage-500 outline-none transition"
+              <input
+                id="confirm-api-key"
+                type={showPassword ? 'text' : 'password'}
+                value={confirmApiKey}
+                onChange={(e) => setConfirmApiKey(e.target.value)}
+                placeholder="AIza..."
+                aria-label={t('geminiKeyModal.confirmApiKeyLabel')}
+                className="w-full px-3 py-2 border border-earth-300 dark:border-earth-600 rounded-lg bg-white dark:bg-earth-900 text-earth-900 dark:text-earth-100 text-sm focus:ring-2 focus:ring-sage-500 focus:border-sage-500 outline-none transition"
                   autoComplete="off"
                   disabled={isLoading}
                 />
@@ -238,6 +242,7 @@ export function GeminiKeyModal({ isOpen, onClose, onSuccess }: GeminiKeyModalPro
               value={masterPassword}
               onChange={(e) => setMasterPassword(e.target.value)}
               placeholder={t('geminiKeyModal.masterPasswordPlaceholder')}
+              aria-label={t('geminiKeyModal.masterPasswordLabel')}
               className="w-full px-3 py-2 border border-earth-300 dark:border-earth-600 rounded-lg bg-white dark:bg-earth-900 text-earth-900 dark:text-earth-100 text-sm focus:ring-2 focus:ring-sage-500 focus:border-sage-500 outline-none transition"
               autoComplete="off"
               disabled={isLoading}
@@ -258,6 +263,7 @@ export function GeminiKeyModal({ isOpen, onClose, onSuccess }: GeminiKeyModalPro
                 value={confirmMasterPassword}
                 onChange={(e) => setConfirmMasterPassword(e.target.value)}
                 placeholder={t('geminiKeyModal.confirmMasterPasswordPlaceholder')}
+                aria-label={t('geminiKeyModal.confirmMasterPasswordLabel')}
                 className="w-full px-3 py-2 border border-earth-300 dark:border-earth-600 rounded-lg bg-white dark:bg-earth-900 text-earth-900 dark:text-earth-100 text-sm focus:ring-2 focus:ring-sage-500 focus:border-sage-500 outline-none transition"
                 autoComplete="off"
                 disabled={isLoading}
@@ -271,6 +277,7 @@ export function GeminiKeyModal({ isOpen, onClose, onSuccess }: GeminiKeyModalPro
               id="show-password"
               checked={showPassword}
               onChange={(e) => setShowPassword(e.target.checked)}
+              aria-label={t('geminiKeyModal.showPassword')}
               className="rounded border-earth-300 dark:border-earth-600 text-sage-600 focus:ring-sage-500"
             />
             <label
@@ -322,7 +329,7 @@ export function GeminiKeyModal({ isOpen, onClose, onSuccess }: GeminiKeyModalPro
             </p>
           </div>
         )}
-      </div>
+      </dialog>
     </div>
   );
 }
