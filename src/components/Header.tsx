@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuthModals } from './AuthModals';
 import { clearAuthCookie } from '../utils/api';
-import { useAlert } from './AlertProvider';
 import { Button } from './ui/Button';
 import { useIsLoggedIn } from '../hooks/useIsLoggedIn';
 import { useAuthStore } from '../stores/authStore';
@@ -17,7 +16,6 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({ onToggleSidebar, onNavigate }) => {
   const { t, i18n } = useTranslation();
   const isLoggedIn = useIsLoggedIn();
-  const { showSuccess, showError } = useAlert();
   const { currentUser, logout } = useAuthStore();
   const { isOpen: isAuthOpen, initialMode, openLogin, closeModal, AuthModal } = useAuthModals();
   const [isLoading, setIsLoading] = useState(false);

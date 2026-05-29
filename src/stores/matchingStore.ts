@@ -202,7 +202,7 @@ export const useMatchingStore = create<MatchingState>()((set, get) => ({
     const { preferences, matchResults } = get();
     const minScore = threshold ?? preferences.minMatchThreshold;
     return Object.entries(matchResults)
-      .reduce<Array<{ opportunityId: string; result: JobMatchResult }>>((acc, [opportunityId, result]) => {
+      .reduce<Array<{ opportunityId: string; result: MatchResult }>>((acc, [opportunityId, result]) => {
         if (result.overallScore >= minScore) {
           acc.push({ opportunityId, result });
         }
