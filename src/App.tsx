@@ -196,7 +196,7 @@ function App() {
           <main id="app-main-landmark">
             <Suspense fallback={
               <div className="flex items-center justify-center h-screen bg-earth-100 dark:bg-earth-900">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-sage-600"></div>
+                <div className="animate-spin rounded-full size-12 border-b-2 border-sage-600"></div>
               </div>
             }>
               {content}
@@ -206,7 +206,7 @@ function App() {
           <MainLayout currentPage={currentPage} onNavigate={setCurrentPage}>
             <Suspense fallback={
               <div className="flex items-center justify-center h-full">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-sage-600"></div>
+                <div className="animate-spin rounded-full size-8 border-b-2 border-sage-600"></div>
               </div>
             }>
               {content}

@@ -2,17 +2,15 @@ import React from 'react';
 
 export function Table({ className = '', ...props }: React.HTMLAttributes<HTMLTableElement>) {
   return (
-    <div
+    <section
       className="relative w-full overflow-auto focus:outline-none"
-      tabIndex={0}
-      role="region"
       aria-label="Data Table"
     >
       <table
         className={`w-full caption-bottom text-sm ${className}`}
         {...props}
       />
-    </div>
+    </section>
   );
 }
 

@@ -1,6 +1,6 @@
 // src/components/ProfileSetupModal.tsx
 
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import useFocusTrap from '../hooks/useFocusTrap';
 import useKeyboardEscape from '../hooks/useKeyboardEscape';
 import type { UserMatchProfile, SeniorityLevel } from '../types/matching';
@@ -35,48 +35,23 @@ export const ProfileSetupModal: React.FC<ProfileSetupModalProps> = ({
   existingProfile,
   onSave,
 }) => {
-  const modalRef = useRef<HTMLDivElement>(null);
+  const modalRef = useRef<HTMLDialogElement>(null);
   useFocusTrap(modalRef, isOpen);
   useKeyboardEscape(onClose, isOpen);
 
-  const [targetRoles, setTargetRoles] = useState('');
-  const [seniority, setSeniority] = useState<SeniorityLevel | ''>('');
-  const [topSkills, setTopSkills] = useState('');
-  const [preferredLocations, setPreferredLocations] = useState('');
-  const [salaryMin, setSalaryMin] = useState('');
-  const [salaryMax, setSalaryMax] = useState('');
-  const [salaryCurrency, setSalaryCurrency] = useState('USD');
-  const [selectedWorkTypes, setSelectedWorkTypes] = useState<('remote' | 'on-site' | 'hybrid')[]>([]);
-  const [cvText, setCvText] = useState('');
+  // Initialize form state from existingProfile on first mount.
+  // The component fully unmounts when isOpen becomes false (via `if (!isOpen) return null`),
+  // so state is naturally reset on every open without needing a useEffect.
+  const [targetRoles, setTargetRoles] = useState(() => existingProfile?.targetRoles.join(', ') ?? '');
+  const [seniority, setSeniority] = useState<SeniorityLevel | ''>(() => existingProfile?.seniority ?? '');
+  const [topSkills, setTopSkills] = useState(() => existingProfile?.topSkills.join(', ') ?? '');
+  const [preferredLocations, setPreferredLocations] = useState(() => existingProfile?.preferredLocations.join(', ') ?? '');
+  const [salaryMin, setSalaryMin] = useState(() => existingProfile?.salaryRange?.min?.toString() ?? '');
+  const [salaryMax, setSalaryMax] = useState(() => existingProfile?.salaryRange?.max?.toString() ?? '');
+  const [salaryCurrency, setSalaryCurrency] = useState(() => existingProfile?.salaryRange?.currency ?? 'USD');
+  const [selectedWorkTypes, setSelectedWorkTypes] = useState<('remote' | 'on-site' | 'hybrid')[]>(() => existingProfile?.preferredWorkTypes ?? []);
+  const [cvText, setCvText] = useState(() => existingProfile?.cvText ?? '');
   const [activeTab, setActiveTab] = useState<'manual' | 'cv'>('manual');
-
-  useEffect(() => {
-    if (isOpen) {
-      if (existingProfile) {
-        setTargetRoles(existingProfile.targetRoles.join(', '));
-        setSeniority(existingProfile.seniority ?? '');
-        setTopSkills(existingProfile.topSkills.join(', '));
-        setPreferredLocations(existingProfile.preferredLocations.join(', '));
-        setSalaryMin(existingProfile.salaryRange?.min?.toString() ?? '');
-        setSalaryMax(existingProfile.salaryRange?.max?.toString() ?? '');
-        setSalaryCurrency(existingProfile.salaryRange?.currency ?? 'USD');
-        setSelectedWorkTypes(existingProfile.preferredWorkTypes);
-        setCvText(existingProfile.cvText ?? '');
-      } else {
-        // Reset form when opening without an existing profile
-        setTargetRoles('');
-        setSeniority('');
-        setTopSkills('');
-        setPreferredLocations('');
-        setSalaryMin('');
-        setSalaryMax('');
-        setSalaryCurrency('USD');
-        setSelectedWorkTypes([]);
-        setCvText('');
-        setActiveTab('manual');
-      }
-    }
-  }, [isOpen, existingProfile]);
 
   const handleToggleWorkType = (wt: 'remote' | 'on-site' | 'hybrid') => {
     setSelectedWorkTypes((prev) =>
@@ -86,10 +61,10 @@ export const ProfileSetupModal: React.FC<ProfileSetupModalProps> = ({
 
   const handleSubmit = useCallback(() => {
     const profile: Partial<UserMatchProfile> = {
-      targetRoles: targetRoles.split(',').map((s) => s.trim()).filter(Boolean),
+      targetRoles: targetRoles.split(',').flatMap((s) => s.trim() ? [s.trim()] : []),
       seniority: seniority || null,
-      topSkills: topSkills.split(',').map((s) => s.trim().toLowerCase()).filter(Boolean),
-      preferredLocations: preferredLocations.split(',').map((s) => s.trim()).filter(Boolean),
+      topSkills: topSkills.split(',').flatMap((s) => s.trim() ? [s.trim().toLowerCase()] : []),
+      preferredLocations: preferredLocations.split(',').flatMap((s) => s.trim() ? [s.trim()] : []),
       preferredWorkTypes: selectedWorkTypes,
       salaryRange: salaryMin || salaryMax
         ? {
@@ -118,13 +93,17 @@ export const ProfileSetupModal: React.FC<ProfileSetupModalProps> = ({
 
   return (
     <div
+      role="none"
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
+      onKeyDown={(e) => {
+        if (e.key === 'Escape') onClose();
+      }}
     >
-      <div
-        role="dialog"
+      <dialog
+        open
         aria-modal="true"
         aria-labelledby="profile-setup-title"
         ref={modalRef}
@@ -142,6 +121,7 @@ export const ProfileSetupModal: React.FC<ProfileSetupModalProps> = ({
             </p>
           </div>
           <button
+            type="button"
             onClick={onClose}
             className="p-1 rounded-lg text-earth-400 hover:text-earth-600 dark:hover:text-earth-300 hover:bg-earth-100 dark:hover:bg-earth-700 transition"
             aria-label="Close"
@@ -208,6 +188,7 @@ export const ProfileSetupModal: React.FC<ProfileSetupModalProps> = ({
                 value={targetRoles}
                 onChange={(e) => setTargetRoles(e.target.value)}
                 placeholder="e.g., Software Engineer, Backend Developer, Data Scientist"
+                aria-label="Target Roles"
                 className="w-full px-3 py-2 border border-earth-300 dark:border-earth-600 rounded-lg bg-white dark:bg-earth-900 text-earth-900 dark:text-earth-100 text-sm focus:ring-2 focus:ring-sage-500 focus:border-sage-500 outline-none transition"
               />
               <p className="text-xs text-earth-500 dark:text-earth-400">
@@ -224,9 +205,10 @@ export const ProfileSetupModal: React.FC<ProfileSetupModalProps> = ({
                 id="seniority"
                 value={seniority}
                 onChange={(e) => setSeniority(e.target.value as SeniorityLevel | '')}
+                aria-label="Seniority Level"
                 className="w-full px-3 py-2 border border-earth-300 dark:border-earth-600 rounded-lg bg-white dark:bg-earth-900 text-earth-900 dark:text-earth-100 text-sm focus:ring-2 focus:ring-sage-500 focus:border-sage-500 outline-none transition"
               >
-                <option value="">— Select —</option>
+                <option value="">Select</option>
                 {SENIORITY_OPTIONS.map((opt) => (
                   <option key={opt.value} value={opt.value}>
                     {opt.label}
@@ -246,6 +228,7 @@ export const ProfileSetupModal: React.FC<ProfileSetupModalProps> = ({
                 value={topSkills}
                 onChange={(e) => setTopSkills(e.target.value)}
                 placeholder="e.g., React, Node.js, Python, Kubernetes"
+                aria-label="Top Skills"
                 className="w-full px-3 py-2 border border-earth-300 dark:border-earth-600 rounded-lg bg-white dark:bg-earth-900 text-earth-900 dark:text-earth-100 text-sm focus:ring-2 focus:ring-sage-500 focus:border-sage-500 outline-none transition"
               />
               <p className="text-xs text-earth-500 dark:text-earth-400">
@@ -275,6 +258,7 @@ export const ProfileSetupModal: React.FC<ProfileSetupModalProps> = ({
                       checked={selectedWorkTypes.includes(opt.value)}
                       onChange={() => handleToggleWorkType(opt.value)}
                       className="sr-only"
+                      aria-label={opt.label}
                     />
                     <span className="text-sm font-medium">{opt.label}</span>
                   </label>
@@ -293,13 +277,14 @@ export const ProfileSetupModal: React.FC<ProfileSetupModalProps> = ({
                 value={preferredLocations}
                 onChange={(e) => setPreferredLocations(e.target.value)}
                 placeholder="e.g., Remote, San Francisco, Berlin"
+                aria-label="Preferred Locations"
                 className="w-full px-3 py-2 border border-earth-300 dark:border-earth-600 rounded-lg bg-white dark:bg-earth-900 text-earth-900 dark:text-earth-100 text-sm focus:ring-2 focus:ring-sage-500 focus:border-sage-500 outline-none transition"
               />
             </div>
 
             {/* Salary */}
             <div className="space-y-1.5">
-              <label className="block text-sm font-semibold text-earth-700 dark:text-earth-300">
+              <label htmlFor="salary-min" className="block text-sm font-semibold text-earth-700 dark:text-earth-300">
                 Salary Expectations
               </label>
               <div className="flex gap-3">                  <div className="flex-1">
@@ -309,6 +294,7 @@ export const ProfileSetupModal: React.FC<ProfileSetupModalProps> = ({
                       value={salaryMin}
                       onChange={(e) => setSalaryMin(e.target.value)}
                       placeholder="Min"
+                      aria-label="Minimum Salary"
                     className="w-full px-3 py-2 border border-earth-300 dark:border-earth-600 rounded-lg bg-white dark:bg-earth-900 text-earth-900 dark:text-earth-100 text-sm focus:ring-2 focus:ring-sage-500 focus:border-sage-500 outline-none transition"
                   />
                 </div>                  <div className="flex-1">
@@ -318,12 +304,14 @@ export const ProfileSetupModal: React.FC<ProfileSetupModalProps> = ({
                       value={salaryMax}
                       onChange={(e) => setSalaryMax(e.target.value)}
                       placeholder="Max"
+                      aria-label="Maximum Salary"
                     className="w-full px-3 py-2 border border-earth-300 dark:border-earth-600 rounded-lg bg-white dark:bg-earth-900 text-earth-900 dark:text-earth-100 text-sm focus:ring-2 focus:ring-sage-500 focus:border-sage-500 outline-none transition"
                   />
                 </div>
                 <select
                   value={salaryCurrency}
                   onChange={(e) => setSalaryCurrency(e.target.value)}
+                  aria-label="Salary Currency"
                   className="px-3 py-2 border border-earth-300 dark:border-earth-600 rounded-lg bg-white dark:bg-earth-900 text-earth-900 dark:text-earth-100 text-sm focus:ring-2 focus:ring-sage-500 focus:border-sage-500 outline-none transition"
                 >
                   <option value="USD">USD</option>
@@ -353,6 +341,7 @@ export const ProfileSetupModal: React.FC<ProfileSetupModalProps> = ({
                 onChange={(e) => setCvText(e.target.value)}
                 rows={12}
                 placeholder="Paste your CV or resume text here. Our AI will analyze it to extract your skills, experience, and preferences..."
+                aria-label="CV / Resume Text"
                 className="w-full px-3 py-2 border border-earth-300 dark:border-earth-600 rounded-lg bg-white dark:bg-earth-900 text-earth-900 dark:text-earth-100 text-sm focus:ring-2 focus:ring-sage-500 focus:border-sage-500 outline-none transition resize-none font-mono"
               />
               <p className="text-xs text-earth-500 dark:text-earth-400">
@@ -386,7 +375,7 @@ export const ProfileSetupModal: React.FC<ProfileSetupModalProps> = ({
             </button>
           </div>
         </div>
-      </div>
+      </dialog>
     </div>
   );
 };

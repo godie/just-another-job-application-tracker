@@ -1,5 +1,5 @@
 // src/components/AlertProvider.tsx
-import React, { createContext, use, useState, useCallback } from 'react';
+import React, { createContext, use, useState, useCallback, useMemo } from 'react';
 import type { ReactNode } from 'react';
 import Alert from './Alert';
 import type { AlertType } from './Alert';
@@ -56,12 +56,13 @@ export const AlertProvider: React.FC<AlertProviderProps> = ({ children }) => {
     addAlert({ type: 'info', message, duration });
   }, [addAlert]);
 
+  const contextValue = useMemo(() => ({ showAlert, showSuccess, showError, showWarning, showInfo }), [showAlert, showSuccess, showError, showWarning, showInfo]);
+
   return (
-    <AlertContext.Provider value={{ showAlert, showSuccess, showError, showWarning, showInfo }}>
+    <AlertContext.Provider value={contextValue}>
       {children}
       {/* Alert container - positioned fixed at top right */}
-      <div
-        role="region"
+      <section
         aria-label="Notifications"
         aria-live="polite"
         aria-atomic="false"
@@ -77,7 +78,7 @@ export const AlertProvider: React.FC<AlertProviderProps> = ({ children }) => {
             />
           </div>
         ))}
-      </div>
+      </section>
     </AlertContext.Provider>
   );
 };

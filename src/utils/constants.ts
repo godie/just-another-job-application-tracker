@@ -23,7 +23,7 @@ export const DEFAULT_FIELDS: FieldDefinition[] = [
 ];
 
 export const DEFAULT_PREFERENCES: UserPreferences = {
-  enabledFields: DEFAULT_FIELDS.filter(field => field.id !== 'notes').map(field => field.id),
+  enabledFields: DEFAULT_FIELDS.reduce<string[]>((acc, field) => { if (field.id !== 'notes') acc.push(field.id); return acc; }, []),
   columnOrder: DEFAULT_FIELDS.map(field => field.id),
   customFields: [],
   defaultView: 'table',

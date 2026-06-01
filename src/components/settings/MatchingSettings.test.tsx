@@ -206,7 +206,7 @@ describe('MatchingSettings', () => {
         onClearData={vi.fn()}
       />
     );
-    expect(screen.getByText('Building...')).toBeInTheDocument();
+    expect(screen.getByText('Building…')).toBeInTheDocument();
   });
 
   it('shows scoring spinner', () => {
@@ -223,7 +223,7 @@ describe('MatchingSettings', () => {
         onClearData={vi.fn()}
       />
     );
-    expect(screen.getByText('Scoring...')).toBeInTheDocument();
+    expect(screen.getByText('Scoring…')).toBeInTheDocument();
   });
 
   it('calls onClearData when clear button clicked', () => {

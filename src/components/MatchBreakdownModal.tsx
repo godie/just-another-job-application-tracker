@@ -77,13 +77,16 @@ export const MatchBreakdownModal: React.FC<MatchBreakdownModalProps> = ({
   const config = verdictConfig[result.verdict];
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
-      role="dialog"
+    <dialog
+      open
+      className="fixed inset-0 z-50 m-0 p-4 bg-black/50 backdrop-blur-sm flex items-center justify-center"
       aria-modal="true"
       aria-labelledby="match-breakdown-title"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
+      }}
+      onKeyDown={(e) => {
+        if (e.key === 'Escape') onClose();
       }}
     >
       <div
@@ -95,9 +98,9 @@ export const MatchBreakdownModal: React.FC<MatchBreakdownModalProps> = ({
           <div className="flex items-start justify-between">
             <div>
               <h2
-                id="match-breakdown-title"
-                className="text-xl font-bold text-earth-900 dark:text-earth-100"
-              >
+            id="match-breakdown-title"
+            className="text-xl font-semibold text-earth-900 dark:text-earth-100"
+          >
                 Match Analysis
               </h2>
               {opportunityTitle && (
@@ -108,6 +111,7 @@ export const MatchBreakdownModal: React.FC<MatchBreakdownModalProps> = ({
               )}
             </div>
             <button
+              type="button"
               onClick={onClose}
               className="p-1 rounded-lg text-earth-400 hover:text-earth-600 dark:hover:text-earth-300 hover:bg-earth-100 dark:hover:bg-earth-700 transition"
               aria-label="Close"
@@ -141,7 +145,7 @@ export const MatchBreakdownModal: React.FC<MatchBreakdownModalProps> = ({
           {(Object.entries(subscoreLabels) as [keyof typeof subscoreLabels, string][]).map(
             ([key, label]) => (
               <ScoreBar
-                key={key}
+                key={`score-${key}`}
                 label={label}
                 score={result.subscores[key]}
               />
@@ -159,16 +163,14 @@ export const MatchBreakdownModal: React.FC<MatchBreakdownModalProps> = ({
                 </svg>
                 Strengths
               </h3>
-              <ul className="space-y-1">
-                {result.strengths.map((s, i) => (
+              <ul className="space-y-1">                {result.strengths.map((s) => (
                   <li
-                    key={`strength-${i}-${s.slice(0, 20)}`}
+                    key={`strength-${s}`}
                     className="text-sm text-earth-700 dark:text-earth-300 pl-6 relative before:content-['•'] before:absolute before:left-2 before:text-sage-500"
                   >
                     {s}
                   </li>
-                ))}
-              </ul>
+                ))}</ul>
             </div>
           )}
 
@@ -181,9 +183,9 @@ export const MatchBreakdownModal: React.FC<MatchBreakdownModalProps> = ({
                 Potential Gaps
               </h3>
               <ul className="space-y-1">
-                {result.gaps.map((g, i) => (
+                {result.gaps.map((g) => (
                   <li
-                    key={`gap-${i}-${g.slice(0, 20)}`}
+                    key={`gap-${g}`}
                     className="text-sm text-earth-600 dark:text-earth-400 pl-6 relative before:content-['•'] before:absolute before:left-2 before:text-earth-400"
                   >
                     {g}
@@ -200,6 +202,7 @@ export const MatchBreakdownModal: React.FC<MatchBreakdownModalProps> = ({
             Computed {getLocaleDateString(result.computedAt)} · {result.computationMethod}
           </span>
           <button
+            type="button"
             onClick={onClose}
             className="px-4 py-2 text-sm font-medium bg-sage-600 text-white hover:bg-sage-700 rounded-lg transition"
           >
@@ -207,7 +210,7 @@ export const MatchBreakdownModal: React.FC<MatchBreakdownModalProps> = ({
           </button>
         </div>
       </div>
-    </div>
+    </dialog>
   );
 };
 

@@ -1,6 +1,6 @@
 import React, { useReducer, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useSEO } from '../seo';
+import { useSEO } from '../seo/useSEO';
 import { usePreferencesStore } from '../stores/preferencesStore';
 import { useAuthStore } from '../stores/authStore';
 import { useAlert } from '../components/AlertProvider';
@@ -26,7 +26,8 @@ import { getCurrentISOString } from '../utils/dateHelpers';
 import { ConnectGoogleButton } from '../components/ConnectGoogleButton';
 
 import Footer from '../components/Footer';
-import { Card, PageHeader } from '../components/ui';
+import { Card } from '../components/ui/Card';
+import { PageHeader } from '../components/ui/PageHeader';
 import packageJson from '../../package.json';
 
 interface SettingsPageProps {
@@ -419,6 +420,7 @@ const SettingsPageContent: React.FC<SettingsPageProps> = ({ onNavigate }) => {
                     )}
                   </div>
                   <button
+                    type='button'
                     onClick={() => onNavigate?.('backup-sync')}
                     className='px-6 py-2.5 bg-sage-600 text-white text-sm font-semibold hover:bg-sage-700 transition-colors'
                   >
@@ -436,6 +438,7 @@ const SettingsPageContent: React.FC<SettingsPageProps> = ({ onNavigate }) => {
                   <p className='text-earth-600 dark:text-earth-400 mb-8 max-w-md mx-auto'>{t('backupSync.notLoggedIn.description')}</p>
                   <div className='flex flex-col sm:flex-row justify-center gap-4'>
                     <button
+                      type='button'
                       onClick={() => onNavigate?.('backup-sync')}
                       className='px-6 py-2.5 bg-sage-600 text-white text-sm font-semibold hover:bg-sage-700 transition-colors'
                     >
@@ -478,6 +481,7 @@ const SettingsPageContent: React.FC<SettingsPageProps> = ({ onNavigate }) => {
                     const isActive = activeSection === sectionId;
                     return (
                       <button
+                        type="button"
                         key={sectionId}
                         onClick={() => dispatch({ type: 'SET_FIELD', field: 'activeSection', value: sectionId })}
                         className={`group flex items-center px-4 py-3 text-sm font-semibold w-full transition-colors ${
@@ -582,7 +586,7 @@ const SettingsPageContent: React.FC<SettingsPageProps> = ({ onNavigate }) => {
               <button
                 type='button'
                 onClick={handleReset}
-                className='w-full flex justify-center py-4 px-4 text-sm font-semibold text-earth-700 dark:text-earth-300 bg-white dark:bg-earth-800 hover:bg-earth-50 dark:hover:bg-earth-700 transition-colors'
+                className='w-full flex justify-center p-4 text-sm font-semibold text-earth-700 dark:text-earth-300 bg-white dark:bg-earth-800 hover:bg-earth-50 dark:hover:bg-earth-700 transition-colors'
               >
                 {t('settings.resetDefault')}
               </button>
@@ -594,8 +598,9 @@ const SettingsPageContent: React.FC<SettingsPageProps> = ({ onNavigate }) => {
         <Footer version={packageJson.version} />
       </div>
 
-      {/* Profile Setup Modal */}
+      {/* Profile Setup Modal — key ensures clean remount when opening/closing */}
       <ProfileSetupModal
+        key={`profile-modal-${isProfileModalOpen ? (profile ? 'edit' : 'new') : 'closed'}`}
         isOpen={isProfileModalOpen}
         onClose={() => dispatch({ type: 'TOGGLE_PROFILE_MODAL', value: false })}
         existingProfile={profile}

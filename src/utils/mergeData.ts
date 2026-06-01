@@ -16,8 +16,7 @@ const toTimestamp = (d: string): number => (d ? parseLocalDate(d).getTime() : 0)
 function getAppLatestDate(app: JobApplication): string {
   if (app.timeline && app.timeline.length > 0) {
     const dates = app.timeline
-      .map((e) => e.date)
-      .filter(Boolean)
+      .flatMap((e) => e.date ? [e.date] : [])
       .sort((a, b) => toTimestamp(b) - toTimestamp(a));
     if (dates.length > 0) return dates[0];
   }

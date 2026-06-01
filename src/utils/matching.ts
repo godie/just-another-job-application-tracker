@@ -102,7 +102,8 @@ export function calculateRoleSimilarity(title: string, targetRoles: string[]): n
     }
 
     // Word overlap score
-    const commonWords = titleWords.filter((w) => roleWords.includes(w));
+    const roleWordsSet = new Set(roleWords);
+    const commonWords = titleWords.filter((w) => roleWordsSet.has(w));
     const overlapScore = (commonWords.length / Math.max(titleWords.length, roleWords.length)) * 100;
     bestScore = Math.max(bestScore, overlapScore);
   }
@@ -151,7 +152,7 @@ function parseSalaryRange(salaryStr: string | undefined): { min: number; max: nu
   const numbers = text.match(/\d{1,3}(?:,\d{3})*(?:\.\d+)?|\d+/g);
   if (!numbers || numbers.length === 0) return null;
 
-  const values = numbers.map((n) => parseInt(n.replace(/,/g, ''), 10)).filter((n) => !isNaN(n));
+  const values = numbers.reduce<number[]>((acc, n) => { const v = parseInt(n.replace(/,/g, ''), 10); if (!isNaN(v)) acc.push(v); return acc; }, []);
   if (values.length === 0) return null;
 
   // Handle K notation (e.g., 80K -> 80000)
@@ -344,14 +345,14 @@ export function buildProfileFromHistory(
 
   // Extract skills from notes and descriptions (best effort)
   const allText = applications
-    .map((app) => [app.notes, app.position, app.company].filter(Boolean).join(' '))
+    .flatMap((app) => [app.notes, app.position, app.company].flatMap(v => v ? [v] : []))
     .join(' ');
   const topSkills = extractSkillsFromDescription(allText);
 
   // Locations and work types
-  const preferredLocations = [...new Set(applications.map((app) => app.location).filter(Boolean) as string[])];
+  const preferredLocations = [...new Set(applications.reduce<string[]>((acc, app) => { if (app.location) acc.push(app.location); return acc; }, []))];
   const preferredWorkTypes = [
-    ...new Set(applications.map((app) => app.workType).filter(Boolean) as ('remote' | 'on-site' | 'hybrid')[]),
+    ...new Set(applications.reduce<('remote' | 'on-site' | 'hybrid')[]>((acc, app) => { if (app.workType) acc.push(app.workType); return acc; }, [])),
   ];
 
   // Success patterns from positive apps

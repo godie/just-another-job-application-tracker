@@ -88,7 +88,7 @@ const TimelineEditor: React.FC<TimelineEditorProps> = ({ events, onChange }) => 
     }
   };
 
-  const sortedEvents = [...events].sort((a, b) => parseLocalDate(a.date).getTime() - parseLocalDate(b.date).getTime());
+  const sortedEvents = events.toSorted((a, b) => parseLocalDate(a.date).getTime() - parseLocalDate(b.date).getTime());
 
   return (
     <div className="mt-6">
@@ -120,8 +120,8 @@ const TimelineEditor: React.FC<TimelineEditorProps> = ({ events, onChange }) => 
             ) : (
               <div className="flex items-start justify-between">
                 <div className="flex-1">
-                  <div className='flex items-center space-x-2'>
-                    <span className='font-medium text-earth-900 dark:text-earth-100'>
+<div className='flex items-center gap-x-2'>
+                     <span className='font-medium text-earth-900 dark:text-earth-100'>
                       {event.type === 'custom' && event.customTypeName 
                         ? event.customTypeName 
                         : stageOptions.find(opt => opt.value === event.type || (opt.isCustom && event.customTypeName === opt.label))?.label || event.type}
@@ -145,8 +145,8 @@ const TimelineEditor: React.FC<TimelineEditorProps> = ({ events, onChange }) => 
                     <p className='text-sm text-earth-600 dark:text-earth-400 mt-1 italic'>"{event.notes}"</p>
                   )}
                 </div>
-                <div className='flex space-x-2'>
-                  <button
+<div className='flex gap-x-2'>
+                   <button
                     type='button'
                     onClick={() => setEditingId(event.id)}
                     className='text-sage-600 hover:text-sage-800 dark:text-sage-400 dark:hover:text-sage-300 text-sm'
@@ -267,7 +267,7 @@ const EventForm: React.FC<EventFormProps> = ({ event, stageOptions, statusOption
   };
 
   return (
-    <div className="space-y-3" role="group" aria-label="Timeline event form">
+    <fieldset className="space-y-3" aria-label="Timeline event form">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         <div>
           <label htmlFor="stage-type" className="block text-xs font-medium text-earth-700 dark:text-earth-300 mb-1">Stage Type</label>
@@ -275,6 +275,7 @@ const EventForm: React.FC<EventFormProps> = ({ event, stageOptions, statusOption
             id="stage-type"
             value={type}
             onChange={(e) => handleTypeChange(e.target.value)}
+            aria-label="Stage Type"
             className='w-full text-sm rounded border-earth-300 dark:border-earth-600 shadow-sm focus:border-sage-500 dark:focus:border-sage-400 focus:ring-sage-500 dark:focus:ring-sage-400 p-2 border bg-white dark:bg-earth-800 text-earth-900 dark:text-earth-100'
           >
             {stageOptions.map(opt => (
@@ -293,6 +294,7 @@ const EventForm: React.FC<EventFormProps> = ({ event, stageOptions, statusOption
             value={date}
             onChange={(e) => dispatch({ type: 'SET_FIELD', field: 'date', value: e.target.value })}
             required
+            aria-label="Date"
             className='w-full text-sm rounded border-earth-300 dark:border-earth-600 shadow-sm focus:border-sage-500 dark:focus:border-sage-400 focus:ring-sage-500 dark:focus:ring-sage-400 p-2 border bg-white dark:bg-earth-800 text-earth-900 dark:text-earth-100'
           />
         </div>
@@ -303,6 +305,7 @@ const EventForm: React.FC<EventFormProps> = ({ event, stageOptions, statusOption
             id="event-status"
             value={status}
             onChange={(e) => dispatch({ type: 'SET_FIELD', field: 'status', value: e.target.value as EventStatus })}
+            aria-label="Status"
             className='w-full text-sm rounded border-earth-300 dark:border-earth-600 shadow-sm focus:border-sage-500 dark:focus:border-sage-400 focus:ring-sage-500 dark:focus:ring-sage-400 p-2 border bg-white dark:bg-earth-800 text-earth-900 dark:text-earth-100'
           >
             {statusOptions.map(opt => (
@@ -324,6 +327,7 @@ const EventForm: React.FC<EventFormProps> = ({ event, stageOptions, statusOption
             onChange={(e) => dispatch({ type: 'SET_FIELD', field: 'customType', value: e.target.value })}
             placeholder="Enter custom event name"
             disabled={type.startsWith('custom:')}
+            aria-label="Custom Type Name"
             className={`w-full text-sm rounded border-earth-300 shadow-sm focus:border-sage-500 focus:ring-sage-500 p-2 border ${
               type.startsWith('custom:') ? 'bg-earth-100 dark:bg-earth-700' : ''
             }`}
@@ -341,6 +345,7 @@ const EventForm: React.FC<EventFormProps> = ({ event, stageOptions, statusOption
           value={notes}
           onChange={(e) => dispatch({ type: 'SET_FIELD', field: 'notes', value: e.target.value })}
           rows={2}
+          aria-label="Notes"
           className='w-full text-sm rounded border-earth-300 dark:border-earth-600 shadow-sm focus:border-sage-500 dark:focus:border-sage-400 focus:ring-sage-500 dark:focus:ring-sage-400 p-2 border bg-white dark:bg-earth-800 text-earth-900 dark:text-earth-100'
         />
       </div>        <div>
@@ -351,11 +356,12 @@ const EventForm: React.FC<EventFormProps> = ({ event, stageOptions, statusOption
           value={interviewerName}
           onChange={(e) => dispatch({ type: 'SET_FIELD', field: 'interviewerName', value: e.target.value })}
           placeholder="John Doe"
+          aria-label="Interviewer Name"
           className='w-full text-sm rounded border-earth-300 dark:border-earth-600 shadow-sm focus:border-sage-500 dark:focus:border-sage-400 focus:ring-sage-500 dark:focus:ring-sage-400 p-2 border bg-white dark:bg-earth-800 text-earth-900 dark:text-earth-100'
         />
       </div>
 
-      <div className="flex justify-end space-x-2">
+      <div className="flex justify-end gap-x-2">
         <button
           type="button"
           onClick={onCancel}
@@ -371,7 +377,7 @@ const EventForm: React.FC<EventFormProps> = ({ event, stageOptions, statusOption
           Save
         </button>
       </div>
-    </div>
+    </fieldset>
   );
 };
 

@@ -1,4 +1,4 @@
-import React, { useMemo, useState, memo, useEffect } from 'react';
+import React, { useMemo, useState, memo } from 'react';
 import { getTodayDate, cloneDate } from '../utils/dateHelpers';
 import { useTranslation } from 'react-i18next';
 import type { JobApplication, InterviewEvent } from '../types/applications';
@@ -141,14 +141,8 @@ const formatRelativeTime = (eventDate: Date, referenceDate: Date, t: TranslateFn
 // Memoized to prevent re-renders when filteredApplications reference changes but content is the same
 const CalendarView: React.FC<CalendarViewProps> = ({ applications, onEdit }) => {
   const { t, i18n } = useTranslation();
-  const EPOCH = new Date(2000, 0, 1);
-  const [focusMonth, setFocusMonth] = useState(() => startOfMonth(EPOCH));
-  const [today, setToday] = useState<Date>(EPOCH);
-
-  useEffect(() => {
-    setFocusMonth(startOfMonth(getTodayDate()));
-    setToday(getTodayDate());
-  }, []);
+  const [focusMonth, setFocusMonth] = useState(() => startOfMonth(getTodayDate()));
+  const [today] = useState(() => getTodayDate());
 
   const calendar = useMemo(() => {
     const start = startOfMonth(focusMonth);      const startDay = cloneDate(start);
