@@ -24,7 +24,7 @@ export interface JobApplication {
   platform: string;
   contactName: string;
   notes: string;
-  
+
   // New: Timeline of all events
   timeline: InterviewEvent[];
 }
@@ -37,7 +37,7 @@ export interface InterviewEvent {
   status: EventStatus; // 'completed' | 'scheduled' | 'cancelled' | 'pending'
 }
 
-export type InterviewStageType = 
+export type InterviewStageType =
   | 'application_submitted'
   | 'screener_call'
   | 'first_contact'
@@ -66,7 +66,7 @@ export type EventStatus = 'completed' | 'scheduled' | 'cancelled' | 'pending';
 ```typescript
 export interface JobApplication {
   // ... existing fields
-  
+
   currentStage: InterviewStageType;
   stageHistory: StageTransition[];
 }
@@ -88,7 +88,7 @@ export interface StageTransition {
 ```typescript
 export interface JobApplication {
   // ... existing fields
-  
+
   currentStatus: string; // Quick reference
   timeline: InterviewEvent[]; // Detailed history
   customFields: Record<string, string>; // User-defined fields
@@ -588,9 +588,6 @@ export const useAppStore = create<AppState>((set) => ({
 45. ✅ **Email Scan (Gmail)** in Settings: preview and apply selected additions/updates; rate-limit handling
 46. ✅ **PWA** (installable app; manifest and service worker)
 47. ✅ **i18n test mock** loads English translation JSON in setupTests (no duplication)
-48. ✅ **AI-Powered Job Matching** (types, storage, deterministic engine, Gemini profile synthesis + job scoring, Zustand store, MatchScoreBadge, MatchBreakdownModal, ProfileSetupModal, MatchingSettings, RecommendationPanel, Settings integration, barrel exports)
-49. ✅ **Direct ATS Search / Job Search** (JobSearchForm, JobSearchResults, PHP JobSearchController, configurable filters, search-all functionality, filter persistence)
-50. ✅ **CSV Export/Import** (exportToCSV, parseCSV, CSVActions component, merge-with-existing-dedup logic, bilingual labels)
 
 **Polish & maintenance (optional):**
 - [ ] **Remove legacy PHP scripts** in `api/` once all traffic uses the new routes: `captcha.php`, `set-auth-cookie.php`, `get-auth-cookie.php`, `clear-auth-cookie.php`, `suggestions.php`, `google-sheets.php`. Keep only `index.php`, `Router.php`, `config.php`, `controllers/`, `helpers/`.
@@ -600,9 +597,10 @@ export const useAppStore = create<AppState>((set) => ({
 - [ ] **E2E tests**: Consider adding a small E2E suite (e.g. Playwright) for critical flows (login, add application, sync Sheets) to catch regressions.
 
 **Immediate Next Steps:**
-1. **AI-Assisted Features (beyond matching)**: Interview preparation AI, cover letter suggestions, resume optimization feedback.
-2. **Enhanced Security**: Optional encryption for data stored in localStorage and sensitive field masking.
-3. **Chrome Extension enhancements**:
+1. **Export/Import Functionality**: Support for exporting data to CSV/JSON and importing from other trackers.
+2. **AI-Assisted Features**: Integration with LLMs for resume matching, cover letter suggestions, and interview preparation.
+3. **Enhanced Security**: Optional encryption for data stored in localStorage and sensitive field masking.
+4. **Chrome Extension enhancements**:
    - Extension detection and installation prompt
    - Video mini-tutorial for extension usage
 
@@ -619,7 +617,12 @@ export const useAppStore = create<AppState>((set) => ({
   - User name and email
   - Current position or positions/job titles user is seeking
   - Profile customization options
-- **Advanced Job Search APIs** - Deeper integrations with third-party job boards (LinkedIn Jobs API, Indeed API, Glassdoor API) for unified search results.
+- **Job Search Page** - Integrated job search functionality:
+  - Search vacancies across different company platforms and job boards
+  - Integration with multiple job search APIs (LinkedIn, Indeed, Glassdoor, etc.)
+  - Recommendation to install Chrome extension for easier job capture
+  - Direct conversion from search results to Opportunities or Applications
+  - One-click job application tracking from search results
 
 Your application is well-structured for these enhancements. The modular design makes it easy to add these features incrementally.
 
@@ -639,20 +642,12 @@ Your application is well-structured for these enhancements. The modular design m
    - ✅ `role="switch"` on theme toggle button
    - ✅ `aria-checked` on theme toggle switch
    - ✅ `sr-only` class for screen reader only content (Actions column header)
-   - ✅ `role="main"`, `role="navigation"`, `role="banner"` landmark roles
-   - ✅ `aria-live="polite"` and `aria-atomic="true"` on alert components
-   - ✅ `aria-describedby` and `aria-invalid` on form inputs
-   - ✅ `aria-required` on required form fields
 
 2. **Keyboard Navigation:**
    - ✅ `useKeyboardEscape` hook for closing modals with Escape key
    - ✅ Focus management on interactive elements
    - ✅ Keyboard accessible buttons and links
    - ✅ Disabled state styling for keyboard navigation (pagination buttons)
-   - ✅ **Skip navigation link** - "Skip to main content" link for keyboard users
-   - ✅ **Keyboard shortcuts** - `/` for search, `n` for new entry, `?` for help
-   - ✅ **Keyboard shortcuts help modal** - Press `?` to see all shortcuts
-   - ✅ **Kanban keyboard navigation** - Buttons to move cards between columns
 
 3. **Semantic HTML:**
    - ✅ Proper use of semantic HTML elements (`<header>`, `<nav>`, `<main>`, `<button>`, `<table>`, `<th>`, `<td>`)
@@ -666,135 +661,110 @@ Your application is well-structured for these enhancements. The modular design m
    - ✅ Visual indicators for interactive states (hover, focus, disabled)
    - ✅ Status indicators with both color and icons
    - ✅ Responsive design for various screen sizes
-   - ✅ **Enhanced focus indicators** - `focus-visible:ring-2` on all interactive elements
 
-5. **Form Accessibility:**
-   - ✅ `aria-describedby` links inputs to error messages
-   - ✅ `aria-invalid` indicates validation state
-   - ✅ `aria-required` indicates required fields
-   - ✅ Visual asterisk (*) for required fields
-   - ✅ Error messages announced via `role="alert"`
-
-6. **Modal Accessibility:**
-   - ✅ Focus trap in all modals (useFocusTrap hook)
-   - ✅ Focus restoration when modals close
-   - ✅ `role="dialog"` and `aria-modal="true"` attributes
-   - ✅ `aria-labelledby` links to modal titles
-
-7. **Meta Information:**
+5. **Meta Information:**
    - ✅ Meta description for SEO and screen reader context
    - ✅ Language attribute on HTML element (`lang="en"`)
-   - ✅ Improved alt text for logo images
 
 #### ⚠️ Partially Implemented / Needs Improvement
 
-1. **Dynamic Content:**
-   - ⚠️ Live regions for non-alert updates - filter results, pagination changes could use aria-live
-   - ⚠️ Loading states - loading indicators could be announced to screen readers
+1. **Focus Management:**
+   - ⚠️ Modal focus trapping - modals may allow focus to escape
+   - ⚠️ Focus return after closing modals - focus may not return to trigger element
+   - ⚠️ Skip navigation link missing - no "skip to main content" link for keyboard users
 
-2. **Table Accessibility:**
-   - ⚠️ Sortable columns - sorting not yet implemented, but `aria-sort` ready
-   - ⚠️ Complex tables - timeline view could benefit from additional ARIA roles
+2. **Form Accessibility:**
+   - ⚠️ Error messages association - form errors may not be properly associated with inputs via `aria-describedby`
+   - ⚠️ Required field indicators - visual indicators exist but may need `aria-required` attributes
+   - ⚠️ Form validation announcements - screen readers may not announce validation errors immediately
 
-3. **Advanced Keyboard Navigation:**
-   - ⚠️ Drag-and-drop full keyboard support - Kanban has move buttons but could use arrow key navigation
-   - ⚠️ Custom shortcut configuration - users cannot customize keyboard shortcuts yet
+3. **Dynamic Content:**
+   - ⚠️ Live regions for updates - no `aria-live` regions for dynamic content updates (alerts, filter results)
+   - ⚠️ Loading states - loading indicators may not be announced to screen readers
+
+4. **Table Accessibility:**
+   - ⚠️ Sortable columns - if columns become sortable, need `aria-sort` attributes
+   - ⚠️ Complex tables - timeline/kanban views may need additional ARIA roles
+
+5. **Keyboard Shortcuts:**
+   - ⚠️ Limited keyboard shortcuts - only Escape key implemented
+   - ⚠️ No keyboard shortcut documentation or help menu
 
 #### ❌ Missing Features / Recommendations
 
 1. **WCAG 2.1 Level AA Compliance Gaps:**
 
    **Perceivable:**
-   - ⚠️ **Color contrast audit** - Verify all text meets 4.5:1 contrast ratio (tools: WebAIM Contrast Checker)
-   - ❌ **Text resize controls** - No explicit text resize controls (currently relies on browser zoom)
+   - ❌ **Alternative text for images** - Logo images need descriptive alt text (currently only has "JAJAT")
+   - ❌ **Color contrast ratio** - Some text may not meet 4.5:1 contrast ratio (needs audit)
+   - ❌ **Text resize** - No explicit text resize controls (relies on browser zoom)
    - ❌ **Audio/video captions** - N/A for current features, but needed for future video tutorials
 
    **Operable:**
-   - ⚠️ **Timing adjustable** - Auto-dismiss alerts have fixed timing (could be user-configurable)
-   - ⚠️ **Drag-and-drop keyboard enhancement** - Arrow key navigation between columns could be added
+   - ❌ **Keyboard accessibility** - All functionality should be keyboard accessible
+     - Drag-and-drop in Kanban view may not be keyboard accessible
+     - Some complex interactions may require mouse
+   - ❌ **No keyboard traps** - Ensure users can navigate away from all components
+   - ❌ **Timing adjustable** - Auto-dismiss alerts have fixed timing (could be configurable)
+   - ❌ **Navigation** - Skip links missing for main content areas
    - ❌ **Multiple ways to find content** - Currently only search/filter, could add tags/categories
 
    **Understandable:**
-   - ⚠️ **Language identification** - User-entered content doesn't specify language
-   - ⚠️ **Form field descriptions** - Some complex fields could use `aria-describedby` for more context
+   - ❌ **Language identification** - Some content may not specify language (especially user-entered content)
+   - ❌ **Error identification** - Form errors need better labeling and association
+   - ❌ **Labels and instructions** - Some form fields may need more descriptive labels
+   - ❌ **Consistent navigation** - Navigation is mostly consistent, but could be improved
 
    **Robust:**
-   - ⚠️ **HTML validation** - Periodic HTML validation recommended
+   - ❌ **Parsing** - HTML should validate (needs verification)
+   - ❌ **Name, role, value** - All UI components need proper ARIA attributes
 
 2. **Screen Reader Optimization:**
-   - ⚠️ **Complementary landmark** - Sidebar could use `role="complementary"` in addition to navigation
-   - ⚠️ **State announcements** - Filter/sort changes could announce results count
-   - ⚠️ **Descriptive link text** - Some action links could have more context
+   - ❌ **Landmark regions** - Missing `role="main"`, `role="complementary"`, `role="navigation"`
+   - ❌ **Live regions** - Need `aria-live="polite"` for non-critical updates and `aria-live="assertive"` for errors
+   - ❌ **State announcements** - Complex state changes (filters, sorting) need announcements
+   - ❌ **Descriptive link text** - Some links may have non-descriptive text (e.g., "click here")
 
 3. **Keyboard Navigation Improvements:**
-   - ⚠️ **Tab order verification** - Periodic verification recommended
-   - ⚠️ **Additional shortcuts** - Consider `j`/`k` for navigation, `e` for edit
+   - ❌ **Focus indicators** - Ensure all interactive elements have visible focus indicators
+   - ❌ **Tab order** - Verify logical tab order throughout application
+   - ❌ **Keyboard shortcuts** - Add common shortcuts (e.g., `/` for search, `n` for new entry, `?` for help)
+   - ❌ **Shortcut documentation** - Help menu or keyboard shortcuts overlay
 
 4. **Testing Recommendations:**
-   - ✅ **Automated testing** - Basic axe-core setup implemented (`src/tests/accessibility/`)
-   - ⚠️ **Lighthouse CI integration** - Could be added to CI/CD pipeline
-   - ⚠️ **Screen reader testing** - Manual testing with NVDA, JAWS, VoiceOver recommended
-   - ⚠️ **Keyboard-only testing** - Periodic manual testing with keyboard only (no mouse)
+   - ❌ **Automated testing** - Integrate accessibility testing tools (axe-core, Lighthouse CI)
+   - ❌ **Screen reader testing** - Test with NVDA, JAWS, VoiceOver
+   - ❌ **Keyboard-only testing** - Manual testing with keyboard only (no mouse)
+   - ❌ **Color contrast audit** - Use tools like WebAIM Contrast Checker
 
 ### Recommended Implementation Plan
 
-#### Phase 1: Quick Wins (High Impact, Low Effort) ✅ COMPLETED
-1. ✅ Add skip navigation link
-2. ✅ Improve image alt text descriptions
-3. ✅ Add `aria-live` regions for alerts and dynamic updates
-4. ✅ Add landmark roles (`role="main"`, `role="navigation"`)
-5. ✅ Ensure all interactive elements have focus indicators
+#### Phase 1: Quick Wins (High Impact, Low Effort)
+1. Add skip navigation link
+2. Improve image alt text descriptions
+3. Add `aria-live` regions for alerts and dynamic updates
+4. Add landmark roles (`role="main"`, `role="navigation"`)
+5. Ensure all interactive elements have focus indicators
 
-**Implementation:**
-- Skip link added to `MainLayout.tsx`
-- Landmark roles added to `MainLayout`, `Sidebar`, `Header`
-- ARIA live regions added to `Alert.tsx` and `AlertProvider.tsx`
-- Enhanced focus indicators on `Input`, `Select`, `Button` components
-- Improved alt text for logo
+#### Phase 2: Form Improvements
+1. Add `aria-describedby` to associate error messages with inputs
+2. Add `aria-required` to required fields
+3. Improve form validation announcements
+4. Add `aria-invalid` to inputs with errors
 
-#### Phase 2: Form Improvements ✅ COMPLETED
-1. ✅ Add `aria-describedby` to associate error messages with inputs
-2. ✅ Add `aria-required` to required fields
-3. ✅ Improve form validation announcements
-4. ✅ Add `aria-invalid` to inputs with errors
+#### Phase 3: Advanced Features
+1. Implement keyboard shortcuts with help menu
+2. Add focus trapping to modals
+3. Implement keyboard navigation for Kanban drag-and-drop
+4. Add ARIA roles for complex components (timeline, kanban)
+5. Color contrast audit and fixes
 
-**Implementation:**
-- `Input.tsx` and `Select.tsx` now support `aria-describedby`, `aria-invalid`, `aria-required`
-- Error messages linked to inputs with unique IDs
-- Visual indicators (asterisk) for required fields
-- Error announcements use `role="alert"`
-- Created `useAnnounce.ts` hook for screen reader announcements
-
-#### Phase 3: Advanced Features ✅ COMPLETED
-1. ✅ Implement keyboard shortcuts with help menu
-2. ✅ Add focus trapping to modals
-3. ✅ Implement keyboard navigation for Kanban drag-and-drop
-4. ✅ Add ARIA roles for complex components (timeline, kanban)
-5. ⚠️ Color contrast audit and fixes (partial - needs verification)
-
-**Implementation:**
-- Created `useKeyboardShortcuts.ts` hook with `/`, `n`, `?` shortcuts
-- Created `KeyboardHelp.tsx` component for shortcuts documentation
-- `useFocusTrap.ts` already implemented and applied to all modals
-- Added keyboard-accessible move buttons to `KanbanView.tsx` cards
-- `ConfirmDialog.tsx` updated with `role="alertdialog"` and proper ARIA
-
-#### Phase 4: Testing & Validation ✅ PARTIALLY COMPLETED
-1. ✅ Set up automated accessibility testing (axe-core, Lighthouse)
-2. ⚠️ Conduct screen reader testing sessions (manual testing needed)
-3. ⚠️ Keyboard-only navigation testing (manual testing needed)
-4. ⚠️ WCAG 2.1 Level AA compliance audit (tools available)
-5. ✅ Create accessibility documentation
-
-**Implementation:**
-- Created `src/tests/accessibility/` directory with axe-core configuration
-- Added accessibility tests for `Input`, `Alert`, `MainLayout` components
-- Documentation updated in this file
-
-**Remaining:**
-- Lighthouse CI integration in CI/CD pipeline
-- Regular screen reader testing sessions (NVDA, JAWS, VoiceOver)
-- Color contrast verification with automated tools
+#### Phase 4: Testing & Validation
+1. Set up automated accessibility testing (axe-core, Lighthouse)
+2. Conduct screen reader testing sessions
+3. Keyboard-only navigation testing
+4. WCAG 2.1 Level AA compliance audit
+5. Create accessibility documentation
 
 ### Tools & Resources
 
@@ -821,48 +791,3 @@ Your application is well-structured for these enhancements. The modular design m
 - **axe-core Violations**: Zero critical/high severity violations
 - **Keyboard Navigation**: 100% of functionality accessible via keyboard
 - **Screen Reader Compatibility**: Tested and working with major screen readers (NVDA, JAWS, VoiceOver)
-
-### New Components Added
-
-The following components and hooks were created to enhance accessibility:
-
-| Component/Hook | Location | Purpose |
-|----------------|----------|---------|
-| `useAnnounce.ts` | `src/hooks/useAnnounce.ts` | Screen reader announcements |
-| `useKeyboardShortcuts.ts` | `src/hooks/useKeyboardShortcuts.ts` | Global keyboard shortcuts |
-| `KeyboardHelp.tsx` | `src/components/KeyboardHelp.tsx` | Shortcuts help modal |
-| `axe-config.ts` | `src/tests/accessibility/axe-config.ts` | axe-core test utilities |
-| Accessibility tests | `src/tests/accessibility/*.test.tsx` | Component a11y tests |
-
-### Keyboard Shortcuts Reference
-
-| Shortcut | Action | Context |
-|----------|--------|---------|
-| `/` | Focus search input | Global |
-| `n` | Trigger new entry | Global (navigates to applications) |
-| `?` | Show keyboard help | Global |
-| `Escape` | Close modal/dialog | When modal open |
-| `Tab` | Navigate forward | Global |
-| `Shift + Tab` | Navigate backward | Global |
-
-### Running Accessibility Tests
-
-```bash
-# Run all tests including accessibility tests
-npm test
-
-# Run tests in watch mode
-npm run test:watch
-
-# Run with coverage
-npm run test:cov
-```
-
-### Manual Testing Checklist
-
-- [ ] Navigate entire app using only keyboard (Tab, Shift+Tab, Enter, Space)
-- [ ] Verify skip link works (Tab from page load, Enter on "Skip to main content")
-- [ ] Test all modals with Escape key and focus trapping
-- [ ] Use screen reader (NVDA/VoiceOver) to verify announcements
-- [ ] Check color contrast with browser dev tools or WAVE
-- [ ] Verify all interactive elements have visible focus indicators

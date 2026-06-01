@@ -10,9 +10,6 @@
 - **Authentication:** Email/Password and Google OAuth linking.
 - **Cloud Sync:** Optional MySQL-backed data persistence.
 - **Accessibility:** WCAG 2.2 AA compliance across all main pages.
-- **AI-Powered Job Matching:** Deterministic scoring + Gemini AI profile synthesis and job scoring. Core engine, types, persistence, Zustand store, and Settings UI done. OpportunitiesPage/HomePage integration pending (see DOCS/MATCHING_IMPLEMENTATION_TASKS.md).
-- **Direct ATS Search / Job Search:** Search across major ATS platforms (Ashby, Greenhouse, Lever, Workable, Workday, Teamtailor, iCIMS) with configurable filters and search-all functionality.
-- **CSV Export/Import:** Export applications to CSV and import from CSV with duplicate detection and merge logic.
 
 ## Short-term 🛠️
 - [ ] **Advanced Data Migration:** Better handling of conflicts between local and cloud data.

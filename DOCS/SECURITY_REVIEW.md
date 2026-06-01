@@ -12,7 +12,7 @@ En esta branch se implementaron las siguientes medidas de seguridad:
 ### 1. **Protección contra Cross-Site Scripting (XSS)**
 
 #### Implementado en:
-- **Frontend (`src/utils/localStorage.ts`)**: 
+- **Frontend (`src/utils/localStorage.ts`)**:
   - Función `sanitizeObject()` que sanitiza recursivamente todos los campos string usando `DOMPurify`
   - Sanitización automática al cargar datos de `localStorage` en `getApplications()` y `getOpportunities()`
   - Sanitización antes de guardar en `saveApplications()` y `saveOpportunities()`
@@ -189,5 +189,3 @@ Los atributos `href` se estaban configurando directamente con contenido del usua
 ---
 
 **Revisión completada exitosamente** ✨
-
-

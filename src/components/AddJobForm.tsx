@@ -1,121 +1,35 @@
 // src/components/AddJobForm.tsx
-import React, { useState, useRef, useEffect } from 'react';
-import { getLocalDateString } from '../utils/dateHelpers';
+import React, { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { JobApplication } from '../types/applications';
-import { toWorkType, buildInitialTimeline } from '../utils/applications';
 import useKeyboardEscape from '../hooks/useKeyboardEscape';
 import useFocusTrap from '../hooks/useFocusTrap';
+import { useJobForm } from '../hooks/useJobForm';
 import TimelineEditor from './TimelineEditor';
 import { Button, Input, Select, Card } from './ui';
 
 interface AddJobFormProps {
-  onSave: (newEntry: Omit<JobApplication, 'id'>) => void;
+  onSave: (newEntry: Omit<JobApplication, 'id'> | JobApplication) => void;
   onCancel: () => void;
   initialData?: JobApplication | null;
 }
 
-const initialFormData: Omit<JobApplication, 'id'> = {
-  position: '',
-  company: '',
-  location: '',
-  workType: undefined,
-  hybridDaysInOffice: undefined,
-  salary: '',
-  status: 'Applied',
-  applicationDate: '',
-  interviewDate: '',
-  notes: '',
-  link: '',
-  platform: 'LinkedIn',
-  contactName: '',
-  followUpDate: '',
-  timeline: [],
-};
-
-
 const AddJobForm: React.FC<AddJobFormProps> = ({ onSave, onCancel, initialData }) => {
   const { t } = useTranslation();
-  const isCreationMode = initialData && !initialData.id;
-  const isEditing = !!initialData && !!initialData.id;
   
-  // When creating a new entry, merge initialData with initialFormData to ensure defaults
-  const getInitialFormData = () => {
-    if (isEditing && initialData) {
-      return initialData;
-    }
-    if (isCreationMode && initialData) {
-      // Merge initialData with initialFormData to ensure all defaults are set
-      return { ...initialFormData, ...initialData };
-    }
-    return initialFormData;
-  };
-  
-  const [formData, setFormData] = useState<Omit<JobApplication, 'id'> | JobApplication>(
-    () => getInitialFormData()
-  );
-
-  useEffect(() => {
-    if (!initialData) {
-      setFormData(prev => {
-        const p = prev as Omit<JobApplication, 'id'>;
-        if (!p.applicationDate) {
-          return { ...p, applicationDate: getLocalDateString() };
-        }
-        return prev;
-      });
-    }
-  }, [initialData]);
+  const {
+    formData,
+    setFormData,
+    updateFormField,
+    handleSubmit,
+    isEditing,
+  } = useJobForm({ initialData, onSave });
 
   useKeyboardEscape(onCancel, true);
 
   // Focus trap for modal accessibility
   const modalRef = useRef<HTMLDivElement>(null);
   useFocusTrap(modalRef);
-
-  const updateFormField = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    if (name === 'hybridDaysInOffice') {
-      const num = value === '' ? undefined : parseInt(value, 10);
-      setFormData(prev => ({ ...prev, hybridDaysInOffice: num }));
-      return;
-    }
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    // Ensure status has a default value
-    const dataWithStatus = {
-      ...formData,
-      status: formData.status || 'Applied',
-    };
-    
-    // Use manual timeline if exists, otherwise build from form data
-    let timeline = dataWithStatus.timeline || [];
-    if (timeline.length === 0) {
-      timeline = buildInitialTimeline(
-        dataWithStatus.applicationDate,
-        dataWithStatus.status,
-        dataWithStatus.interviewDate
-      );
-    }
-    
-    const validWorkType = toWorkType(dataWithStatus.workType);
-    const hybridDaysInOffice =
-      validWorkType === 'hybrid' && typeof dataWithStatus.hybridDaysInOffice === 'number'
-        ? dataWithStatus.hybridDaysInOffice
-        : undefined;
-    const finalData = {
-      ...dataWithStatus,
-      timeline,
-      location: dataWithStatus.location || undefined,
-      workType: validWorkType,
-      hybridDaysInOffice,
-    };
-    onSave(finalData);
-  };
 
   return (
     <div 
