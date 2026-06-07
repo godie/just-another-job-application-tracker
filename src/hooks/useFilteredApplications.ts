@@ -1,7 +1,7 @@
 import { useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { type JobApplication, type ApplicationWithMetadata } from '../types/applications';
-import { type Filters } from '../components/FiltersBar';
+import { type Filters } from '../types/filters';
 import { parseLocalDate } from '../utils/date';
 
 /**
