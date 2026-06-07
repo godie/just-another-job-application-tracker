@@ -4,7 +4,7 @@ import { useTranslation, Trans } from 'react-i18next';
 import { useSEO } from '../seo/useSEO';
 import Footer from '../components/Footer';
 import ViewSwitcher, { type ViewType } from '../components/ViewSwitcher';
-import FiltersBar, { type Filters } from '../components/FiltersBar';
+import FiltersBar from '../components/FiltersBar';
 import MetricsSummary from '../components/MetricsSummary';
 import { useAlert } from '../components/AlertProvider';
 import type { JobApplication } from '../types/applications';
@@ -15,37 +15,12 @@ import packageJson from '../../package.json';
 import { useApplicationsStore } from '../stores/applicationsStore';
 import { usePreferencesStore } from '../stores/preferencesStore';
 import { useFilteredApplications } from '../hooks/useFilteredApplications';
+import { useApplicationFiltersState } from '../hooks/useApplicationFiltersState';
 import { useTableColumns } from '../hooks/useTableColumns';
 import CurrentViewRenderer from '../components/CurrentViewRenderer';
 import { PageHeader } from '../components/ui/PageHeader';
 
 const VIEW_STORAGE_KEY = 'preferredView';
-const FILTERS_STORAGE_KEY = 'applicationFilters';
-
-// Initialize from localStorage synchronously
-function loadInitialFilters(): Filters {
-  if (typeof window === 'undefined') return defaultFilters;
-  const storedFilters = window.localStorage.getItem(FILTERS_STORAGE_KEY);
-  if (storedFilters) {
-    try {
-      const parsed = JSON.parse(storedFilters) as Filters;
-      return { ...defaultFilters, ...parsed };
-    } catch {
-      return defaultFilters;
-    }
-  }
-  return defaultFilters;
-}
-
-const defaultFilters: Filters = {
-  search: '',
-  status: '',
-  statusInclude: [],
-  statusExclude: [],
-  platform: '',
-  dateFrom: '',
-  dateTo: '',
-};
 
 import { type PageType } from '../App';
 
@@ -75,9 +50,10 @@ const HomePageContent: React.FC<HomePageContentProps> = ({ onNavigate }) => {
   
   const [currentApplication, setCurrentApplication] = useState<JobApplication | null>(null);
   const [currentView, setCurrentView] = useState<ViewType>('table');
-  const [filters, setFilters] = useState<Filters>(loadInitialFilters);
   const [isDataToolsOpen, setIsDataToolsOpen] = useState(false);
   const isFormOpen = currentApplication !== null;
+
+  const { filters, handleFiltersChange, handleClearFilters } = useApplicationFiltersState();
 
   // Load data on mount
   useEffect(() => {
@@ -118,20 +94,6 @@ const HomePageContent: React.FC<HomePageContentProps> = ({ onNavigate }) => {
     setCurrentView(view);
     if (typeof window !== 'undefined') {
       window.localStorage.setItem(VIEW_STORAGE_KEY, view);
-    }
-  }, []);
-
-  const handleFiltersChange = useCallback((nextFilters: Filters) => {
-    setFilters(nextFilters);
-    if (typeof window !== 'undefined') {
-      window.localStorage.setItem(FILTERS_STORAGE_KEY, JSON.stringify(nextFilters));
-    }
-  }, []);
-
-  const handleClearFilters = useCallback(() => {
-    setFilters(defaultFilters);
-    if (typeof window !== 'undefined') {
-      window.localStorage.removeItem(FILTERS_STORAGE_KEY);
     }
   }, []);
 
