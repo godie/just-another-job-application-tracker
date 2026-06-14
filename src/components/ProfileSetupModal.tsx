@@ -29,19 +29,15 @@ const WORK_TYPE_OPTIONS: { value: 'remote' | 'on-site' | 'hybrid'; label: string
   { value: 'on-site', label: 'On-site' },
 ];
 
-export const ProfileSetupModal: React.FC<ProfileSetupModalProps> = ({
-  isOpen,
+const ProfileSetupModalContent: React.FC<Omit<ProfileSetupModalProps, 'isOpen'>> = ({
   onClose,
   existingProfile,
   onSave,
 }) => {
   const modalRef = useRef<HTMLDialogElement>(null);
-  useFocusTrap(modalRef, isOpen);
-  useKeyboardEscape(onClose, isOpen);
+  useFocusTrap(modalRef, true);
+  useKeyboardEscape(onClose, true);
 
-  // Initialize form state from existingProfile on first mount.
-  // The component fully unmounts when isOpen becomes false (via `if (!isOpen) return null`),
-  // so state is naturally reset on every open without needing a useEffect.
   const [targetRoles, setTargetRoles] = useState(() => existingProfile?.targetRoles.join(', ') ?? '');
   const [seniority, setSeniority] = useState<SeniorityLevel | ''>(() => existingProfile?.seniority ?? '');
   const [topSkills, setTopSkills] = useState(() => existingProfile?.topSkills.join(', ') ?? '');
@@ -89,8 +85,6 @@ export const ProfileSetupModal: React.FC<ProfileSetupModalProps> = ({
     }
   };
 
-  if (!isOpen) return null;
-
   return (
     <div
       role="none"
@@ -127,7 +121,7 @@ export const ProfileSetupModal: React.FC<ProfileSetupModalProps> = ({
             aria-label="Close"
           >
             <svg className="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         </div>
@@ -287,24 +281,26 @@ export const ProfileSetupModal: React.FC<ProfileSetupModalProps> = ({
               <label htmlFor="salary-min" className="block text-sm font-semibold text-earth-700 dark:text-earth-300">
                 Salary Expectations
               </label>
-              <div className="flex gap-3">                  <div className="flex-1">
-                    <input
-                      type="number"
-                      id="salary-min"
-                      value={salaryMin}
-                      onChange={(e) => setSalaryMin(e.target.value)}
-                      placeholder="Min"
-                      aria-label="Minimum Salary"
+              <div className="flex gap-3">
+                <div className="flex-1">
+                  <input
+                    type="number"
+                    id="salary-min"
+                    value={salaryMin}
+                    onChange={(e) => setSalaryMin(e.target.value)}
+                    placeholder="Min"
+                    aria-label="Minimum Salary"
                     className="w-full px-3 py-2 border border-earth-300 dark:border-earth-600 rounded-lg bg-white dark:bg-earth-900 text-earth-900 dark:text-earth-100 text-sm focus:ring-2 focus:ring-sage-500 focus:border-sage-500 outline-none transition"
                   />
-                </div>                  <div className="flex-1">
-                    <input
-                      type="number"
-                      id="salary-max"
-                      value={salaryMax}
-                      onChange={(e) => setSalaryMax(e.target.value)}
-                      placeholder="Max"
-                      aria-label="Maximum Salary"
+                </div>
+                <div className="flex-1">
+                  <input
+                    type="number"
+                    id="salary-max"
+                    value={salaryMax}
+                    onChange={(e) => setSalaryMax(e.target.value)}
+                    placeholder="Max"
+                    aria-label="Maximum Salary"
                     className="w-full px-3 py-2 border border-earth-300 dark:border-earth-600 rounded-lg bg-white dark:bg-earth-900 text-earth-900 dark:text-earth-100 text-sm focus:ring-2 focus:ring-sage-500 focus:border-sage-500 outline-none transition"
                   />
                 </div>
@@ -380,3 +376,19 @@ export const ProfileSetupModal: React.FC<ProfileSetupModalProps> = ({
   );
 };
 
+export const ProfileSetupModal: React.FC<ProfileSetupModalProps> = ({
+  isOpen,
+  onClose,
+  existingProfile,
+  onSave,
+}) => {
+  if (!isOpen) return null;
+
+  return (
+    <ProfileSetupModalContent
+      onClose={onClose}
+      existingProfile={existingProfile}
+      onSave={onSave}
+    />
+  );
+};
