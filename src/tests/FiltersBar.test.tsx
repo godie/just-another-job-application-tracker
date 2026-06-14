@@ -1,6 +1,7 @@
 import { render, screen, fireEvent, act } from '@testing-library/react';
 import { describe, expect, test, vi, beforeEach, afterEach } from 'vitest';
-import FiltersBar, { type Filters } from '../components/FiltersBar';
+import FiltersBar from '../components/FiltersBar';
+import { type Filters } from '../types/filters';
 
 const defaultFilters: Filters = {
   search: '',

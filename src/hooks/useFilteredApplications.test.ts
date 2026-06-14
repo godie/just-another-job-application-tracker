@@ -1,7 +1,7 @@
 import { renderHook } from '@testing-library/react';
 import { useFilteredApplications } from './useFilteredApplications';
 import { type JobApplication } from '../types/applications';
-import { type Filters } from '../components/FiltersBar';
+import { type Filters } from '../types/filters';
 import { describe, it, expect } from 'vitest';
 
 const mockApplications: JobApplication[] = [
