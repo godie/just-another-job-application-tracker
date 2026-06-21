@@ -40,8 +40,6 @@ export const ProfileSetupModal: React.FC<ProfileSetupModalProps> = ({
   useKeyboardEscape(onClose, isOpen);
 
   // Initialize form state from existingProfile on first mount.
-  // The component fully unmounts when isOpen becomes false (via `if (!isOpen) return null`),
-  // so state is naturally reset on every open without needing a useEffect.
   const [targetRoles, setTargetRoles] = useState(() => existingProfile?.targetRoles.join(', ') ?? '');
   const [seniority, setSeniority] = useState<SeniorityLevel | ''>(() => existingProfile?.seniority ?? '');
   const [topSkills, setTopSkills] = useState(() => existingProfile?.topSkills.join(', ') ?? '');
@@ -52,6 +50,22 @@ export const ProfileSetupModal: React.FC<ProfileSetupModalProps> = ({
   const [selectedWorkTypes, setSelectedWorkTypes] = useState<('remote' | 'on-site' | 'hybrid')[]>(() => existingProfile?.preferredWorkTypes ?? []);
   const [cvText, setCvText] = useState(() => existingProfile?.cvText ?? '');
   const [activeTab, setActiveTab] = useState<'manual' | 'cv'>('manual');
+
+  // Sync state with existingProfile when the modal opens or the profile changes
+  React.useEffect(() => {
+    if (isOpen) {
+      setTargetRoles(existingProfile?.targetRoles.join(', ') ?? '');
+      setSeniority(existingProfile?.seniority ?? '');
+      setTopSkills(existingProfile?.topSkills.join(', ') ?? '');
+      setPreferredLocations(existingProfile?.preferredLocations.join(', ') ?? '');
+      setSalaryMin(existingProfile?.salaryRange?.min?.toString() ?? '');
+      setSalaryMax(existingProfile?.salaryRange?.max?.toString() ?? '');
+      setSalaryCurrency(existingProfile?.salaryRange?.currency ?? 'USD');
+      setSelectedWorkTypes(existingProfile?.preferredWorkTypes ?? []);
+      setCvText(existingProfile?.cvText ?? '');
+      setActiveTab('manual');
+    }
+  }, [isOpen, existingProfile]);
 
   const handleToggleWorkType = (wt: 'remote' | 'on-site' | 'hybrid') => {
     setSelectedWorkTypes((prev) =>
