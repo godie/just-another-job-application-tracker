@@ -83,8 +83,8 @@ final class EnforceUserDeactivationLifecycleContract extends AbstractMigration
         // drop useful infrastructure or silently mask a real FK drift.
     }
 
-    // Precondition (users table exists) is enforced once in up(), so
-    // each assert below can focus on its single contract concern.
+    // Precondition (users table) gated once in up(); asserts below
+    // each owns one contract concern.
 
     private function assertUsersActiveFlag(): void
     {
@@ -94,8 +94,10 @@ final class EnforceUserDeactivationLifecycleContract extends AbstractMigration
             return;
         }
 
-        // No 'after' anchor: the column position is irrelevant to the
-        // contract.
+        // No 'after' anchor: the column position is immaterial to the
+        // contract and tying the assertion to a specific neighbour
+        // would bind the migration to whichever column happened to
+        // exist in the creating schema.
         $users->addColumn('is_active', 'boolean', [
             'default' => true,
             'null' => false,
