@@ -1,7 +1,7 @@
 // src/pages/OpportunitiesPage.tsx
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useSEO } from '../seo';
+import { useSEO } from '../seo/useSEO';
 import Footer from '../components/Footer';
 import { JobSearchForm } from '../components/JobSearchForm';
 import { JobSearchResults } from '../components/JobSearchResults';
@@ -18,7 +18,7 @@ import { useApplicationsStore } from '../stores/applicationsStore';
 import OpportunitiesEmptyState from '../components/OpportunitiesEmptyState';
 import OpportunitiesTable from '../components/OpportunitiesTable';
 import { useFormatDate } from '../hooks/useFormatDate';
-import { PageHeader } from '../components/ui';
+import { PageHeader } from '../components/ui/PageHeader';
 
 import { type PageType } from '../App';
 import type { JobSearchParams, UnifiedJobResult } from '../types/jobSearch';

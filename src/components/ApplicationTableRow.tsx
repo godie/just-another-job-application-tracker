@@ -5,7 +5,8 @@ import { type JobApplication, type ApplicationWithMetadata } from '../types/appl
 import { getCellValue } from '../utils/applications';
 import type { TableColumn } from '../types/table';
 import { sanitizeUrl } from '../utils/url';
-import { TableRow, TableCell, Badge } from './ui';
+import { TableRow, TableCell } from './ui/Table';
+import { Badge } from './ui/Badge';
 import { getBadgeVariantForStatus } from '../utils/status';
 
 interface ApplicationTableRowProps {
@@ -115,6 +116,7 @@ const ApplicationTableRow: React.FC<ApplicationTableRowProps> = ({
             performance for large lists. */}
         <div className="opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-opacity duration-200">
           <button
+            type='button'
             onClick={(e) => {
               e.stopPropagation();
               onDeleteRequest(item);

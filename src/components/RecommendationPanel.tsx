@@ -62,6 +62,7 @@ export const RecommendationPanel: React.FC<RecommendationPanelProps> = ({
         </div>
         {showViewAll && onViewAll && (
           <button
+            type="button"
             onClick={onViewAll}
             className="text-sm text-sage-600 dark:text-sage-400 hover:text-sage-700 dark:hover:text-sage-300 font-medium transition"
           >
@@ -103,6 +104,7 @@ export const RecommendationPanel: React.FC<RecommendationPanelProps> = ({
                 />
                 {onApply && (
                   <button
+                    type="button"
                     onClick={() => onApply(opportunity)}
                     className="text-xs font-medium text-sage-600 dark:text-sage-400 hover:text-sage-800 dark:hover:text-sage-300 opacity-0 group-hover:opacity-100 focus:opacity-100 transition"
                   >
@@ -122,9 +124,9 @@ export const RecommendationPanel: React.FC<RecommendationPanelProps> = ({
             {/* Strengths tags */}
             {matchResult.strengths.length > 0 && (
               <div className="flex flex-wrap gap-1.5 mt-2">
-                {matchResult.strengths.slice(0, 2).map((strength, i) => (
+                {matchResult.strengths.slice(0, 2).map((strength) => (
                   <span
-                    key={`strength-${i}-${strength.slice(0, 20)}`}
+                    key={`strength-${strength}`}
                     className="inline-flex items-center px-2 py-0.5 rounded text-xs bg-sage-50 dark:bg-sage-900/20 text-sage-700 dark:text-sage-300"
                   >
                     {strength}

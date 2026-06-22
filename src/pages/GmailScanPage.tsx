@@ -14,6 +14,7 @@ const GmailScanPage: React.FC<GmailScanPageProps> = ({ onNavigate }) => {
     <div className="max-w-4xl mx-auto py-8">
       <div className="mb-6">
         <button
+          type="button"
           onClick={() => onNavigate?.('applications')}
           className='flex items-center text-sage-600 dark:text-sage-400 hover:underline mb-4'
         >

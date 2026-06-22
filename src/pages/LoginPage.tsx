@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { useAuthStore } from '../stores/authStore';
 import { useAlert } from '../components/AlertProvider';
-import { Input, Button, Card } from '../components/ui';
+import { Input } from '../components/ui/Input';
+import { Button } from '../components/ui/Button';
+import { Card } from '../components/ui/Card';
 
 interface LoginPageProps {
   onNavigate: (page: string) => void;
@@ -62,6 +64,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onNavigate, onSuccess }) => {
           <p className='mt-2 text-sm text-earth-600 dark:text-earth-400'>
             Don't have an account?{' '}
             <button
+              type='button'
               onClick={() => onNavigate('register')}
               className='font-medium text-sage-600 hover:text-sage-700 dark:text-sage-400 dark:hover:text-sage-300 focus:outline-none focus:underline'
             >

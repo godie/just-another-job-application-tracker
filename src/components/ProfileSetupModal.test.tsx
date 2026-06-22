@@ -190,6 +190,7 @@ describe('ProfileSetupModal', () => {
     const handleSave = vi.fn();
     const { rerender } = render(
       <ProfileSetupModal
+        key="edit-profile"
         isOpen={true}
         onClose={vi.fn()}
         existingProfile={makeProfile()}
@@ -205,6 +206,7 @@ describe('ProfileSetupModal', () => {
     // Close modal
     rerender(
       <ProfileSetupModal
+        key="closed-modal"
         isOpen={false}
         onClose={vi.fn()}
         existingProfile={makeProfile()}
@@ -212,9 +214,10 @@ describe('ProfileSetupModal', () => {
       />
     );
 
-    // Re-open without existingProfile — form should reset to empty
+    // Re-open without existingProfile — using a new key forces clean remount
     rerender(
       <ProfileSetupModal
+        key="new-profile"
         isOpen={true}
         onClose={vi.fn()}
         existingProfile={null}

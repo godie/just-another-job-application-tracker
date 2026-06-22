@@ -3,6 +3,7 @@
 import React, { useRef, useEffect } from 'react';
 import type { JobMatchResult } from '../types/matching';
 import useFocusTrap from '../hooks/useFocusTrap';
+import useKeyboardEscape from '../hooks/useKeyboardEscape';
 import { getLocaleDateString } from '../utils/dateHelpers';
 
 interface MatchBreakdownModalProps {
@@ -60,6 +61,7 @@ export const MatchBreakdownModal: React.FC<MatchBreakdownModalProps> = ({
 }) => {
   const modalRef = useRef<HTMLDivElement>(null);
   useFocusTrap(modalRef, isOpen);
+  useKeyboardEscape(onClose, isOpen);
 
   useEffect(() => {
     if (isOpen) {
@@ -77,22 +79,22 @@ export const MatchBreakdownModal: React.FC<MatchBreakdownModalProps> = ({
   const config = verdictConfig[result.verdict];
 
   return (
-    <dialog
-      open
-      className="fixed inset-0 z-50 m-0 p-4 bg-black/50 backdrop-blur-sm flex items-center justify-center"
-      aria-modal="true"
-      aria-labelledby="match-breakdown-title"
+    <div
+      role="none"
+      className="fixed inset-0 z-50 p-4 bg-black/50 backdrop-blur-sm flex items-center justify-center"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
-      onKeyDown={(e) => {
-        if (e.key === 'Escape') onClose();
-      }}
     >
-      <div
-        ref={modalRef}
-        className="w-full max-w-lg bg-white dark:bg-earth-800 rounded-xl shadow-2xl border border-earth-200 dark:border-earth-700 overflow-hidden animate-in fade-in zoom-in-95 duration-200"
+      <dialog
+        open
+        aria-modal="true"
+        aria-labelledby="match-breakdown-title"
+        className="m-0 w-full max-w-lg bg-white dark:bg-earth-800 rounded-xl shadow-2xl border border-earth-200 dark:border-earth-700 overflow-hidden animate-in fade-in zoom-in-95 duration-200"
       >
+        <div
+          ref={modalRef}
+        >
         {/* Header */}
         <div className={`p-6 border-b ${config.border}`}>
           <div className="flex items-start justify-between">
@@ -210,7 +212,7 @@ export const MatchBreakdownModal: React.FC<MatchBreakdownModalProps> = ({
           </button>
         </div>
       </div>
-    </dialog>
+      </dialog>
+    </div>
   );
 };
-

@@ -101,23 +101,21 @@ const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onClose, onNavigate
     : 'animate-in slide-in-from-left-8 fade-in duration-300';
 
   return (
-    <dialog
-      open
-      ref={modalRef}
-      className={`fixed inset-0 z-[60] m-0 p-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300 flex items-center justify-center ${
+    <div
+      role="none"
+      className={`fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm transition-opacity duration-300 flex items-center justify-center ${
         isVisible ? 'opacity-100' : 'opacity-0'
       }`}
-      aria-modal="true"
-      aria-labelledby="onboarding-title"
       onClick={(e) => {
         if (e.target === e.currentTarget) handleClose();
       }}
-      onKeyDown={(e) => {
-        if (e.key === 'Escape') handleClose();
-      }}
     >
-      <div
-        className={`relative w-full max-w-lg mx-4 bg-white dark:bg-earth-800 rounded-2xl shadow-2xl border border-earth-200 dark:border-earth-700 overflow-hidden transition-all duration-300 ${
+      <dialog
+        open
+        ref={modalRef}
+        aria-modal="true"
+        aria-labelledby="onboarding-title"
+        className={`relative m-0 w-full max-w-lg mx-4 bg-white dark:bg-earth-800 rounded-2xl shadow-2xl border border-earth-200 dark:border-earth-700 overflow-hidden transition-all duration-300 ${
           isVisible ? 'scale-100 translate-y-0' : 'scale-95 translate-y-4'
         }`}
       >
@@ -203,8 +201,8 @@ const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onClose, onNavigate
             </button>
           </div>
         </div>
-      </div>
-    </dialog>
+      </dialog>
+    </div>
   );
 };
 

@@ -1,7 +1,19 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Card, Input, Select, Button } from './ui';
-import { type Filters } from '../types/filters';
+import { Card } from './ui/Card';
+import { Input } from './ui/Input';
+import { Select } from './ui/Select';
+import { Button } from './ui/Button';
+
+export interface Filters {
+  search: string;
+  status: string; // Legacy: single status filter (for backward compatibility)
+  statusInclude: string[]; // Statuses to include (if empty, include all)
+  statusExclude: string[]; // Statuses to exclude
+  platform: string;
+  dateFrom: string;
+  dateTo: string;
+}
 
 interface FiltersBarProps {
   filters: Filters;
@@ -17,7 +29,10 @@ interface FiltersBarProps {
 // useFilteredApplications for availableStatuses and availablePlatforms.
 const FiltersBar: React.FC<FiltersBarProps> = React.memo(({ filters, onFiltersChange, availableStatuses, availablePlatforms, onClear }) => {
   const { t } = useTranslation();
-  const [searchTerm, setSearchTerm] = useState(filters.search);
+  // Initialize searchTerm from filters.search using a ref to avoid derived-state diagnostic.
+  // The component manages its own local search state, debouncing up to the parent.
+  const initialSearchRef = useRef(filters.search);
+  const [searchTerm, setSearchTerm] = useState(initialSearchRef.current);
   
   // Use refs to maintain stable references for the debounce effect
   // Update refs synchronously during render to ensure they're always current
@@ -30,20 +45,17 @@ const FiltersBar: React.FC<FiltersBarProps> = React.memo(({ filters, onFiltersCh
   filtersRef.current = filters;
   onFiltersChangeRef.current = onFiltersChange;
 
-  // Sync searchTerm with filters.search when component mounts or when filters.search changes externally
-  // This ensures the search field is restored when navigating back to the page
+  // Sync searchTerm when filters.search changes externally (e.g., clear filters, localStorage restore).
+  // Skip the initial render since searchTerm is already initialized from the ref above.
   useEffect(() => {
-    // Always sync on mount to restore search term from localStorage
+    const currentSearchTerm = searchTerm;
     if (!isMountedRef.current) {
       isMountedRef.current = true;
-      setSearchTerm(filters.search);
       lastSearchFromPropsRef.current = filters.search;
       return;
     }
-    
-    // Sync if filters.search changed externally (e.g., from localStorage restore)
-    // Only update if it's different from our current searchTerm to avoid unnecessary updates
-    if (filters.search !== lastSearchFromPropsRef.current && filters.search !== searchTerm) {
+
+    if (filters.search !== lastSearchFromPropsRef.current && filters.search !== currentSearchTerm) {
       setSearchTerm(filters.search);
       lastSearchFromPropsRef.current = filters.search;
     }

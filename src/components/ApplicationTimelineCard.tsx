@@ -2,7 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { type JobApplication, type InterviewEvent } from '../types/applications';
 import { type ApplicationWithMetadata } from '../types/applications';
-import { Badge } from './ui';
+import { Badge } from './ui/Badge';
 import { getBadgeVariantForStatus } from '../utils/status';
 import TimelineEventList from './TimelineEventList';
 
@@ -60,6 +60,7 @@ const ApplicationTimelineCard: React.FC<ApplicationTimelineCardProps> = ({
             </div>
           </div>
           <button
+            type="button"
             onClick={(e) => {
               e.stopPropagation();
               onToggleExpand();
@@ -96,6 +97,7 @@ const ApplicationTimelineCard: React.FC<ApplicationTimelineCardProps> = ({
           <div className='px-4 sm:px-6 py-4 bg-earth-50 dark:bg-earth-900 border-t border-earth-200 dark:border-earth-700 flex flex-col gap-2 sm:flex-row sm:justify-end'>
             {onEdit && (
               <button
+                type="button"
                 onClick={() => onEdit(app)}
                 className='px-4 py-2 text-sm font-medium text-sage-700 dark:text-sage-300 bg-sage-100 dark:bg-sage-900 hover:bg-sage-200 dark:hover:bg-sage-800 rounded transition'
               >
@@ -104,6 +106,7 @@ const ApplicationTimelineCard: React.FC<ApplicationTimelineCardProps> = ({
             )}
             {onDelete && (
               <button
+                type="button"
                 onClick={() => onDelete?.(app)}
                 className='px-4 py-2 text-sm font-medium text-terracotta-700 dark:text-terracotta-300 bg-terracotta-100 dark:bg-terracotta-900 hover:bg-terracotta-200 dark:hover:bg-terracotta-800 rounded transition'
               >

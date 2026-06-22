@@ -39,9 +39,9 @@ const GDPRCookieBanner: React.FC<GDPRCookieBannerProps> = ({ onConsentChange }) 
   if (!isVisible) return null;
 
   return (
-    <div
+    <dialog
+      open
       className="fixed bottom-0 left-0 right-0 z-[55] animate-in slide-in-from-bottom-4 fade-in duration-500"
-      role="dialog"
       aria-modal="true"
       aria-labelledby="cookie-banner-title"
     >
@@ -177,7 +177,7 @@ const GDPRCookieBanner: React.FC<GDPRCookieBannerProps> = ({ onConsentChange }) 
           </div>
         )}
       </div>
-    </div>
+    </dialog>
   );
 };
 

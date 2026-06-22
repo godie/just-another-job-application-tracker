@@ -2,7 +2,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { getCurrentLocaleString } from '../utils/dateHelpers';
 import { useTranslation } from 'react-i18next';
 import { FaArrowLeft, FaSync } from 'react-icons/fa';
-import { Card, Button } from '../components/ui';
+import { Card } from '../components/ui/Card';
+import { Button } from '../components/ui/Button';
 import { useAlert } from '../components/AlertProvider';
 import { type PageType } from '../App';
 
@@ -67,6 +68,7 @@ const SuggestionsViewerPage: React.FC<SuggestionsViewerPageProps> = ({ onNavigat
       <header className="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <button
+            type='button'
             onClick={() => onNavigate('support')}
             className='flex items-center gap-2 text-sage-600 dark:text-sage-400 hover:underline mb-2 cursor-pointer'
           >

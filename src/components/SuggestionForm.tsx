@@ -2,7 +2,9 @@ import React, { useReducer, useMemo, useEffect, useCallback, useRef } from 'reac
 import { useTranslation } from 'react-i18next';
 import { FaClipboard } from 'react-icons/fa';
 import { useAlert } from './AlertProvider';
-import { Card, Button, Input } from './ui';
+import { Card } from './ui/Card';
+import { Button } from './ui/Button';
+import { Input } from './ui/Input';
 import { type PageType } from '../App';
 
 const SUPPORT_API_BASE_URL =
@@ -269,6 +271,7 @@ const SuggestionForm: React.FC<SuggestionFormProps> = ({ onNavigate }) => {
                     className="sr-only"
                     checked={isActive}
                     onChange={() => handleTypeChange(type.id)}
+                    aria-label={type.label}
                   />
                   {type.label}
                 </label>
@@ -287,13 +290,14 @@ const SuggestionForm: React.FC<SuggestionFormProps> = ({ onNavigate }) => {
             value={explanation}
                 onChange={(event) => dispatch({ type: 'SET_FIELD', field: 'explanation', value: event.target.value })}
             placeholder={t('support.explanationPlaceholder')}
+            aria-label={t('support.explanation')}
             className='w-full px-4 py-2 bg-white dark:bg-earth-900 border border-earth-300 dark:border-earth-600 rounded focus:ring-2 focus:ring-sage-500 dark:text-white outline-none'
             required
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-earth-700 dark:text-earth-300 mb-2">
+          <label htmlFor="captcha-input" className="block text-sm font-medium text-earth-700 dark:text-earth-300 mb-2">
             {t('support.captchaLabel')}
           </label>
           <p className="text-xs text-earth-500 dark:text-earth-400">{t('support.captchaDesc')}</p>
@@ -314,12 +318,14 @@ const SuggestionForm: React.FC<SuggestionFormProps> = ({ onNavigate }) => {
             </Button>
           </div>
           <Input
+            id="captcha-input"
             type="text"
             inputMode="numeric"
             pattern="[0-9]*"
             value={captchaInput}
                 onChange={(event) => dispatch({ type: 'SET_FIELD', field: 'captchaInput', value: event.target.value })}
             placeholder={t('support.captchaPlaceholder')}
+            aria-label={t('support.captchaLabel')}
             className="mt-3"
           />
         </div>

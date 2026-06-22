@@ -2,7 +2,8 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { Card, Button } from './ui';
+import { Card } from './ui/Card';
+import { Button } from './ui/Button';
 
 import type { UnifiedJobResult } from '../types/jobSearch';
 

@@ -1,12 +1,13 @@
 // src/components/ApplicationTable.tsx
-import React, { useState, memo, useCallback, useMemo, useEffect } from 'react';
+import React, { useState, memo, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { type JobApplication, type ApplicationWithMetadata } from '../types/applications';
 import type { TableColumn } from '../types/table';
 import ConfirmDialog from './ConfirmDialog';
 import ApplicationTableRow from './ApplicationTableRow';
 import ApplicationCard from './ApplicationCard';
-import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell, Card } from './ui';
+import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from './ui/Table';
+import { Card } from './ui/Card';
 
 const ITEMS_PER_PAGE = 20;
 
@@ -28,19 +29,17 @@ const ApplicationTable: React.FC<ApplicationTableProps> = ({ columns, data, onEd
   });
 
   // Pagination logic
-  const totalPages = Math.ceil(data.length / ITEMS_PER_PAGE);
-  const paginatedData = useMemo(() => {
-    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-    return data.slice(startIndex, startIndex + ITEMS_PER_PAGE);
-  }, [data, currentPage]);
+  const totalPages = Math.max(Math.ceil(data.length / ITEMS_PER_PAGE), 1);
+  // Derive the effective page: clamp currentPage within valid range.
+  // When data shrinks and currentPage exceeds totalPages, this returns 1.
+  const effectivePage = useMemo(() => {
+    return Math.min(currentPage, totalPages);
+  }, [currentPage, totalPages]);
 
-  // Reset to page 1 if current page is beyond available pages
-  useEffect(() => {
-    const total = Math.ceil(data.length / ITEMS_PER_PAGE);
-    if (currentPage > total && total > 0) {
-      setCurrentPage(1);
-    }
-  }, [data.length, currentPage]);
+  const paginatedData = useMemo(() => {
+    const startIndex = (effectivePage - 1) * ITEMS_PER_PAGE;
+    return data.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  }, [data, effectivePage]);
 
   const goToPage = (page: number) => {
     setCurrentPage(page);
@@ -126,8 +125,9 @@ const ApplicationTable: React.FC<ApplicationTableProps> = ({ columns, data, onEd
       {totalPages > 1 && (
         <div className='flex items-center justify-center gap-2 pt-4'>
           <button
-            onClick={() => goToPage(currentPage - 1)}
-            disabled={currentPage === 1}
+            type='button'
+            onClick={() => goToPage(effectivePage - 1)}
+            disabled={effectivePage === 1}
             className='px-4 py-2 text-sm font-medium text-earth-700 dark:text-earth-300 bg-white dark:bg-earth-800 border border-earth-300 dark:border-earth-600 rounded hover:bg-earth-50 dark:hover:bg-earth-700 disabled:opacity-50 disabled:cursor-not-allowed transition'
             aria-label={t('common.previous')}
           >
@@ -137,10 +137,11 @@ const ApplicationTable: React.FC<ApplicationTableProps> = ({ columns, data, onEd
           <div className='flex items-center gap-1'>
             {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
               <button
+                type='button'
                 key={page}
                 onClick={() => goToPage(page)}
                 className={`px-3 py-1.5 text-sm font-medium rounded transition ${
-                  currentPage === page
+                  effectivePage === page
                     ? 'bg-sage-600 text-white'
                     : 'text-earth-700 dark:text-earth-300 bg-white dark:bg-earth-800 border border-earth-300 dark:border-earth-600 hover:bg-earth-50 dark:hover:bg-earth-700'
                 }`}
@@ -151,8 +152,9 @@ const ApplicationTable: React.FC<ApplicationTableProps> = ({ columns, data, onEd
           </div>
 
           <button
-            onClick={() => goToPage(currentPage + 1)}
-            disabled={currentPage === totalPages}
+            type='button'
+            onClick={() => goToPage(effectivePage + 1)}
+            disabled={effectivePage === totalPages}
             className='px-4 py-2 text-sm font-medium text-earth-700 dark:text-earth-300 bg-white dark:bg-earth-800 border border-earth-300 dark:border-earth-600 rounded hover:bg-earth-50 dark:hover:bg-earth-700 disabled:opacity-50 disabled:cursor-not-allowed transition'
             aria-label={t('common.next')}
           >

@@ -89,6 +89,9 @@ export default defineConfig({
     setupFiles: './src/setupTests.ts', // File to set up testing library extensions
     // Specify where tests are located
     include: ['**/*.test.{ts,tsx}'],
+    // Vitest 4 defaults to forks pool, but thread crashes occur in this environment.
+    // Explicitly use forks to avoid "Worker exited unexpectedly" errors.
+    pool: 'forks',
   },
   server: {
     proxy: {

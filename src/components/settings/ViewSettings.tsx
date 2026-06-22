@@ -29,6 +29,7 @@ const ViewSettings: React.FC<ViewSettingsProps> = ({ defaultView, onDefaultViewC
           const isActive = defaultView === view;
           return (
             <button
+              type='button'
               key={view}
               onClick={() => onDefaultViewChange(view)}
               className={`flex flex-col p-5 rounded border-2 transition-all text-left group ${

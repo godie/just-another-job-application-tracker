@@ -122,6 +122,7 @@ const ToolsSettings: React.FC = () => {
               onChange={handleImportData}
               disabled={isRestoring}
               className='hidden'
+              aria-label={t('tools.backup.importJson')}
             />
           </label>
         </div>

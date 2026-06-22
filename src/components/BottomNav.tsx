@@ -32,6 +32,7 @@ const BottomNav: React.FC<BottomNavProps> = ({ currentPage, onNavigate }) => {
       <div className='flex justify-around items-center h-16'>
         {navItems.map((item) => (
           <button
+            type="button"
             key={item.page}
             onClick={() => onNavigate(item.page  as PageType)}
             className={`flex flex-col items-center justify-center w-full h-full transition-colors group relative ${

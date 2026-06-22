@@ -142,19 +142,14 @@ const KanbanView: React.FC<KanbanViewProps> = ({ applications, onEdit, onDelete 
               items.map((application) => (
                 <div
                   key={application.id}
-                  className='bg-white dark:bg-earth-700 rounded border border-earth-200 dark:border-earth-600 hover:border-sage-400 dark:hover:border-sage-500 transition cursor-pointer'
-                  onClick={() => onEdit?.(application)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault();
-                      onEdit?.(application);
-                    }
-                  }}
-                  role='button'
-                  tabIndex={0}
-                  aria-label={t('kanban.editApp', { position: application.position, company: application.company })}
+                  className='bg-white dark:bg-earth-700 rounded border border-earth-200 dark:border-earth-600 hover:border-sage-400 dark:hover:border-sage-500 transition'
                 >
-                  <div className='p-4 space-y-2'>
+                  <button
+                    type="button"
+                    className='w-full rounded-t cursor-pointer text-left p-4 space-y-2'
+                    onClick={() => onEdit?.(application)}
+                    aria-label={t('kanban.editApp', { position: application.position, company: application.company })}
+                  >
                     <div>
                       <h4 className='text-base font-semibold text-earth-900 dark:text-earth-100'>{application.position}</h4>
                       <p className='text-sm text-earth-600 dark:text-earth-400'>{application.company}</p>
@@ -190,7 +185,7 @@ const KanbanView: React.FC<KanbanViewProps> = ({ applications, onEdit, onDelete 
                         </ul>
                       </div>
                     )}
-                  </div>
+                  </button>
                   <footer className='px-4 py-2 border-t border-earth-200 dark:border-earth-600 bg-earth-50 dark:bg-earth-800 rounded-b flex flex-col gap-2'>
                     {/* Keyboard accessible status change buttons */}
                     <menu className='flex flex-wrap gap-1' aria-label={t('kanban.moveToStatus')}>

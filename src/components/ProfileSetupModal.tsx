@@ -1,6 +1,7 @@
 // src/components/ProfileSetupModal.tsx
 
-import React, { useState, useRef, useCallback, useEffect } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
+import type { KeyboardEvent } from 'react';
 import useFocusTrap from '../hooks/useFocusTrap';
 import useKeyboardEscape from '../hooks/useKeyboardEscape';
 import type { UserMatchProfile, SeniorityLevel } from '../types/matching';
@@ -39,33 +40,19 @@ export const ProfileSetupModal: React.FC<ProfileSetupModalProps> = ({
   useFocusTrap(modalRef, isOpen);
   useKeyboardEscape(onClose, isOpen);
 
-  // Form state
-  const [targetRoles, setTargetRoles] = useState('');
-  const [seniority, setSeniority] = useState<SeniorityLevel | ''>('');
-  const [topSkills, setTopSkills] = useState('');
-  const [preferredLocations, setPreferredLocations] = useState('');
-  const [salaryMin, setSalaryMin] = useState('');
-  const [salaryMax, setSalaryMax] = useState('');
-  const [salaryCurrency, setSalaryCurrency] = useState('USD');
-  const [selectedWorkTypes, setSelectedWorkTypes] = useState<('remote' | 'on-site' | 'hybrid')[]>([]);
-  const [cvText, setCvText] = useState('');
+  // Initialize form state from existingProfile on first mount.
+  // The component fully unmounts when isOpen becomes false (via `if (!isOpen) return null`),
+  // so state is naturally reset on every open without needing a useEffect.
+  const [targetRoles, setTargetRoles] = useState(() => existingProfile?.targetRoles.join(', ') ?? '');
+  const [seniority, setSeniority] = useState<SeniorityLevel | ''>(() => existingProfile?.seniority ?? '');
+  const [topSkills, setTopSkills] = useState(() => existingProfile?.topSkills.join(', ') ?? '');
+  const [preferredLocations, setPreferredLocations] = useState(() => existingProfile?.preferredLocations.join(', ') ?? '');
+  const [salaryMin, setSalaryMin] = useState(() => existingProfile?.salaryRange?.min?.toString() ?? '');
+  const [salaryMax, setSalaryMax] = useState(() => existingProfile?.salaryRange?.max?.toString() ?? '');
+  const [salaryCurrency, setSalaryCurrency] = useState(() => existingProfile?.salaryRange?.currency ?? 'USD');
+  const [selectedWorkTypes, setSelectedWorkTypes] = useState<('remote' | 'on-site' | 'hybrid')[]>(() => existingProfile?.preferredWorkTypes ?? []);
+  const [cvText, setCvText] = useState(() => existingProfile?.cvText ?? '');
   const [activeTab, setActiveTab] = useState<'manual' | 'cv'>('manual');
-
-  // Sync/reset form state whenever isOpen or existingProfile changes
-  useEffect(() => {
-    if (isOpen) {
-      setTargetRoles(existingProfile?.targetRoles.join(', ') ?? '');
-      setSeniority(existingProfile?.seniority ?? '');
-      setTopSkills(existingProfile?.topSkills.join(', ') ?? '');
-      setPreferredLocations(existingProfile?.preferredLocations.join(', ') ?? '');
-      setSalaryMin(existingProfile?.salaryRange?.min?.toString() ?? '');
-      setSalaryMax(existingProfile?.salaryRange?.max?.toString() ?? '');
-      setSalaryCurrency(existingProfile?.salaryRange?.currency ?? 'USD');
-      setSelectedWorkTypes(existingProfile?.preferredWorkTypes ?? []);
-      setCvText(existingProfile?.cvText ?? '');
-      setActiveTab('manual');
-    }
-  }, [isOpen, existingProfile]);
 
   const handleToggleWorkType = (wt: 'remote' | 'on-site' | 'hybrid') => {
     setSelectedWorkTypes((prev) =>
@@ -97,33 +84,35 @@ export const ProfileSetupModal: React.FC<ProfileSetupModalProps> = ({
     onSave, onClose,
   ]);
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
+  const handleDialogKeyDown = useCallback((e: KeyboardEvent) => {
     if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+      e.preventDefault();
       handleSubmit();
     }
-  };
+  }, [handleSubmit]);
 
   if (!isOpen) return null;
 
   return (
     <div
       role="none"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
-      onClick={(e) => {
-        if (e.target === e.currentTarget) onClose();
-      }}
-      onKeyDown={(e) => {
-        if (e.key === 'Escape') onClose();
-      }}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 relative"
     >
+      <button
+        type="button"
+        onClick={onClose}
+        aria-label="Close modal backdrop"
+        className="absolute inset-0 h-full w-full"
+      />
       <dialog
         open
         aria-modal="true"
         aria-labelledby="profile-setup-title"
         ref={modalRef}
-        className="w-full max-w-2xl bg-white dark:bg-earth-800 rounded-xl shadow-2xl border border-earth-200 dark:border-earth-700 overflow-hidden animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] flex flex-col"
-        onKeyDown={handleKeyDown}
+        className="relative z-10 w-full max-w-2xl bg-white dark:bg-earth-800 rounded-xl shadow-2xl border border-earth-200 dark:border-earth-700 overflow-hidden animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] flex flex-col"
+        onKeyDown={handleDialogKeyDown}
       >
+        <div className="contents">
         {/* Header */}
         <div className="px-6 py-4 border-b border-earth-200 dark:border-earth-700 flex items-center justify-between flex-shrink-0">
           <div>
@@ -389,8 +378,8 @@ export const ProfileSetupModal: React.FC<ProfileSetupModalProps> = ({
             </button>
           </div>
         </div>
+        </div>
       </dialog>
     </div>
   );
 };
-

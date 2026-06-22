@@ -3,7 +3,9 @@ import React, { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { type JobOpportunity } from '../types/opportunities';
 import useFocusTrap from '../hooks/useFocusTrap';
-import { Button, Input, Card } from './ui';
+import { Button } from './ui/Button';
+import { Input } from './ui/Input';
+import { Card } from './ui/Card';
 
 interface OpportunityFormProps {
   isOpen: boolean;
@@ -108,9 +110,9 @@ const OpportunityForm: React.FC<OpportunityFormProps> = ({ isOpen, onClose, onSa
   };
 
   return (
-    <div 
+    <dialog 
+      open
       className="fixed inset-0 bg-earth-900/80 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-      role="dialog"
       aria-modal="true"
       aria-labelledby="opportunity-form-title"
     >
@@ -205,6 +207,7 @@ const OpportunityForm: React.FC<OpportunityFormProps> = ({ isOpen, onClose, onSa
                 onChange={(e) => handleInputChange('description', e.target.value)}
                 rows={4}
                 maxLength={2000}
+                aria-label={t('form.description')}
                 className='w-full rounded border border-earth-300 dark:border-earth-600 px-3 py-2 text-sm bg-white dark:bg-earth-800 text-earth-900 dark:text-earth-100 placeholder-earth-400 dark:placeholder-earth-500 focus:border-sage-500 focus:ring-sage-500 resize-none'
                 placeholder="Job description or notes..."
               />
@@ -241,7 +244,7 @@ const OpportunityForm: React.FC<OpportunityFormProps> = ({ isOpen, onClose, onSa
         </div>
         </Card>
       </div>
-    </div>
+    </dialog>
   );
 };
 

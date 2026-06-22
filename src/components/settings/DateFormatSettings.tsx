@@ -27,6 +27,7 @@ const DateFormatSettings: React.FC<DateFormatSettingsProps> = ({ currentFormat, 
 
           return (
             <button
+              type='button'
               key={format}
               onClick={() => onDateFormatChange(format)}
               className={`flex items-center justify-between p-5 rounded border-2 transition-all text-left ${

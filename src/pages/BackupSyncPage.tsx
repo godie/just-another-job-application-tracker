@@ -10,7 +10,7 @@ import { setAuthCookieWithCode } from '../utils/api';
 import { type PageType } from '../App';
 import GoogleSheetsSync from '../components/GoogleSheetsSync';
 import Footer from '../components/Footer';
-import { PageHeader } from '../components/ui';
+import { PageHeader } from '../components/ui/PageHeader';
 import packageJson from '../../package.json';
 
 interface BackupSyncPageProps {

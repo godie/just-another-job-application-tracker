@@ -1,9 +1,9 @@
 // src/pages/InsightsPage.tsx
 import React, { lazy, Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useSEO } from '../seo';
+import { useSEO } from '../seo/useSEO';
 import { useInsightsData } from '../hooks/useInsightsData';
-import { PageHeader, StatCard } from '../components/ui';
+import { PageHeader } from '../components/ui/PageHeader';
 
 import { type PageType } from '../App';
 
@@ -47,25 +47,38 @@ const InsightsPage: React.FC<InsightsPageProps> = ({ onNavigate }) => {
       <section aria-labelledby='stats-heading' className='mb-16'>
         <h2 id='stats-heading' className='sr-only'>Application Statistics</h2>
         <div className='grid grid-cols-2 sm:grid-cols-4 gap-4'>
-          <StatCard
-            title={t('insights.totalApplications')}
-            value={totalApplications}
-            variant="earth"
-            isLarge
-          />
+          {/* Dominant metric: Total Applications — spans 2 columns */}
+          <div className='col-span-2 bg-earth-50 dark:bg-earth-800 p-6 border-l-2 border-earth-400 dark:border-earth-500 transition-colors duration-300'>
+            <p className='text-sm font-medium text-earth-500 dark:text-earth-400 tracking-wide uppercase'>
+              {t('insights.totalApplications')}
+            </p>
+            <p className='mt-2 font-serif text-5xl sm:text-6xl font-bold text-earth-900 dark:text-earth-50 leading-none'>
+              {totalApplications}
+            </p>
+          </div>
 
-          <StatCard
-            title={t('insights.totalInterviews')}
-            value={totalInterviews}
-            variant="sage"
-          />
+          {/* Compact metric: Total Interviews */}
+          <div className='bg-sage-50 dark:bg-sage-900/30 p-5 border-l-2 border-sage-400 dark:border-sage-600 transition-colors duration-300'>
+            <p className='text-xs font-medium text-sage-600 dark:text-sage-400 tracking-wide uppercase'>
+              {t('insights.totalInterviews')}
+            </p>
+            <p className='mt-1 font-serif text-3xl font-bold text-sage-800 dark:text-sage-100'>
+              {totalInterviews}
+            </p>
+          </div>
 
-          <StatCard
-            title={t('insights.rejectedApplications')}
-            value={rejectedApplicationsCount}
-            variant="earth-muted"
-            description={`${rejectionPercentage} ${t('insights.rejectionRate', 'rate')}`}
-          />
+          {/* Compact metric: Rejected — earth-dark to reserve terracotta for CTAs */}
+          <div className='bg-earth-100 dark:bg-earth-700/50 p-5 border-l-2 border-earth-500 dark:border-earth-500 transition-colors duration-300'>
+            <p className='text-xs font-medium text-earth-600 dark:text-earth-300 tracking-wide uppercase'>
+              {t('insights.rejectedApplications')}
+            </p>
+            <p className='mt-1 font-serif text-3xl font-bold text-earth-800 dark:text-earth-100'>
+              {rejectedApplicationsCount}
+            </p>
+            <p className='mt-0.5 text-xs text-earth-500 dark:text-earth-400'>
+              {rejectionPercentage} {t('insights.rejectionRate', 'rate')}
+            </p>
+          </div>
         </div>
       </section>
 
