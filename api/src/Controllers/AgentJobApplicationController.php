@@ -8,7 +8,6 @@ use OverPHP\Core\Response;
 use OverPHP\Libs\Database;
 use OverPHP\Models\AgentJobApplication;
 use OverPHP\Repositories\AgentJobApplicationRepository;
-use function OverPHP\Helpers\app_session_start;
 use function OverPHP\Helpers\app_session_get_user_id;
 
 /**
@@ -185,11 +184,17 @@ class AgentJobApplicationController
     }
 
     /**
-     * Read user_id from the authenticated session, starting the session if needed.
+     * Read user_id from the authenticated session.
+     *
+     * The session is already started by Security::startSecureSession() in
+     * the route dispatcher (index.php) before the controller is reached,
+     * and by the test fixture's loginAs(); no defensive start is needed
+     * here. Reading $_SESSION after forgetting to start it would just
+     * surface as a missing user_id and return 401, which is the correct
+     * behavior for an unauthenticated request.
      */
     protected function currentUserId(): ?int
     {
-        app_session_start();
         return app_session_get_user_id();
     }
 }

@@ -9,6 +9,8 @@ use OverPHP\Libs\Database;
 use OverPHP\Repositories\AgentJobApplicationRepository;
 use PHPUnit\Framework\TestCase;
 
+use function OverPHP\Helpers\app_session_start;
+
 /**
  * Testable subclass that allows injecting a mock database and input JSON.
  */
@@ -129,10 +131,10 @@ class AgentJobApplicationControllerTest extends TestCase
 
     private function loginAs(int $userId): void
     {
-        if (session_status() === \PHP_SESSION_NONE) {
-            // Some CLI/PHPUnit environments can't keep cookies; bypass headers
-            @session_start();
-        }
+        // Reuse the production helper so we don't rely on @-suppressing
+        // session_start() — any real warning from PHP will surface and
+        // surface a test failure instead of being silently masked.
+        app_session_start();
         $_SESSION['user_id'] = $userId;
         $_SESSION['role'] = 'member';
     }
