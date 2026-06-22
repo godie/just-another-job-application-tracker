@@ -68,9 +68,13 @@ class AgentJobApplicationRepository
         $where = [];
         $params = [];
 
-        // user_id is mandatory for tenant isolation
+        // user_id is mandatory for tenant isolation — refuse to query
+        // without it so a programming bug surfaces immediately instead
+        // of silently returning an empty list to the wrong caller.
         if (empty($filters['user_id'])) {
-            return ['items' => [], 'total' => 0];
+            throw new \InvalidArgumentException(
+                'AgentJobApplicationRepository::list() requires user_id in $filters.'
+            );
         }
         $where[] = 'user_id = :user_id';
         $params['user_id'] = (int) $filters['user_id'];

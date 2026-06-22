@@ -244,7 +244,7 @@ CREATE TABLE IF NOT EXISTS agent_job_applications (
     agent_name VARCHAR(100), -- informational label of which automation posted it (e.g. "codex-canada-search")
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE RESTRICT, -- preserve agent audit history if a user is deleted
     INDEX idx_agent_user (user_id),
     INDEX idx_agent_hash (idempotency_hash),
     INDEX idx_agent_user_hash (user_id, idempotency_hash),
