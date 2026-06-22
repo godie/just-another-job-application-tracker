@@ -34,3 +34,19 @@ Esta carpeta ahora usa el core actual de `OverPHP` dentro de `api/src`, mantenie
 - CSRF queda desactivado por defecto para no romper el frontend actual basado en cookies y `fetch`.
 - Si instalas dependencias PHP dentro de `api/vendor`, `index.php` usará ese autoload; si no, funciona con el autoloader local del core copiado en `src/`.
 - El plan de evolución para auth de aplicación, sync con cuentas y multitenancy está documentado en [DOCS/MULTITENANCY_AND_AUTH_PLAN.md](../DOCS/MULTITENANCY_AND_AUTH_PLAN.md).
+
+## Migraciones con Phinx
+
+- Instalar dependencias PHP: `cd api && composer install`
+- Ver estado: `cd api && composer phinx -- status -e development`
+- Ejecutar baseline legacy en producción: `cd api && composer phinx -- migrate -e production -t 20260622090000`
+- Ejecutar migraciones incrementales de esta rama: `cd api && composer phinx -- migrate -e production`
+- Crear nuevas migraciones: `cd api && composer phinx -- create NombreDeMigracion`
+
+Migraciones incrementales actuales:
+
+- `20260622100000_UpgradeLegacySchemaForSessionAuth`
+- `20260622100100_CreateAuthTokensAndAuditLogTables`
+- `20260622100200_CreateAgentJobApplicationsTable`
+
+`../phinx.php` reutiliza `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD` y `DB_CHARSET`, además de `api/config.php` o `api/config.example.php` como respaldo.

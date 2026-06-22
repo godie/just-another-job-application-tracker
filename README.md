@@ -31,6 +31,101 @@ This project is feature-complete for its core functionality. Based on the projec
 - **Mobile-First Responsive Design**: Card-based table on mobile, compact metrics, adaptive header and login button.
 - **Test Infrastructure**: 680+ tests passing with Vitest and happy-dom.
 
+## Database Migrations (Phinx)
+
+The PHP API uses [Phinx](https://phinx.org/) for lightweight MySQL schema migrations. Configuration lives in [phinx.php](./phinx.php), and migration files are stored in [`db/migrations`](./db/migrations).
+
+### Install PHP Dependencies
+
+```bash
+cd api
+composer install
+```
+
+### Check Migration Status
+
+```bash
+cd api
+composer phinx -- status -e development
+```
+
+Use `-e production` on the production server.
+
+### Baseline an Existing Production Database
+
+If production already has a legacy database and you want Phinx to start tracking it without changing current tables or data, run only the baseline migration:
+
+```bash
+cd api
+composer phinx -- migrate -e production -t 20260622090000
+```
+
+This creates the `phinxlog` table if needed and marks `20260622090000_InitialDatabaseBaseline.php` as executed. It does not alter existing application tables.
+
+The current legacy MySQL schema already exists and is defined in [api/data/schema.sql](./api/data/schema.sql). The high-level reference notes live in [DOCS/DB_SCHEMA.md](./DOCS/DB_SCHEMA.md). That schema should be treated as already deployed in production. From now on, Phinx should manage only incremental changes after the baseline.
+
+Current incremental migrations in this branch:
+
+- `20260622100000_UpgradeLegacySchemaForSessionAuth`
+- `20260622100100_CreateAuthTokensAndAuditLogTables`
+- `20260622100200_CreateAgentJobApplicationsTable`
+
+Reference-only logical migration breakdown for the existing schema:
+
+- `CreateUsersTable`
+- `CreateApplicationsTable`
+- `CreateTimelineEventsTable`
+- `CreateOpportunitiesTable`
+- `CreateUserPreferencesTable`
+- `CreateOrganizationsTable`
+- `CreateOrganizationMembersTable`
+- `CreateAuthTokensTable`
+- `CreateAuditLogTable`
+
+Do not add those legacy table-creation migrations as pending executable files in `db/migrations` for the current production environment, or Phinx may try to replay schema that already exists.
+
+### Run Pending Migrations
+
+```bash
+cd api
+composer phinx -- migrate -e development
+```
+
+For production:
+
+```bash
+cd api
+composer phinx -- migrate -e production
+```
+
+For an existing production database on this branch, the safe order is:
+
+1. `composer phinx -- migrate -e production -t 20260622090000`
+2. `composer phinx -- migrate -e production`
+
+### Create a New Migration
+
+```bash
+cd api
+composer phinx -- create CreateUsersTable
+```
+
+Phinx will generate a new file in `db/migrations`. Then implement the schema change using the Phinx API, for example:
+
+```php
+$table = $this->table('logs');
+$table
+    ->addColumn('level', 'string', ['limit' => 50])
+    ->addColumn('message', 'text')
+    ->create();
+```
+
+Recommended migration naming style:
+
+- `CreateUsersTable`
+- `AddStatusToApplicationsTable`
+- `CreateAuthTokensTable`
+
 ## Next Steps
 
 - Complete matching UI integration: add MatchScoreBadge + RecommendationPanel to OpportunitiesPage and HomePage (see [DOCS/MATCHING_IMPLEMENTATION_TASKS.md](./DOCS/MATCHING_IMPLEMENTATION_TASKS.md) T12, T14)
