@@ -220,6 +220,38 @@ CREATE TABLE IF NOT EXISTS audit_log (
 INSERT INTO organizations (name, description)
 VALUES ('Default Organization', 'Default organization for single-tenant deployments');
 
+-- =====================================================
+-- AGENT JOB APPLICATIONS (for automated job application tracking)
+-- =====================================================
+CREATE TABLE IF NOT EXISTS agent_job_applications (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    idempotency_hash VARCHAR(64) UNIQUE NOT NULL,
+    job_title VARCHAR(255) NOT NULL,
+    company_name VARCHAR(255) NOT NULL,
+    salary_text VARCHAR(255),
+    technologies JSON,
+    applied_at DATETIME NOT NULL,
+    source_url TEXT NOT NULL,
+    location_text VARCHAR(255),
+    province VARCHAR(100),
+    country VARCHAR(100),
+    work_mode VARCHAR(20) DEFAULT 'unknown',
+    application_status VARCHAR(20) DEFAULT 'submitted',
+    notes TEXT,
+    external_job_id VARCHAR(255),
+    raw_payload JSON,
+    agent_name VARCHAR(100),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_agent_hash (idempotency_hash),
+    INDEX idx_agent_company (company_name),
+    INDEX idx_agent_status (application_status),
+    INDEX idx_agent_applied (applied_at),
+    INDEX idx_agent_created (created_at),
+    INDEX idx_agent_work_mode (work_mode),
+    INDEX idx_agent_province (province)
+);
+
 -- Note: For now, users will have organization_id = NULL (standalone mode)
 -- When multi-tenant is enabled, users can be assigned to organizations
 -- The application logic will handle both cases:

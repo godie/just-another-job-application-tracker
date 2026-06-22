@@ -25,7 +25,8 @@
     "files": [
       "src/Helpers/cors.php",
       "src/Helpers/database.php",
-      "src/Helpers/appAuth.php"
+      "src/Helpers/appAuth.php",
+      "src/Helpers/agentAuth.php"
     ]
   },
   "autoload-dev": {

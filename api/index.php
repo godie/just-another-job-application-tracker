@@ -149,4 +149,7 @@ $router->add('POST', '/sync/opportunities', function() {
 $router->add('GET', '/user/profile', 'UserController@profile');
 $router->add('GET', '/hello', 'HelloController@index');
 
+$router->add('POST', '/agent/job-applications', 'AgentJobApplicationController@store');
+$router->add('GET', '/agent/job-applications', 'AgentJobApplicationController@index');
+
 $router->run();

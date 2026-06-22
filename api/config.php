@@ -61,4 +61,5 @@ return [
     'refresh_cookie_days' => 30,
     'google_client_id' => getenv('GOOGLE_CLIENT_ID') ?: '__VITE_GOOGLE_CLIENT_ID__',
     'google_client_secret' => getenv('GOOGLE_CLIENT_SECRET') ?: '__VITE_GOOGLE_CLIENT_SECRET__',
+    'agent_api_key' => getenv('AGENT_API_KEY') ?: '',
 ];
