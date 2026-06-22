@@ -6,6 +6,15 @@ import { VitePWA } from 'vite-plugin-pwa'
 
 const apiProxyTarget = process.env.VITE_API_PROXY_TARGET || 'http://localhost:8080'
 
+const securityHeaders = {
+  'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://accounts.google.com https://oauth2.googleapis.com https://www.googleapis.com; frame-ancestors 'none';",
+  'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload',
+  'X-Content-Type-Options': 'nosniff',
+  'X-Frame-Options': 'DENY',
+  'X-XSS-Protection': '1; mode=block',
+  'Referrer-Policy': 'strict-origin-when-cross-origin',
+}
+
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
@@ -17,7 +26,7 @@ export default defineConfig({
       manifest: {
         name: 'JAJAT - Job Application Tracker',
         short_name: 'JAJAT',
-        description: 'Track and manage your job applications with timeline views, calendar, and Google Sheets sync.',
+        description: 'Track and manage your job applications with timeline views, calendar integration, and Google Sheets sync. Stay organized throughout your job search journey.',
         theme_color: '#4f46e5',
         background_color: '#ffffff',
         display: 'standalone',
@@ -45,12 +54,23 @@ export default defineConfig({
         enabled: false,
       },
     }),
+    {
+      name: 'security-headers',
+      apply: 'serve',
+      configureServer(server: { middlewares: { use: (fn: (req: unknown, res: { setHeader: (key: string, value: string) => void }, next: () => void) => void) => void } }) {
+        server.middlewares.use((_req: unknown, res: { setHeader: (key: string, value: string) => void }, next: () => void) => {
+          Object.entries(securityHeaders).forEach(([key, value]) => {
+            res.setHeader(key, value)
+          })
+          next()
+        })
+      },
+    },
   ],
   build: {
     outDir: 'dist',
     rollupOptions: {
       output: {
-        // Avoid using eval in output to prevent CSP issues
         format: 'es',
         generatedCode: {
           constBindings: true,
@@ -76,18 +96,14 @@ export default defineConfig({
         },
       },
     },
-    // Use modern target to avoid eval in production
     target: 'es2015',
-    // Source maps can cause CSP issues with eval, disable for production
     sourcemap: false,
-    // Use esbuild (default) which doesn't use eval
     minify: 'esbuild',
   },
   test: {
-    globals: true, // Allows using functions like 'describe', 'it', 'expect' globally
-    environment: 'happy-dom', // Using happy-dom instead of jsdom to avoid DONT_CONTEXTIFY error
-    setupFiles: './src/setupTests.ts', // File to set up testing library extensions
-    // Specify where tests are located
+    globals: true,
+    environment: 'happy-dom',
+    setupFiles: './src/setupTests.ts',
     include: ['**/*.test.{ts,tsx}'],
     // Vitest 4 defaults to forks pool, but thread crashes occur in this environment.
     // Explicitly use forks to avoid "Worker exited unexpectedly" errors.
