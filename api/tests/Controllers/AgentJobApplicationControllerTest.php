@@ -85,12 +85,14 @@ class AgentJobApplicationControllerTest extends TestCase
 
     private function createSchema(): void
     {
+        // Minimal users fixture — only `id` is referenced by the FK from
+        // agent_job_applications. The other production columns are
+        // omitted on purpose to keep the fixture honest: tests never read
+        // them, so they shouldn't carry placeholder values.
         $this->db->exec('
             CREATE TABLE IF NOT EXISTS users (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                email VARCHAR(255) UNIQUE NOT NULL,
-                password_hash VARCHAR(255),
-                is_active BOOLEAN DEFAULT TRUE
+                email VARCHAR(255) UNIQUE NOT NULL
             )
         ');
         $this->db->exec('
@@ -115,7 +117,7 @@ class AgentJobApplicationControllerTest extends TestCase
                 agent_name VARCHAR(100),
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                 updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+                FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE RESTRICT
             )
         ');
     }
@@ -123,10 +125,10 @@ class AgentJobApplicationControllerTest extends TestCase
     private function createUsers(): void
     {
         $stmt = $this->db->prepare(
-            'INSERT INTO users (id, email, password_hash) VALUES (:id, :email, :hash)',
+            'INSERT INTO users (id, email) VALUES (:id, :email)',
         );
-        $stmt->execute(['id' => 1, 'email' => 'user1@example.com', 'hash' => 'x']);
-        $stmt->execute(['id' => 2, 'email' => 'user2@example.com', 'hash' => 'x']);
+        $stmt->execute(['id' => 1, 'email' => 'user1@example.com']);
+        $stmt->execute(['id' => 2, 'email' => 'user2@example.com']);
     }
 
     private function loginAs(int $userId): void
@@ -142,6 +144,16 @@ class AgentJobApplicationControllerTest extends TestCase
     private function logout(): void
     {
         $_SESSION = [];
+    }
+
+    /**
+     * Swap the simulated session to a different user mid-test. No
+     * controller rebuild: currentUserId() reads $_SESSION lazily.
+     */
+    private function switchUser(int $userId): void
+    {
+        $this->logout();
+        $this->loginAs($userId);
     }
 
     // ── Authentication Tests ─────────────────────────────────────────
@@ -394,18 +406,8 @@ class AgentJobApplicationControllerTest extends TestCase
         $content1 = json_decode($this->captureResponse($response1), true);
         $this->assertEquals(201, $response1->getStatusCode());
 
-        // User 2 logs in and posts the same job → should be a new record, NOT a duplicate
-        $this->logout();
-        $this->loginAs(2);
-
-        // Rebuild controller so the new session is read
-        $config = ['database' => ['enabled' => true, 'driver' => 'sqlite', 'sqlite' => ['path' => ':memory:', 'options' => []]]];
-        $database = new Database($config);
-        $reflection = new \ReflectionClass($database);
-        $connectionProp = $reflection->getProperty('connection');
-        $connectionProp->setAccessible(true);
-        $connectionProp->setValue($database, $this->db);
-        $this->controller = new TestableAgentJobApplicationController($database);
+        // User 2 posts the same job — should be a NEW record, not a duplicate
+        $this->switchUser(2);
 
         $this->controller->mockInput = $payload;
         $response2 = $this->controller->store();
@@ -431,15 +433,7 @@ class AgentJobApplicationControllerTest extends TestCase
         $this->controller->store();
 
         // Switch to user 2 and post one record
-        $this->logout();
-        $this->loginAs(2);
-        $config = ['database' => ['enabled' => true, 'driver' => 'sqlite', 'sqlite' => ['path' => ':memory:', 'options' => []]]];
-        $database = new Database($config);
-        $reflection = new \ReflectionClass($database);
-        $prop = $reflection->getProperty('connection');
-        $prop->setAccessible(true);
-        $prop->setValue($database, $this->db);
-        $this->controller = new TestableAgentJobApplicationController($database);
+        $this->switchUser(2);
 
         $p3 = $this->validPayload();
         $p3['job_title'] = 'User2 Role';
