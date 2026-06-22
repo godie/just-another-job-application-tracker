@@ -7,9 +7,13 @@ namespace OverPHP\Models;
 /**
  * Agent Job Application Model
  *
- * Represents a job application submitted by an automated agent.
+ * Represents a job application submitted by an automated agent on behalf
+ * of a specific user (identified by the session). The user_id is part of
+ * the idempotency hash so different users posting the same job do not
+ * collide, and so a user can re-run their automation idempotently.
  *
  * @property int|null $id
+ * @property int $userId
  * @property string $idempotencyHash
  * @property string $jobTitle
  * @property string $companyName
@@ -32,6 +36,7 @@ namespace OverPHP\Models;
 class AgentJobApplication
 {
     public readonly ?int $id;
+    public readonly int $userId;
     public readonly string $idempotencyHash;
     public readonly string $jobTitle;
     public readonly string $companyName;
@@ -53,6 +58,7 @@ class AgentJobApplication
 
     public function __construct(
         ?int $id,
+        int $userId,
         string $idempotencyHash,
         string $jobTitle,
         string $companyName,
@@ -73,6 +79,7 @@ class AgentJobApplication
         ?string $updatedAt = null,
     ) {
         $this->id = $id;
+        $this->userId = $userId;
         $this->idempotencyHash = $idempotencyHash;
         $this->jobTitle = $jobTitle;
         $this->companyName = $companyName;
@@ -116,6 +123,7 @@ class AgentJobApplication
 
         return new self(
             id: isset($row['id']) && $row['id'] !== '' ? (int) $row['id'] : null,
+            userId: isset($row['user_id']) && $row['user_id'] !== '' ? (int) $row['user_id'] : 0,
             idempotencyHash: $row['idempotency_hash'] ?? '',
             jobTitle: $row['job_title'] ?? '',
             companyName: $row['company_name'] ?? '',
@@ -138,16 +146,23 @@ class AgentJobApplication
     }
 
     /**
-     * Create new instance from agent payload
+     * Create new instance from agent payload.
+     *
+     * The $userId argument is required; the caller must obtain it from
+     * the authenticated session, not from the payload.
      */
-    public static function fromPayload(array $payload): self
+    public static function fromPayload(array $payload, int $userId): self
     {
         $company = self::normalizeString($payload['company_name'] ?? '');
         $title = self::normalizeString($payload['job_title'] ?? '');
         $sourceUrl = self::normalizeString($payload['source_url'] ?? '');
         $appliedAt = self::normalizeString($payload['applied_at'] ?? '');
 
+        // user_id is part of the dedup key so different users posting the
+        // same job don't collide; re-running the same automation by the
+        // same user is idempotent.
         $idempotencyHash = hash('sha256', implode('|', [
+            $userId,
             $company,
             $title,
             $sourceUrl,
@@ -160,6 +175,7 @@ class AgentJobApplication
 
         return new self(
             id: null,
+            userId: $userId,
             idempotencyHash: $idempotencyHash,
             jobTitle: $title,
             companyName: $company,
@@ -186,6 +202,7 @@ class AgentJobApplication
     {
         return [
             'id' => $this->id,
+            'userId' => $this->userId,
             'idempotencyHash' => $this->idempotencyHash,
             'jobTitle' => $this->jobTitle,
             'companyName' => $this->companyName,
@@ -213,6 +230,7 @@ class AgentJobApplication
     public function toDatabase(): array
     {
         return [
+            'user_id' => $this->userId,
             'idempotency_hash' => $this->idempotencyHash,
             'job_title' => $this->jobTitle,
             'company_name' => $this->companyName,

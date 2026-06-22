@@ -8,17 +8,26 @@ use OverPHP\Core\Response;
 use OverPHP\Libs\Database;
 use OverPHP\Models\AgentJobApplication;
 use OverPHP\Repositories\AgentJobApplicationRepository;
-use function OverPHP\Helpers\agent_require_api_key;
+use function OverPHP\Helpers\app_session_start;
+use function OverPHP\Helpers\app_session_get_user_id;
 
+/**
+ * Agent Job Applications Controller
+ *
+ * Authenticated via the standard session (RequireAuth). All records are
+ * scoped to the user_id stored in the session; users only see their own
+ * applications. The `agent_name` field in the payload is a free-text label
+ * for which automation posted the record (e.g. "codex-canada-search"),
+ * not an auth credential.
+ */
 class AgentJobApplicationController
 {
     private AgentJobApplicationRepository $repo;
-    private array $config;
 
-    public function __construct(?Database $db = null, ?array $config = null)
+    public function __construct(?Database $db = null)
     {
-        $this->config = $config ?? require __DIR__ . '/../../config.php';
-        $database = $db ?? new Database($this->config);
+        $config = require __DIR__ . '/../../config.php';
+        $database = $db ?? new Database($config);
         $this->repo = new AgentJobApplicationRepository($database->getConnection());
     }
 
@@ -26,12 +35,17 @@ class AgentJobApplicationController
      * POST /api/agent/job-applications
      *
      * Create a new agent job application. Idempotent by design.
+     * user_id comes from the authenticated session and is bound to the row.
      */
     public function store(): Response
     {
-        $authError = agent_require_api_key($this->config['agent_api_key'] ?? '');
-        if ($authError !== null) {
-            return Response::json($authError, 401);
+        $userId = $this->currentUserId();
+        if ($userId === null) {
+            return Response::json([
+                'success' => false,
+                'error' => 'Authentication required',
+                'message' => 'Please log in to access this resource',
+            ], 401);
         }
 
         $data = $this->getInputJson();
@@ -87,11 +101,11 @@ class AgentJobApplicationController
             ], 400);
         }
 
-        // Build model from payload
-        $application = AgentJobApplication::fromPayload($data);
+        // Build model from payload (userId from session, NOT from payload)
+        $application = AgentJobApplication::fromPayload($data, $userId);
 
-        // Check for duplicate via idempotency hash
-        $existing = $this->repo->findByHash($application->idempotencyHash);
+        // Check for duplicate via idempotency hash, scoped to current user
+        $existing = $this->repo->findByHash($application->idempotencyHash, $userId);
         if ($existing !== null) {
             return Response::json([
                 'success' => true,
@@ -103,7 +117,7 @@ class AgentJobApplicationController
 
         // Insert new record
         $id = $this->repo->create($application);
-        $created = $this->repo->findById($id);
+        $created = $this->repo->findById($id, $userId);
 
         if ($created === null) {
             return Response::json([
@@ -123,16 +137,22 @@ class AgentJobApplicationController
     /**
      * GET /api/agent/job-applications
      *
-     * List recent agent job applications with optional filters.
+     * List the authenticated user's agent job applications with optional filters.
      */
     public function index(): Response
     {
-        $authError = agent_require_api_key($this->config['agent_api_key'] ?? '');
-        if ($authError !== null) {
-            return Response::json($authError, 401);
+        $userId = $this->currentUserId();
+        if ($userId === null) {
+            return Response::json([
+                'success' => false,
+                'error' => 'Authentication required',
+                'message' => 'Please log in to access this resource',
+            ], 401);
         }
 
+        // user_id filter is appended implicitly — never trust params from the client
         $filters = [
+            'user_id' => $userId,
             'status' => $_GET['status'] ?? null,
             'company' => $_GET['company'] ?? null,
             'work_mode' => $_GET['work_mode'] ?? null,
@@ -144,9 +164,6 @@ class AgentJobApplicationController
             'sort_by' => $_GET['sort_by'] ?? 'created_at',
             'sort_order' => $_GET['sort_order'] ?? 'DESC',
         ];
-
-        // Remove null/empty filters
-        $filters = array_filter($filters, fn ($v) => $v !== null && $v !== '');
 
         $result = $this->repo->list($filters);
 
@@ -165,5 +182,14 @@ class AgentJobApplicationController
     {
         $json = file_get_contents('php://input') ?: '{}';
         return json_decode($json, true);
+    }
+
+    /**
+     * Read user_id from the authenticated session, starting the session if needed.
+     */
+    protected function currentUserId(): ?int
+    {
+        app_session_start();
+        return app_session_get_user_id();
     }
 }

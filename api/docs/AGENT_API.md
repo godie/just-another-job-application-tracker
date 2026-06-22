@@ -1,244 +1,210 @@
-# Agent Job Applications API
+# Agent API — Job Application Logger
 
-API segura para que agentes automatizados registren postulaciones laborales realizadas.
+API endpoints used by automated agents (Codex, custom scripts, etc.) to
+record job applications on behalf of a logged-in user on
+`jajat.godieboy.com`.
 
-## Autenticación
+> **Authentication model**: same session as the rest of the app. The user
+> must be logged in (via `/api/auth/login` or the Google OAuth flow). The
+> agent uses that same cookie session — there is no separate API key, no
+> Bearer token. Every record is scoped to the session's `user_id`.
 
-Todas las rutas requieren un **API Key** enviado en el header `Authorization`:
-
-```http
-Authorization: Bearer <AGENT_API_KEY>
-```
-
-La clave se lee desde la variable de entorno `AGENT_API_KEY` (ver `.env`).
-
-## Variables de Entorno
-
-Agregar a `api/.env`:
-
-```env
-AGENT_API_KEY="sk-agent-jajat-<random-hex>"
-```
-
-Generar una clave segura:
-
-```bash
-openssl rand -hex 32
-```
+---
 
 ## Endpoints
 
-### POST /api/agent/job-applications
+### `POST /api/agent/job-applications`
 
-Registra una nueva postulación. Es **idempotente**: enviar el mismo payload dos veces no crea duplicados.
+Create a new job-application record. Idempotent.
 
-#### Request Body
+#### Required fields
 
-| Campo | Tipo | Requerido | Descripción |
-|-------|------|-----------|-------------|
-| `job_title` | string | ✅ | Título del puesto |
-| `company_name` | string | ✅ | Nombre de la empresa |
-| `source_url` | string | ✅ | URL de la vacante (debe ser URL válida) |
-| `applied_at` | string | ✅ | Fecha/hora ISO 8601 de la postulación |
-| `salary_text` | string | ❌ | Texto del rango salarial |
-| `technologies` | string[] | ❌ | Stack tecnológico (se normaliza a minúsculas) |
-| `location_text` | string | ❌ | Ubicación completa |
-| `province` | string | ❌ | Provincia/estado |
-| `country` | string | ❌ | País |
-| `work_mode` | string | ❌ | `remote`, `hybrid`, `onsite`, `unknown` |
-| `application_status` | string | ❌ | `submitted`, `skipped`, `failed` |
-| `notes` | string | ❌ | Notas adicionales |
-| `external_job_id` | string | ❌ | ID externo de la vacante |
-| `raw_payload` | object | ❌ | Payload crudo para auditoría |
-| `agent_name` | string | ❌ | Nombre del agente/automatización |
+| Field | Type | Rule |
+|:---|:---|:---|
+| `job_title` | string | non-empty after trim |
+| `company_name` | string | non-empty after trim |
+| `source_url` | string | valid URL (`FILTER_VALIDATE_URL`) |
+| `applied_at` | ISO 8601 datetime | any of: ATOM, `…P`, `…H:i:s`, `Y-m-d` — normalized to UTC |
+
+#### Optional fields
+
+| Field | Type | Notes |
+|:---|:---|:---|
+| `salary_text` | string\|null | empty string ⇔ null |
+| `technologies` | string[] | normalized (lowercased, trimmed, deduped) |
+| `location_text` | string\|null | |
+| `province` | string\|null | e.g. "Ontario", "Quebec" |
+| `country` | string\|null | e.g. "Canada" |
+| `work_mode` | enum | `remote` \| `hybrid` \| `onsite` \| `unknown` (default: `unknown`) |
+| `application_status` | enum | `submitted` \| `skipped` \| `failed` (default: `submitted`) |
+| `notes` | string\|null | free text |
+| `external_job_id` | string\|null | job id from the source board |
+| `raw_payload` | object\|null | arbitrary audit blob (JSON-encoded) |
+| `agent_name` | string\|null | **informational** label of which automation posted it (e.g. `"codex-canada-search"`). Not used for auth. |
+
+`user_id` is **never** taken from the payload — always derived from the
+session.
 
 #### Response
 
-**201 Created** (nuevo registro):
-
+`201 Created` — new record:
 ```json
 {
   "success": true,
   "data": {
-    "id": 1,
-    "idempotencyHash": "a1b2c3...",
-    "jobTitle": "Software Engineer",
+    "id": 42,
+    "userId": 7,
+    "jobTitle": "Backend Engineer",
     "companyName": "Acme Corp",
-    "salaryText": "$120k - $150k CAD",
-    "technologies": ["php", "react", "mysql"],
-    "appliedAt": "2026-01-15T10:30:00+00:00",
-    "sourceUrl": "https://example.com/jobs/123",
-    "locationText": "Toronto, ON",
-    "province": "Ontario",
-    "country": "Canada",
-    "workMode": "remote",
+    "appliedAt": "2026-01-15T15:30:00+00:00",
     "applicationStatus": "submitted",
-    "notes": "Applied via company portal",
-    "externalJobId": "acme-12345",
-    "rawPayload": null,
-    "agentName": "codex-automation",
-    "createdAt": "2026-01-15T10:35:00Z",
-    "updatedAt": "2026-01-15T10:35:00Z"
+    "idempotencyHash": "f3a1…",
+    "agentName": "codex-canada-search",
+    "createdAt": "2026-01-15T15:31:02+00:00",
+    "updatedAt": "2026-01-15T15:31:02+00:00"
   },
   "isDuplicate": false,
   "message": "Application recorded successfully"
 }
 ```
 
-**200 OK** (duplicado detectado):
-
+`200 OK` — idempotency hit (same user, same `(company, title, source_url, applied_at)`):
 ```json
 {
   "success": true,
-  "data": { /* existing record */ },
+  "data": { "..." },
   "isDuplicate": true,
   "message": "Application already exists (duplicate detected)"
 }
 ```
 
-#### Ejemplo cURL
+`400` — validation error (missing/invalid required field, malformed JSON).
+`401` — no active session.
+`500` — unexpected insert failure.
 
-```bash
-curl -X POST https://jajat.godieboy.com/api/agent/job-applications \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer sk-agent-jajat-..." \
-  -d '{
-    "job_title": "Software Engineer",
-    "company_name": "Shopify",
-    "salary_text": "$130k - $170k CAD",
-    "technologies": ["Ruby", "Rails", "React"],
-    "applied_at": "2026-06-22T14:30:00Z",
-    "source_url": "https://www.shopify.com/careers/engineering",
-    "location_text": "Vancouver, BC",
-    "province": "British Columbia",
-    "country": "Canada",
-    "work_mode": "remote",
-    "application_status": "submitted",
-    "notes": "Applied via Lever portal. Cover letter included.",
-    "external_job_id": "shopify-se-2026-001",
-    "agent_name": "codex-job-bot"
-  }'
-```
+#### Idempotency contract
+
+- Idempotency hash = `sha256(user_id | company | title | source_url | applied_at)`.
+- The hash is unique **per user**: two different users can post the same
+  job and both records are kept.
+- Re-running the automation for the same user returns the existing record
+  with `isDuplicate: true` instead of duplicating it.
 
 ---
 
-### GET /api/agent/job-applications
+### `GET /api/agent/job-applications`
 
-Lista postulaciones registradas con filtros opcionales.
+List the authenticated user's job applications. Other users' records are
+never returned.
 
-#### Query Parameters
+#### Query parameters
 
-| Parámetro | Tipo | Default | Descripción |
-|-----------|------|---------|-------------|
-| `status` | string | — | Filtrar por `application_status` |
-| `company` | string | — | Filtrar por nombre de empresa (LIKE) |
-| `work_mode` | string | — | `remote`, `hybrid`, `onsite` |
-| `province` | string | — | Filtrar por provincia |
-| `country` | string | — | Filtrar por país |
-| `agent_name` | string | — | Filtrar por nombre de agente |
-| `limit` | int | 50 | Máximo 100 |
-| `offset` | int | 0 | Paginación |
-| `sort_by` | string | `created_at` | `applied_at`, `created_at`, `company_name`, `job_title` |
-| `sort_order` | string | `DESC` | `ASC` o `DESC` |
+| Param | Type | Default |
+|:---|:---|:---|
+| `status` | string | — |
+| `company` | string | matches `company_name LIKE %value%` |
+| `work_mode` | string | — |
+| `province` | string | — |
+| `country` | string | — |
+| `agent_name` | string | — |
+| `limit` | int | 50 (capped at 100) |
+| `offset` | int | 0 |
+| `sort_by` | string | `created_at` (or `applied_at`, `company_name`, `job_title`) |
+| `sort_order` | string | `DESC` (or `ASC`) |
 
 #### Response
 
 ```json
 {
   "success": true,
-  "data": [
-    {
-      "id": 1,
-      "jobTitle": "Software Engineer",
-      "companyName": "Shopify",
-      ...
-    }
-  ],
-  "meta": {
-    "total": 42,
-    "limit": 50,
-    "offset": 0
-  }
+  "data": [ { "..." }, { "..." } ],
+  "meta": { "total": 25, "limit": 50, "offset": 0 }
 }
-```
-
-#### Ejemplo cURL
-
-```bash
-# Listar las últimas 10 postulaciones remotas en BC
-curl "https://jajat.godieboy.com/api/agent/job-applications?work_mode=remote&province=British+Columbia&limit=10" \
-  -H "Authorization: Bearer sk-agent-jajat-..."
-
-# Listar postulaciones fallidas
-curl "https://jajat.godieboy.com/api/agent/job-applications?status=failed" \
-  -H "Authorization: Bearer sk-agent-jajat-..."
 ```
 
 ---
 
-## Idempotencia
+## Authentication cookbook (agent side)
 
-El sistema calcula un hash SHA-256 a partir de:
+The agent must already be logged in. The standard flow:
 
-```
-company_name | job_title | source_url | applied_at
-```
+```bash
+# 1) Log in (cookies stored in jar.txt)
+curl -s -c jar.txt -X POST https://jajat.godieboy.com/api/auth/login \
+  -H 'Content-Type: application/json' \
+  -d '{"email":"you@example.com","password":"…"}'
 
-Si un registro con el mismo hash ya existe, se devuelve el existente en lugar de crear uno nuevo. Esto permite que un agente reintente en caso de timeout de red sin crear duplicados.
+# 2) Send the agent event
+curl -s -b jar.txt -X POST https://jajat.godieboy.com/api/agent/job-applications \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "job_title": "Software Engineer",
+    "company_name": "Acme Corp",
+    "applied_at": "2026-01-15T10:30:00-05:00",
+    "source_url": "https://jobs.example.com/123",
+    "work_mode": "remote",
+    "province": "Ontario",
+    "country": "Canada",
+    "technologies": ["PHP", "React"],
+    "salary_text": "CAD 120k-150k",
+    "agent_name": "codex-canada-search"
+  }'
 
-## Normalización
-
-- **`technologies`**: minúsculas, trim, deduplicadas
-- **`work_mode`**: se fuerza a `remote`, `hybrid`, `onsite` o `unknown`
-- **`application_status`**: se fuerza a `submitted`, `skipped` o `failed`
-- **`applied_at`**: se convierte a UTC en formato ISO 8601
-
-## Notas para Integración con Codex
-
-1. **Generar la clave API** y agregarla a las variables de entorno del agente.
-2. **Después de cada postulación exitosa**, enviar un POST a `/api/agent/job-applications`.
-3. **Manejar `isDuplicate: true`** como éxito (la postulación ya está registrada).
-4. **Incluir `raw_payload`** con datos adicionales del scraping para auditoría futura.
-5. **Usar `agent_name`** para identificar qué automatización envió el registro.
-
-## Migración de Base de Datos
-
-Ejecutar en MySQL:
-
-```sql
--- El schema completo está en api/data/schema.sql
--- La tabla agent_job_applications se crea automáticamente si usas el schema.sql completo
+# 3) Optionally list recent applications
+curl -s -b jar.txt 'https://jajat.godieboy.com/api/agent/job-applications?limit=10'
 ```
 
-Para aplicar solo la migración de esta tabla:
+Or via Google OAuth: log in interactively once in a headless browser to
+populate the cookie jar, then reuse it from the agent.
 
-```sql
-CREATE TABLE IF NOT EXISTS agent_job_applications (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    idempotency_hash VARCHAR(64) UNIQUE NOT NULL,
-    job_title VARCHAR(255) NOT NULL,
-    company_name VARCHAR(255) NOT NULL,
-    salary_text VARCHAR(255),
-    technologies JSON,
-    applied_at DATETIME NOT NULL,
-    source_url TEXT NOT NULL,
-    location_text VARCHAR(255),
-    province VARCHAR(100),
-    country VARCHAR(100),
-    work_mode VARCHAR(20) DEFAULT 'unknown',
-    application_status VARCHAR(20) DEFAULT 'submitted',
-    notes TEXT,
-    external_job_id VARCHAR(255),
-    raw_payload JSON,
-    agent_name VARCHAR(100),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    INDEX idx_agent_hash (idempotency_hash),
-    INDEX idx_agent_company (company_name),
-    INDEX idx_agent_status (application_status),
-    INDEX idx_agent_applied (applied_at),
-    INDEX idx_agent_created (created_at),
-    INDEX idx_agent_work_mode (work_mode),
-    INDEX idx_agent_province (province)
-);
-```
+---
+
+## Environment variables
+
+The endpoint requires the standard user-session infrastructure (no extra
+variables):
+
+| Var | Purpose |
+|:---|:---|
+| `DB_*` | standard DB connection (MySQL or SQLite via `DB_DRIVER`) |
+| `SESSION_*` | session cookie name/secure flags, as used elsewhere in the app |
+
+Authentication secrets for the *user* (`GOOGLE_CLIENT_ID`,
+`GOOGLE_CLIENT_SECRET`, password hashing) follow the existing
+configuration. The `AGENT_API_KEY` env var from the previous design has
+been removed.
+
+---
+
+## Notes for connecting an automated agent (Codex flow)
+
+1. **One-time bootstrap** — register or login a real user on
+   `jajat.godieboy.com`. Persist the session cookie somewhere the agent
+   can read.
+2. **Per-application write** — after submitting an application on the
+   job board, call `POST /api/agent/job-applications` with the cookie
+   attached. The endpoint is idempotent, so retries are safe.
+3. **Per-application skip / fail** — still POST, but with
+   `application_status: "skipped"` or `"failed"` plus a `notes` string
+   explaining why. This preserves the audit trail.
+4. **Review** — `GET /api/agent/job-applications?status=submitted&limit=50`
+   returns what was recorded, ordered by `created_at DESC`. UI screen
+   can be built on top of this list.
+5. **Filters that match your requirements**:
+   - "Software Engineer" / "Backend Engineer": filter by
+     `job_title LIKE`.
+   - "Remote in provinces other than Ontario": `work_mode=remote AND
+     province<>Ontario AND country=Canada`.
+   - "All modes in Ontario": `country=Canada AND province=Ontario`
+     (no `work_mode` filter).
+
+---
+
+## Operational notes
+
+- **Migration**: re-run `data/schema.sql` to add `user_id NOT NULL` FK + indexes on the `agent_job_applications` table. Existing rows (from the previous API-key design) will need a backfill that assigns each orphan row to an "agent owner" user, or be deleted.
+- **Security**:
+  - Hash is `sha256` of user-scoped fields — sufficient for dedup, not cryptographic identity.
+  - `user_id` filter is appended server-side from the session; the client cannot override it.
+  - `FIND_IN_SET`-style inputs (`agent_name`, `status`, etc.) go through prepared statements via PDO bindings.
+- **Logs / errors** — exception messages are returned as `{"success": false, "error": "…"}`. The `raw_payload` and `technologies` arrays are JSON-encoded for storage; their content is opaque to the server.

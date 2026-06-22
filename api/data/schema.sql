@@ -221,10 +221,11 @@ INSERT INTO organizations (name, description)
 VALUES ('Default Organization', 'Default organization for single-tenant deployments');
 
 -- =====================================================
--- AGENT JOB APPLICATIONS (for automated job application tracking)
+-- AGENT JOB APPLICATIONS (for automated job application tracking per user)
 -- =====================================================
 CREATE TABLE IF NOT EXISTS agent_job_applications (
     id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
     idempotency_hash VARCHAR(64) UNIQUE NOT NULL,
     job_title VARCHAR(255) NOT NULL,
     company_name VARCHAR(255) NOT NULL,
@@ -240,10 +241,13 @@ CREATE TABLE IF NOT EXISTS agent_job_applications (
     notes TEXT,
     external_job_id VARCHAR(255),
     raw_payload JSON,
-    agent_name VARCHAR(100),
+    agent_name VARCHAR(100), -- informational label of which automation posted it (e.g. "codex-canada-search")
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    INDEX idx_agent_user (user_id),
     INDEX idx_agent_hash (idempotency_hash),
+    INDEX idx_agent_user_hash (user_id, idempotency_hash),
     INDEX idx_agent_company (company_name),
     INDEX idx_agent_status (application_status),
     INDEX idx_agent_applied (applied_at),
