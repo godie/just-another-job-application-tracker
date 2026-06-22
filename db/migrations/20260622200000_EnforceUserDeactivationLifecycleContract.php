@@ -57,6 +57,20 @@ final class EnforceUserDeactivationLifecycleContract extends AbstractMigration
 {
     public function up(): void
     {
+        // Single precondition gate: all three asserts below assume the
+        // users table exists. Failing here once (with an actionable
+        // message) is cleaner than each assert producing its own
+        // confusing downstream error.
+        if (!$this->hasTable('users')) {
+            throw new \RuntimeException(
+                'users table missing. This migration assumes the users '
+                . 'table is seeded before Phinx migrations run; the '
+                . 'project bootstrap (or the InitialDatabaseBaseline '
+                . 'migration) is responsible. Refusing to assume an '
+                . 'implicit schema.'
+            );
+        }
+
         $this->assertUsersActiveFlag();
         $this->assertUsersActiveIndex();
         $this->assertAgentApplicationsRestrictForeignKey();
@@ -69,29 +83,19 @@ final class EnforceUserDeactivationLifecycleContract extends AbstractMigration
         // drop useful infrastructure or silently mask a real FK drift.
     }
 
+    // Precondition (users table exists) is enforced once in up(), so
+    // each assert below can focus on its single contract concern.
+
     private function assertUsersActiveFlag(): void
     {
         $users = $this->table('users');
-
-        if (!$this->hasTable('users')) {
-            throw new \RuntimeException(
-                'users table missing. This migration assumes the users '
-                . 'table is seeded before Phinx migrations run; the '
-                . 'project bootstrap (or the InitialDatabaseBaseline '
-                . 'migration) is responsible. Refusing to assume an '
-                . 'implicit schema.'
-            );
-        }
 
         if ($users->hasColumn('is_active')) {
             return;
         }
 
         // No 'after' anchor: the column position is irrelevant to the
-        // contract and an explicit 'after' would bind to whichever
-        // column happened to exist in the creating schema, tying this
-        // assertion to a precondition that the contract does not
-        // actually require.
+        // contract.
         $users->addColumn('is_active', 'boolean', [
             'default' => true,
             'null' => false,
