@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [2.3.1] - 2026-06-22 (later)
+
+Hotfix patch released the same day as v2.3.0. Both fixes are producer-side-only (no API surface, no migration changes, no end-user configuration semantics), so a SemVer patch bump.
+
+### Fixed
+- **`api/composer.json` autoload `files`** still listed `src/Helpers/agentAuth.php` after the shared-key → session auth refactor on `feat/agent-api-session-auth`. `composer install` / `composer dump-autoload` failed on v2.3.0 with `Failed opening required '.../src/Helpers/agentAuth.php'`, blocking fresh installs of the release. The dangling line is dropped; the three remaining helpers (`cors.php`, `database.php`, `appAuth.php`) are intact. `composer.lock` unchanged.
+- **PHPUnit warning under PHP 8.2** on `AppAuthControllerTest::testExchangeGoogleCodeRejectsRedirectUriNotInAllowedOrigins` (dynamic property `$this->config` on the test class, deprecated since PHP 8.2). Replaced with a reflection-based read of the parent's declared `private array $config`. Three assertions preserved; behavioral coverage unchanged. Suite now reports **0 warnings** under PHP 8.2 (was 1 phpunit warning on v2.3.0).
+
 ## [2.3.0] - 2026-06-22
 
 ### Added
