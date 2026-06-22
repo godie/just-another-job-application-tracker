@@ -17,6 +17,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - **Idempotency hash scheme** — `(user_id, normalized job_url)` keyed; the same agent retrying the same job on the same user is a no-op rather than a duplicate row.
 - **`agent_name` column on `agent_job_applications`** — informational label identifying which agent submitted the record (forensic / audit value).
 - **User lifecycle contract** documented in `api/docs/AGENT_API.md` (deactivation pattern + GDPR escape hatch).
+- **Phinx migration `db/migrations/20260622200000_EnforceUserDeactivationLifecycleContract.php`** — idempotent assertion migration that codifies the contract on both fresh and upgrade installs. Adds `users.is_active` + `idx_user_active` if missing; verifies `agent_job_applications.user_id` FK is `ON DELETE RESTRICT` against `information_schema` and aborts loudly otherwise (so silent FK drift can't erode the audit trail). Phinx-portable across MySQL and Postgres.
 
 ### Changed
 - **API authentication** — agent endpoint switched from a shared `AGENT_API_KEY` header check to user-session authentication. Removes one global-write credential. Multi-user isolation enforced by the auth layer.
