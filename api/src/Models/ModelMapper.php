@@ -116,12 +116,30 @@ class ModelMapper
     }
 
     /**
-     * Delete user (cascade will handle related data)
+     * Deactivate a user (soft delete).
+     *
+     * Users are never hard-deleted: ON DELETE RESTRICT on every per-user
+     * table (applications, timeline_events, opportunities, audit_log,
+     * agent_job_applications) preserves the audit trail. To remove access
+     * for a user, set is_active = 0 — login flow rejects inactive users,
+     * and org/user lookups that filter by is_active return nothing.
+     *
+     * GDPR right-to-be-forgotten: if the law ever requires hard deletion
+     * of a user that owns rows in RESTRICT'd tables, the contract breaks
+     * by design. The path is: temporarily drop the RESTRICT FK(s) on the
+     * tables the user owns, delete the rows, delete the user, re-add the
+     * FK(s). This is an explicit, audited operation, not a one-liner.
      */
     public function deleteUser(int $id): bool
     {
-        $stmt = $this->pdo->prepare("DELETE FROM users WHERE id = :id");
-        return $stmt->execute(["id" => $id]);
+        $driver = $this->pdo->getAttribute(\PDO::ATTR_DRIVER_NAME);
+        $now = $driver === 'sqlite'
+            ? "datetime('now')"
+            : 'CURRENT_TIMESTAMP';
+        $stmt = $this->pdo->prepare(
+            "UPDATE users SET is_active = 0, updated_at = $now WHERE id = :id",
+        );
+        return $stmt->execute(['id' => $id]);
     }
 
     // ============================================================

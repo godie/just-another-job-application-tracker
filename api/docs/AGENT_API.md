@@ -124,6 +124,27 @@ never returned.
 
 ---
 
+## User lifecycle contract
+
+Users are never hard-deleted. Every per-user table (`applications`,
+`timeline_events`, `opportunities`, `audit_log`, `agent_job_applications`)
+declares `ON DELETE RESTRICT` on its `user_id` FK so a user cannot be
+removed while their rows are still in the database.
+
+To remove a user's access, **deactivate** them — `UPDATE users SET
+is_active = 0 WHERE id = :id` — and the existing code paths handle it:
+`AppAuthController::login()` rejects inactive users with `403 Account is
+inactive`, and any future lookup that filters `WHERE is_active = 1` will
+skip them. The actual code lives on `ModelMapper::deleteUser()` (soft
+delete) and `ModelMapper::reactivateUser()` for symmetry.
+
+Active audit rows are deliberately preserved across deactivation. If a
+GDPR-style hard delete is ever required, the documented escape hatch is:
+temporarily drop the RESTRICT FKs, delete the rows, delete the user,
+re-add the FKs — an explicit, audited operation, not a one-liner.
+
+---
+
 ## Authentication cookbook (agent side)
 
 The agent must already be logged in. The standard flow:
