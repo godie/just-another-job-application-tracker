@@ -1,6 +1,6 @@
 // src/components/ProfileSetupModal.tsx
 
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import useFocusTrap from '../hooks/useFocusTrap';
 import useKeyboardEscape from '../hooks/useKeyboardEscape';
 import type { UserMatchProfile, SeniorityLevel } from '../types/matching';
@@ -39,19 +39,33 @@ export const ProfileSetupModal: React.FC<ProfileSetupModalProps> = ({
   useFocusTrap(modalRef, isOpen);
   useKeyboardEscape(onClose, isOpen);
 
-  // Initialize form state from existingProfile on first mount.
-  // The component fully unmounts when isOpen becomes false (via `if (!isOpen) return null`),
-  // so state is naturally reset on every open without needing a useEffect.
-  const [targetRoles, setTargetRoles] = useState(() => existingProfile?.targetRoles.join(', ') ?? '');
-  const [seniority, setSeniority] = useState<SeniorityLevel | ''>(() => existingProfile?.seniority ?? '');
-  const [topSkills, setTopSkills] = useState(() => existingProfile?.topSkills.join(', ') ?? '');
-  const [preferredLocations, setPreferredLocations] = useState(() => existingProfile?.preferredLocations.join(', ') ?? '');
-  const [salaryMin, setSalaryMin] = useState(() => existingProfile?.salaryRange?.min?.toString() ?? '');
-  const [salaryMax, setSalaryMax] = useState(() => existingProfile?.salaryRange?.max?.toString() ?? '');
-  const [salaryCurrency, setSalaryCurrency] = useState(() => existingProfile?.salaryRange?.currency ?? 'USD');
-  const [selectedWorkTypes, setSelectedWorkTypes] = useState<('remote' | 'on-site' | 'hybrid')[]>(() => existingProfile?.preferredWorkTypes ?? []);
-  const [cvText, setCvText] = useState(() => existingProfile?.cvText ?? '');
+  // Form state
+  const [targetRoles, setTargetRoles] = useState('');
+  const [seniority, setSeniority] = useState<SeniorityLevel | ''>('');
+  const [topSkills, setTopSkills] = useState('');
+  const [preferredLocations, setPreferredLocations] = useState('');
+  const [salaryMin, setSalaryMin] = useState('');
+  const [salaryMax, setSalaryMax] = useState('');
+  const [salaryCurrency, setSalaryCurrency] = useState('USD');
+  const [selectedWorkTypes, setSelectedWorkTypes] = useState<('remote' | 'on-site' | 'hybrid')[]>([]);
+  const [cvText, setCvText] = useState('');
   const [activeTab, setActiveTab] = useState<'manual' | 'cv'>('manual');
+
+  // Sync/reset form state whenever isOpen or existingProfile changes
+  useEffect(() => {
+    if (isOpen) {
+      setTargetRoles(existingProfile?.targetRoles.join(', ') ?? '');
+      setSeniority(existingProfile?.seniority ?? '');
+      setTopSkills(existingProfile?.topSkills.join(', ') ?? '');
+      setPreferredLocations(existingProfile?.preferredLocations.join(', ') ?? '');
+      setSalaryMin(existingProfile?.salaryRange?.min?.toString() ?? '');
+      setSalaryMax(existingProfile?.salaryRange?.max?.toString() ?? '');
+      setSalaryCurrency(existingProfile?.salaryRange?.currency ?? 'USD');
+      setSelectedWorkTypes(existingProfile?.preferredWorkTypes ?? []);
+      setCvText(existingProfile?.cvText ?? '');
+      setActiveTab('manual');
+    }
+  }, [isOpen, existingProfile]);
 
   const handleToggleWorkType = (wt: 'remote' | 'on-site' | 'hybrid') => {
     setSelectedWorkTypes((prev) =>
