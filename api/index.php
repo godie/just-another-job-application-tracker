@@ -149,4 +149,21 @@ $router->add('POST', '/sync/opportunities', function() {
 $router->add('GET', '/user/profile', 'UserController@profile');
 $router->add('GET', '/hello', 'HelloController@index');
 
+$router->add('POST', '/agent/job-applications', function () {
+    $result = RequireAuth::handle();
+    if ($result !== null) {
+        echo json_encode($result);
+        return;
+    }
+    return (new AgentJobApplicationController())->store();
+});
+$router->add('GET', '/agent/job-applications', function () {
+    $result = RequireAuth::handle();
+    if ($result !== null) {
+        echo json_encode($result);
+        return;
+    }
+    return (new AgentJobApplicationController())->index();
+});
+
 $router->run();

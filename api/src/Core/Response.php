@@ -17,6 +17,16 @@ final class Response
         private readonly array $headers = []
     ) {}
 
+    public function getStatusCode(): int
+    {
+        return $this->statusCode;
+    }
+
+    public function getContent(): mixed
+    {
+        return $this->content;
+    }
+
     public static function json(mixed $data, int $statusCode = 200): self
     {
         return new self($data, $statusCode, ['Content-Type' => 'application/json; charset=utf-8']);
