@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { getAuthCookie } from '../utils/api';
 
 /**
@@ -9,6 +9,7 @@ import { getAuthCookie } from '../utils/api';
 export function useGoogleToken() {
   const [hasValidToken, setHasValidToken] = useState(false);
   const [isChecking, setIsChecking] = useState(true);
+  const checkedRef = useRef(false);
 
   const checkToken = useCallback(async () => {
     try {
@@ -22,7 +23,11 @@ export function useGoogleToken() {
   }, []);
 
   useEffect(() => {
-    checkToken();
+    // Guard ensures we only check once per hook instance lifetime
+    if (!checkedRef.current) {
+      checkedRef.current = true;
+      checkToken();
+    }
   }, [checkToken]);
 
   return { hasValidToken, isChecking, checkToken };

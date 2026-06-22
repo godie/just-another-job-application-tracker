@@ -51,6 +51,7 @@ const CustomFieldsSettings: React.FC<CustomFieldsSettingsProps> = ({
               value={customFieldForm.label || ''}
               onChange={(e) => setCustomFieldForm({ ...customFieldForm, label: e.target.value })}
               placeholder='e.g., Recruiter Phone'
+              aria-label={t('settings.custom.label')}
               className='w-full px-4 py-3 border border-earth-300 dark:border-earth-600 rounded focus:ring-2 focus:ring-sage-500 focus:border-sage-500 bg-white dark:bg-earth-800 text-earth-900 dark:text-earth-100 transition-all'
             />
           </div>
@@ -69,6 +70,7 @@ const CustomFieldsSettings: React.FC<CustomFieldsSettingsProps> = ({
                   options: e.target.value === 'select' ? [] : undefined,
                 })
               }
+              aria-label={t('settings.custom.type')}
               className='w-full px-4 py-3 border border-earth-300 dark:border-earth-600 rounded focus:ring-2 focus:ring-sage-500 focus:border-sage-500 bg-white dark:bg-earth-800 text-earth-900 dark:text-earth-100 transition-all'
             >
               <option value='text'>{t('settings.custom.types.text')}</option>
@@ -96,6 +98,7 @@ const CustomFieldsSettings: React.FC<CustomFieldsSettingsProps> = ({
                 }
                 placeholder='Remote&#10;Hybrid&#10;On-site'
                 rows={4}
+                aria-label={t('settings.custom.options')}
                 className='w-full px-4 py-3 border border-earth-300 dark:border-earth-600 rounded focus:ring-2 focus:ring-sage-500 focus:border-sage-500 bg-white dark:bg-earth-800 text-earth-900 dark:text-earth-100 transition-all'
               />
               <p className='text-xs text-earth-500 dark:text-earth-400 mt-2 italic'>
@@ -114,6 +117,7 @@ const CustomFieldsSettings: React.FC<CustomFieldsSettingsProps> = ({
                 onChange={(e) =>
                   setCustomFieldForm({ ...customFieldForm, required: e.target.checked })
                 }
+                aria-label={t('settings.custom.required')}
                 className='size-5 text-sage-600 border-earth-300 dark:border-earth-600 rounded focus:ring-sage-500 transition-all cursor-pointer'
               />
               <span className='text-sm font-bold text-earth-700 dark:text-earth-300 group-hover:text-earth-900 dark:group-hover:text-earth-100 transition-colors'>
@@ -202,6 +206,7 @@ const CustomFieldsSettings: React.FC<CustomFieldsSettingsProps> = ({
                   <button
                     type='button'
                     onClick={() => onEditCustomField(field)}
+                    aria-label={t('common.edit')}
                     className='p-2 text-sage-600 hover:bg-sage-50 dark:hover:bg-sage-900/30 rounded transition-colors'
                   >
                     <svg xmlns='http://www.w3.org/2000/svg' className='size-5' viewBox='0 0 20 20' fill='currentColor'>
@@ -211,6 +216,7 @@ const CustomFieldsSettings: React.FC<CustomFieldsSettingsProps> = ({
                   <button
                     type='button'
                     onClick={() => onDeleteCustomField(field.id)}
+                    aria-label={t('common.delete')}
                     className='p-2 text-terracotta-600 hover:bg-terracotta-50 dark:hover:bg-terracotta-900/30 rounded transition-colors'
                   >
                     <svg xmlns='http://www.w3.org/2000/svg' className='size-5' viewBox='0 0 20 20' fill='currentColor'>

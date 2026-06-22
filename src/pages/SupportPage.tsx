@@ -1,6 +1,6 @@
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { useSEO } from '../seo';
+import { useSEO } from '../seo/useSEO';
 import DonationSection from '../components/DonationSection';
 import SuggestionForm from '../components/SuggestionForm';
 import { type PageType } from '../App';

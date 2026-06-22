@@ -44,6 +44,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
         </div>
         {onAction && actionLabel && (
           <button
+            type="button"
             className='self-start sm:self-auto bg-terracotta-600 hover:bg-terracotta-700 active:bg-terracotta-800 text-white font-bold py-4 px-8 rounded transition-colors border border-terracotta-700 hover:border-terracotta-800 text-base shadow-sm hover:shadow-md'
             onClick={onAction}
             aria-label={actionLabel}

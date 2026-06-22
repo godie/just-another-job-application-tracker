@@ -118,8 +118,9 @@ describe('OnboardingWizard', () => {
       expect(screen.getByRole('dialog')).toBeInTheDocument();
     });
 
-    const backdrop = screen.getByRole('dialog');
-    fireEvent.click(backdrop);
+    const backdrop = screen.getByRole('dialog').parentElement;
+    expect(backdrop).not.toBeNull();
+    fireEvent.click(backdrop!);
 
     await waitFor(() => {
       expect(onClose).toHaveBeenCalledTimes(1);

@@ -5,7 +5,8 @@ import { type PageType } from '../App';
 import { useIsLoggedIn } from '../hooks/useIsLoggedIn';
 import SyncNavIcon from './sync/SyncNavIcon';
 import { useOpportunitiesStore } from '../stores/opportunitiesStore';
-import { Button, Badge } from './ui';
+import { Button } from './ui/Button';
+import { Badge } from './ui/Badge';
 
 
 interface SidebarProps {
@@ -62,7 +63,6 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPage = 'applications', onNavig
 
   return (
     <nav
-      role="navigation"
       aria-label='Main navigation'
       className={`fixed left-0 top-16 h-[calc(100vh-4rem)] bg-earth-50 dark:bg-earth-800 border-r border-earth-200 dark:border-earth-700 p-4 flex flex-col transition-transform duration-300 ease-in-out z-40 ${
         isOpen ? 'translate-x-0' : '-translate-x-full'

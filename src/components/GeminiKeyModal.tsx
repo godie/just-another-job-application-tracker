@@ -1,4 +1,5 @@
 import { useRef, useState, useCallback, useEffect } from 'react';
+import type { KeyboardEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import useKeyboardEscape from '../hooks/useKeyboardEscape';
@@ -114,34 +115,35 @@ export function GeminiKeyModal({ isOpen, onClose, onSuccess }: GeminiKeyModalPro
     t,
   ]);
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
+  const handleDialogKeyDown = useCallback((e: KeyboardEvent) => {
     if (e.key === 'Enter' && !isLoading) {
       e.preventDefault();
       handleSubmit();
     }
-  };
+  }, [isLoading, handleSubmit]);
 
   if (!isOpen) return null;
 
   return (
     <div
       role="none"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
-      onClick={(e) => {
-        if (e.target === e.currentTarget) onClose();
-      }}
-      onKeyDown={(e) => {
-        if (e.key === 'Escape') onClose();
-      }}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm relative"
     >
+      <button
+        type="button"
+        onClick={onClose}
+        aria-label="Close modal backdrop"
+        className="absolute inset-0 h-full w-full"
+      />
       <dialog
         open
         aria-modal="true"
         aria-labelledby="gemini-key-modal-title"
         ref={modalRef}
-        className="w-full max-w-md mx-4 bg-white dark:bg-earth-800 rounded-xl shadow-2xl border border-earth-200 dark:border-earth-700 p-6 space-y-5 animate-in fade-in zoom-in-95 duration-200"
-        onKeyDown={handleKeyDown}
+        className="relative z-10 w-full max-w-md mx-4 bg-white dark:bg-earth-800 rounded-xl shadow-2xl border border-earth-200 dark:border-earth-700 p-6 space-y-5 animate-in fade-in zoom-in-95 duration-200"
+        onKeyDown={handleDialogKeyDown}
       >
+        <div className="space-y-5">
         <div className="flex items-start justify-between">
           <div>
             <h2
@@ -329,6 +331,7 @@ export function GeminiKeyModal({ isOpen, onClose, onSuccess }: GeminiKeyModalPro
             </p>
           </div>
         )}
+        </div>
       </dialog>
     </div>
   );

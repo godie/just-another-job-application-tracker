@@ -3,7 +3,7 @@
 import React, { useReducer, useEffect, useCallback, useRef } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import { useAlert } from './AlertProvider';
-import { Card } from './ui';
+import { Card } from './ui/Card';
 import { useAuthStore } from '../stores/authStore';
 import { ConnectGoogleButton } from './ConnectGoogleButton';
 import { useGoogleToken } from '../hooks/useGoogleToken';
@@ -323,6 +323,7 @@ const GoogleSheetsSync: React.FC<GoogleSheetsSyncProps> = ({ applications, onSyn
               value={sheetIdInput}
               onChange={(e) => dispatch({ type: 'SET_FIELD', field: 'sheetIdInput', value: e.target.value })}
               placeholder={t('sheets.placeholder')}
+              aria-label={t('sheets.placeholder')}
               className="flex-1 px-3 py-2 border border-earth-300 dark:border-earth-600 rounded text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-earth-800 text-earth-900 dark:text-earth-100"
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {

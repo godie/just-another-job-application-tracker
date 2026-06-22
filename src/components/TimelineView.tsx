@@ -1,5 +1,5 @@
 // src/components/TimelineView.tsx
-import React, { useState, useMemo, useEffect, memo } from 'react';
+import React, { useState, useMemo, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelection } from '../hooks/useSelection';
 import { useFormatDate } from '../hooks/useFormatDate';
@@ -45,25 +45,23 @@ const TimelineView: React.FC<TimelineViewProps> = ({ applications, onEdit, onDel
   };
 
   // Pagination logic
-  const totalPages = Math.ceil(applications.length / ITEMS_PER_PAGE);
+  const totalPages = Math.max(Math.ceil(applications.length / ITEMS_PER_PAGE), 1);
+  // Derive the effective page: clamp currentPage within valid range.
+  // When data shrinks and currentPage exceeds totalPages, this returns 1.
+  const effectivePage = useMemo(() => {
+    return Math.min(currentPage, totalPages);
+  }, [currentPage, totalPages]);
+
   const paginatedApplications = useMemo(() => {
-    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    const startIndex = (effectivePage - 1) * ITEMS_PER_PAGE;
     return applications.slice(startIndex, startIndex + ITEMS_PER_PAGE);
-  }, [applications, currentPage]);
+  }, [applications, effectivePage]);
 
   const goToPage = (page: number) => {
     setCurrentPage(page);
     // Scroll to top of timeline view
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
-
-  // Reset to page 1 if current page is beyond available pages
-  useEffect(() => {
-    const totalPages = Math.ceil(applications.length / ITEMS_PER_PAGE);
-    if (currentPage > totalPages && totalPages > 0) {
-      setCurrentPage(1);
-    }
-  }, [applications.length, currentPage]);
 
   if (applications.length === 0) {
     return (
@@ -104,8 +102,9 @@ const TimelineView: React.FC<TimelineViewProps> = ({ applications, onEdit, onDel
       {totalPages > 1 && (
         <div className="flex items-center justify-center gap-2 pt-4">
           <button
-            onClick={() => goToPage(currentPage - 1)}
-            disabled={currentPage === 1}
+            type="button"
+            onClick={() => goToPage(effectivePage - 1)}
+            disabled={effectivePage === 1}
             className="px-4 py-2 text-sm font-medium text-earth-700 dark:text-earth-300 bg-white dark:bg-earth-800 border border-earth-300 dark:border-earth-600 rounded hover:bg-earth-50 dark:hover:bg-earth-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
             aria-label={t('common.previous')}
           >
@@ -115,15 +114,16 @@ const TimelineView: React.FC<TimelineViewProps> = ({ applications, onEdit, onDel
           <div className="flex items-center gap-1">
             {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
               <button
+                type="button"
                 key={page}
                 onClick={() => goToPage(page)}
                 className={`px-3 py-2 text-sm font-medium rounded transition ${
-                  currentPage === page
+                  effectivePage === page
                     ? 'bg-sage-600 text-white'
                     : 'text-earth-700 dark:text-earth-300 bg-white dark:bg-earth-800 border border-earth-300 dark:border-earth-600 hover:bg-earth-50 dark:hover:bg-earth-700'
                 }`}
                 aria-label={t('common.goToPage', { page })}
-                aria-current={currentPage === page ? 'page' : undefined}
+                aria-current={effectivePage === page ? 'page' : undefined}
               >
                 {page}
               </button>
@@ -131,8 +131,9 @@ const TimelineView: React.FC<TimelineViewProps> = ({ applications, onEdit, onDel
           </div>
 
           <button
-            onClick={() => goToPage(currentPage + 1)}
-            disabled={currentPage === totalPages}
+            type="button"
+            onClick={() => goToPage(effectivePage + 1)}
+            disabled={effectivePage === totalPages}
             className="px-4 py-2 text-sm font-medium text-earth-700 dark:text-earth-300 bg-white dark:bg-earth-800 border border-earth-300 dark:border-earth-600 rounded hover:bg-earth-50 dark:hover:bg-earth-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
             aria-label={t('common.next')}
           >

@@ -1,6 +1,7 @@
 // src/components/ProfileSetupModal.tsx
 
 import React, { useState, useRef, useCallback } from 'react';
+import type { KeyboardEvent } from 'react';
 import useFocusTrap from '../hooks/useFocusTrap';
 import useKeyboardEscape from '../hooks/useKeyboardEscape';
 import type { UserMatchProfile, SeniorityLevel } from '../types/matching';
@@ -83,33 +84,35 @@ export const ProfileSetupModal: React.FC<ProfileSetupModalProps> = ({
     onSave, onClose,
   ]);
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
+  const handleDialogKeyDown = useCallback((e: KeyboardEvent) => {
     if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+      e.preventDefault();
       handleSubmit();
     }
-  };
+  }, [handleSubmit]);
 
   if (!isOpen) return null;
 
   return (
     <div
       role="none"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
-      onClick={(e) => {
-        if (e.target === e.currentTarget) onClose();
-      }}
-      onKeyDown={(e) => {
-        if (e.key === 'Escape') onClose();
-      }}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 relative"
     >
+      <button
+        type="button"
+        onClick={onClose}
+        aria-label="Close modal backdrop"
+        className="absolute inset-0 h-full w-full"
+      />
       <dialog
         open
         aria-modal="true"
         aria-labelledby="profile-setup-title"
         ref={modalRef}
-        className="w-full max-w-2xl bg-white dark:bg-earth-800 rounded-xl shadow-2xl border border-earth-200 dark:border-earth-700 overflow-hidden animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] flex flex-col"
-        onKeyDown={handleKeyDown}
+        className="relative z-10 w-full max-w-2xl bg-white dark:bg-earth-800 rounded-xl shadow-2xl border border-earth-200 dark:border-earth-700 overflow-hidden animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] flex flex-col"
+        onKeyDown={handleDialogKeyDown}
       >
+        <div className="contents">
         {/* Header */}
         <div className="px-6 py-4 border-b border-earth-200 dark:border-earth-700 flex items-center justify-between flex-shrink-0">
           <div>
@@ -375,8 +378,8 @@ export const ProfileSetupModal: React.FC<ProfileSetupModalProps> = ({
             </button>
           </div>
         </div>
+        </div>
       </dialog>
     </div>
   );
 };
-

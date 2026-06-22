@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { setSkipAuthModal } from '../storage/auth';
 import { type PageType } from '../App';
-import { useSEO } from '../seo';
+import { useSEO } from '../seo/useSEO';
 
 interface LandingPageProps {
   onNavigate: (page: PageType) => void;
@@ -84,6 +84,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
       {/* Navigation / Lang Switcher + Enter CTA */}
       <nav className='relative max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-6 flex justify-between items-center gap-4'>
         <button
+          type='button'
           onClick={handleEnterApp}
           className='inline-flex items-center gap-2 bg-terracotta-600 hover:bg-terracotta-700 active:bg-terracotta-800 text-white font-semibold py-2.5 px-6 rounded transition-colors shadow-sm hover:shadow-md border border-terracotta-700 hover:border-terracotta-800'
         >
@@ -99,6 +100,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
           </div>
           <div className='flex items-center gap-2' aria-label='Language selector'>
             <button
+              type='button'
               onClick={() => changeLanguage('en')}
               className={`px-4 py-2 text-sm font-semibold rounded transition-all duration-200 ${
                 i18n.language.startsWith('en') 
@@ -109,6 +111,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
               EN
             </button>
             <button
+              type='button'
               onClick={() => changeLanguage('es')}
               className={`px-4 py-2 text-sm font-semibold rounded transition-all duration-200 ${
                 i18n.language.startsWith('es') 
@@ -146,6 +149,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
             
             <div className='flex flex-col sm:flex-row gap-4'>
               <button
+                type='button'
                 onClick={handleEnterApp}
                 className='inline-flex items-center justify-center gap-2 bg-terracotta-600 hover:bg-terracotta-700 active:bg-terracotta-800 text-white font-semibold py-4 px-8 text-lg rounded transition-colors shadow-sm hover:shadow-md border border-terracotta-700 hover:border-terracotta-800'
               >
@@ -155,6 +159,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                 </svg>
               </button>
               <button
+                type='button'
                 onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}
                 className='inline-flex items-center justify-center gap-2 border border-earth-300 dark:border-earth-600 text-earth-700 dark:text-earth-200 font-semibold py-4 px-8 text-lg rounded transition-colors hover:bg-earth-100 dark:hover:bg-earth-800'
               >
@@ -405,6 +410,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
             Join thousands of job seekers who have organized their search and landed their dream roles.
           </p>
           <button
+            type='button'
             onClick={handleEnterApp}
             className='inline-flex items-center gap-3 bg-white text-terracotta-700 hover:bg-earth-100 font-bold py-4 px-10 text-lg rounded transition-colors border border-earth-200 hover:border-earth-300'
           >

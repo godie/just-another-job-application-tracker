@@ -71,6 +71,7 @@ const CSVActions: React.FC = () => {
   return (
     <div className="flex flex-wrap gap-2 items-center">
       <button
+        type="button"
         onClick={handleExport}
         className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-earth-700 dark:text-earth-200 bg-white dark:bg-earth-800 border border-earth-300 dark:border-earth-600 rounded hover:bg-earth-100 dark:hover:bg-earth-700 transition-colors"
         title={t('csv.export')}
@@ -80,6 +81,7 @@ const CSVActions: React.FC = () => {
       </button>
 
       <button
+        type="button"
         onClick={handleImportClick}
         className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-earth-700 dark:text-earth-200 bg-white dark:bg-earth-800 border border-earth-300 dark:border-earth-600 rounded hover:bg-earth-100 dark:hover:bg-earth-700 transition-colors"
         title={t('csv.import')}
@@ -94,6 +96,7 @@ const CSVActions: React.FC = () => {
         onChange={handleFileChange}
         accept=".csv"
         className="hidden"
+        aria-label={t('csv.import')}
       />
     </div>
   );

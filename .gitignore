@@ -41,3 +41,15 @@ api/vendor/
 .agents
 .kiro
 api/.phpunit.result.cache
+.claude
+.codebudd
+.cursor
+.junie
+.openhands
+.qoder
+.qwen
+.windsurf
+.codebuddy/
+skills/
+social-media-drafts/
+codedb.snapshot

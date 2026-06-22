@@ -33,7 +33,7 @@ export const Button: React.FC<ButtonProps> = ({
   const combinedClassName = `${baseStyles} ${variants[variant]} ${sizes[size]} ${className}`;
 
   return (
-    <button className={combinedClassName} {...props}>
+    <button className={combinedClassName} type="button" {...props}>
       {children}
     </button>
   );

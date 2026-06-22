@@ -1,29 +1,69 @@
 // src/components/AddJobForm.tsx
-import React, { useRef } from 'react';
+import React, { useState, useRef } from 'react';
+import { getLocalDateString } from '../utils/dateHelpers';
 import { useTranslation } from 'react-i18next';
 import type { JobApplication } from '../types/applications';
+import { toWorkType, buildInitialTimeline } from '../utils/applications';
 import useKeyboardEscape from '../hooks/useKeyboardEscape';
 import useFocusTrap from '../hooks/useFocusTrap';
-import { useJobForm } from '../hooks/useJobForm';
 import TimelineEditor from './TimelineEditor';
-import { Button, Input, Select, Card } from './ui';
+import { Button } from './ui/Button';
+import { Input } from './ui/Input';
+import { Select } from './ui/Select';
+import { Card } from './ui/Card';
 
 interface AddJobFormProps {
-  onSave: (newEntry: Omit<JobApplication, 'id'> | JobApplication) => void;
+  onSave: (newEntry: Omit<JobApplication, 'id'>) => void;
   onCancel: () => void;
   initialData?: JobApplication | null;
 }
 
+const initialFormData: Omit<JobApplication, 'id'> = {
+  position: '',
+  company: '',
+  location: '',
+  workType: undefined,
+  hybridDaysInOffice: undefined,
+  salary: '',
+  status: 'Applied',
+  applicationDate: '',
+  interviewDate: '',
+  notes: '',
+  link: '',
+  platform: 'LinkedIn',
+  contactName: '',
+  followUpDate: '',
+  timeline: [],
+};
+
+
 const AddJobForm: React.FC<AddJobFormProps> = ({ onSave, onCancel, initialData }) => {
   const { t } = useTranslation();
+  const isCreationMode = initialData && !initialData.id;
+  const isEditing = !!initialData && !!initialData.id;
   
-  const {
-    formData,
-    setFormData,
-    updateFormField,
-    handleSubmit,
-    isEditing,
-  } = useJobForm({ initialData, onSave });
+  // When creating a new entry, merge initialData with initialFormData to ensure defaults
+  const getInitialFormData = () => {
+    if (isEditing && initialData) {
+      return initialData;
+    }
+    if (isCreationMode && initialData) {
+      // Merge initialData with initialFormData to ensure all defaults are set
+      return { ...initialFormData, ...initialData };
+    }
+    return initialFormData;
+  };
+  
+  const [formData, setFormData] = useState<Omit<JobApplication, 'id'> | JobApplication>(
+    () => {
+      const data = getInitialFormData();
+      // Set today's date as default when creating a new entry
+      if (!data.applicationDate) {
+        return { ...data, applicationDate: getLocalDateString() };
+      }
+      return data;
+    }
+  );
 
   useKeyboardEscape(onCancel, true);
 
@@ -31,10 +71,54 @@ const AddJobForm: React.FC<AddJobFormProps> = ({ onSave, onCancel, initialData }
   const modalRef = useRef<HTMLDivElement>(null);
   useFocusTrap(modalRef);
 
+  const updateFormField = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    if (name === 'hybridDaysInOffice') {
+      const num = value === '' ? undefined : parseInt(value, 10);
+      setFormData(prev => ({ ...prev, hybridDaysInOffice: num }));
+      return;
+    }
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Ensure status has a default value
+    const dataWithStatus = {
+      ...formData,
+      status: formData.status || 'Applied',
+    };
+    
+    // Use manual timeline if exists, otherwise build from form data
+    let timeline = dataWithStatus.timeline || [];
+    if (timeline.length === 0) {
+      timeline = buildInitialTimeline(
+        dataWithStatus.applicationDate,
+        dataWithStatus.status,
+        dataWithStatus.interviewDate
+      );
+    }
+    
+    const validWorkType = toWorkType(dataWithStatus.workType);
+    const hybridDaysInOffice =
+      validWorkType === 'hybrid' && typeof dataWithStatus.hybridDaysInOffice === 'number'
+        ? dataWithStatus.hybridDaysInOffice
+        : undefined;
+    const finalData = {
+      ...dataWithStatus,
+      timeline,
+      location: dataWithStatus.location || undefined,
+      workType: validWorkType,
+      hybridDaysInOffice,
+    };
+    onSave(finalData);
+  };
+
   return (
-    <div 
+    <dialog 
+      open
       className='fixed inset-0 bg-earth-900/80 backdrop-blur-sm flex items-center justify-center p-4 z-50'
-      role='dialog'
       aria-modal='true'
       aria-labelledby='add-job-form-title'
     >
@@ -82,6 +166,7 @@ const AddJobForm: React.FC<AddJobFormProps> = ({ onSave, onCancel, initialData }
                 onChange={updateFormField}
                 placeholder='e.g. Remote, San Francisco'
                 maxLength={200}
+                aria-label={t('form.location')}
                 className='w-full rounded border-earth-300 dark:border-earth-600 focus:border-sage-500 dark:focus:border-sage-400 focus:ring-sage-500 dark:focus:ring-sage-400 p-2.5 border bg-white dark:bg-earth-800 text-earth-900 dark:text-earth-100 transition-colors'
                 data-testid='form-location'
               />
@@ -214,15 +299,17 @@ const AddJobForm: React.FC<AddJobFormProps> = ({ onSave, onCancel, initialData }
             />
             
             <div className='col-span-full'>
-              <label className='block text-xs font-semibold text-earth-600 dark:text-earth-400 mb-1'>
+              <label className='block text-xs font-semibold text-earth-600 dark:text-earth-400 mb-1' htmlFor='job-form-notes'>
                 {t('form.notes')}
               </label>
               <textarea
+                id='job-form-notes'
                 name='notes'
                 value={formData.notes}
                 onChange={updateFormField}
                 rows={3}
                 maxLength={2000}
+                aria-label={t('form.notes')}
                 className='w-full rounded border-earth-300 dark:border-earth-600 px-3 py-2.5 text-sm bg-white dark:bg-earth-700 text-earth-900 dark:text-earth-100 placeholder-earth-400 dark:placeholder-earth-500 focus:border-sage-500 focus:ring-sage-500 transition-colors resize-none'
               />
               <p className='text-xs text-earth-400 dark:text-earth-500 mt-1'>
@@ -260,7 +347,7 @@ const AddJobForm: React.FC<AddJobFormProps> = ({ onSave, onCancel, initialData }
         </form>
         </Card>
       </div>
-    </div>
+    </dialog>
   );
 };
 

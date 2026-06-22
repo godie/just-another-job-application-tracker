@@ -5,7 +5,10 @@ import { type JobApplication, type ApplicationWithMetadata } from '../types/appl
 import { getCellValue } from '../utils/applications';
 import type { TableColumn } from '../types/table';
 import { sanitizeUrl } from '../utils/url';
-import { Card, Badge, Button, Separator } from './ui';
+import { Card } from './ui/Card';
+import { Badge } from './ui/Badge';
+import { Button } from './ui/Button';
+import { Separator } from './ui/Separator';
 import { getBadgeVariantForStatus } from '../utils/status';
 
 interface ApplicationCardProps {

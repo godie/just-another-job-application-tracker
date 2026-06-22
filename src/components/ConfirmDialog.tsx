@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { Button } from './ui';
+import { Button } from './ui/Button';
 import useFocusTrap from '../hooks/useFocusTrap';
 import useKeyboardEscape from '../hooks/useKeyboardEscape';
 

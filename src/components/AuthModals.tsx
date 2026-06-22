@@ -1,9 +1,9 @@
 // src/components/AuthModals.tsx
-import React, { useState } from 'react';
+import React, { useReducer, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useGoogleLogin } from '@react-oauth/google';
 import { useAuthStore } from '../stores/authStore';
-import { Button } from './ui';
+import { Button } from './ui/Button';
 
 type AuthMode = 'login' | 'register';
 
@@ -13,15 +13,61 @@ interface AuthModalProps {
   initialMode?: AuthMode;
 }
 
-// eslint-disable-next-line react-refresh/only-export-components
-const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'login' }) => {
+interface AuthModalState {
+  mode: AuthMode;
+  email: string;
+  password: string;
+  confirmPassword: string;
+  displayName: string;
+  localError: string | null;
+}
+
+type AuthModalAction =
+  | { type: 'fieldChanged'; field: 'email' | 'password' | 'confirmPassword' | 'displayName'; value: string }
+  | { type: 'modeChanged'; mode: AuthMode }
+  | { type: 'localErrorChanged'; error: string | null };
+
+function createInitialState(mode: AuthMode): AuthModalState {
+  return {
+    mode,
+    email: '',
+    password: '',
+    confirmPassword: '',
+    displayName: '',
+    localError: null,
+  };
+}
+
+function authModalReducer(state: AuthModalState, action: AuthModalAction): AuthModalState {
+  switch (action.type) {
+    case 'fieldChanged':
+      return {
+        ...state,
+        [action.field]: action.value,
+      };
+    case 'modeChanged':
+      return {
+        ...state,
+        mode: action.mode,
+        password: '',
+        confirmPassword: '',
+        localError: null,
+      };
+    case 'localErrorChanged':
+      return {
+        ...state,
+        localError: action.error,
+      };
+    default:
+      return state;
+  }
+}
+
+export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'login' }) => {
   const { t } = useTranslation();
-  const [mode, setMode] = useState<AuthMode>(initialMode);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [displayName, setDisplayName] = useState('');
-  const [localError, setLocalError] = useState<string | null>(null);
+  // Initialize mode from prop — component unmounts when !isOpen, so state is fresh each open.
+  const [state, dispatch] = useReducer(authModalReducer, initialMode, createInitialState);
+  const { mode, email, password, confirmPassword, displayName, localError } = state;
 
   const { login, register, loginWithGoogle, isLoading, error } = useAuthStore();
 
@@ -40,33 +86,25 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'l
     },
   });
 
-  React.useEffect(() => {
-    if (isOpen) {
-      setMode(initialMode);
-      setEmail('');
-      setPassword('');
-      setConfirmPassword('');
-      setDisplayName('');
-      setLocalError(null);
-    }
-  }, [isOpen, initialMode]);
+  // Component unmounts when !isOpen, so state resets naturally on every open.
+  // No need for a useEffect to reset state — the conditional return above handles it.
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLocalError(null);
+    dispatch({ type: 'localErrorChanged', error: null });
 
     if (!email || !password) {
-      setLocalError(t('auth.errors.required'));
+      dispatch({ type: 'localErrorChanged', error: t('auth.errors.required') });
       return;
     }
 
     if (mode === 'register') {
       if (password !== confirmPassword) {
-        setLocalError(t('auth.errors.passwordMismatch'));
+        dispatch({ type: 'localErrorChanged', error: t('auth.errors.passwordMismatch') });
         return;
       }
       if (password.length < 8) {
-        setLocalError(t('auth.errors.weakPassword'));
+        dispatch({ type: 'localErrorChanged', error: t('auth.errors.weakPassword') });
         return;
       }
       try {
@@ -90,10 +128,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'l
   };
 
   const switchMode = (newMode: AuthMode) => {
-    setMode(newMode);
-    setLocalError(null);
-    setPassword('');
-    setConfirmPassword('');
+    dispatch({ type: 'modeChanged', mode: newMode });
   };
 
   if (!isOpen) return null;
@@ -107,6 +142,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'l
               {mode === 'login' ? t('auth.login') : t('auth.register')}
             </h2>
             <button
+              type="button"
               onClick={onClose}
               className="p-2 text-earth-500 hover:text-earth-700 dark:text-earth-400 dark:hover:text-earth-200 transition-colors"
               aria-label="Close"
@@ -132,7 +168,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'l
                 id="auth-email"
                 type="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => dispatch({ type: 'fieldChanged', field: 'email', value: e.target.value })}
+                aria-label={t('auth.email')}
                 className="w-full px-3 py-2 border border-earth-300 dark:border-earth-600 rounded-md bg-white dark:bg-earth-700 text-earth-800 dark:text-earth-100 focus:outline-none focus:ring-2 focus:ring-sage-500 focus:border-transparent"
                 placeholder="you@example.com"
                 required
@@ -147,7 +184,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'l
                 id="auth-password"
                 type="password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => dispatch({ type: 'fieldChanged', field: 'password', value: e.target.value })}
+                aria-label={t('auth.password')}
                 className="w-full px-3 py-2 border border-earth-300 dark:border-earth-600 rounded-md bg-white dark:bg-earth-700 text-earth-800 dark:text-earth-100 focus:outline-none focus:ring-2 focus:ring-sage-500 focus:border-transparent"
                 placeholder="••••••••"
                 required
@@ -164,7 +202,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'l
                     id="auth-confirm-password"
                     type="password"
                     value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    onChange={(e) => dispatch({ type: 'fieldChanged', field: 'confirmPassword', value: e.target.value })}
+                    aria-label={t('auth.confirmPassword')}
                     className="w-full px-3 py-2 border border-earth-300 dark:border-earth-600 rounded-md bg-white dark:bg-earth-700 text-earth-800 dark:text-earth-100 focus:outline-none focus:ring-2 focus:ring-sage-500 focus:border-transparent"
                     placeholder="••••••••"
                     required
@@ -179,7 +218,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'l
                     id="auth-display-name"
                     type="text"
                     value={displayName}
-                    onChange={(e) => setDisplayName(e.target.value)}
+                    onChange={(e) => dispatch({ type: 'fieldChanged', field: 'displayName', value: e.target.value })}
+                    aria-label={t('auth.displayName')}
                     className="w-full px-3 py-2 border border-earth-300 dark:border-earth-600 rounded-md bg-white dark:bg-earth-700 text-earth-800 dark:text-earth-100 focus:outline-none focus:ring-2 focus:ring-sage-500 focus:border-transparent"
                     placeholder={t('auth.displayName')}
                   />
@@ -267,6 +307,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'l
   );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useAuthModals = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [initialMode, setInitialMode] = useState<AuthMode>('login');
@@ -294,4 +335,3 @@ export const useAuthModals = () => {
     AuthModal,
   };
 };
-

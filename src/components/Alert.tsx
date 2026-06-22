@@ -18,7 +18,7 @@ const Alert: React.FC<AlertProps> = ({ type, message, onClose, duration = 5000 }
       const timer = setTimeout(() => {
         setIsVisible(false);
         if (onClose) {
-          setTimeout(onClose, 300); // Wait for fade-out animation
+          setTimeout(onClose, 300);
         }
       }, duration);
 
@@ -84,6 +84,7 @@ const Alert: React.FC<AlertProps> = ({ type, message, onClose, duration = 5000 }
         </div>
         {onClose && (
           <button
+            type="button"
             onClick={() => {
               setIsVisible(false);
               setTimeout(onClose, 300);

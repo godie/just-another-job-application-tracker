@@ -32,6 +32,7 @@ const OpportunitiesTable: React.FC<OpportunitiesTableProps> = ({
           placeholder={t('opportunities.searchPlaceholder')}
           value={searchTerm}
           onChange={(e) => onSearchChange(e.target.value)}
+          aria-label={t('opportunities.searchPlaceholder')}
           className='w-full sm:w-64 px-4 py-2 border border-earth-300 dark:border-earth-600 rounded bg-white dark:bg-earth-800 text-earth-900 dark:text-earth-100 placeholder-earth-400 dark:placeholder-earth-500 focus:ring-2 focus:ring-sage-500 focus:border-transparent'
         />
         <p className='text-xs text-earth-500 dark:text-earth-400 mt-2'>
@@ -109,12 +110,14 @@ const OpportunitiesTable: React.FC<OpportunitiesTableProps> = ({
                         {t('opportunities.actions.view')}
                       </a>
                       <button
+                        type="button"
                         onClick={() => onApply(opp)}
                         className='text-green-600 dark:text-green-400 hover:text-green-900 dark:hover:text-green-300 font-semibold'
                       >
                         {t('opportunities.actions.apply')}
                       </button>
                       <button
+                        type="button"
                         onClick={() => onDelete(opp)}
                         className='text-terracotta-600 dark:text-terracotta-400 hover:text-terracotta-900 dark:hover:text-terracotta-300'
                       >

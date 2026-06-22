@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { FaCoffee, FaHeart } from 'react-icons/fa';
-import { Card } from './ui';
+import { Card } from './ui/Card';
 
 const DonationSection: React.FC = () => {
   const { t } = useTranslation();

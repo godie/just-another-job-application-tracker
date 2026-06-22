@@ -45,6 +45,7 @@ const PWAReloadPrompt: React.FC = () => {
       </div>
       <div className='flex justify-end gap-2'>
         <button
+          type="button"
           onClick={close}
           className='px-3 py-1.5 text-xs font-medium text-earth-600 dark:text-earth-400 hover:bg-earth-100 dark:hover:bg-earth-700 rounded'
         >
@@ -52,6 +53,7 @@ const PWAReloadPrompt: React.FC = () => {
         </button>
         {needUpdate && (
           <button
+            type="button"
             onClick={() => updateServiceWorker(true)}
             className='px-3 py-1.5 text-xs font-bold text-white bg-sage-600 hover:bg-sage-700 rounded'
           >

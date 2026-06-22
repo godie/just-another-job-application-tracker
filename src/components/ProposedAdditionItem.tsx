@@ -38,6 +38,7 @@ export const ProposedAdditionItem: React.FC<ProposedAdditionItemProps> = ({
         checked={isSelected}
         onChange={onToggle}
         disabled={disabled}
+        aria-label={`Select addition: ${addition.data.position} at ${addition.data.company}`}
         className='mt-1 size-5 text-sage-600 border-earth-300 dark:border-earth-600 rounded focus:ring-sage-500 disabled:opacity-30'
       />
       <div className="flex-1 min-w-0">
@@ -63,6 +64,7 @@ export const ProposedAdditionItem: React.FC<ProposedAdditionItemProps> = ({
                 type="checkbox"
                 checked={isForced}
                 onChange={(e) => onToggleForce(e.target.checked)}
+                aria-label={t('settings.emailScan.addAnyway')}
                 className='size-3.5 rounded border-earth-300 dark:border-earth-600 text-sage-600'
               />
               {t('settings.emailScan.addAnyway')}

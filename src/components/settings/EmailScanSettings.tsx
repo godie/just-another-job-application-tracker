@@ -79,6 +79,7 @@ const EmailScanSettings: React.FC<EmailScanSettingsProps> = ({
             <div className="flex items-center gap-2">
               {keyConfigured && (
                 <button
+                  type='button'
                   onClick={handleRemoveKey}
                   className="px-3 py-1.5 text-xs font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded border border-red-200 dark:border-red-800 transition"
                 >
@@ -86,6 +87,7 @@ const EmailScanSettings: React.FC<EmailScanSettingsProps> = ({
                 </button>
               )}
               <button
+                type='button'
                 onClick={() => setShowGeminiModal(true)}
                 className="px-4 py-2 text-sm font-medium bg-sage-600 text-white hover:bg-sage-700 rounded transition"
               >
@@ -111,6 +113,7 @@ const EmailScanSettings: React.FC<EmailScanSettingsProps> = ({
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           {monthOptions.map((months) => (
             <button
+              type='button'
               key={months}
               onClick={() => onEmailScanMonthsChange(months)}
               className={`flex flex-col items-center justify-center p-4 rounded border-2 transition-all ${
@@ -157,6 +160,7 @@ const EmailScanSettings: React.FC<EmailScanSettingsProps> = ({
                   type="checkbox"
                   checked={isEnabled}
                   onChange={() => onChatbotToggle(chatbot.id)}
+                  aria-label={chatbot.name}
                   className='size-5 text-sage-600 border-earth-300 dark:border-earth-600 rounded focus:ring-sage-500'
                 />
                 <span className={`font-bold ${isEnabled ? 'text-sage-700 dark:text-sage-300' : 'text-earth-700 dark:text-earth-300'}`}>

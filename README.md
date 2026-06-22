@@ -4,6 +4,11 @@
 
 This is a modern Job Application Tracker built using React, TypeScript, and Tailwind CSS. The project follows Test-Driven Development (TDD) principles, utilizing Vitest and React Testing Library for comprehensive unit and component testing.The application manages job applications locally, with an architecture designed for seamless integration with external services like Google Sheets.
 
+## Runtime Requirements
+
+- Node.js 22.x
+- npm 10.9.2
+
 # Project Status
 
 **Completion: 98%**
