@@ -763,17 +763,20 @@ class AppAuthControllerTest extends TestCase
      */
     public function testExchangeGoogleCodeRejectsRedirectUriNotInAllowedOrigins(): void
     {
-        // Use reflection to inject a limited allowed_origins config
-        // so we can test the real exchangeGoogleCodeForToken method
-        $testConfig = $this->config;
-        $testConfig['allowed_origins'] = ['https://trusted.example.com'];
-        $testConfig['google_client_id'] = 'test-client-id';
-        $testConfig['google_client_secret'] = 'test-client-secret';
-
-        // config is on the parent AppAuthController, not TestableAppAuthController
+        // Inject a limited allowed_origins config via reflection so we
+        // exercise the real exchangeGoogleCodeForToken method.
+        // The parent's $config is private; reading and writing through
+        // reflection avoids PHP 8.2's "dynamic property" deprecation
+        // that would otherwise fire when the test class fell back to
+        // $this->config.
         $reflection = new \ReflectionClass(AppAuthController::class);
         $configProp = $reflection->getProperty('config');
         $configProp->setAccessible(true);
+
+        $testConfig = $configProp->getValue($this->controller) ?? [];
+        $testConfig['allowed_origins'] = ['https://trusted.example.com'];
+        $testConfig['google_client_id'] = 'test-client-id';
+        $testConfig['google_client_secret'] = 'test-client-secret';
         $configProp->setValue($this->controller, $testConfig);
 
         // Attempt exchange with an untrusted redirectUri
