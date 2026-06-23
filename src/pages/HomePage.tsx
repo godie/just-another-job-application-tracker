@@ -117,11 +117,13 @@ const HomePageContent: React.FC<HomePageContentProps> = ({ onNavigate }) => {
       window.removeEventListener('message', handleMessage);
       window.removeEventListener('triggerEditJob', handleTriggerEdit);
     };
-  // loadApplications/loadPreferences are stable Zustand actions.
-  // showSuccess (useAlert) and t (useTranslation) are referentially stable.
-  // Stable deps = effect runs once on mount; no re-subscription needed.
+  // loadApplications/loadPreferences are Zustand actions — NOT referentially
+  // stable (they're recreated on store updates). Using them as deps creates
+  // an infinite loop: effect runs → loadApplications() updates store → actions
+  // get new references → effect re-runs → ...
+  // Empty [] ensures mount-only execution; stable callbacks in handlers, getState() for applications.
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loadApplications, loadPreferences]);
+  }, []);
 
   // Sync view preference
   useEffect(() => {
