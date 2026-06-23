@@ -3,7 +3,7 @@ export interface SEOConfig {
   /** Browser tab title. Appended with " | JAJAT" unless suppressSuffix is true. */
   title: string;
   /** Meta description (max 160 chars recommended). */
-  description: string;
+  description?: string;
   /** Canonical URL for this page. Defaults to window.location.href. */
   canonicalUrl?: string;
   /** Open Graph image URL. Defaults to DEFAULT_OG_IMAGE. */

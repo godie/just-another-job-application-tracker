@@ -6,6 +6,7 @@ import type { SEODefaults } from './constants';
  * ResolvedSEOConfig by applying defaults and the title suffix rule.
  *
  * - Appends " | JAJAT" to the title unless `config.suppressSuffix` is `true`
+ * - Falls back to `defaults.description` for `description` when omitted
  * - Falls back to `defaults.baseUrl` for `canonicalUrl` when omitted
  * - Falls back to `defaults.ogImage` for `ogImage` when omitted
  * - Falls back to `"website"` for `ogType` when omitted
@@ -23,7 +24,7 @@ export function resolveSEOConfig(
 
   return {
     title,
-    description: config.description,
+    description: config.description ?? defaults.description,
     canonicalUrl: config.canonicalUrl ?? defaults.baseUrl,
     ogImage: config.ogImage ?? defaults.ogImage,
     ogType: config.ogType ?? 'website',

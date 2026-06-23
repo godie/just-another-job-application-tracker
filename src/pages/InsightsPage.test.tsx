@@ -136,4 +136,10 @@ describe('InsightsPage', () => {
     render(<InsightsPage />);
     expect(screen.queryByText('+ Add Entry')).not.toBeInTheDocument();
   });
+
+  it('sets the document title via useSEO hook', () => {
+    render(<InsightsPage />);
+    // resolveSEOConfig appends " | JAJAT" suffix
+    expect(document.title).toBe('Insights & Analytics | JAJAT');
+  });
 });

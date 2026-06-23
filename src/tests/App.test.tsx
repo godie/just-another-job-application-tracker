@@ -1,7 +1,8 @@
 // src/tests/App.test.tsx
-import { render, screen, act } from '@testing-library/react';
+import { render, screen, act, fireEvent } from '@testing-library/react';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import App from '../App';
+import type { JobApplication } from '../types/applications';
 
 // Mock auth store to prevent unhandled rejections from fetchMe -> setLoginStatus
 vi.mock('../stores/authStore', () => ({
@@ -22,6 +23,26 @@ vi.mock('../stores/authStore', () => ({
   })),
 }));
 
+// Mock applications store so we can seed test data for the job-details page
+vi.mock('../stores/applicationsStore', () => ({
+  useApplicationsStore: vi.fn(),
+}));
+
+import { useApplicationsStore } from '../stores/applicationsStore';
+
+// Default mock state — safe defaults for all tests. Individual tests override.
+const defaultStoreState = () => ({
+  applications: [] as JobApplication[],
+  loadApplications: vi.fn(),
+  refreshApplications: vi.fn(),
+  deleteApplication: vi.fn(),
+});
+
+(useApplicationsStore as ReturnType<typeof vi.fn>).mockImplementation(
+  (selector?: (state: ReturnType<typeof defaultStoreState>) => unknown) =>
+    typeof selector === 'function' ? selector(defaultStoreState()) : defaultStoreState()
+);
+
 // Mock components that might be problematic in test environment
 vi.mock('../layouts/MainLayout', () => ({
   default: ({ children }: { children: React.ReactNode }) => <div data-testid='main-layout'>{children}</div>,
@@ -40,6 +61,11 @@ describe('App Navigation and History', () => {
     localStorage.clear();
     // Reset URL to base
     window.history.replaceState({}, '', '/');
+    // Reset applications store to safe defaults
+    (useApplicationsStore as ReturnType<typeof vi.fn>).mockImplementation(
+      (selector?: (state: ReturnType<typeof defaultStoreState>) => unknown) =>
+        typeof selector === 'function' ? selector(defaultStoreState()) : defaultStoreState()
+    );
   });
 
   it('renders the landing page by default', () => {
@@ -66,6 +92,75 @@ describe('App Navigation and History', () => {
 
     // Initially on landing
     expect(window.location.search).toContain('page=landing');
+  });
+
+  it('renders job-details page with correct application data from URL', async () => {
+    // Seed a test application in the store
+    const testApp: JobApplication = {
+      id: 'app-1',
+      position: 'Senior Backend Engineer',
+      company: 'Widgets Inc',
+      status: 'interviewing',
+      applicationDate: '2025-01-15',
+      salary: '120k–150k',
+      platform: 'Indeed',
+      location: 'Berlin, DE',
+      workType: 'hybrid',
+      hybridDaysInOffice: 3,
+      contactName: 'Alice Hiring',
+      link: 'https://example.com/job/sbe',
+      interviewDate: '2025-02-01',
+      followUpDate: '2025-03-01',
+      notes: 'Great team.',
+      timeline: [
+        { id: 'e1', type: 'application_submitted', date: '2025-01-15', status: 'completed' },
+        { id: 'e2', type: 'technical_interview', date: '2025-02-01', status: 'scheduled' },
+      ],
+      customFields: { 'Referral': 'Internal' },
+    } as JobApplication;
+
+    const mockLoad = vi.fn();
+    const mockRefresh = vi.fn();
+    const mockDelete = vi.fn();
+
+    (useApplicationsStore as ReturnType<typeof vi.fn>).mockImplementation(
+      (selector: (state: { applications: JobApplication[]; loadApplications: typeof mockLoad; refreshApplications: typeof mockRefresh; deleteApplication: typeof mockDelete }) => unknown) =>
+        selector({
+          applications: [testApp],
+          loadApplications: mockLoad,
+          refreshApplications: mockRefresh,
+          deleteApplication: mockDelete,
+        })
+    );
+
+    // Set URL with job-details page and jobId
+    const url = new URL(window.location.href);
+    url.searchParams.set('page', 'job-details');
+    url.searchParams.set('jobId', 'app-1');
+    window.history.replaceState({}, '', url.toString());
+
+    render(<App />);
+
+    // Wait for lazy-loaded JobDetailsPage to resolve — use heading role to avoid
+    // matching duplicate text in both <h1> and detail grid <dd>
+    expect(await screen.findByRole('heading', { name: /Senior Backend Engineer/ })).toBeInTheDocument();
+    // Company appears in subtitle <p> and detail grid — use getAllByText
+    const companyTexts = screen.getAllByText('Widgets Inc');
+    expect(companyTexts.length).toBe(2);
+    // Status badge
+    expect(screen.getByText('interviewing')).toBeInTheDocument();
+    // Job ID in header
+    expect(screen.getByText('app-1')).toBeInTheDocument();
+    // SEO title
+    expect(document.title).toBe(
+      'Senior Backend Engineer at Widgets Inc - My Applications | JAJAT'
+    );
+
+    // Verify full navigation flow: click "Back to Applications"
+    const backButtons = screen.getAllByText(/Back to Applications/);
+    fireEvent.click(backButtons[0]);
+    // After navigation, App should update the URL
+    expect(window.location.search).toContain('page=applications');
   });
 
   it('updates the page when the popstate event occurs', async () => {

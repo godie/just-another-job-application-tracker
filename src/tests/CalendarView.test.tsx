@@ -40,12 +40,12 @@ describe('CalendarView', () => {
     expect(screen.getByText(/technical interview/i)).toBeInTheDocument();
   });
 
-  test('clicking an event triggers onEdit callback', () => {
-    const onEdit = vi.fn();
-    render(<CalendarView applications={[applicationWithEvent]} onEdit={onEdit} />);
+  test('clicking an event triggers onSelectJob callback', () => {
+    const onSelectJob = vi.fn();
+    render(<CalendarView applications={[applicationWithEvent]} onSelectJob={onSelectJob} />);
 
     fireEvent.click(screen.getByText(/Site Reliability Engineer/i));
-    expect(onEdit).toHaveBeenCalledWith(applicationWithEvent);
+    expect(onSelectJob).toHaveBeenCalledWith(applicationWithEvent);
   });
 
   test('highlights today with special styling', () => {

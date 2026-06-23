@@ -15,6 +15,7 @@ const GmailScanPage = lazy(() => import('./pages/GmailScanPage'));
 const BackupSyncPage = lazy(() => import('./pages/BackupSyncPage'));
 const LoginPage = lazy(() => import('./pages/LoginPage'));
 const RegisterPage = lazy(() => import('./pages/RegisterPage'));
+const JobDetailsPage = lazy(() => import('./pages/JobDetailsPage'));
 
 import PWAReloadPrompt from './components/PWAReloadPrompt';
 import MergePromptHandler from './components/sync/MergePromptHandler';
@@ -34,9 +35,9 @@ import useKeyboardShortcuts from './hooks/useKeyboardShortcuts';
 // Google OAuth client ID - must be set via VITE_GOOGLE_CLIENT_ID environment variable
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
 
-export type PageType = 'landing' | 'applications' | 'opportunities' | 'settings' | 'insights' | 'support' | 'suggestions' | 'login' | 'register' | 'gmail-scan' | 'backup-sync';
+export type PageType = 'landing' | 'applications' | 'opportunities' | 'settings' | 'insights' | 'support' | 'suggestions' | 'login' | 'register' | 'gmail-scan' | 'backup-sync' | 'job-details';
 
-const VALID_PAGES: PageType[] = ['landing', 'applications', 'opportunities', 'settings', 'insights', 'support', 'suggestions', 'login', 'register', 'gmail-scan', 'backup-sync'];
+const VALID_PAGES: PageType[] = ['landing', 'applications', 'opportunities', 'settings', 'insights', 'support', 'suggestions', 'login', 'register', 'gmail-scan', 'backup-sync', 'job-details'];
 
 function App() {
   const { fetchMe } = useAuthStore();
@@ -175,6 +176,8 @@ function App() {
         return <GmailScanPage onNavigate={setCurrentPage} />;
       case 'backup-sync':
         return <BackupSyncPage onNavigate={setCurrentPage} />;
+      case 'job-details':
+        return <JobDetailsPage onNavigate={setCurrentPage} />;
 
       case 'landing':
         return <LandingPage onNavigate={setCurrentPage} />;

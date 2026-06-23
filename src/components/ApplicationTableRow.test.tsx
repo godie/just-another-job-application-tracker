@@ -36,6 +36,7 @@ const mockApplication: ApplicationWithMetadata = {
 };
 
 describe('ApplicationTableRow', () => {
+  const mockOnSelectJob = vi.fn();
   const mockOnEdit = vi.fn();
   const mockOnDeleteRequest = vi.fn();
   const columns: TableColumn[] = [
@@ -56,6 +57,7 @@ describe('ApplicationTableRow', () => {
           <ApplicationTableRow
             item={mockApplication}
             columns={columns}
+            onSelectJob={mockOnSelectJob}
             onEdit={mockOnEdit}
             onDeleteRequest={mockOnDeleteRequest}
           />
@@ -71,13 +73,14 @@ describe('ApplicationTableRow', () => {
     expect(link).toHaveAttribute('href', 'https://example.com/job');
   });
 
-  it('calls onEdit when a cell is clicked', () => {
+  it('calls onSelectJob when a cell is clicked', () => {
     render(
       <table>
         <tbody>
           <ApplicationTableRow
             item={mockApplication}
             columns={columns}
+            onSelectJob={mockOnSelectJob}
             onEdit={mockOnEdit}
             onDeleteRequest={mockOnDeleteRequest}
           />
@@ -89,7 +92,7 @@ describe('ApplicationTableRow', () => {
     expect(cell).toBeInTheDocument();
     if (cell) {
       fireEvent.click(cell);
-      expect(mockOnEdit).toHaveBeenCalledWith(mockApplication);
+      expect(mockOnSelectJob).toHaveBeenCalledWith(mockApplication);
     }
   });
 
@@ -100,6 +103,7 @@ describe('ApplicationTableRow', () => {
           <ApplicationTableRow
             item={mockApplication}
             columns={columns}
+            onSelectJob={mockOnSelectJob}
             onEdit={mockOnEdit}
             onDeleteRequest={mockOnDeleteRequest}
           />
@@ -117,6 +121,7 @@ describe('ApplicationTableRow', () => {
           <ApplicationTableRow
             item={mockApplication}
             columns={columns}
+            onSelectJob={mockOnSelectJob}
             onEdit={mockOnEdit}
             onDeleteRequest={mockOnDeleteRequest}
           />
@@ -137,6 +142,7 @@ describe('ApplicationTableRow', () => {
           <ApplicationTableRow
             item={mockApplication}
             columns={[{ id: 'link', label: 'Link' }]}
+            onSelectJob={mockOnSelectJob}
             onEdit={mockOnEdit}
             onDeleteRequest={mockOnDeleteRequest}
           />
@@ -156,6 +162,7 @@ describe('ApplicationTableRow', () => {
           <ApplicationTableRow
             item={mockApplication}
             columns={columns}
+            onSelectJob={mockOnSelectJob}
             onEdit={mockOnEdit}
             onDeleteRequest={mockOnDeleteRequest}
           />

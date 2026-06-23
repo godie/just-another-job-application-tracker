@@ -46,17 +46,18 @@ describe('KanbanView', () => {
     expect(screen.getByText(/Data Scientist/)).toBeInTheDocument();
   });
 
-  test('triggers edit and delete callbacks', () => {
+  test('triggers select and delete callbacks', () => {
+    const onSelectJob = vi.fn();
     const onEdit = vi.fn();
     const onDelete = vi.fn();
     const applications: JobApplication[] = [
       makeApplication({ id: 'app-1', status: 'Applied', position: 'Fullstack Eng' }),
     ];
 
-    render(<KanbanView applications={applications} onEdit={onEdit} onDelete={onDelete} />);
+    render(<KanbanView applications={applications} onSelectJob={onSelectJob} onEdit={onEdit} onDelete={onDelete} />);
 
     fireEvent.click(screen.getByText(/Fullstack Eng/));
-    expect(onEdit).toHaveBeenCalledWith(applications[0]);
+    expect(onSelectJob).toHaveBeenCalledWith(applications[0]);
 
     // Click delete button - this opens the confirmation dialog
     const deleteButtons = screen.getAllByRole('button', { name: /Delete/i });

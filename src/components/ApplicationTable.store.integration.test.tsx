@@ -68,6 +68,7 @@ const columns: TableColumn[] = [
 ];
 
 describe('ApplicationTable + Zustand store integration', () => {
+  const mockOnSelectJob = vi.fn();
   const mockOnEdit = vi.fn();
   const mockOnDelete = vi.fn();
 
@@ -81,6 +82,7 @@ describe('ApplicationTable + Zustand store integration', () => {
       <ApplicationTable
         columns={columns}
         data={mockApplicationsState.applications}
+        onSelectJob={mockOnSelectJob}
         onEdit={mockOnEdit}
         onDelete={mockOnDelete}
       />
@@ -95,11 +97,12 @@ describe('ApplicationTable + Zustand store integration', () => {
     expect(screen.getAllByText('Applied').length).toBeGreaterThan(0);
   });
 
-  it('calls onEdit when row is clicked (store data)', () => {
+  it('calls onSelectJob when row is clicked (store data)', () => {
     render(
       <ApplicationTable
         columns={columns}
         data={mockApplicationsState.applications}
+        onSelectJob={mockOnSelectJob}
         onEdit={mockOnEdit}
         onDelete={mockOnDelete}
       />
@@ -110,7 +113,7 @@ describe('ApplicationTable + Zustand store integration', () => {
     expect(firstCell).toBeInTheDocument();
     if (firstCell) {
       fireEvent.click(firstCell);
-      expect(mockOnEdit).toHaveBeenCalledWith(mockApplications[0]);
+      expect(mockOnSelectJob).toHaveBeenCalledWith(mockApplications[0]);
     }
   });
 
@@ -119,6 +122,7 @@ describe('ApplicationTable + Zustand store integration', () => {
       <ApplicationTable
         columns={columns}
         data={mockApplicationsState.applications}
+        onSelectJob={mockOnSelectJob}
         onEdit={mockOnEdit}
         onDelete={mockOnDelete}
       />
@@ -147,6 +151,7 @@ describe('ApplicationTable + Zustand store integration', () => {
       <ApplicationTable
         columns={columns}
         data={mockApplicationsState.applications}
+        onSelectJob={mockOnSelectJob}
         onEdit={mockOnEdit}
         onDelete={mockOnDelete}
       />

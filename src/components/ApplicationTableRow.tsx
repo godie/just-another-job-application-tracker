@@ -12,6 +12,7 @@ import { getBadgeVariantForStatus } from '../utils/status';
 interface ApplicationTableRowProps {
   item: ApplicationWithMetadata;
   columns: TableColumn[];
+  onSelectJob: (application: JobApplication) => void;
   onEdit: (application: JobApplication) => void;
   onDeleteRequest: (application: JobApplication) => void;
 }
@@ -25,7 +26,7 @@ const NOTES_WORD_WRAP_LENGTH = 50;
 const ApplicationTableRow: React.FC<ApplicationTableRowProps> = ({
   item,
   columns,
-  onEdit,
+  onSelectJob,
   onDeleteRequest,
 }) => {
   const { t } = useTranslation();
@@ -35,6 +36,7 @@ const ApplicationTableRow: React.FC<ApplicationTableRowProps> = ({
     <TableRow
       className="cursor-pointer group"
       data-testid={`row-${item.id}`}
+      onClick={() => onSelectJob(item)}
     >
       {columns.map((column) => {
         const cellContent = getCellValue(item, column.id);
@@ -45,7 +47,6 @@ const ApplicationTableRow: React.FC<ApplicationTableRowProps> = ({
           return (
             <TableCell
               key={column.id}
-              onClick={() => onEdit(item)}
               className="px-4 sm:px-6 py-3 text-earth-900 dark:text-earth-100 border-r border-earth-100 dark:border-earth-700 group-hover:bg-sage-50 dark:group-hover:bg-sage-900/20 whitespace-nowrap"
             >
               <Badge variant={getBadgeVariantForStatus(item.status)}>
@@ -69,7 +70,6 @@ const ApplicationTableRow: React.FC<ApplicationTableRowProps> = ({
           return (
             <TableCell
               key={column.id}
-              onClick={() => onEdit(item)}
               className={`px-4 sm:px-6 py-3 text-earth-900 dark:text-earth-100 border-r border-earth-100 dark:border-earth-700 group-hover:bg-sage-50 dark:group-hover:bg-sage-900/20 ${
                 shouldWrap ? 'whitespace-pre-line' : 'whitespace-nowrap'
               } ${isNotes ? 'max-w-xs' : ''}`}
@@ -87,7 +87,6 @@ const ApplicationTableRow: React.FC<ApplicationTableRowProps> = ({
         return (
           <TableCell
             key={column.id}
-            onClick={() => onEdit(item)}
             className="px-4 sm:px-6 py-3 whitespace-nowrap text-earth-900 dark:text-earth-100 border-r border-earth-100 dark:border-earth-700 group-hover:bg-sage-50 dark:group-hover:bg-sage-900/20"
           >
             {isLink ? (

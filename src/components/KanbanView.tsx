@@ -6,6 +6,7 @@ import ConfirmDialog from './ConfirmDialog';
 
 interface KanbanViewProps {
   applications: ApplicationWithMetadata[];
+  onSelectJob?: (application: JobApplication) => void;
   onEdit?: (application: JobApplication) => void;
   onDelete?: (application: JobApplication) => void;
 }
@@ -20,7 +21,7 @@ const DEFAULT_STATUS_ORDER = [
 ];
 
 // Memoized to prevent re-renders when filteredApplications reference changes but content is the same
-const KanbanView: React.FC<KanbanViewProps> = ({ applications, onEdit, onDelete }) => {
+const KanbanView: React.FC<KanbanViewProps> = ({ applications, onSelectJob, onEdit, onDelete }) => {
   const { t } = useTranslation();
   const [deleteConfirm, setDeleteConfirm] = useState<{ isOpen: boolean; application: JobApplication | null }>({
     isOpen: false,
@@ -147,7 +148,10 @@ const KanbanView: React.FC<KanbanViewProps> = ({ applications, onEdit, onDelete 
                   <button
                     type="button"
                     className='w-full rounded-t cursor-pointer text-left p-4 space-y-2'
-                    onClick={() => onEdit?.(application)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onSelectJob?.(application);
+                    }}
                     aria-label={t('kanban.editApp', { position: application.position, company: application.company })}
                   >
                     <div>
