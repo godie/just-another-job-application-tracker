@@ -97,11 +97,15 @@ const HomePageContent: React.FC<HomePageContentProps> = ({ onNavigate }) => {
     
     window.addEventListener('message', handleMessage);
 
-    // Listen for edit requests from JobDetailsPage
+    // Listen for edit requests from JobDetailsPage.
+    // Use getState() to read latest applications without subscribing to the store,
+    // avoiding an infinite render loop (loadApplications updates applications → effect
+    // re-runs → calls loadApplications again).
     const handleTriggerEdit = (e: Event) => {
       const customEvent = e as CustomEvent<{ jobId: string }>;
       if (customEvent.detail?.jobId) {
-        const app = applications.find((a) => a.id === customEvent.detail.jobId);
+        const apps = useApplicationsStore.getState().applications;
+        const app = apps.find((a) => a.id === customEvent.detail.jobId);
         if (app) {
           setCurrentApplication(app);
         }
@@ -113,7 +117,7 @@ const HomePageContent: React.FC<HomePageContentProps> = ({ onNavigate }) => {
       window.removeEventListener('message', handleMessage);
       window.removeEventListener('triggerEditJob', handleTriggerEdit);
     };
-  }, [loadApplications, loadPreferences, showSuccess, t, applications]);
+  }, [loadApplications, loadPreferences, showSuccess, t]);
 
   // Sync view preference
   useEffect(() => {
