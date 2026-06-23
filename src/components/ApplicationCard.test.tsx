@@ -36,6 +36,7 @@ const mockApplication: ApplicationWithMetadata = {
 };
 
 describe('ApplicationCard', () => {
+  const mockOnSelectJob = vi.fn();
   const mockOnEdit = vi.fn();
   const mockOnDeleteRequest = vi.fn();
   const otherColumns: TableColumn[] = [
@@ -53,6 +54,7 @@ describe('ApplicationCard', () => {
       <ApplicationCard
         item={mockApplication}
         otherColumns={otherColumns}
+        onSelectJob={mockOnSelectJob}
         onEdit={mockOnEdit}
         onDeleteRequest={mockOnDeleteRequest}
       />
@@ -67,6 +69,7 @@ describe('ApplicationCard', () => {
       <ApplicationCard
         item={mockApplication}
         otherColumns={otherColumns}
+        onSelectJob={mockOnSelectJob}
         onEdit={mockOnEdit}
         onDeleteRequest={mockOnDeleteRequest}
       />
@@ -75,11 +78,12 @@ describe('ApplicationCard', () => {
     expect(screen.getByText('Applied')).toBeInTheDocument();
   });
 
-  it('calls onEdit when card is clicked', () => {
+  it('calls onSelectJob when card is clicked', () => {
     render(
       <ApplicationCard
         item={mockApplication}
         otherColumns={otherColumns}
+        onSelectJob={mockOnSelectJob}
         onEdit={mockOnEdit}
         onDeleteRequest={mockOnDeleteRequest}
       />
@@ -88,8 +92,8 @@ describe('ApplicationCard', () => {
     const card = screen.getByTestId('card-1');
     fireEvent.click(card);
 
-    expect(mockOnEdit).toHaveBeenCalledTimes(1);
-    expect(mockOnEdit).toHaveBeenCalledWith(mockApplication);
+    expect(mockOnSelectJob).toHaveBeenCalledTimes(1);
+    expect(mockOnSelectJob).toHaveBeenCalledWith(mockApplication);
   });
 
   it('calls onDeleteRequest when delete button is clicked and stops propagation', () => {
@@ -97,6 +101,7 @@ describe('ApplicationCard', () => {
       <ApplicationCard
         item={mockApplication}
         otherColumns={otherColumns}
+        onSelectJob={mockOnSelectJob}
         onEdit={mockOnEdit}
         onDeleteRequest={mockOnDeleteRequest}
       />
@@ -114,6 +119,7 @@ describe('ApplicationCard', () => {
       <ApplicationCard
         item={mockApplication}
         otherColumns={otherColumns}
+        onSelectJob={mockOnSelectJob}
         onEdit={mockOnEdit}
         onDeleteRequest={mockOnDeleteRequest}
       />
@@ -140,6 +146,7 @@ describe('ApplicationCard', () => {
       <ApplicationCard
         item={emptyApp}
         otherColumns={otherColumns}
+        onSelectJob={mockOnSelectJob}
         onEdit={mockOnEdit}
         onDeleteRequest={mockOnDeleteRequest}
       />
@@ -155,6 +162,7 @@ describe('ApplicationCard', () => {
       <ApplicationCard
         item={mockApplication}
         otherColumns={otherColumns}
+        onSelectJob={mockOnSelectJob}
         onEdit={mockOnEdit}
         onDeleteRequest={mockOnDeleteRequest}
       />

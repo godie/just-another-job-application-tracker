@@ -11,6 +11,7 @@ import type { JobApplication } from '../types/applications';
 import AddJobForm from '../components/AddJobForm';
 import CSVActions from '../components/CSVActions';
 import GoogleSheetsSync from '../components/GoogleSheetsSync';
+import JobPreviewPanel from '../components/JobPreviewPanel';
 import packageJson from '../../package.json';
 import { useApplicationsStore } from '../stores/applicationsStore';
 import { usePreferencesStore } from '../stores/preferencesStore';
@@ -74,10 +75,12 @@ const HomePageContent: React.FC<HomePageContentProps> = ({ onNavigate }) => {
   const loadPreferences = usePreferencesStore((state) => state.loadPreferences);
   
   const [currentApplication, setCurrentApplication] = useState<JobApplication | null>(null);
+  const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
   const [currentView, setCurrentView] = useState<ViewType>('table');
   const [filters, setFilters] = useState<Filters>(loadInitialFilters);
   const [isDataToolsOpen, setIsDataToolsOpen] = useState(false);
   const isFormOpen = currentApplication !== null;
+  const isPreviewOpen = selectedJobId !== null;
 
   // Load data on mount
   useEffect(() => {
@@ -93,11 +96,24 @@ const HomePageContent: React.FC<HomePageContentProps> = ({ onNavigate }) => {
     };
     
     window.addEventListener('message', handleMessage);
+
+    // Listen for edit requests from JobDetailsPage
+    const handleTriggerEdit = (e: Event) => {
+      const customEvent = e as CustomEvent<{ jobId: string }>;
+      if (customEvent.detail?.jobId) {
+        const app = applications.find((a) => a.id === customEvent.detail.jobId);
+        if (app) {
+          setCurrentApplication(app);
+        }
+      }
+    };
+    window.addEventListener('triggerEditJob', handleTriggerEdit);
     
     return () => {
       window.removeEventListener('message', handleMessage);
+      window.removeEventListener('triggerEditJob', handleTriggerEdit);
     };
-  }, [loadApplications, loadPreferences, showSuccess, t]);
+  }, [loadApplications, loadPreferences, showSuccess, t, applications]);
 
   // Sync view preference
   useEffect(() => {
@@ -156,6 +172,14 @@ const HomePageContent: React.FC<HomePageContentProps> = ({ onNavigate }) => {
 
   const handleEdit = useCallback((appToEdit: JobApplication | null) => {
     setCurrentApplication(appToEdit);
+  }, []);
+
+  const handleSelectJob = useCallback((app: JobApplication) => {
+    setSelectedJobId(app.id);
+  }, []);
+
+  const handleClosePreview = useCallback(() => {
+    setSelectedJobId(null);
   }, []);
 
   const handleCreateNew = () => {
@@ -256,6 +280,7 @@ const HomePageContent: React.FC<HomePageContentProps> = ({ onNavigate }) => {
         currentView={currentView}
         filteredApplications={filteredApplications}
         tableColumns={tableColumns}
+        onSelectJob={handleSelectJob}
         onEdit={handleEdit}
         onDelete={handleDeleteEntry}
       />
@@ -265,6 +290,15 @@ const HomePageContent: React.FC<HomePageContentProps> = ({ onNavigate }) => {
           initialData={currentApplication}
           onSave={handleSaveEntry}
           onCancel={handleCancel}
+        />
+      )}
+      {isPreviewOpen && selectedJobId && (
+        <JobPreviewPanel
+          jobId={selectedJobId}
+          onClose={handleClosePreview}
+          onNavigate={onNavigate}
+          onEdit={handleEdit}
+          onDelete={handleDeleteEntry}
         />
       )}
     </div>

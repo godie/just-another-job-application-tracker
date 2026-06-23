@@ -786,5 +786,48 @@
       "title": "Support & Suggestions",
       "description": "Get help or share feedback with the JAJAT team."
     }
+  },
+  "jobDetails": {
+    "notFound": "Job Not Found",
+    "notFoundDesc": "The job application you are looking for does not exist or has been removed.",
+    "backToApplications": "Back to Applications",
+    "details": "Job Details",
+    "position": "Position",
+    "company": "Company",
+    "location": "Location",
+    "workType": "Work Type",
+    "hybridDays": "Days in Office",
+    "salary": "Salary",
+    "platform": "Platform",
+    "contactName": "Contact",
+    "applicationDate": "Applied",
+    "interviewDate": "Interview",
+    "followUpDate": "Follow-up",
+    "jobLink": "Job Link",
+    "notes": "Notes",
+    "timeline": "Timeline",
+    "customFields": "Custom Fields"
+  },
+  "jobPreview": {
+    "notFound": "Application not found.",
+    "panelTitle": "Job Preview",
+    "preview": "Job Preview",
+    "openFullDetails": "Open full job details",
+    "location": "Location",
+    "workType": "Work Type",
+    "salary": "Salary",
+    "platform": "Platform",
+    "dates": "Dates",
+    "applied": "Applied",
+    "interview": "Interview",
+    "followUp": "Follow-up",
+    "noDates": "No dates recorded",
+    "contact": "Contact",
+    "jobLink": "Job Link",
+    "notes": "Notes",
+    "timelineEvents_one": "{{count}} timeline event",
+    "timelineEvents_other": "{{count}} timeline events",
+    "customFieldsCount_one": "{{count}} custom field",
+    "customFieldsCount_other": "{{count}} custom fields"
   }
 }

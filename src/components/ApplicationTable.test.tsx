@@ -31,6 +31,7 @@ const mockApplication: JobApplication = {
 };
 
 describe('ApplicationTable', () => {
+  const mockOnSelectJob = vi.fn();
   const mockOnEdit = vi.fn();
   const mockOnDelete = vi.fn();
   const defaultColumns: TableColumn[] = [
@@ -49,6 +50,7 @@ describe('ApplicationTable', () => {
       <ApplicationTable
         columns={defaultColumns}
         data={[]}
+        onSelectJob={mockOnSelectJob}
         onEdit={mockOnEdit}
         onDelete={mockOnDelete}
       />
@@ -64,6 +66,7 @@ describe('ApplicationTable', () => {
       <ApplicationTable
         columns={defaultColumns}
         data={[mockApplication]}
+        onSelectJob={mockOnSelectJob}
         onEdit={mockOnEdit}
         onDelete={mockOnDelete}
       />
@@ -89,6 +92,7 @@ describe('ApplicationTable', () => {
       <ApplicationTable
         columns={defaultColumns}
         data={[mockApplication]}
+        onSelectJob={mockOnSelectJob}
         onEdit={mockOnEdit}
         onDelete={mockOnDelete}
       />
@@ -102,11 +106,12 @@ describe('ApplicationTable', () => {
     expect(card).toBeInTheDocument();
   });
 
-  it('calls onEdit when table row is clicked', () => {
+  it('calls onSelectJob when table row is clicked', () => {
     render(
       <ApplicationTable
         columns={defaultColumns}
         data={[mockApplication]}
+        onSelectJob={mockOnSelectJob}
         onEdit={mockOnEdit}
         onDelete={mockOnDelete}
       />
@@ -119,15 +124,16 @@ describe('ApplicationTable', () => {
     
     if (firstCell) {
       fireEvent.click(firstCell);
-      expect(mockOnEdit).toHaveBeenCalledWith(mockApplication);
+      expect(mockOnSelectJob).toHaveBeenCalledWith(mockApplication);
     }
   });
 
-  it('calls onEdit when mobile card is clicked', () => {
+  it('calls onSelectJob when mobile card is clicked', () => {
     const { container } = render(
       <ApplicationTable
         columns={defaultColumns}
         data={[mockApplication]}
+        onSelectJob={mockOnSelectJob}
         onEdit={mockOnEdit}
         onDelete={mockOnDelete}
       />
@@ -138,7 +144,7 @@ describe('ApplicationTable', () => {
 
     if (card) {
       fireEvent.click(card);
-      expect(mockOnEdit).toHaveBeenCalledWith(mockApplication);
+      expect(mockOnSelectJob).toHaveBeenCalledWith(mockApplication);
     }
   });
 
@@ -147,6 +153,7 @@ describe('ApplicationTable', () => {
       <ApplicationTable
         columns={defaultColumns}
         data={[mockApplication]}
+        onSelectJob={mockOnSelectJob}
         onEdit={mockOnEdit}
         onDelete={mockOnDelete}
       />
@@ -167,6 +174,7 @@ describe('ApplicationTable', () => {
       <ApplicationTable
         columns={defaultColumns}
         data={[mockApplication]}
+        onSelectJob={mockOnSelectJob}
         onEdit={mockOnEdit}
         onDelete={mockOnDelete}
       />
@@ -188,6 +196,7 @@ describe('ApplicationTable', () => {
       <ApplicationTable
         columns={defaultColumns}
         data={[mockApplication]}
+        onSelectJob={mockOnSelectJob}
         onEdit={mockOnEdit}
         onDelete={mockOnDelete}
       />
@@ -213,6 +222,7 @@ describe('ApplicationTable', () => {
       <ApplicationTable
         columns={[toColumn('position', 'Position'), toColumn('link', 'Link')]}
         data={[mockApplication]}
+        onSelectJob={mockOnSelectJob}
         onEdit={mockOnEdit}
         onDelete={mockOnDelete}
       />
@@ -231,6 +241,7 @@ describe('ApplicationTable', () => {
       <ApplicationTable
         columns={defaultColumns}
         data={[mockApplication]}
+        onSelectJob={mockOnSelectJob}
         onEdit={mockOnEdit}
         onDelete={mockOnDelete}
       />
@@ -249,6 +260,7 @@ describe('ApplicationTable', () => {
       <ApplicationTable
         columns={defaultColumns}
         data={[mockApplication]}
+        onSelectJob={mockOnSelectJob}
         onEdit={mockOnEdit}
         onDelete={mockOnDelete}
       />
@@ -274,6 +286,7 @@ describe('ApplicationTable', () => {
       <ApplicationTable
         columns={defaultColumns}
         data={applications}
+        onSelectJob={mockOnSelectJob}
         onEdit={mockOnEdit}
         onDelete={mockOnDelete}
       />
@@ -302,6 +315,7 @@ describe('ApplicationTable', () => {
           toColumn('notes', 'Notes'),
         ]}
         data={[emptyApplication]}
+        onSelectJob={mockOnSelectJob}
         onEdit={mockOnEdit}
         onDelete={mockOnDelete}
       />

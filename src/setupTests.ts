@@ -65,7 +65,12 @@ type TranslationValues = Record<string, string | number | undefined>;
 vi.mock('react-i18next', () => {
   return {
     useTranslation: () => ({
-      t: (key: string, options?: TranslationValues) => {
+      t: (key: string, defaultValueOrOptions?: string | TranslationValues, maybeOptions?: TranslationValues) => {
+        // i18next supports both 2-arg t(key, options) and 3-arg t(key, defaultValue, options)
+        const options: TranslationValues | undefined =
+          typeof defaultValueOrOptions === 'object' && !Array.isArray(defaultValueOrOptions)
+            ? defaultValueOrOptions
+            : maybeOptions;
         // i18next plural: try key_one / key_other when count is provided
         let result: string | undefined;
         if (options?.count !== undefined) {

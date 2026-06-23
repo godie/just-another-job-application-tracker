@@ -7,6 +7,7 @@ import { parseLocalDate } from '../utils/date';
 
 interface CalendarViewProps {
   applications: ApplicationWithMetadata[];
+  onSelectJob?: (application: JobApplication) => void;
   onEdit?: (application: JobApplication) => void;
 }
 
@@ -139,7 +140,7 @@ const formatRelativeTime = (eventDate: Date, referenceDate: Date, t: TranslateFn
 };
 
 // Memoized to prevent re-renders when filteredApplications reference changes but content is the same
-const CalendarView: React.FC<CalendarViewProps> = ({ applications, onEdit }) => {
+const CalendarView: React.FC<CalendarViewProps> = ({ applications, onSelectJob }) => {
   const { t, i18n } = useTranslation();
   const [focusMonth, setFocusMonth] = useState(() => startOfMonth(getTodayDate()));
   const [today] = useState(() => getTodayDate());
@@ -270,7 +271,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({ applications, onEdit }) => 
                     <li key={event.id}>
                       <button
                         type='button'
-                        onClick={() => onEdit?.(application)}
+                        onClick={() => onSelectJob?.(application)}
                         className={styles.button}
                       >
                         <span className='font-semibold block truncate'>{application.position}</span>

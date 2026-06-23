@@ -13,6 +13,7 @@ interface CurrentViewRendererProps {
   currentView: ViewType;
   filteredApplications: ApplicationWithMetadata[];
   tableColumns: TableColumn[];
+  onSelectJob: (application: JobApplication) => void;
   onEdit: (application: JobApplication) => void;
   onDelete: (application: JobApplication) => void;
 }
@@ -21,6 +22,7 @@ const ViewContent: React.FC<CurrentViewRendererProps> = ({
   currentView,
   filteredApplications,
   tableColumns,
+  onSelectJob,
   onEdit,
   onDelete,
 }) => {
@@ -29,6 +31,7 @@ const ViewContent: React.FC<CurrentViewRendererProps> = ({
       return (
         <TimelineView
           applications={filteredApplications}
+          onSelectJob={onSelectJob}
           onEdit={onEdit}
           onDelete={onDelete}
         />
@@ -37,6 +40,7 @@ const ViewContent: React.FC<CurrentViewRendererProps> = ({
       return (
         <KanbanView
           applications={filteredApplications}
+          onSelectJob={onSelectJob}
           onEdit={onEdit}
           onDelete={onDelete}
         />
@@ -45,6 +49,7 @@ const ViewContent: React.FC<CurrentViewRendererProps> = ({
       return (
         <CalendarView
           applications={filteredApplications}
+          onSelectJob={onSelectJob}
           onEdit={onEdit}
         />
       );
@@ -54,6 +59,7 @@ const ViewContent: React.FC<CurrentViewRendererProps> = ({
         <ApplicationTable
           columns={tableColumns}
           data={filteredApplications}
+          onSelectJob={onSelectJob}
           onEdit={onEdit}
           onDelete={onDelete}
         />

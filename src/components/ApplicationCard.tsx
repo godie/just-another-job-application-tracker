@@ -14,6 +14,7 @@ import { getBadgeVariantForStatus } from '../utils/status';
 interface ApplicationCardProps {
   item: ApplicationWithMetadata;
   otherColumns: TableColumn[];
+  onSelectJob: (application: JobApplication) => void;
   onEdit: (application: JobApplication) => void;
   onDeleteRequest: (application: JobApplication) => void;
 }
@@ -25,7 +26,7 @@ interface ApplicationCardProps {
 const ApplicationCard: React.FC<ApplicationCardProps> = ({
   item,
   otherColumns,
-  onEdit,
+  onSelectJob,
   onDeleteRequest,
 }) => {
   const { t } = useTranslation();
@@ -37,7 +38,7 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
 
   return (
     <Card
-      onClick={() => onEdit(item)}
+      onClick={() => onSelectJob(item)}
       className='p-4 cursor-pointer border border-earth-200 dark:border-earth-700 bg-white dark:bg-earth-800 hover:border-sage-300 dark:hover:border-sage-700 transition-colors'
       data-testid={`card-${item.id}`}
     >

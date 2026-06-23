@@ -10,6 +10,7 @@ interface ApplicationTimelineCardProps {
   app: ApplicationWithMetadata;
   isExpanded: boolean;
   onToggleExpand: () => void;
+  onSelectJob?: (application: JobApplication) => void;
   onEdit?: (application: JobApplication) => void;
   onDelete?: (application: JobApplication) => void;
   sortedEvents: InterviewEvent[];
@@ -23,6 +24,7 @@ const ApplicationTimelineCard: React.FC<ApplicationTimelineCardProps> = ({
   app,
   isExpanded,
   onToggleExpand,
+  onSelectJob,
   onEdit,
   onDelete,
   sortedEvents,
@@ -36,7 +38,10 @@ const ApplicationTimelineCard: React.FC<ApplicationTimelineCardProps> = ({
   return (
     <div className='bg-white dark:bg-earth-800 rounded border border-earth-200 dark:border-earth-700 overflow-hidden hover:border-sage-300 dark:hover:border-sage-600 transition'>
       {/* Header - Accordion Toggle */}
-      <div className='bg-sage-50 dark:bg-sage-900/30 px-4 sm:px-6 py-4 border-b border-earth-200 dark:border-earth-700'>
+      <div
+        className='bg-sage-50 dark:bg-sage-900/30 px-4 sm:px-6 py-4 border-b border-earth-200 dark:border-earth-700 cursor-pointer'
+        onClick={() => onSelectJob?.(app)}
+      >
         <div className='flex items-center justify-between'>
           <div className='flex-1 min-w-0'>
             <div className='flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-3'>

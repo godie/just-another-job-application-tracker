@@ -10,6 +10,7 @@ import ApplicationTimelineCard from './ApplicationTimelineCard';
 
 interface TimelineViewProps {
   applications: ApplicationWithMetadata[];
+  onSelectJob?: (application: JobApplication) => void;
   onEdit?: (application: JobApplication) => void;
   onDelete?: (application: JobApplication) => void;
 }
@@ -17,7 +18,7 @@ interface TimelineViewProps {
 const ITEMS_PER_PAGE = 10;
 
 // Memoized to prevent re-renders when filteredApplications reference changes but content is the same
-const TimelineView: React.FC<TimelineViewProps> = ({ applications, onEdit, onDelete }) => {
+const TimelineView: React.FC<TimelineViewProps> = ({ applications, onSelectJob, onEdit, onDelete }) => {
   const { t } = useTranslation();
   const { formatLocaleDate } = useFormatDate();
   const [deleteConfirm, setDeleteConfirm] = useState<{ isOpen: boolean; application: JobApplication | null }>({
@@ -87,6 +88,7 @@ const TimelineView: React.FC<TimelineViewProps> = ({ applications, onEdit, onDel
             app={app}
             isExpanded={isExpanded}
             onToggleExpand={() => expandedApps.toggle(app.id)}
+            onSelectJob={onSelectJob}
             onEdit={onEdit}
             onDelete={(application) => setDeleteConfirm({ isOpen: true, application })}
             sortedEvents={sortedEvents}

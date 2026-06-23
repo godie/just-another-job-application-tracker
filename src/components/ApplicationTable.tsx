@@ -14,13 +14,14 @@ const ITEMS_PER_PAGE = 20;
 interface ApplicationTableProps {
     columns: TableColumn[];
     data: ApplicationWithMetadata[];
+    onSelectJob: (application: JobApplication) => void;
     onEdit: (application: JobApplication) => void;
     onDelete: (application: JobApplication) => void;
 }
 
 const PRIMARY_COLUMN_IDS = ['position', 'company', 'status'];
 
-const ApplicationTable: React.FC<ApplicationTableProps> = ({ columns, data, onEdit, onDelete }) => {
+const ApplicationTable: React.FC<ApplicationTableProps> = ({ columns, data, onSelectJob, onEdit, onDelete }) => {
   const { t } = useTranslation();
   const [currentPage, setCurrentPage] = useState(1);
   const [deleteConfirm, setDeleteConfirm] = useState<{ isOpen: boolean; application: JobApplication | null }>({
@@ -74,6 +75,7 @@ const ApplicationTable: React.FC<ApplicationTableProps> = ({ columns, data, onEd
               key={item.id}
               item={item}
               otherColumns={otherColumns}
+              onSelectJob={onSelectJob}
               onEdit={onEdit}
               onDeleteRequest={handleDeleteRequest}
             />
@@ -112,6 +114,7 @@ const ApplicationTable: React.FC<ApplicationTableProps> = ({ columns, data, onEd
                   key={item.id}
                   item={item}
                   columns={columns}
+                  onSelectJob={onSelectJob}
                   onEdit={onEdit}
                   onDeleteRequest={handleDeleteRequest}
                 />

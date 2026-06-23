@@ -51,6 +51,12 @@ describe('SettingsPage', () => {
       expect(screen.getByText(/Account/i)).toBeInTheDocument();
     });
 
+    test('sets the document title via useSEO hook', async () => {
+      renderWithGoogleProvider(<SettingsPage />);
+      // resolveSEOConfig appends " | JAJAT" suffix
+      expect(document.title).toBe('Settings | JAJAT');
+    });
+
     test('switches sections when sidebar buttons are clicked', async () => {
       renderWithGoogleProvider(<SettingsPage />);
 
