@@ -117,7 +117,11 @@ const HomePageContent: React.FC<HomePageContentProps> = ({ onNavigate }) => {
       window.removeEventListener('message', handleMessage);
       window.removeEventListener('triggerEditJob', handleTriggerEdit);
     };
-  }, [loadApplications, loadPreferences, showSuccess, t]);
+  // loadApplications/loadPreferences are stable Zustand actions.
+  // showSuccess (useAlert) and t (useTranslation) are referentially stable.
+  // Stable deps = effect runs once on mount; no re-subscription needed.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loadApplications, loadPreferences]);
 
   // Sync view preference
   useEffect(() => {
