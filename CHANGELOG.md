@@ -6,6 +6,35 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [2.4.0] - 2026-06-23
+
+### Added
+- **Job details page** (`JobDetailsPage`) — Jira-style full-screen view for individual job applications. Renders position, company, status badge, location, work type, hybrid days, salary, platform, contact, dates (applied/interview/follow-up), job link, notes, timeline events, and custom fields. Navigated via `?page=job-details&jobId=<id>` URL params. Includes SEO meta tags, footer with app version, edit/delete actions (edit dispatches `triggerEditJob` to HomePage, delete navigates back to applications).
+- **Job preview panel** (`JobPreviewPanel`) — slide-over side panel for quick job inspection from the applications list. Shows position, company, status, key info grid (location, work type, salary, platform), dates section, contact, job link, notes excerpt (truncated to 150 chars), timeline event count, and custom fields count with i18n plural support. Features keyboard accessibility (Escape to close, backdrop click, focus trap via `useFocusTrap`), slide-in animation, and a clickable job ID that navigates to the full `JobDetailsPage`.
+- **Timeline display utilities** (`src/utils/timelineDisplay.ts`) — shared `formatDate`, `getStageDisplayName`, and `getEventStatusColor` helpers used by `JobDetailsPage`, `JobPreviewPanel`, `TimelineView`, and other components.
+- **`onSelectJob` navigation** — all view components now accept an `onSelectJob` callback that opens the `JobPreviewPanel` when a job is clicked. Wired across `ApplicationTable`, `ApplicationCard`, `ApplicationTableRow`, `KanbanView`, `CalendarView`, `TimelineView`, `ApplicationTimelineCard`, and `CurrentViewRenderer`.
+- **`job-details` route** — added to `App.tsx` page routing alongside existing routes.
+- **Translation keys** — English and Spanish translations for `jobDetails` (18 keys) and `jobPreview` (20 keys, including plural `timelineEvents` and `customFieldsCount`).
+- **Default SEO description** — `SEODefaults` now includes a `description` field (`"Track and manage your job applications — free, private, and open-source."`), used as fallback when pages don't provide one (no more empty meta tags).
+- **SEO title tests** — added `document.title` assertions for `LandingPage`, `InsightsPage`, and `SettingsPage` verifying the `resolveSEOConfig` `" | JAJAT"` suffix.
+- **App-level integration test** — renders `<App />` at `?page=job-details&jobId=app-1`, awaits lazy-loaded `JobDetailsPage`, asserts position/company/status/jobId/SEO title, and clicks "Back to Applications" to verify full navigation flow.
+- **51 unit tests** across `JobDetailsPage.test.tsx` (20 tests), `JobPreviewPanel.test.tsx` (31 tests), and `timelineDisplay.test.ts` (25 tests).
+
+### Changed
+- **`onEdit` → `onSelectJob`** — card/row clicks in `ApplicationCard`, `ApplicationTableRow`, and `CalendarView` now trigger `onSelectJob` (opens preview panel) instead of `onEdit` (opens edit form). Edit is still accessible via the Edit button in both the preview panel and the full details page.
+- **`SEOConfig.description`** — made optional; `resolveSEOConfig` falls back to `defaults.description` when omitted.
+
+### Fixed
+- **`setupTests.ts` t() mock** — now handles 3-argument `t(key, defaultValue, options)` calls correctly for i18n plural forms (was ignoring the `count` option).
+- **`formatDate` invalid-date guard** — added `isNaN(d.getTime())` check before `toLocaleDateString()` so invalid date strings return the original input instead of `"Invalid Date"`.
+- **React Doctor issues** — hoisted `DetailField` component from inside `JobDetailsPage` body to module scope (eliminates recreation on every render), replaced `[...arr].sort()` with `arr.toSorted()`, removed redundant `role="complementary"` from `<aside>` (implicit per HTML spec).
+- **12 `@typescript-eslint/no-explicit-any` errors** — replaced `(state: any)` with properly typed store state in `JobPreviewPanel.test.tsx` and `JobDetailsPage.test.tsx`.
+- **Inline `<style>` block** — moved `@keyframes slideInRight` from `JobPreviewPanel` inline `<style>` to `src/index.css` (CSP-safe).
+- **`t as (...)` type cast** — extracted to a `const tt` helper at component top in `JobDetailsPage` to centralize the single `TFunction` narrowing point.
+
+### Removed
+- Unused `onEdit` destructuring from `ApplicationCard`, `ApplicationTableRow`, and `CalendarView` (props interface preserved, callers unaffected).
+
 ## [2.3.1] - 2026-06-22 (later)
 
 Hotfix patch released the same day as v2.3.0. Both fixes are producer-side-only (no API surface, no migration changes, no end-user configuration semantics), so a SemVer patch bump.
