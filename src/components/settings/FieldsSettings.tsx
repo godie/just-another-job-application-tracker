@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { type FieldDefinition } from '../../types/preferences';
+import { Button } from '../ui/Button';
 
 interface FieldsSettingsProps {
   orderedFields: FieldDefinition[];
@@ -65,38 +66,30 @@ const FieldsSettings: React.FC<FieldsSettingsProps> = ({
                 </div>
               </div>
               <div className="flex items-center gap-1">
-                <button
-                  type="button"
+                <Button
+                  variant="ghost"
+                  size="icon"
                   onClick={() => handleMove(index, 'up')}
                   disabled={index === 0}
                   aria-label="Move Up"
-                  className={`p-2 rounded transition ${
-                    index === 0
-                      ? 'text-muted-foreground cursor-not-allowed'
-                      : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-                  }`}
                   title="Move Up"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" className="size-5" viewBox="0 0 20 20" fill="currentColor">
                     <path fillRule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clipRule="evenodd" />
                   </svg>
-                </button>
-                <button
-                  type="button"
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
                   onClick={() => handleMove(index, 'down')}
                   disabled={index === orderedFields.length - 1}
                   aria-label="Move Down"
-                  className={`p-2 rounded transition ${
-                    index === orderedFields.length - 1
-                      ? 'text-muted-foreground cursor-not-allowed'
-                      : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-                  }`}
                   title="Move Down"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" className="size-5" viewBox="0 0 20 20" fill="currentColor">
                     <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
                   </svg>
-                </button>
+                </Button>
               </div>
             </div>
           );

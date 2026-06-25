@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { type CustomInterviewEvent } from '../../types/preferences';
+import { Button } from '../ui/Button';
 
 interface InterviewingSettingsProps {
   customInterviewEvents: CustomInterviewEvent[];
@@ -59,39 +60,34 @@ const InterviewingSettings: React.FC<InterviewingSettingsProps> = ({
           <div className='flex gap-3 pt-2'>
             {editingInterviewEvent ? (
               <>
-                <button
-                  type='button'
+                <Button
+                  variant='primary'
+                  size='md'
                   onClick={onUpdateInterviewEvent}
                   disabled={!interviewEventForm.label}
-                  className={`px-6 py-2.5 rounded text-sm font-bold transition-all ${
-                    interviewEventForm.label
-                      ? 'bg-primary text-primary-foreground hover:bg-primary/90'
-                      : 'bg-muted text-muted-foreground cursor-not-allowed'
-                  }`}
+                  className='px-6 py-2.5 font-bold'
                 >
                   {t('settings.interviewing.update')}
-                </button>
-                <button
-                  type='button'
+                </Button>
+                <Button
+                  variant='outline'
+                  size='md'
                   onClick={onCancelEdit}
-                  className='px-6 py-2.5 rounded text-sm font-bold border border-border text-muted-foreground hover:bg-muted transition-all'
+                  className='px-6 py-2.5 font-bold text-muted-foreground hover:text-foreground'
                 >
                   {t('common.cancel')}
-                </button>
+                </Button>
               </>
             ) : (
-              <button
-                type='button'
+              <Button
+                variant='primary'
+                size='md'
                 onClick={onAddInterviewEvent}
                 disabled={!interviewEventForm.label}
-                className={`px-6 py-2.5 rounded text-sm font-bold transition-all ${
-                  interviewEventForm.label
-                    ? 'bg-primary text-primary-foreground hover:bg-primary/90'
-                    : 'bg-muted text-muted-foreground cursor-not-allowed'
-                }`}
+                className='px-6 py-2.5 font-bold'
               >
                 {t('settings.interviewing.addEvent')}
-              </button>
+              </Button>
             )}
           </div>
         </div>
@@ -117,28 +113,30 @@ const InterviewingSettings: React.FC<InterviewingSettingsProps> = ({
                   </span>
                 </div>
                 <div className='flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity'>
-                  <button
-                    type='button'
+                  <Button
+                    variant='ghost'
+                    size='icon'
                     onClick={() => onEditInterviewEvent(event)}
-                    className='p-2 text-primary hover:bg-primary/5 dark:hover:bg-primary/10 rounded transition-colors'
+                    className='text-primary hover:bg-primary/5 dark:hover:bg-primary/10'
                     title={t('common.edit')}
                     aria-label={t('common.edit')}
                   >
                     <svg xmlns='http://www.w3.org/2000/svg' className='size-5' viewBox='0 0 20 20' fill='currentColor'>
                       <path d='M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z' />
                     </svg>
-                  </button>
-                  <button
-                    type='button'
+                  </Button>
+                  <Button
+                    variant='ghost'
+                    size='icon'
                     onClick={() => onDeleteInterviewEvent(event.id)}
-                    className='p-2 text-destructive hover:bg-destructive/5 dark:hover:bg-destructive/10 rounded transition-colors'
+                    className='text-destructive hover:bg-destructive/5 dark:hover:bg-destructive/10'
                     title={t('common.delete')}
                     aria-label={t('common.delete')}
                   >
                     <svg xmlns='http://www.w3.org/2000/svg' className='size-5' viewBox='0 0 20 20' fill='currentColor'>
                       <path fillRule='evenodd' d='M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z' clipRule='evenodd' />
                     </svg>
-                  </button>
+                  </Button>
                 </div>
               </div>
             ))}

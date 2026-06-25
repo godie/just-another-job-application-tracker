@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { CHATBOTS } from '../../utils/constants';
 import { GeminiKeyModal } from '../GeminiKeyModal';
 import { hasKeyStored, clearStoredKey } from '../../hooks/useCrypto';
+import { Button } from '../ui/Button';
 
 interface EmailScanSettingsProps {
   emailScanMonths: number;
@@ -78,21 +79,22 @@ const EmailScanSettings: React.FC<EmailScanSettingsProps> = ({
             </div>
             <div className="flex items-center gap-2">
               {keyConfigured && (
-                <button
-                  type='button'
+                <Button
+                  variant='outline'
+                  size='sm'
                   onClick={handleRemoveKey}
-                  className="px-3 py-1.5 text-xs font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded border border-red-200 dark:border-red-800 transition"
+                  className='text-destructive border-destructive/30 hover:bg-destructive/5 hover:text-destructive'
                 >
                   {t('settings.emailScan.geminiKeyRemove')}
-                </button>
+                </Button>
               )}
-              <button
-                type='button'
+              <Button
+                variant='primary'
+                size='md'
                 onClick={() => setShowGeminiModal(true)}
-                className="px-4 py-2 text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 rounded transition"
               >
                 {keyConfigured ? t('settings.emailScan.geminiKeyChange') : t('settings.emailScan.geminiKeySetup')}
-              </button>
+              </Button>
             </div>
           </div>
         </div>
