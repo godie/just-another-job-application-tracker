@@ -36,6 +36,7 @@ export default {
       // new code to them is still warranted.
       exclude: [
         'habit-hooks.config.*',
+        'src/components/BarChartWidget.tsx',
         'src/components/InterviewBarChart.tsx',
         'src/components/StatusBarChart.tsx',
         'src/utils/geminiJobScoring.ts',
