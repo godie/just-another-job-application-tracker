@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Button } from './ui/Button';
 import {
   hasConsent,
   storeConsent,
@@ -87,20 +88,22 @@ const GDPRCookieBanner: React.FC<GDPRCookieBannerProps> = ({ onConsentChange }) 
 
             {/* Actions */}
             <div className="flex flex-col sm:flex-row gap-2 md:flex-shrink-0">
-              <button
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={handleAcceptEssential}
-                className="px-4 py-2 rounded-lg text-sm font-medium border border-border text-foreground hover:bg-muted transition whitespace-nowrap"
-                type="button"
+                className="whitespace-nowrap"
               >
                 {t('gdpr.essentialOnly')}
-              </button>
-              <button
+              </Button>
+              <Button
+                variant="primary"
+                size="sm"
                 onClick={handleAcceptAll}
-                className="px-4 py-2 rounded-lg text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 transition shadow-sm whitespace-nowrap"
-                type="button"
+                className="whitespace-nowrap"
               >
                 {t('gdpr.acceptAll')}
-              </button>
+              </Button>
             </div>
           </div>
 
