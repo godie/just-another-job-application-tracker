@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import useKeyboardEscape from '../hooks/useKeyboardEscape';
 import useFocusTrap from '../hooks/useFocusTrap';
+import { Button } from './ui/Button';
 import { markOnboardingComplete } from './OnboardingWizard.utils';
 
 interface WizardStep {
@@ -127,16 +128,18 @@ const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onClose, onNavigate
         </div>
 
         {/* Close button */}
-        <button
+        <Button
           type="button"
+          variant="ghost"
+          size="icon"
           onClick={handleClose}
-          className="absolute top-3 right-3 p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition z-10"
+          className="absolute top-3 right-3 z-10 rounded-lg"
           aria-label={t('common.close')}
         >
           <svg className="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
           </svg>
-        </button>
+        </Button>
 
         {/* Step content */}
         <div className={`px-8 pt-10 pb-6 text-center ${slideClass}`} key={current.id}>
@@ -183,21 +186,25 @@ const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onClose, onNavigate
 
           <div className="flex gap-3">
             {!isFirst && (
-              <button
-                onClick={goPrev}
-                className="px-4 py-2 rounded-lg text-sm font-medium border border-border text-foreground hover:bg-muted transition"
+              <Button
                 type="button"
+                variant="outline"
+                size="md"
+                onClick={goPrev}
+                className="rounded-lg"
               >
                 {t('common.previous')}
-              </button>
+              </Button>
             )}
-            <button
-              onClick={goNext}
-              className="px-5 py-2 rounded-lg text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 transition shadow-sm"
+            <Button
               type="button"
+              variant="primary"
+              size="md"
+              onClick={goNext}
+              className="rounded-lg"
             >
               {isLast ? t('onboarding.startTracking') : t('common.next')}
-            </button>
+            </Button>
           </div>
         </div>
       </dialog>
