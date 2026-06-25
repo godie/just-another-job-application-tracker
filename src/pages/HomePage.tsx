@@ -115,7 +115,6 @@ const HomePageContent: React.FC<HomePageContentProps> = ({ onNavigate }) => {
   const isFormOpen = currentApplication !== null;
   const isPreviewOpen = selectedJobId !== null;
 
-  // useEffectEvent handlers capture latest closures, so empty `[]` deps are intentional.
   const onMessage = useEffectEvent((event: MessageEvent) => {
     if (event.data && event.data.type === 'JOB_OPPORTUNITY_SYNC') {
       showSuccess(t('home.success.captured'));
@@ -138,7 +137,6 @@ const HomePageContent: React.FC<HomePageContentProps> = ({ onNavigate }) => {
     loadPreferences();
   });
 
-  // mount-only: useEffectEvent handlers capture latest closures (stable refs in React 19).
   useEffect(() => {
     onMount();
     window.addEventListener('message', onMessage);
