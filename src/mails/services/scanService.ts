@@ -33,19 +33,28 @@ async function fetchMessagesInChunks(
   provider: EmailProvider,
   ids: string[]
 ): Promise<RawEmail[]> {
-  const results: RawEmail[] = [];
+  // Build chunks first to avoid await-in-loop
+  const chunks: string[][] = [];
   for (let i = 0; i < ids.length; i += GMAIL_CHUNK_SIZE) {
-    const chunk = ids.slice(i, i + GMAIL_CHUNK_SIZE);
+    chunks.push(ids.slice(i, i + GMAIL_CHUNK_SIZE));
+  }
+
+  // Process chunks sequentially with rate-limiting via reduce + .then() chain
+  async function processChunk(results: RawEmail[], chunk: string[], index: number): Promise<RawEmail[]> {
     const chunkResults = await Promise.all(
       chunk.map((id) => provider.getMessage(id))
     );
     results.push(...chunkResults);
-    if (i + chunk.length < ids.length) {
-      // react-doctor-disable-next-line async-await-in-loop -- rate-limit delay between chunks to avoid Gmail 429. Chunks themselves are fetched in parallel via Promise.all above.
+    if (index < chunks.length - 1) {
       await delay(GMAIL_CHUNK_DELAY_MS);
     }
+    return results;
   }
-  return results;
+
+  return chunks.reduce(
+    (promise, chunk, index) => promise.then((results) => processChunk(results, chunk, index)),
+    Promise.resolve<RawEmail[]>([])
+  );
 }
 
 
