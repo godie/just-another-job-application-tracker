@@ -61,7 +61,16 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode, onNavigate, onSuccess }) => {
         {/* Header */}
         <div className='mb-8'>
           <div className='flex justify-center'>
-            <img src='/jajat-logo.png' alt='JAJAT Logo' className='h-12 w-auto' />
+            <img
+              src='/jajat-logo.png'
+              alt='JAJAT Logo'
+              // Intrinsic dims match the source file (1024x1024).
+              // Defense-in-depth CLS prevention.
+              width={1024}
+              height={1024}
+              decoding='async'
+              className='h-12 w-auto'
+            />
           </div>
           <div className='flex items-center gap-3 mt-6 mb-4'>
             <div className='w-8 h-0.5 bg-primary/80'></div>

@@ -95,6 +95,12 @@ const [theme, setTheme] = useState<'light' | 'dark'>(() => {
         <img
           src='/jajat-logo.png'
           alt='Just Another Job Application Tracker - Home'
+          // Intrinsic dims match the source file (1024x1024).
+          // Defense-in-depth CLS prevention: declared aspect ratio informs
+          // layout before image arrives, even if Tailwind classes change.
+          width={1024}
+          height={1024}
+          decoding='async'
           className='size-10 md:hidden'
           data-testid='app-logo-mobile'
         />
