@@ -1,5 +1,6 @@
 import React from 'react';
 import { useRegisterSW } from 'virtual:pwa-register/react';
+import { Button } from './ui/Button';
 
 const PWAReloadPrompt: React.FC = () => {
   const sw = useRegisterSW({
@@ -44,21 +45,24 @@ const PWAReloadPrompt: React.FC = () => {
         </div>
       </div>
       <div className='flex justify-end gap-2'>
-        <button
+        <Button
           type="button"
+          variant="ghost"
+          size="sm"
           onClick={close}
-          className='px-3 py-1.5 text-xs font-medium text-muted-foreground hover:bg-muted rounded'
+          className='text-muted-foreground'
         >
           Dismiss
-        </button>
+        </Button>
         {needUpdate && (
-          <button
+          <Button
             type="button"
+            variant="primary"
+            size="sm"
             onClick={() => updateServiceWorker(true)}
-            className='px-3 py-1.5 text-xs font-bold text-white bg-primary hover:bg-primary rounded'
           >
             Update
-          </button>
+          </Button>
         )}
       </div>
     </div>

@@ -5,6 +5,7 @@ import { exportToCSV, parseCSV } from '../utils/csv';
 import { getCurrentDateKey } from '../utils/dateHelpers';
 import { useAlert } from './AlertProvider';
 import { HiDownload, HiUpload } from 'react-icons/hi';
+import { Button } from './ui/Button';
 
 const CSVActions: React.FC = () => {
   const { t } = useTranslation();
@@ -68,25 +69,27 @@ const CSVActions: React.FC = () => {
 
   return (
     <div className="flex flex-wrap gap-2 items-center">
-      <button
+      <Button
         type="button"
+        variant="outline"
+        size="md"
         onClick={handleExport}
-        className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-foreground bg-card border border-border rounded hover:bg-muted transition-colors"
         title={t('csv.export')}
       >
         <HiDownload className="size-4" />
         <span className="hidden sm:inline">{t('csv.export')}</span>
-      </button>
+      </Button>
 
-      <button
+      <Button
         type="button"
+        variant="outline"
+        size="md"
         onClick={handleImportClick}
-        className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-foreground bg-card border border-border rounded hover:bg-muted transition-colors"
         title={t('csv.import')}
       >
         <HiUpload className="size-4" />
         <span className="hidden sm:inline">{t('csv.import')}</span>
-      </button>
+      </Button>
 
       <input
         type="file"

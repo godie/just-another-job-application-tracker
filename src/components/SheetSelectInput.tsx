@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { Button } from './ui/Button';
 
 interface SheetSelectInputProps {
   sheetIdInput: string;
@@ -42,26 +43,24 @@ export const SheetSelectInput: React.FC<SheetSelectInputProps> = ({
             }
           }}
         />
-        <button
+        <Button
+          type="button"
+          variant="primary"
+          size="sm"
           onClick={onSetSheet}
           disabled={isSettingSheet || !sheetIdInput.trim()}
-          className={`px-4 py-2 rounded-lg font-medium text-sm transition-colors ${
-            isSettingSheet || !sheetIdInput.trim()
-              ? 'bg-muted text-muted-foreground dark:bg-muted dark:text-muted-foreground cursor-not-allowed'
-              : 'bg-primary hover:bg-primary/90 text-primary-foreground'
-          }`}
-          type="button"
         >
           {isSettingSheet ? t('sheets.setting') : t('sheets.set')}
-        </button>
-        <button
+        </Button>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
           onClick={onCancel}
           disabled={isSettingSheet}
-          className="px-4 py-2 rounded font-medium text-sm bg-card hover:bg-muted text-foreground border border-border transition-colors"
-          type="button"
         >
           {t('common.cancel')}
-        </button>
+        </Button>
       </div>
       <p className="text-xs text-muted-foreground mt-2">
         Example:{' '}
