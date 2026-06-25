@@ -90,16 +90,17 @@ const JobDetailsPage: React.FC<JobDetailsPageProps> = ({ onNavigate }) => {
   return (
     <div className="max-w-4xl mx-auto px-4 md:px-6 lg:px-8 py-8">
       {/* Back Navigation */}
-      <button
-        type="button"
+      <Button
+        variant="ghost"
+        size="md"
         onClick={() => onNavigate?.('applications')}
-        className="inline-flex items-center gap-1.5 text-sm text-primary hover:text-primary dark:hover:text-primary mb-6 transition-colors"
+        className="mb-6 gap-1.5"
       >
         <svg className="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
         </svg>
         {t('jobDetails.backToApplications', 'Back to Applications')}
-      </button>
+      </Button>
 
       {/* Header */}
       <Card className="mb-6 overflow-hidden">

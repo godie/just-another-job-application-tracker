@@ -6,6 +6,7 @@ import type { TableColumn } from '../types/table';
 import { sanitizeUrl } from '../utils/url';
 import { TableRow, TableCell } from './ui/Table';
 import { Badge } from './ui/Badge';
+import { Button } from './ui/Button';
 import { getBadgeVariantForStatus } from '../utils/status';
 
 interface ApplicationTableRowProps {
@@ -110,18 +111,18 @@ const ApplicationTableRow: React.FC<ApplicationTableRowProps> = ({
             for the entire table during mouse movements, significantly improving
             performance for large lists. */}
         <div className="opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-opacity duration-200">
-          <button
-            type='button'
+          <Button
+            variant='danger'
+            size='sm'
             onClick={(e) => {
               e.stopPropagation();
               onDeleteRequest(item);
             }}
-            className="px-3 py-1.5 rounded text-xs font-semibold bg-destructive hover:bg-destructive/90 text-destructive-foreground transition-colors inline-flex items-center gap-1"
             aria-label={t('home.deleteConfirm.titleFor', { position: item.position, company: item.company })}
             data-testid={`delete-btn-${item.id}`}
           >
-            <span>{t('common.delete')}</span>
-          </button>
+            {t('common.delete')}
+          </Button>
         </div>
       </TableCell>
     </TableRow>
