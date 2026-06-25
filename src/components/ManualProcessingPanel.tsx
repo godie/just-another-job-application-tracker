@@ -33,24 +33,28 @@ const ModeToggle: React.FC<{
   const { t } = useTranslation();
   return (
     <div className="flex items-center gap-2 bg-muted rounded-lg p-1 w-fit">
-      <Button
+      <button
         onClick={() => setProcessingMode('manual')}
         type="button"
-        variant={processingMode === 'manual' ? 'outline' : 'ghost'}
-        size="sm"
-        className="text-sm"
+        className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
+          processingMode === 'manual'
+            ? 'bg-card text-foreground shadow-sm'
+            : 'text-muted-foreground hover:text-foreground'
+        }`}
       >
         {t('settings.emailScan.processingModes.manual')}
-      </Button>
-      <Button
+      </button>
+      <button
         onClick={() => setProcessingMode('api')}
         type="button"
-        variant={processingMode === 'api' ? 'outline' : 'ghost'}
-        size="sm"
-        className="text-sm"
+        className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
+          processingMode === 'api'
+            ? 'bg-card text-foreground shadow-sm'
+            : 'text-muted-foreground hover:text-foreground'
+        }`}
       >
         {t('settings.emailScan.processingModes.api')}
-      </Button>
+      </button>
     </div>
   );
 };
@@ -177,15 +181,13 @@ const EmailList: React.FC<{
         <h4 className="text-sm font-semibold text-foreground">
           {t('settings.emailScan.emailsFound', { count: emails.length })}
         </h4>
-        <Button
+        <button
           type="button"
-          variant="ghost"
-          size="sm"
           onClick={() => selectedEmailIds.selectAll(emails.map((e) => e.id))}
-          className="text-xs text-primary hover:underline hover:bg-transparent hover:text-primary h-auto px-0 py-0"
+          className="text-xs text-primary hover:underline"
         >
           {t('settings.emailScan.selectAll')}
-        </Button>
+        </button>
       </div>
       <div className="max-h-60 overflow-y-auto border border-border rounded divide-y divide-border bg-card">
         {emails.map((email) => (
