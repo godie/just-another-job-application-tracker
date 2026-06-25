@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { Button } from './ui/Button';
 
 export type AlertType = 'success' | 'error' | 'warning' | 'info';
 
@@ -82,21 +83,23 @@ const Alert: React.FC<AlertProps> = ({ type, message, onClose, duration = 5000 }
           <p className="text-sm font-medium">{message}</p>
         </div>
         {onClose && (
-          <button
+          <Button
             type="button"
+            variant="ghost"
+            size="icon"
             onClick={() => {
               setIsVisible(false);
               if (onClose) {
                 setTimeout(onClose, 300);
               }
             }}
-            className="ml-4 flex-shrink-0 text-muted-foreground hover:text-muted-foreground dark:hover:text-muted-foreground transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+            className="ml-4 flex-shrink-0 text-current hover:text-current"
             aria-label="Close alert"
           >
             <svg className="size-5" fill="currentColor" viewBox="0 0 20 20">
               <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
             </svg>
-          </button>
+          </Button>
         )}
       </div>
     </div>
