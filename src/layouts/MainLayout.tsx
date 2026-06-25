@@ -53,7 +53,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, currentPage, onNaviga
         {/* Since sidebar is currently hidden on mobile (md:block), we don't need the overlay */}
         {isSidebarOpen && (
           <div
-            className="fixed inset-0 bg-gray-950 bg-opacity-50 z-30 hidden mt-16"
+            className="fixed inset-0 bg-black/50 z-30 hidden mt-16"
             onClick={toggleSidebar}
             aria-hidden="true"
           />
