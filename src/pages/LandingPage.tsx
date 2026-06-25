@@ -174,6 +174,12 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                 <img
                   src='/screenshots/table_view.png'
                   alt='Application tracking interface'
+                  // Intrinsic dims match the source file (1280x720, 16:9).
+                  // Defense-in-depth: explicit width/height lets browsers reserve space
+                  // before the image arrives, preventing CLS even if the
+                  // aspect-square parent style is ever removed.
+                  width={1280}
+                  height={720}
                   className='w-full h-full object-cover'
                   // Hero image is the LCP candidate: prioritize fetch, decode off-main-thread
                   fetchPriority='high'
