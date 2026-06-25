@@ -16,9 +16,6 @@ interface MockStoreState {
   refreshApplications: Mock;
 }
 
-// =========================================================================
-// 1. MOCK RADICAL: Evita loops infinitos de Zustand e i18next
-// =========================================================================
 vi.mock('../stores/applicationsStore', () => {
   const mockGetState = vi.fn(() => ({
     applications: [],
@@ -52,9 +49,6 @@ vi.mock('react-i18next', () => ({
 
 vi.mock('../components/GoogleSheetsSync', () => ({ default: () => null }));
 
-// =========================================================================
-// 2. SETUP Y HELPERS
-// =========================================================================
 const renderWithProviders = (ui: React.ReactElement) => {
   return render(
     <GoogleOAuthProvider clientId="test">
@@ -68,7 +62,6 @@ describe('HomePage - Full Integration Suite', () => {
   beforeEach(() => {
     cleanup();
     vi.clearAllMocks();
-    // Estado base para cada test
     getMockedState().mockReturnValue({
       applications: [],
       loadApplications: vi.fn(),
@@ -76,7 +69,6 @@ describe('HomePage - Full Integration Suite', () => {
     });
   });
 
-  // --- TEST DE RENDERIZADO (Fix Final V2) ---
   test('Debe renderizar y abrir el formulario sin bucles', async () => {
     renderWithProviders(<HomePage />);
     const addButton = screen.getByTestId('add-entry-button');
@@ -84,7 +76,6 @@ describe('HomePage - Full Integration Suite', () => {
     expect(await screen.findByText('form.addTitle')).toBeInTheDocument();
   });
 
-  // --- TEST DE VISUALIZACIÓN (Fix Final V2 adaptado) ---
   test('Muestra aplicaciones en la tabla correctamente', async () => {
     getMockedState().mockReturnValue({
       applications: [{ id: '1', position: 'Senior Dev', company: 'Google', status: 'Applied' }],
@@ -98,7 +89,6 @@ describe('HomePage - Full Integration Suite', () => {
     expect((await screen.findAllByText(/Google/i)).length).toBeGreaterThanOrEqual(1);
   });
 
-  // --- TEST DE FLUJO COMPLETO (Fix Final V2) ---
   test('Flujo completo: Agregar aplicación y verificar visualización', async () => {
     const mockState = {
       applications: [],
@@ -115,7 +105,6 @@ describe('HomePage - Full Integration Suite', () => {
     fireEvent.change(screen.getByTestId('form-company'), { target: { value: 'OpenAI' } });
     fireEvent.click(screen.getByTestId('form-save'));
 
-    // Actualizamos el mock para simular que la data ya existe tras el guardado
     getMockedState().mockReturnValue({
       ...mockState,
       applications: [{ id: 'new-id', position: 'Software Engineer', company: 'OpenAI', status: 'Applied' }]
@@ -125,7 +114,6 @@ describe('HomePage - Full Integration Suite', () => {
     expect((await screen.findAllByText(/Software Engineer/i)).length).toBeGreaterThan(0);
   });
 
-  // --- TEST DE FILTROS (Lógica original recuperada) ---
   test('Filtros: La búsqueda reduce los resultados en la tabla', async () => {
     const apps = [
       { id: '1', position: 'Frontend Dev', company: 'UI Labs', status: 'Applied' },
@@ -149,7 +137,6 @@ describe('HomePage - Full Integration Suite', () => {
     });
   });
 
-  // --- TEST DE VISTAS (Lógica original recuperada) ---
   test('Vistas: Cambia entre Tabla y Kanban correctamente', async () => {
     getMockedState().mockReturnValue({
       applications: [{ id: '1', position: 'Support', company: 'Help', status: 'Applied' }],
@@ -159,8 +146,7 @@ describe('HomePage - Full Integration Suite', () => {
 
     renderWithProviders(<HomePage />);
 
-    // Cambiar a Kanban (usando la clave de traducción para el aria-label)
-    const kanbanButton = screen.getByRole('button', { name: /settings.view.kanban/i });
+    const kanbanButton = screen.getByRole('tab', { name: /settings.view.kanban/i });
     fireEvent.click(kanbanButton);
 
     expect(screen.getByText('views.kanban')).toBeInTheDocument();

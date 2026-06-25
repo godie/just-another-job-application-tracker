@@ -1,13 +1,9 @@
-// src/pages/JobDetailsPage.test.tsx
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import JobDetailsPage from './JobDetailsPage';
 import type { JobApplication } from '../types/applications';
 
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
 
 function makeApp(overrides: Partial<JobApplication> = {}): JobApplication {
   return {
@@ -38,7 +34,6 @@ function makeApp(overrides: Partial<JobApplication> = {}): JobApplication {
 const deleteApplication = vi.fn();
 const onNavigate = vi.fn();
 
-// Mock the store
 vi.mock('../stores/applicationsStore', () => ({
   useApplicationsStore: vi.fn(),
 }));
@@ -56,15 +51,12 @@ function renderPage() {
   return render(<JobDetailsPage onNavigate={onNavigate} />);
 }
 
-// Set a jobId in the URL before each test
 function setUrlJobId(jobId: string | null) {
   const search = jobId ? `?page=job-details&jobId=${jobId}` : '?page=job-details';
   window.history.replaceState({}, '', search);
 }
 
-// ---------------------------------------------------------------------------
 // Tests
-// ---------------------------------------------------------------------------
 
 describe('JobDetailsPage', () => {
   beforeEach(() => {
@@ -75,7 +67,6 @@ describe('JobDetailsPage', () => {
     window.history.replaceState({}, '', '/');
   });
 
-  // -- Not-found states ------------------------------------------------------
 
   it('renders not-found state when jobId is missing from URL', () => {
     setUrlJobId(null);
@@ -104,17 +95,14 @@ describe('JobDetailsPage', () => {
     expect(onNavigate).toHaveBeenCalledWith('applications');
   });
 
-  // -- Rendering with data ---------------------------------------------------
 
   it('renders position, company, status, and job ID', () => {
     setUrlJobId('app-1');
     setupStore([makeApp()]);
     renderPage();
 
-    // Position and company appear in both the header AND detail grid
     expect(screen.getAllByText('Senior Backend Engineer').length).toBeGreaterThanOrEqual(2);
     expect(screen.getAllByText('Widgets Inc').length).toBeGreaterThanOrEqual(2);
-    // Status badge
     const badges = screen.getAllByText('interviewing');
     expect(badges.length).toBeGreaterThanOrEqual(1);
     // Job ID
@@ -132,7 +120,6 @@ describe('JobDetailsPage', () => {
     expect(screen.getByText('Berlin, DE')).toBeInTheDocument();
     expect(screen.getByText('Work Type')).toBeInTheDocument();
     expect(screen.getByText('hybrid')).toBeInTheDocument();
-    // hybridDaysInOffice=3
     expect(screen.getByText('Days in Office')).toBeInTheDocument();
     expect(screen.getByText('3')).toBeInTheDocument();
     expect(screen.getByText('Salary')).toBeInTheDocument();
@@ -148,11 +135,8 @@ describe('JobDetailsPage', () => {
     setupStore([makeApp()]);
     renderPage();
 
-    // Applied date (appears in details grid AND timeline events)
     expect(screen.getAllByText('Jan 15, 2025').length).toBeGreaterThan(0);
-    // Interview date (appears in details grid AND timeline events)
     expect(screen.getAllByText('Feb 1, 2025').length).toBeGreaterThan(0);
-    // Follow-up date (appears only in details grid)
     expect(screen.getByText('Mar 1, 2025')).toBeInTheDocument();
   });
 
@@ -196,7 +180,6 @@ describe('JobDetailsPage', () => {
     expect(screen.queryByText('Notes')).toBeNull();
   });
 
-  // -- Timeline --------------------------------------------------------------
 
   it('renders timeline events when present', () => {
     setUrlJobId('app-1');
@@ -204,7 +187,6 @@ describe('JobDetailsPage', () => {
     renderPage();
 
     expect(screen.getByText(/Timeline/)).toBeInTheDocument();
-    // Timeline event types are translated via getStageDisplayName
     expect(screen.getByText('Application Submitted')).toBeInTheDocument();
   });
 
@@ -215,7 +197,6 @@ describe('JobDetailsPage', () => {
     expect(screen.queryByText(/Timeline/)).toBeNull();
   });
 
-  // -- Custom fields ---------------------------------------------------------
 
   it('renders custom fields when present', () => {
     setUrlJobId('app-1');
@@ -234,14 +215,12 @@ describe('JobDetailsPage', () => {
     expect(screen.queryByText('Custom Fields')).toBeNull();
   });
 
-  // -- Actions ---------------------------------------------------------------
 
   it('renders back navigation button and navigates on click', () => {
     setUrlJobId('app-1');
     setupStore([makeApp()]);
     renderPage();
 
-    // There are two "Back to Applications" links (top + bottom)
     const backButtons = screen.getAllByText(/Back to Applications/);
     expect(backButtons.length).toBe(2);
 
@@ -294,31 +273,25 @@ describe('JobDetailsPage', () => {
     expect(onNavigate).toHaveBeenCalledWith('applications');
   });
 
-  // -- Footer ----------------------------------------------------------------
 
   it('renders the Footer component', () => {
     setUrlJobId('app-1');
     setupStore([makeApp()]);
     renderPage();
 
-    // Footer renders a <footer> element with version-specific vibecoded text
     const footer = document.querySelector('footer');
     expect(footer).toBeInTheDocument();
-    // Footer links
     expect(screen.getByText('Terms of Use')).toBeInTheDocument();
     expect(screen.getByText('Privacy Policy')).toBeInTheDocument();
     expect(screen.getByText('About')).toBeInTheDocument();
   });
 
-  // -- SEO -------------------------------------------------------------------
 
   it('sets the document title via useSEO hook', () => {
     setUrlJobId('app-1');
     setupStore([makeApp()]);
     renderPage();
 
-    // Title format: "{position} at {company} - {seo.applications.title} | JAJAT"
-    // (resolveSEOConfig appends " | JAJAT" suffix by default)
     expect(document.title).toBe(
       'Senior Backend Engineer at Widgets Inc - My Applications | JAJAT'
     );
@@ -329,11 +302,9 @@ describe('JobDetailsPage', () => {
     setupStore([]);
     renderPage();
 
-    // When no application is loaded, title is the page title + suffix
     expect(document.title).toBe('My Applications | JAJAT');
   });
 
-  // -- Conditional fields ----------------------------------------------------
 
   it('omits optional fields when their values are empty', () => {
     setUrlJobId('app-1');
@@ -351,12 +322,8 @@ describe('JobDetailsPage', () => {
     ]);
     renderPage();
 
-    // These fields should be present (they have values from the factory)
     expect(screen.getByText('Position')).toBeInTheDocument();
     expect(screen.getByText('Company')).toBeInTheDocument();
-    // Location was set to '' so it should not appear
-    // The Field component returns null for empty values
-    // But we should at least not crash
     expect(screen.queryByText('Berlin, DE')).toBeNull();
   });
 });

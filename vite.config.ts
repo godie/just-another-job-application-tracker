@@ -3,11 +3,16 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { VitePWA } from 'vite-plugin-pwa'
+import path from 'path'
 
 const apiProxyTarget = process.env.VITE_API_PROXY_TARGET || 'http://localhost:8080'
 
-// https://vite.dev/config/
 export default defineConfig({
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+    },
+  },
   plugins: [
     react(),
     tailwindcss(),
@@ -50,20 +55,15 @@ export default defineConfig({
     outDir: 'dist',
     rollupOptions: {
       output: {
-        // Avoid using eval in output to prevent CSP issues
         format: 'es',
         generatedCode: {
           constBindings: true,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        } as any,
+        },
         manualChunks(id) {
-          // Split vendor libraries into separate cacheable chunks
           if (id.includes('node_modules')) {
             if (id.includes('recharts')) return 'recharts';
             if (id.includes('react-dom')) return 'react';
             if (id.includes('/react/')) return 'react';
-            // scheduler is a dependency of react-dom; keep it in the react chunk
-            // to avoid circular chunk dependencies (react -> vendor -> react).
             if (id.includes('scheduler')) return 'react';
             if (id.includes('i18next') || id.includes('react-i18next')) return 'i18n';
             if (id.includes('@react-oauth')) return 'google-auth';
@@ -76,21 +76,15 @@ export default defineConfig({
         },
       },
     },
-    // Use modern target to avoid eval in production
     target: 'es2015',
-    // Source maps can cause CSP issues with eval, disable for production
     sourcemap: false,
-    // Use esbuild (default) which doesn't use eval
     minify: 'esbuild',
   },
   test: {
     globals: true, // Allows using functions like 'describe', 'it', 'expect' globally
     environment: 'happy-dom', // Using happy-dom instead of jsdom to avoid DONT_CONTEXTIFY error
     setupFiles: './src/setupTests.ts', // File to set up testing library extensions
-    // Specify where tests are located
     include: ['**/*.test.{ts,tsx}'],
-    // Vitest 4 defaults to forks pool, but thread crashes occur in this environment.
-    // Explicitly use forks to avoid "Worker exited unexpectedly" errors.
     pool: 'forks',
   },
   server: {
@@ -102,8 +96,6 @@ export default defineConfig({
       },
     },
     headers: {
-      // Allow Google OAuth popup to check window.closed without COOP errors.
-      // 'same-origin-allow-popups' is the recommended value for OAuth popups.
       'Cross-Origin-Opener-Policy': 'same-origin-allow-popups',
     },
   },

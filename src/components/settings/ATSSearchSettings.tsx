@@ -13,18 +13,18 @@ const ATSSearchSettings: React.FC<ATSSearchSettingsProps> = ({ atsSearch, onAtsS
 
   return (
     <div className='space-y-8'>
-      <div className='bg-sage-50 dark:bg-sage-900/20 border border-sage-100 dark:border-sage-900/30 rounded p-6'>
+      <div className='bg-primary/5 dark:bg-primary/10 border border-primary/10 dark:border-primary/10 rounded p-6'>
         <div className='flex items-start gap-4'>
-          <div className='p-3 bg-sage-600 rounded text-white'>
+          <div className='p-3 bg-primary rounded text-white'>
             <svg xmlns='http://www.w3.org/2000/svg' className='size-6' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
               <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z' />
             </svg>
           </div>
           <div>
-            <h3 className='text-lg font-semibold text-earth-900 dark:text-earth-100'>
+            <h3 className='text-lg font-semibold text-foreground'>
               {t('opportunities.atsSearch.title')}
             </h3>
-            <p className='text-sm text-earth-600 dark:text-earth-400 mt-1'>
+            <p className='text-sm text-muted-foreground mt-1'>
               {t('opportunities.atsSearch.subtitle')}
             </p>
           </div>
@@ -58,19 +58,19 @@ const ATSSearchSettings: React.FC<ATSSearchSettingsProps> = ({ atsSearch, onAtsS
         </div>
 
         <div>
-          <label className='block text-sm font-semibold text-earth-700 dark:text-earth-300 mb-2'>
+          <label className='block text-sm font-semibold text-muted-foreground mb-2'>
             {t('opportunities.atsSearch.source')}
           </label>
           <select
             value={atsSearch?.source ?? 'both'}
             onChange={(e) => onAtsSearchChange('source', e.target.value)}
-            className='w-full px-4 py-2.5 text-sm border border-earth-200 dark:border-earth-600 bg-white dark:bg-earth-800 text-earth-900 dark:text-earth-100 rounded focus:outline-none focus:ring-2 focus:ring-sage-500 focus:border-transparent transition-colors'
+            className='w-full px-4 py-2.5 text-sm border border-border bg-card text-foreground rounded focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent transition-colors'
           >
             <option value='both'>{t('opportunities.atsSearch.sourceBoth')}</option>
             <option value='jooble'>{t('opportunities.atsSearch.sourceJooble')}</option>
             <option value='theirstack'>{t('opportunities.atsSearch.sourceTheirstack')}</option>
           </select>
-          <p className='text-xs text-earth-500 dark:text-earth-400 mt-1'>
+          <p className='text-xs text-muted-foreground mt-1'>
             {t('opportunities.atsSearch.sourceHint')}
           </p>
         </div>
@@ -82,7 +82,7 @@ const ATSSearchSettings: React.FC<ATSSearchSettingsProps> = ({ atsSearch, onAtsS
             onChange={(tags) => onAtsSearchChange('techStack', tags)}
             placeholder={t('opportunities.atsSearch.placeholderTechStack')}
           />
-          <p className='text-xs text-earth-500 dark:text-earth-400 mt-1'>
+          <p className='text-xs text-muted-foreground mt-1'>
             {t('opportunities.atsSearch.techStackHint')}
           </p>
         </div>

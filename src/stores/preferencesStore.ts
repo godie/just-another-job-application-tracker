@@ -1,4 +1,3 @@
-// src/stores/preferencesStore.ts
 import { create } from 'zustand';
 import type { UserPreferences } from '../types/preferences';
 import { DEFAULT_PREFERENCES } from '../utils/constants';
@@ -8,17 +7,12 @@ interface PreferencesState {
   preferences: UserPreferences;
   isLoading: boolean;
   
-  // Actions
   loadPreferences: () => void;
   updatePreferences: (updates: Partial<UserPreferences>) => void;
   setPreferences: (preferences: UserPreferences) => void;
   resetPreferences: () => void;
 }
 
-/**
- * Zustand store for managing user preferences.
- * Persistence is handled by the storage layer (src/storage/preferences.ts)
- */
 export const usePreferencesStore = create<PreferencesState>()((set) => ({
   preferences: DEFAULT_PREFERENCES,
   isLoading: false,

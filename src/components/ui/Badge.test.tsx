@@ -10,10 +10,10 @@ describe('Badge', () => {
 
   it('applies the correct variant classes', () => {
     const { rerender } = render(<Badge variant="default">Default</Badge>);
-    expect(screen.getByText(/default/i)).toHaveClass('bg-earth-200');
+    expect(screen.getByText(/default/i)).toHaveClass('bg-primary');
 
     rerender(<Badge variant="danger">Danger</Badge>);
-    expect(screen.getByText(/danger/i)).toHaveClass('bg-red-100');
+    expect(screen.getByText(/danger/i)).toHaveClass('bg-destructive');
 
     rerender(<Badge variant="success">Success</Badge>);
     expect(screen.getByText(/success/i)).toHaveClass('bg-green-100');

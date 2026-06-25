@@ -7,9 +7,7 @@ import { EmailAdapter } from '../adapter/emailAdapter';
 import { QUERIES, QUERIES_ES } from '../types';
 import { useApplicationsStore } from '../../stores/applicationsStore';
 
-/** Max concurrent getMessage requests to avoid Gmail "Too many concurrent requests" (429). */
 const GMAIL_CHUNK_SIZE = 5;
-/** Delay in ms between chunks to stay under rate limits. */
 const GMAIL_CHUNK_DELAY_MS = 150;
 
 function delay(ms: number): Promise<void> {
@@ -17,10 +15,6 @@ function delay(ms: number): Promise<void> {
 }
 
 /**
- * Deduplicates emails by (subject + from + date) to avoid processing
- * the same email found by multiple search queries.
- * Keeps the first occurrence and discards duplicates.
- *
  * Note: The `from` field is compared as-is after normalize(), so consistent
  * formatting is assumed (e.g. always "Name <email>" or always just "email").
  * If normalize() produces different formats for the same sender, dedup may miss.
@@ -35,10 +29,6 @@ export function deduplicateEmails(emails: Email[]): Email[] {
   });
 }
 
-/**
- * Fetches messages in chunks to avoid Gmail 429 (too many concurrent requests).
- * Stops and rethrows on first error (e.g. GmailRateLimitError).
- */
 async function fetchMessagesInChunks(
   provider: EmailProvider,
   ids: string[]
@@ -51,6 +41,7 @@ async function fetchMessagesInChunks(
     );
     results.push(...chunkResults);
     if (i + chunk.length < ids.length) {
+      // react-doctor-disable-next-line async-await-in-loop -- rate-limit delay between chunks to avoid Gmail 429. Chunks themselves are fetched in parallel via Promise.all above.
       await delay(GMAIL_CHUNK_DELAY_MS);
     }
   }
@@ -58,16 +49,10 @@ async function fetchMessagesInChunks(
 }
 
 
-/**
- * Scans the email provider and returns proposed additions/updates for the user to review.
- * Does not modify the store.
- * Fetches messages in chunks to avoid Gmail "Too many concurrent requests" (429).
- */
 export async function scanEmails(provider: EmailProvider, daysBack: number = 30): Promise<ScanPreview> {
   const adapter = new EmailAdapter();
   const { applications } = useApplicationsStore.getState();
 
-  // Run both English and Spanish queries in parallel
   const idsByQuery = await Promise.all([
     ...Object.values(QUERIES).map((q) => provider.search(q(daysBack) as string)),
     ...Object.values(QUERIES_ES).map((q) => provider.search(q(daysBack) as string)),
@@ -120,9 +105,6 @@ export async function scanEmails(provider: EmailProvider, daysBack: number = 30)
   return { proposedAdditions, proposedUpdates, emails };
 }
 
-/**
- * Applies the selected proposed additions and updates to the store.
- */
 export function applyScanPreview(
   additions: ProposedAddition[],
   updates: ProposedUpdate[]

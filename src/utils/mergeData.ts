@@ -1,18 +1,9 @@
-// src/utils/mergeData.ts
 import type { JobApplication } from '../types/applications';
 import type { JobOpportunity } from '../types/opportunities';
 import { parseLocalDate } from './date';
 
-/**
- * Convert a date string to a numeric timestamp for comparison.
- * Returns 0 for empty/falsy strings so records with dates always win over empty ones.
- */
 const toTimestamp = (d: string): number => (d ? parseLocalDate(d).getTime() : 0);
 
-/**
- * Get the most recent date from a JobApplication for conflict resolution.
- * Uses the latest timeline event date, falling back to applicationDate.
- */
 function getAppLatestDate(app: JobApplication): string {
   if (app.timeline && app.timeline.length > 0) {
     const dates = app.timeline
@@ -23,19 +14,10 @@ function getAppLatestDate(app: JobApplication): string {
   return app.applicationDate || '';
 }
 
-/**
- * Get the most recent date from a JobOpportunity for conflict resolution.
- * Uses postedDate falling back to capturedDate.
- */
 function getOppLatestDate(opp: JobOpportunity): string {
   return opp.postedDate || opp.capturedDate || '';
 }
 
-/**
- * Merge two arrays of JobApplications by ID.
- * For records with the same ID: keep the one with the most recent date.
- * For records that only exist in one source: include them.
- */
 export function mergeApplications(
   local: JobApplication[],
   cloud: JobApplication[]
@@ -52,13 +34,11 @@ export function mergeApplications(
 
   const merged: JobApplication[] = [];
 
-  // Process all IDs from both sources (Set already deduplicates)
   for (const id of new Set([...localMap.keys(), ...cloudMap.keys()])) {
     const localApp = localMap.get(id);
     const cloudApp = cloudMap.get(id);
 
     if (localApp && cloudApp) {
-      // Both exist: keep the one with the most recent date
       const localDate = getAppLatestDate(localApp);
       const cloudDate = getAppLatestDate(cloudApp);
 
@@ -77,11 +57,6 @@ export function mergeApplications(
   return merged;
 }
 
-/**
- * Merge two arrays of JobOpportunities by ID.
- * For records with the same ID: keep the one with the most recent date.
- * For records that only exist in one source: include them.
- */
 export function mergeOpportunities(
   local: JobOpportunity[],
   cloud: JobOpportunity[]
@@ -128,10 +103,6 @@ export interface MergeData {
   opportunities: JobOpportunity[];
 }
 
-/**
- * Resolve a merge conflict using the chosen strategy.
- * Returns the final data to apply locally and push to cloud.
- */
 export function resolveMerge(
   strategy: MergeStrategy,
   localData: MergeData,

@@ -70,8 +70,8 @@ const ViewContent: React.FC<CurrentViewRendererProps> = ({
 const CurrentViewRenderer: React.FC<CurrentViewRendererProps> = (props) => {
   return (
     <Suspense fallback={
-      <div className="flex items-center justify-center h-64 text-earth-500">
-        <div className="animate-spin rounded-full size-8 border-b-2 border-sage-600"></div>
+      <div className="flex items-center justify-center h-64 text-muted-foreground">
+        <div className="animate-spin rounded-full size-8 border-b-2 border-primary"></div>
       </div>
     }>
       <ViewContent {...props} />

@@ -7,7 +7,6 @@ const mockScan = vi.fn();
 const mockApplySelected = vi.fn();
 const mockClearPreview = vi.fn();
 
-// Controls for auth store state
 let mockHasGoogleLinked = false;
 
 vi.mock('../stores/authStore', () => ({
@@ -63,7 +62,6 @@ describe('EmailScanReview', () => {
   describe('when Google account is not linked', () => {
     it('renders title and subtitle', async () => {
       renderWithAlert();
-      // Title/subtitle render immediately, before async token check resolves
       expect(screen.getByText(/Scan Gmail for Applications/i)).toBeInTheDocument();
       expect(screen.getByText(/Find confirmations, rejections and next steps in your Gmail to automate your tracker/i)).toBeInTheDocument();
     });

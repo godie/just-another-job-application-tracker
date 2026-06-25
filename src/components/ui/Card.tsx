@@ -1,52 +1,81 @@
-import React from 'react';
+import * as React from 'react';
+import { cn } from '@/lib/utils';
 
-export function Card({ className = '', ...props }: React.HTMLAttributes<HTMLDivElement>) {
-  return (
-    <div
-      className={`bg-white dark:bg-earth-800 rounded border border-earth-200 dark:border-earth-700 shadow-sm ${className}`}
-      {...props}
-    />
-  );
-}
+const Card = ({
+  className, ref, ...props
+}: React.ComponentProps<'div'>) => (
+  <div
+    ref={ref}
+    className={cn(
+      'rounded-xl border bg-card text-card-foreground shadow',
+      className
+    )}
+    {...props}
+  />
+);
+Card.displayName = 'Card';
 
-export function CardHeader({ className = '', ...props }: React.HTMLAttributes<HTMLDivElement>) {
-  return (
-    <div
-      className={`flex flex-col space-y-1.5 p-6 ${className}`}
-      {...props}
-    />
-  );
-}
+const CardHeader = ({
+  className, ref, ...props
+}: React.ComponentProps<'div'>) => (
+  <div
+    ref={ref}
+    className={cn('flex flex-col space-y-1.5 p-6', className)}
+    {...props}
+  />
+);
+CardHeader.displayName = 'CardHeader';
 
-export function CardTitle({ className = '', children, ...props }: React.HTMLAttributes<HTMLHeadingElement>) {
-  return (
-    <h3
-      className={`font-serif text-2xl font-semibold leading-none tracking-tight text-earth-900 dark:text-earth-100 ${className}`}
-      {...props}
-    >
-      {children || props['aria-label'] || 'Card Title'}
-    </h3>
-  );
-}
+const CardTitle = ({
+  className, children, ref, ...props
+}: React.ComponentProps<'h3'>) => (
+  <h3
+    ref={ref}
+    className={cn(
+      'font-semibold leading-none tracking-tight',
+      className
+    )}
+    {...props}
+  >
+    {children || props['aria-label'] || 'Card Title'}
+  </h3>
+);
+CardTitle.displayName = 'CardTitle';
 
-export function CardDescription({ className = '', ...props }: React.HTMLAttributes<HTMLParagraphElement>) {
-  return (
-    <p
-      className={`text-sm text-earth-600 dark:text-earth-400 ${className}`}
-      {...props}
-    />
-  );
-}
+const CardDescription = ({
+  className, ref, ...props
+}: React.ComponentProps<'p'>) => (
+  <p
+    ref={ref}
+    className={cn('text-sm text-muted-foreground', className)}
+    {...props}
+  />
+);
+CardDescription.displayName = 'CardDescription';
 
-export function CardContent({ className = '', ...props }: React.HTMLAttributes<HTMLDivElement>) {
-  return <div className={`p-6 pt-0 ${className}`} {...props} />;
-}
+const CardContent = ({
+  className, ref, ...props
+}: React.ComponentProps<'div'>) => (
+  <div ref={ref} className={cn('p-6 pt-0', className)} {...props} />
+);
+CardContent.displayName = 'CardContent';
 
-export function CardFooter({ className = '', ...props }: React.HTMLAttributes<HTMLDivElement>) {
-  return (
-    <div
-      className={`flex items-center p-6 pt-0 ${className}`}
-      {...props}
-    />
-  );
-}
+const CardFooter = ({
+  className, ref, ...props
+}: React.ComponentProps<'div'>) => (
+  <div
+    ref={ref}
+    className={cn('flex items-center p-6 pt-0', className)}
+    {...props}
+  />
+);
+CardFooter.displayName = 'CardFooter';
+
+export {
+  Card,
+  CardHeader,
+  CardFooter,
+  CardTitle,
+  CardDescription,
+  CardContent,
+};

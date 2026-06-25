@@ -1,6 +1,6 @@
-// src/components/InterviewBarChart.tsx
 import React, { memo } from 'react';
 import { useTranslation } from 'react-i18next';
+// react-doctor-disable-next-line prefer-dynamic-import -- recharts is code-split by parent InsightsPage via React.lazy()
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, CartesianGrid } from 'recharts';
 import ChartContainer, { ChartTooltip } from './ChartContainer';
 
@@ -9,11 +9,27 @@ interface InterviewBarChartProps {
   title?: string;
 }
 
+type ChartTooltipPayload = { active?: boolean; payload?: ReadonlyArray<{ payload: { name: string; value: number } }> };
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const renderInterviewTooltip = (props: any) => {
+  const { active, payload } = props as ChartTooltipPayload;
+  if (active && payload && payload.length) {
+    return (
+      <ChartTooltip
+        name={payload[0].payload.name}
+        value={payload[0].payload.value}
+        unit='interviews'
+        accentColor='terracotta'
+      />
+    );
+  }
+  return null;
+};
+
 const InterviewBarChart: React.FC<InterviewBarChartProps> = ({ data, title }) => {
   const { t } = useTranslation();
 
-  // Only map status names when showing interviews by application status
-  // We check against the English keys to determine if we should map
   const shouldMapStatus = title === t('insights.interviewsByStatus');
   
   const chartData = data.map(item => ({
@@ -23,22 +39,6 @@ const InterviewBarChart: React.FC<InterviewBarChartProps> = ({ data, title }) =>
 
   const chartTitle = title || t('insights.interviewsByType');
   
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const renderTooltip = (props: any) => {
-    const { active, payload } = props as { active?: boolean; payload?: ReadonlyArray<{ payload: { name: string; value: number } }> };
-    if (active && payload && payload.length) {
-      return (
-        <ChartTooltip 
-          name={payload[0].payload.name} 
-          value={payload[0].payload.value} 
-          unit='interviews'
-          accentColor='terracotta'
-        />
-      );
-    }
-    return null;
-  };
-
   return (
     <ChartContainer 
       title={chartTitle}
@@ -63,12 +63,12 @@ const InterviewBarChart: React.FC<InterviewBarChartProps> = ({ data, title }) =>
               borderRadius: '4px',
               fontSize: '12px',
             }}
-            content={renderTooltip}
+            content={renderInterviewTooltip}
           />
           <Legend wrapperStyle={{ fontSize: '12px' }} />
           <Bar 
             dataKey='value' 
-            fill='#ec8567' // terracotta-400
+            fill='#ec8567' // accent color
             radius={[2, 2, 0, 0]}
           />
         </BarChart>

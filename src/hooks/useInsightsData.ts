@@ -5,8 +5,6 @@ import { INTERVIEW_TYPES } from '../utils/constants';
 import type { InterviewEvent } from '../types/applications';
 
 /**
- * Custom hook to calculate application and interview metrics for the Insights page.
- *
  * Uses "loop fusion" to process applications in a single pass for efficiency.
  * Returns both raw metrics and formatted data for charts.
  */
@@ -24,11 +22,9 @@ export const useInsightsData = () => {
     applications.forEach(app => {
       const status = app.status.toLowerCase();
 
-      // 1. Status metrics
       statusMap[status] = (statusMap[status] || 0) + 1;
       if (status === 'rejected') rejectedCount++;
 
-      // 2. Interview metrics from timeline
       if (app.timeline && app.timeline.length > 0) {
         let appInterviewCount = 0;
 
@@ -37,13 +33,11 @@ export const useInsightsData = () => {
             interviewEvents.push(event);
             appInterviewCount++;
 
-            // Track interview type frequency
             interviewTypeMap[event.type] = (interviewTypeMap[event.type] || 0) + 1;
           }
         });
 
         if (appInterviewCount > 0) {
-          // Track total interview events by application status
           interviewStatusMap[status] = (interviewStatusMap[status] || 0) + appInterviewCount;
         }
       }
@@ -59,7 +53,6 @@ export const useInsightsData = () => {
     };
   }, [applications]);
 
-  // Memoize chart data to prevent unnecessary re-renders of chart components.
   const statusChartData = useMemo(() =>
     Object.keys(metrics.statusData).map(key => ({
       name: key,

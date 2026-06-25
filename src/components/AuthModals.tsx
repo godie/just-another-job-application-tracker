@@ -1,4 +1,3 @@
-// src/components/AuthModals.tsx
 import React, { useReducer, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useGoogleLogin } from '@react-oauth/google';
@@ -65,7 +64,6 @@ function authModalReducer(state: AuthModalState, action: AuthModalAction): AuthM
 
 export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMode = 'login' }) => {
   const { t } = useTranslation();
-  // Initialize mode from prop — component unmounts when !isOpen, so state is fresh each open.
   const [state, dispatch] = useReducer(authModalReducer, initialMode, createInitialState);
   const { mode, email, password, confirmPassword, displayName, localError } = state;
 
@@ -78,16 +76,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMo
         await loginWithGoogle(codeResponse.code, window.location.origin);
         onClose();
       } catch {
-        // Error is handled by store
+        /* error surfaced via store */
       }
     },
     onError: () => {
-      // Google OAuth error - user cancelled or failed
+      /* error surfaced via store */
     },
   });
 
-  // Component unmounts when !isOpen, so state resets naturally on every open.
-  // No need for a useEffect to reset state — the conditional return above handles it.
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -111,14 +107,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMo
         await register(email, password, displayName || undefined);
         onClose();
       } catch {
-        // Error is handled by store
+        /* auth error handled by store */
       }
     } else {
       try {
         await login(email, password);
         onClose();
       } catch {
-        // Error is handled by store
+        /* auth error handled by store */
       }
     }
   };
@@ -135,16 +131,16 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMo
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="w-full max-w-md bg-white dark:bg-earth-800 rounded-lg shadow-xl border border-earth-200 dark:border-earth-700 overflow-hidden">
+      <div className="w-full max-w-md bg-card rounded-lg shadow-xl border border-border overflow-hidden">
         <div className="p-6">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-semibold text-earth-800 dark:text-earth-100">
+            <h2 className="text-2xl font-semibold text-foreground">
               {mode === 'login' ? t('auth.login') : t('auth.register')}
             </h2>
             <button
               type="button"
               onClick={onClose}
-              className="p-2 text-earth-500 hover:text-earth-700 dark:text-earth-400 dark:hover:text-earth-200 transition-colors"
+              className="p-2 text-muted-foreground hover:text-foreground transition-colors"
               aria-label="Close"
             >
               <svg className="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -161,7 +157,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMo
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label htmlFor="auth-email" className="block text-sm font-medium text-earth-700 dark:text-earth-300 mb-1">
+              <label htmlFor="auth-email" className="block text-sm font-medium text-foreground mb-1">
                 {t('auth.email')}
               </label>
               <input
@@ -170,14 +166,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMo
                 value={email}
                 onChange={(e) => dispatch({ type: 'fieldChanged', field: 'email', value: e.target.value })}
                 aria-label={t('auth.email')}
-                className="w-full px-3 py-2 border border-earth-300 dark:border-earth-600 rounded-md bg-white dark:bg-earth-700 text-earth-800 dark:text-earth-100 focus:outline-none focus:ring-2 focus:ring-sage-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-input rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring"
                 placeholder="you@example.com"
                 required
               />
             </div>
 
             <div>
-              <label htmlFor="auth-password" className="block text-sm font-medium text-earth-700 dark:text-earth-300 mb-1">
+              <label htmlFor="auth-password" className="block text-sm font-medium text-foreground mb-1">
                 {t('auth.password')}
               </label>
               <input
@@ -186,7 +182,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMo
                 value={password}
                 onChange={(e) => dispatch({ type: 'fieldChanged', field: 'password', value: e.target.value })}
                 aria-label={t('auth.password')}
-                className="w-full px-3 py-2 border border-earth-300 dark:border-earth-600 rounded-md bg-white dark:bg-earth-700 text-earth-800 dark:text-earth-100 focus:outline-none focus:ring-2 focus:ring-sage-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-input rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring"
                 placeholder="••••••••"
                 required
               />
@@ -195,7 +191,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMo
             {mode === 'register' && (
               <>
                 <div>
-                  <label htmlFor="auth-confirm-password" className="block text-sm font-medium text-earth-700 dark:text-earth-300 mb-1">
+                  <label htmlFor="auth-confirm-password" className="block text-sm font-medium text-foreground mb-1">
                     {t('auth.confirmPassword')}
                   </label>
                   <input
@@ -204,14 +200,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMo
                     value={confirmPassword}
                     onChange={(e) => dispatch({ type: 'fieldChanged', field: 'confirmPassword', value: e.target.value })}
                     aria-label={t('auth.confirmPassword')}
-                    className="w-full px-3 py-2 border border-earth-300 dark:border-earth-600 rounded-md bg-white dark:bg-earth-700 text-earth-800 dark:text-earth-100 focus:outline-none focus:ring-2 focus:ring-sage-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-input rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring"
                     placeholder="••••••••"
                     required
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="auth-display-name" className="block text-sm font-medium text-earth-700 dark:text-earth-300 mb-1">
+                  <label htmlFor="auth-display-name" className="block text-sm font-medium text-foreground mb-1">
                     {t('auth.displayName')}
                   </label>
                   <input
@@ -220,7 +216,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMo
                     value={displayName}
                     onChange={(e) => dispatch({ type: 'fieldChanged', field: 'displayName', value: e.target.value })}
                     aria-label={t('auth.displayName')}
-                    className="w-full px-3 py-2 border border-earth-300 dark:border-earth-600 rounded-md bg-white dark:bg-earth-700 text-earth-800 dark:text-earth-100 focus:outline-none focus:ring-2 focus:ring-sage-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-input rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-ring"
                     placeholder={t('auth.displayName')}
                   />
                 </div>
@@ -240,10 +236,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMo
           <div className="mt-6">
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-earth-300 dark:border-earth-600"></div>
+                <div className="w-full border-t border-border"></div>
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white dark:bg-earth-800 text-earth-500">{t('common.orDivider')}</span>
+                <span className="px-2 bg-card text-muted-foreground">{t('common.orDivider')}</span>
               </div>
             </div>
 
@@ -252,7 +248,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMo
                 type="button"
                 onClick={handleGoogleLogin}
                 disabled={isLoading}
-                className="w-full flex items-center justify-center gap-3 px-4 py-2.5 border border-earth-300 dark:border-earth-600 rounded-md bg-white dark:bg-earth-700 text-earth-700 dark:text-earth-200 hover:bg-earth-50 dark:hover:bg-earth-600 transition-colors font-medium"
+                className="w-full flex items-center justify-center gap-3 px-4 py-2.5 border border-border rounded-md bg-background text-foreground hover:bg-muted transition-colors font-medium"
               >
                 <svg className="size-5" viewBox="0 0 24 24">
                   <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -266,7 +262,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMo
               <button
                 type="button"
                 disabled={isLoading}
-                className="w-full flex items-center justify-center gap-3 px-4 py-2.5 border border-earth-300 dark:border-earth-600 rounded-md bg-white dark:bg-earth-700 text-earth-700 dark:text-earth-200 hover:bg-earth-50 dark:hover:bg-earth-600 transition-colors font-medium"
+                className="w-full flex items-center justify-center gap-3 px-4 py-2.5 border border-border rounded-md bg-background text-foreground hover:bg-muted transition-colors font-medium"
               >
                 <svg className="size-5" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M19 3a5 5 0 015 5v8a5 5 0 01-5 5H5a5 5 0 01-5-5v-8a5 5 0 015-5h14zm-9 14.5v-5l4.5 2.5-4.5 2.5z" />
@@ -276,15 +272,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMo
             </div>
           </div>
 
-          <div className="mt-6 text-center text-sm text-earth-600 dark:text-earth-400">
+          <div className="mt-6 text-center text-sm text-muted-foreground">
             {mode === 'login' ? (
               <p>
                 {t('auth.noAccount')}{' '}
                 <button
                   type="button"
-                  onClick={() => switchMode('register')}
-                  className="text-sage-600 dark:text-sage-400 hover:underline font-medium"
-                >
+                  onClick={() => switchMode('register')}className="text-primary hover:underline font-medium">
                   {t('auth.register')}
                 </button>
               </p>
@@ -293,9 +287,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMo
                 {t('auth.hasAccount')}{' '}
                 <button
                   type="button"
-                  onClick={() => switchMode('login')}
-                  className="text-sage-600 dark:text-sage-400 hover:underline font-medium"
-                >
+                  onClick={() => switchMode('login')}className="text-primary hover:underline font-medium">
                   {t('auth.login')}
                 </button>
               </p>

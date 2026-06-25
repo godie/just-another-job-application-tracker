@@ -1,11 +1,9 @@
-// src/tests/BackupSyncPage.test.tsx
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import BackupSyncPage from '../pages/BackupSyncPage';
 import { useAuthStore } from '../stores/authStore';
 import { useMergeStore } from '../stores/mergeStore';
 
-// Mock GoogleOAuth
 vi.mock('@react-oauth/google', () => ({
   useGoogleLogin: (opts: { onSuccess?: (res: { code: string }) => void; onError?: () => void }) => {
     return () => opts.onSuccess?.({ code: 'mock-auth-code' });

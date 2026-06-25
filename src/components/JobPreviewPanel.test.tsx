@@ -1,13 +1,9 @@
-// src/components/JobPreviewPanel.test.tsx
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import JobPreviewPanel from './JobPreviewPanel';
 import type { JobApplication } from '../types/applications';
 
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
 
 function makeApp(overrides: Partial<JobApplication> = {}): JobApplication {
   return {
@@ -34,12 +30,10 @@ function makeApp(overrides: Partial<JobApplication> = {}): JobApplication {
   } as JobApplication;
 }
 
-// Mock the store so we can control which applications are available
 vi.mock('../stores/applicationsStore', () => ({
   useApplicationsStore: vi.fn(),
 }));
 
-// Import the mocked hook so we can control its return value per test
 import { useApplicationsStore } from '../stores/applicationsStore';
 
 const onClose = vi.fn();
@@ -66,9 +60,7 @@ function renderPanel(jobId: string, overrides?: Partial<ReturnType<typeof makeAp
   );
 }
 
-// ---------------------------------------------------------------------------
 // Tests
-// ---------------------------------------------------------------------------
 
 describe('JobPreviewPanel', () => {
   beforeEach(() => {
@@ -79,7 +71,6 @@ describe('JobPreviewPanel', () => {
     document.body.style.overflow = '';
   });
 
-  // -- Rendering with data ---------------------------------------------------
 
   it('renders position, company, and status', () => {
     renderPanel('app-1');
@@ -100,8 +91,6 @@ describe('JobPreviewPanel', () => {
     renderPanel('app-1');
     expect(screen.getByText('Remote')).toBeInTheDocument();
     expect(screen.getByText('90k–110k')).toBeInTheDocument();
-    // The workType "remote" renders as "remote" (lowercase) in JSDOM (CSS capitalize
-    // doesn't affect text content) so only location shows as "Remote"
     const remoteElements = screen.getAllByText('Remote');
     expect(remoteElements.length).toBeGreaterThanOrEqual(1);
     expect(screen.getByText('LinkedIn')).toBeInTheDocument();
@@ -109,19 +98,15 @@ describe('JobPreviewPanel', () => {
 
   it('does not render location/salary/workType/platform when absent', () => {
     renderPanel('app-1', { location: '', workType: '', salary: '', platform: '' } as Partial<JobApplication>);
-    // Should not crash — the grid just won't render those dt/dd pairs
     expect(screen.queryByText('Location')).toBeNull();
   });
 
   it('renders dates section with applied, interview, follow-up', () => {
     renderPanel('app-1');
-    // "Applied" label and formatted date
     expect(screen.getByText('Applied')).toBeInTheDocument();
     expect(screen.getByText('Mar 10, 2025')).toBeInTheDocument();
-    // "Interview" label and formatted date
     expect(screen.getByText('Interview')).toBeInTheDocument();
     expect(screen.getByText('Mar 20, 2025')).toBeInTheDocument();
-    // "Follow-up" label and formatted date
     expect(screen.getByText('Follow-up')).toBeInTheDocument();
     expect(screen.getByText('Apr 1, 2025')).toBeInTheDocument();
   });
@@ -169,7 +154,6 @@ describe('JobPreviewPanel', () => {
     expect(screen.queryByText('Notes')).toBeNull();
   });
 
-  // -- Pluralised meta counts ------------------------------------------------
 
   it('shows timeline event count (plural)', () => {
     renderPanel('app-1');
@@ -203,7 +187,6 @@ describe('JobPreviewPanel', () => {
     expect(screen.queryByText(/custom field/)).toBeNull();
   });
 
-  // -- Interactions ----------------------------------------------------------
 
   it('calls onClose when backdrop is clicked', () => {
     renderPanel('app-1');
@@ -252,7 +235,6 @@ describe('JobPreviewPanel', () => {
     expect(onDelete).toHaveBeenCalledWith(expect.objectContaining({ id: 'app-1' }));
   });
 
-  // -- Not-found state -------------------------------------------------------
 
   it('renders not-found message when application does not exist', () => {
     (useApplicationsStore as ReturnType<typeof vi.fn>).mockImplementation(
@@ -287,13 +269,11 @@ describe('JobPreviewPanel', () => {
     expect(onClose).toHaveBeenCalledTimes(1);
   });
 
-  // -- Accessibility ---------------------------------------------------------
 
   it('has accessible panel title', () => {
     renderPanel('app-1');
     const panel = screen.getByTestId('preview-panel');
     expect(panel.getAttribute('aria-label')).toBe('Job Preview');
-    // aside has implicit ARIA role of complementary per HTML spec
     expect(screen.getByRole('complementary')).toBe(panel);
   });
 
@@ -302,7 +282,6 @@ describe('JobPreviewPanel', () => {
     expect(screen.getByTestId('preview-close').getAttribute('aria-label')).toBe('Close');
   });
 
-  // -- Optional callbacks ----------------------------------------------------
 
   it('does not throw when onNavigate is undefined', () => {
     (useApplicationsStore as ReturnType<typeof vi.fn>).mockImplementation(
@@ -327,11 +306,8 @@ describe('JobPreviewPanel', () => {
     render(
       <JobPreviewPanel jobId="app-1" onClose={onClose} />
     );
-    // Click only Edit/Delete buttons via data-testid to avoid side effects
-    // from the Job ID button (which triggers window.history.pushState)
     fireEvent.click(screen.getByTestId('preview-edit'));
     fireEvent.click(screen.getByTestId('preview-delete'));
-    // Assert no crash — both handlers use optional chaining and are undefined
     expect(true).toBe(true);
   });
 });

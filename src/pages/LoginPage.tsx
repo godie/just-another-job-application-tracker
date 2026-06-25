@@ -45,7 +45,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onNavigate, onSuccess }) => {
   };
 
   return (
-    <div className='min-h-screen flex items-center justify-center bg-earth-50 dark:bg-earth-900 px-4 py-12 sm:px-6 lg:px-8'>
+    <div className='min-h-screen flex items-center justify-center bg-background dark:bg-muted px-4 py-12 sm:px-6 lg:px-8'>
       <Card className='max-w-md w-full p-6 sm:p-10'>
         {/* Header */}
         <div className='mb-8'>
@@ -53,20 +53,20 @@ const LoginPage: React.FC<LoginPageProps> = ({ onNavigate, onSuccess }) => {
              <img src='/jajat-logo.png' alt='JAJAT Logo' className='h-12 w-auto' />
           </div>
           <div className='flex items-center gap-3 mt-6 mb-4'>
-            <div className='w-8 h-0.5 bg-sage-500'></div>
-            <span className='text-sage-600 dark:text-sage-400 text-sm font-medium tracking-wider uppercase'>
+            <div className='w-8 h-0.5 bg-primary/80'></div>
+            <span className='text-primary text-sm font-medium tracking-wider uppercase'>
               Welcome Back
             </span>
           </div>
-          <h1 className='font-serif text-3xl font-semibold text-earth-900 dark:text-earth-50'>
+          <h1 className='font-serif text-3xl font-semibold text-foreground'>
             Sign in to your account
           </h1>
-          <p className='mt-2 text-sm text-earth-600 dark:text-earth-400'>
+          <p className='mt-2 text-sm text-muted-foreground'>
             Don't have an account?{' '}
             <button
               type='button'
               onClick={() => onNavigate('register')}
-              className='font-medium text-sage-600 hover:text-sage-700 dark:text-sage-400 dark:hover:text-sage-300 focus:outline-none focus:underline'
+              className='font-medium text-primary hover:text-primary dark:text-primary dark:hover:text-primary focus:outline-none focus:underline'
             >
               Create a new account
             </button>
@@ -114,10 +114,10 @@ const LoginPage: React.FC<LoginPageProps> = ({ onNavigate, onSuccess }) => {
         {/* Divider */}
         <div className='relative mt-8'>
           <div className='absolute inset-0 flex items-center'>
-            <div className='w-full border-t border-earth-200 dark:border-earth-700'></div>
+            <div className='w-full border-t border-border'></div>
           </div>
           <div className='relative flex justify-center text-sm'>
-            <span className='px-3 bg-white dark:bg-earth-800 text-earth-600 dark:text-earth-400'>Or continue with</span>
+            <span className='px-3 bg-card text-muted-foreground'>Or continue with</span>
           </div>
         </div>
 
@@ -125,7 +125,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onNavigate, onSuccess }) => {
         <div className='mt-6'>
           <button
             type='button'
-            className='w-full inline-flex justify-center py-2.5 px-4 border border-earth-300 dark:border-earth-600 bg-white dark:bg-earth-800 text-sm font-medium text-earth-700 dark:text-earth-300 hover:bg-earth-100 dark:hover:bg-earth-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-sage-500 rounded transition-colors'
+            className='w-full inline-flex justify-center py-2.5 px-4 border border-border bg-card text-sm font-medium text-muted-foreground hover:bg-muted focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded transition-colors'
           >
             <span className='sr-only'>Sign in with Google</span>
             <svg className='size-5' aria-hidden='true' fill='currentColor' viewBox='0 0 24 24'>

@@ -1,10 +1,4 @@
-// src/utils/timelineDisplay.ts
-// Shared display helpers for interview timeline events.
-// Used by TimelineView, JobDetailsPage, and other components.
 
-/**
- * Format a date string (YYYY-MM-DD) into a locale-friendly display.
- */
 export function formatDate(dateStr: string): string {
   try {
     const d = new Date(dateStr + 'T00:00:00');
@@ -15,9 +9,6 @@ export function formatDate(dateStr: string): string {
   }
 }
 
-/**
- * Get a human-readable display name for an interview stage type.
- */
 export function getStageDisplayName(
   t: (key: string, defaultValue?: string) => string,
   type: string,
@@ -27,9 +18,6 @@ export function getStageDisplayName(
   return t(`insights.interviewTypes.${type}`, type.replace(/_/g, ' '));
 }
 
-/**
- * Return a Tailwind background color class for an event status.
- */
 export function getEventStatusColor(status: string): string {
   const colors: Record<string, string> = {
     completed: 'bg-green-500',

@@ -1,6 +1,6 @@
-// src/components/StatusBarChart.tsx
 import React, { memo } from 'react';
 import { useTranslation } from 'react-i18next';
+// react-doctor-disable-next-line prefer-dynamic-import -- recharts is code-split by parent InsightsPage via React.lazy()
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, CartesianGrid } from 'recharts';
 import ChartContainer, { ChartTooltip } from './ChartContainer';
 
@@ -8,28 +8,30 @@ interface StatusBarChartProps {
   data: { name: string; value: number }[];
 }
 
+type ChartTooltipPayload = { active?: boolean; payload?: ReadonlyArray<{ payload: { name: string; value: number } }> };
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const renderStatusTooltip = (props: any) => {
+  const { active, payload } = props as ChartTooltipPayload;
+  if (active && payload && payload.length) {
+    return (
+      <ChartTooltip
+        name={payload[0].payload.name}
+        value={payload[0].payload.value}
+        unit='applications'
+        accentColor='sage'
+      />
+    );
+  }
+  return null;
+};
+
 const StatusBarChart: React.FC<StatusBarChartProps> = ({ data }) => {
   const { t } = useTranslation();
   const chartData = data.map(item => ({
     ...item,
     name: t(`statuses.${item.name.toLowerCase()}`, item.name),
   }));
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const renderTooltip = (props: any) => {
-    const { active, payload } = props as { active?: boolean; payload?: ReadonlyArray<{ payload: { name: string; value: number } }> };
-    if (active && payload && payload.length) {
-      return (
-        <ChartTooltip 
-          name={payload[0].payload.name} 
-          value={payload[0].payload.value} 
-          unit='applications'
-          accentColor='sage'
-        />
-      );
-    }
-    return null;
-  };
 
   return (
     <ChartContainer 
@@ -55,12 +57,12 @@ const StatusBarChart: React.FC<StatusBarChartProps> = ({ data }) => {
               borderRadius: '4px',
               fontSize: '12px',
             }}
-            content={renderTooltip}
+            content={renderStatusTooltip}
           />
           <Legend wrapperStyle={{ fontSize: '12px' }} />
           <Bar 
             dataKey='value' 
-            fill='#7a947a' // sage-400
+            fill='#7a947a' // accent color
             radius={[2, 2, 0, 0]}
           />
         </BarChart>

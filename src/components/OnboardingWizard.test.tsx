@@ -90,18 +90,15 @@ describe('OnboardingWizard', () => {
     const onClose = vi.fn();
     render(<OnboardingWizard onClose={onClose} />);
 
-    // Advance past initial setTimeout that sets isVisible=true
     act(() => {
       vi.advanceTimersByTime(100);
     });
 
-    // Click through all 8 steps
     for (let i = 0; i < 8; i++) {
       const btn = screen.getByRole('button', { name: /common.next|onboarding.startTracking/i });
       fireEvent.click(btn);
     }
 
-    // Advance past handleClose's 300ms setTimeout
     act(() => {
       vi.advanceTimersByTime(400);
     });
@@ -149,21 +146,17 @@ describe('OnboardingWizard', () => {
     const onNavigate = vi.fn();
     render(<OnboardingWizard onClose={onClose} onNavigate={onNavigate} />);
 
-    // Advance past initial setTimeout that sets isVisible=true
     act(() => {
       vi.advanceTimersByTime(100);
     });
 
-    // Click through all 8 steps
     for (let i = 0; i < 8; i++) {
       const btn = screen.getByRole('button', { name: /common.next|onboarding.startTracking/i });
       fireEvent.click(btn);
     }
 
-    // onNavigate is called synchronously inside goNext before handleClose's timeout
     expect(onNavigate).toHaveBeenCalledWith('applications');
 
-    // Advance past handleClose's 300ms setTimeout
     act(() => {
       vi.advanceTimersByTime(400);
     });
@@ -185,7 +178,6 @@ describe('OnboardingWizard', () => {
       expect(screen.getByRole('dialog')).toBeInTheDocument();
     });
 
-    // 8 steps = 8 dots (aria-label contains "onboarding.step")
     const dots = screen.getAllByRole('button', { name: /onboarding.step/i });
     expect(dots).toHaveLength(8);
   });

@@ -1,8 +1,4 @@
-// src/types/applications.ts
 
-/**
- * Interview Event Types
- */
 export type InterviewStageType = 
   | 'application_submitted'
   | 'screener_call'
@@ -21,9 +17,6 @@ export type InterviewStageType =
 
 export type EventStatus = 'completed' | 'scheduled' | 'cancelled' | 'pending';
 
-/**
- * Interview Event - Individual milestone in the interview process
- */
 export interface InterviewEvent {
   id: string;
   type: InterviewStageType;
@@ -34,47 +27,33 @@ export interface InterviewEvent {
   interviewerName?: string; // Name of the interviewer
 }
 
-/** Work arrangement: remote, on-site, or hybrid */
 export type WorkType = 'remote' | 'on-site' | 'hybrid';
 
-/**
- * Job Application - Hybrid approach combining timeline, status, and flexibility
- */
 export interface JobApplication {
-  // Core identification
   id: string;
   position: string;
   company: string;
 
-  // Location and work arrangement
   location?: string;
   workType?: WorkType;
-  /** When workType is 'hybrid': days per week in office (1–5). */
   hybridDaysInOffice?: number;
 
-  // Quick reference fields (legacy support)
   salary: string;
   status: string; // Quick status reference
   applicationDate: string;
   interviewDate: string;
 
-  // New timeline-based tracking
   timeline: InterviewEvent[];
 
-  // Additional fields
   notes: string;
   link: string;
   platform: string;
   contactName: string;
   followUpDate: string;
 
-  // User-defined custom fields
   customFields?: Record<string, string>;
 }
 
-/**
- * Interface for applications with pre-calculated metadata for performance optimization.
- */
 export interface ApplicationWithMetadata extends JobApplication {
   parsedApplicationDate: Date | null;
   searchMetadata: string;
@@ -86,9 +65,6 @@ export interface ApplicationWithMetadata extends JobApplication {
   nextEvent: InterviewEvent | null;
 }
 
-/**
- * Legacy JobApplication for backward compatibility during migration
- */
 export interface LegacyJobApplication {
   id: string;
   position: string;

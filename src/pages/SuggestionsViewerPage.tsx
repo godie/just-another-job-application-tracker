@@ -70,12 +70,12 @@ const SuggestionsViewerPage: React.FC<SuggestionsViewerPageProps> = ({ onNavigat
           <button
             type='button'
             onClick={() => onNavigate('support')}
-            className='flex items-center gap-2 text-sage-600 dark:text-sage-400 hover:underline mb-2 cursor-pointer'
+            className='flex items-center gap-2 text-primary hover:underline mb-2 cursor-pointer'
           >
             <FaArrowLeft size={14} />
             <span>{t('support.suggestionsViewer.back')}</span>
           </button>
-          <h1 className='text-3xl font-semibold text-earth-800 dark:text-earth-100'>{t('support.suggestionsViewer.title')}</h1>
+          <h1 className='text-3xl font-semibold text-foreground'>{t('support.suggestionsViewer.title')}</h1>
         </div>
         <Button
           onClick={() => void fetchSuggestions()}
@@ -90,11 +90,11 @@ const SuggestionsViewerPage: React.FC<SuggestionsViewerPageProps> = ({ onNavigat
 
       {isLoading ? (
         <div className="flex justify-center py-12">
-          <div className='animate-spin rounded-full size-12 border-b-2 border-sage-600'></div>
+          <div className='animate-spin rounded-full size-12 border-b-2 border-primary'></div>
         </div>
       ) : suggestions.length === 0 ? (
         <Card className="p-12 text-center">
-          <p className="text-earth-500 dark:text-earth-400">{t('support.suggestionsViewer.noSuggestions')}</p>
+          <p className="text-muted-foreground">{t('support.suggestionsViewer.noSuggestions')}</p>
         </Card>
       ) : (
         <div className="grid grid-cols-1 gap-4">
@@ -105,18 +105,18 @@ const SuggestionsViewerPage: React.FC<SuggestionsViewerPageProps> = ({ onNavigat
                   {suggestion.types.map((type) => (
                     <span
                       key={type}
-                      className='px-2 py-1 bg-sage-100 dark:bg-sage-900/40 text-sage-700 dark:text-sage-300 text-xs font-semibold rounded'
+                      className='px-2 py-1 bg-primary/5 dark:bg-primary/10 text-primary text-xs font-semibold rounded'
                     >
                       {t(`support.types.${type}`, { defaultValue: type })}
                     </span>
                   ))}
                 </div>
-                <div className="text-xs text-earth-500 dark:text-earth-400 flex flex-col items-end">
+                <div className="text-xs text-muted-foreground flex flex-col items-end">
                   <span>{formattedDates[suggestion.id]}</span>
                   <span>{suggestion.ip_address}</span>
                 </div>
               </div>
-              <p className='text-earth-700 dark:text-earth-300 whitespace-pre-wrap'>{suggestion.explanation}</p>
+              <p className='text-muted-foreground whitespace-pre-wrap'>{suggestion.explanation}</p>
             </Card>
           ))}
         </div>

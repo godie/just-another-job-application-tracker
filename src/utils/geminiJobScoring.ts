@@ -1,4 +1,3 @@
-// src/utils/geminiJobScoring.ts
 
 import type { JobOpportunity } from '../types/opportunities';
 import type {
@@ -85,9 +84,6 @@ ${profile.cvText ? `\nCV Excerpt: ${profile.cvText.substring(0, 2000)}` : ''}
 Provide the match score and analysis as JSON.`;
 }
 
-/**
- * Score a single opportunity against a profile using Gemini AI.
- */
 async function scoreOpportunityWithGemini(
   apiKey: string,
   opportunity: JobOpportunity,
@@ -115,7 +111,6 @@ async function scoreOpportunityWithGemini(
       seniorityFit: clamp(parsed.seniorityFit ?? 50),
     };
 
-    // Recalculate overall to ensure consistency with weights
     const overallScore = Math.round(
       subscores.semanticFit * 0.30 +
       subscores.historicalFit * 0.20 +
@@ -144,10 +139,6 @@ async function scoreOpportunityWithGemini(
   }
 }
 
-/**
- * Calculate a hybrid score: deterministic base + Gemini enrichment when available.
- * If Gemini fails, falls back to deterministic.
- */
 async function calculateHybridScore(
   apiKey: string | null,
   opportunity: JobOpportunity,
@@ -165,7 +156,6 @@ async function calculateHybridScore(
       return deterministic;
     }
 
-    // Blend: 60% deterministic + 40% Gemini for stability
     const blendedSubscores: JobMatchSubscores = {
       semanticFit: Math.round(deterministic.subscores.semanticFit * 0.4 + geminiResult.subscores.semanticFit * 0.6),
       historicalFit: Math.round(deterministic.subscores.historicalFit * 0.6 + geminiResult.subscores.historicalFit * 0.4),
@@ -184,7 +174,6 @@ async function calculateHybridScore(
       blendedSubscores.seniorityFit * 0.05
     );
 
-    // Use Gemini's narrative but blend scores
     return {
       opportunityId: opportunity.id,
       overallScore: clamp(blendedOverall),
@@ -204,28 +193,48 @@ async function calculateHybridScore(
   }
 }
 
-/**
- * Batch score multiple opportunities with hybrid scoring.
- */
+async function concurrentMap<T, R>(
+  items: T[],
+  fn: (item: T, index: number) => Promise<R>,
+  limit = 3
+): Promise<R[]> {
+  const results: R[] = new Array(items.length);
+  let nextIndex = 0;
+
+  async function worker(): Promise<void> {
+    while (nextIndex < items.length) {
+      const i = nextIndex++;
+      // react-doctor-disable-next-line async-await-in-loop -- `concurrentMap` already caps parallelism to `limit`; this worker loop is intentionally sequential within a single worker.
+      results[i] = await fn(items[i], i);
+    }
+  }
+
+  const workers = Array.from({ length: Math.min(limit, items.length) }, () => worker());
+  const settled = await Promise.allSettled(workers);
+  for (const s of settled) {
+    if (s.status === 'rejected') {
+      console.error('concurrentMap worker failed:', s.reason);
+    }
+  }
+  return results;
+}
+
 export async function batchCalculateHybridScores(
   apiKey: string | null,
   opportunities: JobOpportunity[],
   profile: UserMatchProfile
 ): Promise<Record<string, JobMatchResult>> {
-  const results: Record<string, JobMatchResult> = {};
-
-  // Score sequentially to avoid rate limits
-  for (const opp of opportunities) {
+  const entries = await concurrentMap(opportunities, async (opp) => {
     try {
-      results[opp.id] = await calculateHybridScore(apiKey, opp, profile);
+      const result = await calculateHybridScore(apiKey, opp, profile);
+      return [opp.id, result] as const;
     } catch (error) {
       console.error(`Failed to score opportunity ${opp.id}:`, error);
-      // Fallback to deterministic on individual failure
-      results[opp.id] = calculateDeterministicScore(opp, profile, profile.profileVersion);
+      return [opp.id, calculateDeterministicScore(opp, profile, profile.profileVersion)] as const;
     }
-  }
+  });
 
-  return results;
+  return Object.fromEntries(entries);
 }
 
 function clamp(value: number): number {

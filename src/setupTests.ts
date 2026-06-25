@@ -1,4 +1,3 @@
-// src/setupTests.ts
 import React from 'react';
 import '@testing-library/jest-dom';
 import './tests/google-oauth-mock';
@@ -6,7 +5,6 @@ import { vi } from 'vitest';
 
 import enTranslations from './locales/en/translation.json';
 
-// Simple localStorage mock to avoid errors in happy-dom if it's not fully initialized or if vitest is configured with a missing --localstorage-file
 const localStorageMock = (function() {
   let store: Record<string, string> = {};
   return {
@@ -22,25 +20,21 @@ const localStorageMock = (function() {
 if (typeof window !== 'undefined') {
   Object.defineProperty(window, 'localStorage', { value: localStorageMock });
 }
-// Also define it on global for tests that use it without window.
-// Define on globalThis for vitest and other environments
 if (typeof globalThis !== 'undefined' && !globalThis.localStorage) {
   try {
     Object.defineProperty(globalThis, 'localStorage', { value: localStorageMock });
   } catch {
-    // In some environments globalThis.localStorage might be read-only
+    /* localStorage may already be defined as non-configurable; safe to skip */
   }
 }
 
 declare global {
-  // Flag picked up in components to avoid real network calls while testing.
   var __TEST__: boolean | undefined;
 }
 
 const globalWithTestFlag = globalThis as typeof globalThis & { __TEST__?: boolean };
 globalWithTestFlag.__TEST__ = true;
 
-/** Flatten nested translation object to dot-notation keys (e.g. common.save -> "Save"). */
 function flattenTranslations(
   obj: Record<string, unknown>,
   prefix = ''
@@ -61,17 +55,14 @@ const translations = flattenTranslations(enTranslations as Record<string, unknow
 
 type TranslationValues = Record<string, string | number | undefined>;
 
-// Mock react-i18next using the same English translations as the app
 vi.mock('react-i18next', () => {
   return {
     useTranslation: () => ({
       t: (key: string, defaultValueOrOptions?: string | TranslationValues, maybeOptions?: TranslationValues) => {
-        // i18next supports both 2-arg t(key, options) and 3-arg t(key, defaultValue, options)
         const options: TranslationValues | undefined =
           typeof defaultValueOrOptions === 'object' && !Array.isArray(defaultValueOrOptions)
             ? defaultValueOrOptions
             : maybeOptions;
-        // i18next plural: try key_one / key_other when count is provided
         let result: string | undefined;
         if (options?.count !== undefined) {
           const count = options.count;
@@ -84,7 +75,6 @@ vi.mock('react-i18next', () => {
         }
         result = result ?? key;
 
-        // Overrides for tests that expect specific formats
         if (options?.count !== undefined) {
           if (key === 'home.metrics.applications') {
             return options.count === 1 ? 'Application' : 'Applications';
@@ -155,9 +145,7 @@ vi.mock('react-i18next', () => {
         i18nKey === 'sheets.loginRequired' ||
         i18nKey === 'common.footer.vibecoded'
       ) {
-        return React.createElement('span', {
-          dangerouslySetInnerHTML: { __html: result || (children as string) },
-        });
+        return React.createElement('span', null, result || children);
       }
 
       if (result && result !== i18nKey) return result;

@@ -22,20 +22,20 @@ describe('Button', () => {
 
   it('applies the correct variant classes', () => {
     const { rerender } = render(<Button variant='primary'>Primary</Button>);
-    expect(screen.getByRole('button')).toHaveClass('bg-sage-600');
+    expect(screen.getByRole('button')).toHaveClass('bg-primary');
 
     rerender(<Button variant='danger'>Danger</Button>);
-    expect(screen.getByRole('button')).toHaveClass('bg-terracotta-600');
+    expect(screen.getByRole('button')).toHaveClass('bg-destructive');
 
     rerender(<Button variant='outline'>Outline</Button>);
-    expect(screen.getByRole('button')).toHaveClass('border-earth-300');
+    expect(screen.getByRole('button')).toHaveClass('border-input');
   });
 
   it('applies the correct size classes', () => {
     const { rerender } = render(<Button size="sm">Small</Button>);
-    expect(screen.getByRole('button')).toHaveClass('px-3 py-1.5');
+    expect(screen.getByRole('button')).toHaveClass('h-8');
 
     rerender(<Button size="lg">Large</Button>);
-    expect(screen.getByRole('button')).toHaveClass('px-6 py-3');
+    expect(screen.getByRole('button')).toHaveClass('h-10');
   });
 });

@@ -1,15 +1,54 @@
-import { useRef, useState, useCallback, useEffect } from 'react';
-import type { KeyboardEvent } from 'react';
+import { useReducer, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import useKeyboardEscape from '../hooks/useKeyboardEscape';
 import { encryptAndSave, decryptKey, hasKeyStored } from '../hooks/useCrypto';
 import { useGeminiKeyStore } from '../store/geminiKeyStore';
+import { GeminiKeyFormFields } from './GeminiKeyFormFields';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from './ui/Dialog';
 
 interface GeminiKeyModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: (apiKey: string) => void;
+}
+
+interface GeminiKeyModalState {
+  apiKey: string;
+  confirmApiKey: string;
+  masterPassword: string;
+  confirmMasterPassword: string;
+  showPassword: boolean;
+}
+
+type GeminiKeyModalAction =
+  | { type: 'SET_API_KEY'; value: string }
+  | { type: 'SET_CONFIRM_API_KEY'; value: string }
+  | { type: 'SET_MASTER_PASSWORD'; value: string }
+  | { type: 'SET_CONFIRM_MASTER_PASSWORD'; value: string }
+  | { type: 'SET_SHOW_PASSWORD'; value: boolean };
+
+function geminiKeyModalReducer(state: GeminiKeyModalState, action: GeminiKeyModalAction): GeminiKeyModalState {
+  switch (action.type) {
+    case 'SET_API_KEY':
+      return { ...state, apiKey: action.value };
+    case 'SET_CONFIRM_API_KEY':
+      return { ...state, confirmApiKey: action.value };
+    case 'SET_MASTER_PASSWORD':
+      return { ...state, masterPassword: action.value };
+    case 'SET_CONFIRM_MASTER_PASSWORD':
+      return { ...state, confirmMasterPassword: action.value };
+    case 'SET_SHOW_PASSWORD':
+      return { ...state, showPassword: action.value };
+    default:
+      return state;
+  }
 }
 
 export function GeminiKeyModal({ isOpen, onClose, onSuccess }: GeminiKeyModalProps) {
@@ -23,30 +62,22 @@ export function GeminiKeyModal({ isOpen, onClose, onSuccess }: GeminiKeyModalPro
   const isLoading = useGeminiKeyStore((state) => state.isLoading);
   const setLoading = useGeminiKeyStore((state) => state.setLoading);
 
-  const [apiKey, setApiKey] = useState('');
-  const [confirmApiKey, setConfirmApiKey] = useState('');
-  const [masterPassword, setMasterPassword] = useState('');
-  const [confirmMasterPassword, setConfirmMasterPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
+  const [state, dispatch] = useReducer(geminiKeyModalReducer, {
+    apiKey: '',
+    confirmApiKey: '',
+    masterPassword: '',
+    confirmMasterPassword: '',
+    showPassword: false,
+  });
 
-  const modalRef = useRef<HTMLDialogElement>(null);
-  const firstInputRef = useRef<HTMLInputElement>(null);
+  const { apiKey, confirmApiKey, masterPassword, confirmMasterPassword, showPassword } = state;
 
-  // Auto-focus the first input when the modal opens.
-  // Since the component unmounts when !isOpen, this effect runs once per open.
-  useEffect(() => {
-    const rafId = requestAnimationFrame(() => firstInputRef.current?.focus());
-    return () => cancelAnimationFrame(rafId);
-  }, []);
-
-  // Clear decrypted key from memory when modal unmounts
-  useEffect(() => {
-    return () => {
+  const handleOpenChange = useCallback((open: boolean) => {
+    if (!open) {
       clearKeyFromMemory();
-    };
-  }, [clearKeyFromMemory]);
-
-  useKeyboardEscape(onClose, isOpen);
+      onClose();
+    }
+  }, [onClose, clearKeyFromMemory]);
 
   const handleSubmit = useCallback(async () => {
     setError(null);
@@ -115,62 +146,21 @@ export function GeminiKeyModal({ isOpen, onClose, onSuccess }: GeminiKeyModalPro
     t,
   ]);
 
-  const handleDialogKeyDown = useCallback((e: KeyboardEvent) => {
-    if (e.key === 'Enter' && !isLoading) {
-      e.preventDefault();
-      handleSubmit();
-    }
-  }, [isLoading, handleSubmit]);
-
-  if (!isOpen) return null;
-
   return (
-    <div
-      role="none"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm relative"
-    >
-      <button
-        type="button"
-        onClick={onClose}
-        aria-label="Close modal backdrop"
-        className="absolute inset-0 h-full w-full"
-      />
-      <dialog
-        open
-        aria-modal="true"
-        aria-labelledby="gemini-key-modal-title"
-        ref={modalRef}
-        className="relative z-10 w-full max-w-md mx-4 bg-white dark:bg-earth-800 rounded-xl shadow-2xl border border-earth-200 dark:border-earth-700 p-6 space-y-5 animate-in fade-in zoom-in-95 duration-200"
-        onKeyDown={handleDialogKeyDown}
-      >
-        <div className="space-y-5">
-        <div className="flex items-start justify-between">
-          <div>
-            <h2
-              id="gemini-key-modal-title"
-              className="text-xl font-bold text-earth-900 dark:text-earth-100"
-            >
-              {keyAlreadyStored
-                ? t('geminiKeyModal.unlockTitle')
-                : t('geminiKeyModal.setupTitle')}
-            </h2>
-            <p className="text-sm text-earth-500 dark:text-earth-400 mt-1">
-              {keyAlreadyStored
-                ? t('geminiKeyModal.unlockDescription')
-                : t('geminiKeyModal.setupDescription')}
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="p-1 rounded-lg text-earth-400 hover:text-earth-600 dark:hover:text-earth-300 hover:bg-earth-100 dark:hover:bg-earth-700 transition"
-            aria-label={t('common.close')}
-          >
-            <svg className="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
+    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle>
+            {keyAlreadyStored
+              ? t('geminiKeyModal.unlockTitle')
+              : t('geminiKeyModal.setupTitle')}
+          </DialogTitle>
+          <DialogDescription>
+            {keyAlreadyStored
+              ? t('geminiKeyModal.unlockDescription')
+              : t('geminiKeyModal.setupDescription')}
+          </DialogDescription>
+        </DialogHeader>
 
         {error && (
           <div
@@ -184,119 +174,28 @@ export function GeminiKeyModal({ isOpen, onClose, onSuccess }: GeminiKeyModalPro
           </div>
         )}
 
-        <div className="space-y-4">
-          {!keyAlreadyStored && (
-            <>
-              <div className="space-y-1.5">
-                <label
-                  htmlFor="gemini-api-key"
-                  className="block text-sm font-semibold text-earth-700 dark:text-earth-300"
-                >
-                  {t('geminiKeyModal.apiKeyLabel')}
-                </label>
-              <input
-                ref={firstInputRef}
-                id="gemini-api-key"
-                type={showPassword ? 'text' : 'password'}
-                value={apiKey}
-                onChange={(e) => setApiKey(e.target.value)}
-                placeholder="AIza..."
-                aria-label={t('geminiKeyModal.apiKeyLabel')}
-                className="w-full px-3 py-2 border border-earth-300 dark:border-earth-600 rounded-lg bg-white dark:bg-earth-900 text-earth-900 dark:text-earth-100 text-sm focus:ring-2 focus:ring-sage-500 focus:border-sage-500 outline-none transition"
-                  autoComplete="off"
-                  disabled={isLoading}
-                />
-              </div>
+        <GeminiKeyFormFields
+          apiKey={apiKey}
+          setApiKey={(v) => dispatch({ type: 'SET_API_KEY', value: v })}
+          confirmApiKey={confirmApiKey}
+          setConfirmApiKey={(v) => dispatch({ type: 'SET_CONFIRM_API_KEY', value: v })}
+          masterPassword={masterPassword}
+          setMasterPassword={(v) => dispatch({ type: 'SET_MASTER_PASSWORD', value: v })}
+          confirmMasterPassword={confirmMasterPassword}
+          setConfirmMasterPassword={(v) => dispatch({ type: 'SET_CONFIRM_MASTER_PASSWORD', value: v })}
+          showPassword={showPassword}
+          setShowPassword={(v) => dispatch({ type: 'SET_SHOW_PASSWORD', value: v })}
+          keyAlreadyStored={keyAlreadyStored}
+          isLoading={isLoading}
+          isNewKey={!keyAlreadyStored}
+        />
 
-              <div className="space-y-1.5">
-                <label
-                  htmlFor="confirm-api-key"
-                  className="block text-sm font-semibold text-earth-700 dark:text-earth-300"
-                >
-                  {t('geminiKeyModal.confirmApiKeyLabel')}
-                </label>
-              <input
-                id="confirm-api-key"
-                type={showPassword ? 'text' : 'password'}
-                value={confirmApiKey}
-                onChange={(e) => setConfirmApiKey(e.target.value)}
-                placeholder="AIza..."
-                aria-label={t('geminiKeyModal.confirmApiKeyLabel')}
-                className="w-full px-3 py-2 border border-earth-300 dark:border-earth-600 rounded-lg bg-white dark:bg-earth-900 text-earth-900 dark:text-earth-100 text-sm focus:ring-2 focus:ring-sage-500 focus:border-sage-500 outline-none transition"
-                  autoComplete="off"
-                  disabled={isLoading}
-                />
-              </div>
-            </>
-          )}
-
-          <div className="space-y-1.5">
-            <label
-              htmlFor="master-password"
-              className="block text-sm font-semibold text-earth-700 dark:text-earth-300"
-            >
-              {t('geminiKeyModal.masterPasswordLabel')}
-            </label>
-            <input
-              ref={keyAlreadyStored ? firstInputRef : undefined}
-              id="master-password"
-              type={showPassword ? 'text' : 'password'}
-              value={masterPassword}
-              onChange={(e) => setMasterPassword(e.target.value)}
-              placeholder={t('geminiKeyModal.masterPasswordPlaceholder')}
-              aria-label={t('geminiKeyModal.masterPasswordLabel')}
-              className="w-full px-3 py-2 border border-earth-300 dark:border-earth-600 rounded-lg bg-white dark:bg-earth-900 text-earth-900 dark:text-earth-100 text-sm focus:ring-2 focus:ring-sage-500 focus:border-sage-500 outline-none transition"
-              autoComplete="off"
-              disabled={isLoading}
-            />
-          </div>
-
-          {!keyAlreadyStored && (
-            <div className="space-y-1.5">
-              <label
-                htmlFor="confirm-master-password"
-                className="block text-sm font-semibold text-earth-700 dark:text-earth-300"
-              >
-                {t('geminiKeyModal.confirmMasterPasswordLabel')}
-              </label>
-              <input
-                id="confirm-master-password"
-                type={showPassword ? 'text' : 'password'}
-                value={confirmMasterPassword}
-                onChange={(e) => setConfirmMasterPassword(e.target.value)}
-                placeholder={t('geminiKeyModal.confirmMasterPasswordPlaceholder')}
-                aria-label={t('geminiKeyModal.confirmMasterPasswordLabel')}
-                className="w-full px-3 py-2 border border-earth-300 dark:border-earth-600 rounded-lg bg-white dark:bg-earth-900 text-earth-900 dark:text-earth-100 text-sm focus:ring-2 focus:ring-sage-500 focus:border-sage-500 outline-none transition"
-                autoComplete="off"
-                disabled={isLoading}
-              />
-            </div>
-          )}
-
-          <div className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              id="show-password"
-              checked={showPassword}
-              onChange={(e) => setShowPassword(e.target.checked)}
-              aria-label={t('geminiKeyModal.showPassword')}
-              className="rounded border-earth-300 dark:border-earth-600 text-sage-600 focus:ring-sage-500"
-            />
-            <label
-              htmlFor="show-password"
-              className="text-sm text-earth-600 dark:text-earth-400 cursor-pointer select-none"
-            >
-              {t('geminiKeyModal.showPassword')}
-            </label>
-          </div>
-        </div>
-
-        <div className="flex gap-3 pt-2">
+        <DialogFooter>
           <button
             type="button"
             onClick={onClose}
             disabled={isLoading}
-            className="flex-1 px-4 py-2.5 rounded-lg font-medium border border-earth-300 dark:border-earth-600 text-earth-700 dark:text-earth-300 hover:bg-earth-50 dark:hover:bg-earth-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
+            className="flex-1 px-4 py-2.5 rounded-lg font-medium border border-border text-muted-foreground hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed transition"
           >
             {t('common.cancel')}
           </button>
@@ -304,7 +203,7 @@ export function GeminiKeyModal({ isOpen, onClose, onSuccess }: GeminiKeyModalPro
             type="button"
             onClick={handleSubmit}
             disabled={isLoading}
-            className="flex-1 px-4 py-2.5 rounded-lg font-medium bg-sage-600 text-white hover:bg-sage-700 disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center justify-center gap-2"
+            className="flex-1 px-4 py-2.5 rounded-lg font-medium bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center justify-center gap-2"
           >
             {isLoading ? (
               <>
@@ -322,17 +221,16 @@ export function GeminiKeyModal({ isOpen, onClose, onSuccess }: GeminiKeyModalPro
                 : t('geminiKeyModal.saveAction')
             )}
           </button>
-        </div>
+        </DialogFooter>
 
         {!keyAlreadyStored && (
-          <div className="pt-2 border-t border-earth-200 dark:border-earth-700">
-            <p className="text-xs text-earth-500 dark:text-earth-400">
+          <div className="pt-2 border-t border-border">
+            <p className="text-xs text-muted-foreground">
               {t('geminiKeyModal.securityNote')}
             </p>
           </div>
         )}
-        </div>
-      </dialog>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }

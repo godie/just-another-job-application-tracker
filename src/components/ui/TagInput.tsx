@@ -51,7 +51,7 @@ export const TagInput: React.FC<TagInputProps> = ({
   return (
     <div className={`flex flex-col gap-2 ${className}`}>
       {label && (
-        <label className='block text-sm font-bold text-earth-700 dark:text-earth-300'>
+        <label className='block text-sm font-bold text-muted-foreground'>
           {label}
         </label>
       )}
@@ -63,7 +63,7 @@ export const TagInput: React.FC<TagInputProps> = ({
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
           aria-label={label || placeholder || 'Tag input'}
-          className='w-full px-4 py-3 border border-earth-300 dark:border-earth-600 rounded focus:ring-2 focus:ring-sage-500 focus:border-sage-500 bg-white dark:bg-earth-800 text-earth-900 dark:text-earth-100 transition-all'
+          className='w-full px-4 py-3 border border-border rounded focus:ring-2 focus:ring-ring focus:border-ring bg-card text-foreground transition-all'
         />
       </div>
       <div className="flex flex-wrap gap-2 min-h-[32px]">
@@ -71,13 +71,13 @@ export const TagInput: React.FC<TagInputProps> = ({
           <Badge
             key={tag}
             variant='default'
-            className='flex items-center gap-1.5 px-3 py-1.5 text-sm group cursor-default animate-in fade-in zoom-in duration-200 relative overflow-hidden bg-sage-100 text-sage-700 dark:bg-sage-900/40 dark:text-sage-300'
+            className='flex items-center gap-1.5 px-3 py-1.5 text-sm group cursor-default animate-in fade-in zoom-in duration-200 relative overflow-hidden bg-primary/10 text-primary dark:bg-primary/10 dark:text-primary'
           >
             {tag}
             <button
               type="button"
               onClick={() => removeTag(index)}
-              className="opacity-0 group-hover:opacity-100 ml-1 hover:bg-sage-200 dark:hover:bg-sage-800 rounded-full p-0.5 transition-all focus:outline-none focus:opacity-100"
+              className="opacity-0 group-hover:opacity-100 ml-1 hover:bg-primary/20 dark:hover:bg-primary/90 rounded-full p-0.5 transition-all focus:outline-none focus:opacity-100"
               aria-label={`Remove ${tag}`}
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="size-3.5" viewBox="0 0 20 20" fill="currentColor">

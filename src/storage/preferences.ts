@@ -1,4 +1,3 @@
-// src/storage/preferences.ts
 import { PREFERENCES_STORAGE_KEY, DEFAULT_PREFERENCES } from '../utils/constants';
 import type { UserPreferences, ATSSearchPreferences } from '../types/preferences';
 

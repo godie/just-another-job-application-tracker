@@ -5,18 +5,15 @@ import React from 'react';
 import { useGoogleLogin } from '@react-oauth/google';
 import { ConnectGoogleButton } from './ConnectGoogleButton';
 
-// Mock linkGoogleAccount
 vi.mock('../utils/api', () => ({
   linkGoogleAccount: vi.fn(),
 }));
 
-// Mock authStore
 const mockFetchMe = vi.fn();
 vi.mock('../stores/authStore', () => ({
   useAuthStore: vi.fn(),
 }));
 
-// Mock AlertProvider
 const mockShowSuccess = vi.fn();
 const mockShowError = vi.fn();
 vi.mock('./AlertProvider', () => ({
@@ -38,7 +35,6 @@ const mockedUseGoogleLogin = vi.mocked(useGoogleLogin);
 describe('ConnectGoogleButton', () => {
   const mockGoogleLoginFn = vi.fn();
 
-  /** Extract the OAuth config (onSuccess / onError callbacks) passed to useGoogleLogin */
   const getOAuthConfig = () => {
     const calls = mockedUseGoogleLogin.mock.calls;
     return calls[calls.length - 1]?.[0] as
@@ -67,7 +63,6 @@ describe('ConnectGoogleButton', () => {
     } as unknown as ReturnType<typeof useAuthStore>);
   });
 
-  // ── Rendering ────────────────────────────────────────────────────────
 
   it('renders with type="button", aria-label, and Google SVG when not in progress', () => {
     render(<ConnectGoogleButton />);
@@ -100,7 +95,7 @@ describe('ConnectGoogleButton', () => {
     render(<ConnectGoogleButton />);
 
     const button = screen.getByRole('button');
-    expect(button.className).toContain('border-sage-300');
+    expect(button.className).toContain('border-primary/20');
   });
 
   it('applies custom className when provided', () => {
@@ -110,7 +105,6 @@ describe('ConnectGoogleButton', () => {
     expect(button.className).toContain('my-custom-class');
   });
 
-  // ── OAuth flow ───────────────────────────────────────────────────────
 
   it('calls googleLogin on click', async () => {
     const user = userEvent.setup();
@@ -122,7 +116,6 @@ describe('ConnectGoogleButton', () => {
   });
 
   it('shows spinner and disables button while linking', async () => {
-    // Never resolve — keeps isLinking=true
     mockedLinkGoogleAccount.mockImplementation(
       () => new Promise(() => {})
     );
@@ -161,7 +154,6 @@ describe('ConnectGoogleButton', () => {
     });
   });
 
-  // ── Success path ─────────────────────────────────────────────────────
 
   it('calls fetchMe and showSuccess on successful linking', async () => {
     mockedLinkGoogleAccount.mockResolvedValue({
@@ -188,7 +180,6 @@ describe('ConnectGoogleButton', () => {
       );
     });
 
-    // Button should be re-enabled after success
     await waitFor(() => {
       expect(screen.getByRole('button')).not.toBeDisabled();
       expect(screen.getByRole('button')).toHaveAttribute('aria-busy', 'false');
@@ -213,13 +204,11 @@ describe('ConnectGoogleButton', () => {
       expect(onSuccess).toHaveBeenCalledTimes(1);
     });
 
-    // fetchMe called before onSuccess
     expect(mockFetchMe.mock.invocationCallOrder[0]).toBeLessThan(
       onSuccess.mock.invocationCallOrder[0]
     );
   });
 
-  // ── Error paths ──────────────────────────────────────────────────────
 
   it('calls showError with backend message and re-enables button on failure', async () => {
     const onError = vi.fn();
@@ -240,7 +229,6 @@ describe('ConnectGoogleButton', () => {
       expect(onError).toHaveBeenCalledWith('Custom backend error');
     });
 
-    // Button re-enabled after error
     await waitFor(() => {
       expect(screen.getByRole('button')).not.toBeDisabled();
       expect(screen.getByRole('button')).toHaveAttribute('aria-busy', 'false');

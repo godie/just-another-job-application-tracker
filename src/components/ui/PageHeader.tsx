@@ -18,26 +18,23 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
   actionLabel,
   onAction,
   actionTestId,
-  className = 'mb-10',
+  className = 'mb-12',
   children,
 }) => {
   return (
     <header className={className}>
-      <div className='flex flex-col sm:flex-row sm:items-start sm:justify-between gap-6'>
+      <div className='flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6'>
         <div className='flex-1'>
           {category && (
-            <div className='flex items-center gap-3 mb-4'>
-              <div className='w-10 h-0.5 bg-sage-500'></div>
-              <span className='text-sage-600 dark:text-sage-400 text-sm font-medium tracking-wider uppercase'>
-                {category}
-              </span>
-            </div>
+            <span className='inline-block text-xs font-medium tracking-[0.2em] uppercase text-destructive mb-4'>
+              {category}
+            </span>
           )}
-          <h1 className='font-serif text-4xl md:text-5xl font-semibold text-earth-900 dark:text-earth-50'>
+          <h1 className='font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-foreground tracking-tight leading-none'>
             {title}
           </h1>
           {description && (
-            <p className='mt-3 text-base text-earth-600 dark:text-earth-300'>
+            <p className='mt-4 text-base md:text-lg text-muted-foreground max-w-prose leading-relaxed'>
               {description}
             </p>
           )}
@@ -45,16 +42,20 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
         {onAction && actionLabel && (
           <button
             type="button"
-            className='self-start sm:self-auto bg-terracotta-600 hover:bg-terracotta-700 active:bg-terracotta-800 text-white font-bold py-4 px-8 rounded transition-colors border border-terracotta-700 hover:border-terracotta-800 text-base shadow-sm hover:shadow-md'
+            className='group self-start sm:self-end inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-destructive bg-destructive/5 dark:bg-destructive/10 border border-destructive/30 rounded-lg hover:bg-destructive/10 dark:hover:bg-destructive/10 hover:border-destructive/50 transition-all duration-200'
             onClick={onAction}
             aria-label={actionLabel}
             data-testid={actionTestId}
           >
-            {actionLabel}
+            <svg className='size-4 transition-transform duration-200 group-hover:scale-110' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
+              <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 4v16m8-8H4' />
+            </svg>
+            {actionLabel.replace(/^\+\s*/, '')}
           </button>
         )}
         {children}
       </div>
+      <div className='mt-8 h-px bg-gradient-to-r from-border dark:from-border via-muted-foreground/20 dark:via-muted-foreground/20 to-transparent' />
     </header>
   );
 };

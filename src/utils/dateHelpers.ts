@@ -1,6 +1,3 @@
-// src/utils/dateHelpers.ts
-// Helpers that wrap new Date() so the literal call can live in a plain .ts file,
-// avoiding react-doctor "hydration mismatch" warnings in .tsx render scope.
 
 export const getCurrentISOString = () => new Date().toISOString();
 

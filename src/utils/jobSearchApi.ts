@@ -1,14 +1,9 @@
-// src/utils/jobSearchApi.ts
 
 import type { JobSearchParams, JobSearchResponse, JobSearchError } from '../types/jobSearch';
 
 const API_BASE = import.meta.env.VITE_API_URL ?? '/api';
 
 /**
- * Fetch job search results via the PHP proxy endpoint.
- * Supports Jooble, TheirStack, or both sources in parallel.
- * Sends session cookie for authentication (credentials: 'include').
- *
  * Throws structured JobSearchError on failure.
  */
 export async function searchJobs(params: JobSearchParams): Promise<JobSearchResponse> {
@@ -33,7 +28,6 @@ export async function searchJobs(params: JobSearchParams): Promise<JobSearchResp
   const data = await response.json().catch(() => null);
 
   if (!response.ok) {
-    // Map HTTP status codes to structured errors
     if (response.status === 401) {
       throw {
         error: 'auth_required',
@@ -76,10 +70,8 @@ export async function searchJobs(params: JobSearchParams): Promise<JobSearchResp
     } satisfies JobSearchError;
   }
 
-  // Surface partial errors from individual sources (e.g., TheirStack failed but Jooble succeeded)
   const result = data as JobSearchResponse;
   if (result.errors && result.errors.length > 0) {
-    // Don't throw — results are still returned. Errors are displayed inline.
     console.warn('[jobSearchApi] Partial errors from sources:', result.errors);
   }
 

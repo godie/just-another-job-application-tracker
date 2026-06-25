@@ -1,4 +1,3 @@
-// src/components/MatchBreakdownModal.test.tsx
 
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
@@ -99,7 +98,6 @@ describe('MatchBreakdownModal', () => {
     const { container } = render(
       <MatchBreakdownModal isOpen={true} onClose={handleClose} result={makeResult()} />
     );
-    // Click the backdrop (the outer div with role="dialog")
     const backdrop = container.querySelector('[role="dialog"]');
     if (backdrop) {
       fireEvent.click(backdrop);

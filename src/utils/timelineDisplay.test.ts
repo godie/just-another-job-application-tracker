@@ -1,14 +1,11 @@
-// src/utils/timelineDisplay.test.ts
 
 import { describe, it, expect, vi } from 'vitest';
 import { formatDate, getStageDisplayName, getEventStatusColor } from './timelineDisplay';
 
-// ─── formatDate ────────────────────────────────────────────────────────────────
 
 describe('formatDate', () => {
   it('formats a valid YYYY-MM-DD date string to locale format', () => {
     const result = formatDate('2025-06-15');
-    // JSDOM default locale is en-US, so we expect "Jun 15, 2025"
     expect(result).toBe('Jun 15, 2025');
   });
 
@@ -25,7 +22,6 @@ describe('formatDate', () => {
   });
 
   it('returns the input string unchanged when the date is unparseable', () => {
-    // isNaN(d.getTime()) catches invalid dates before toLocaleDateString
     expect(formatDate('not-a-date')).toBe('not-a-date');
   });
 
@@ -38,11 +34,9 @@ describe('formatDate', () => {
   });
 });
 
-// ─── getStageDisplayName ──────────────────────────────────────────────────────
 
 describe('getStageDisplayName', () => {
   const mockT = vi.fn((key: string, fallback?: string) => {
-    // Simulate i18next behavior: return translation if it exists, else fallback
     const translations: Record<string, string> = {
       'insights.interviewTypes.application_submitted': 'Application Submitted',
       'insights.interviewTypes.technical_interview': 'Technical Interview',
@@ -79,7 +73,6 @@ describe('getStageDisplayName', () => {
 
   it('returns the customTypeName for type "custom" when provided', () => {
     expect(getStageDisplayName(mockT, 'custom', 'My Custom Stage')).toBe('My Custom Stage');
-    // t() should NOT be called when type is 'custom' with a customTypeName
     expect(mockT).not.toHaveBeenCalled();
   });
 
@@ -115,7 +108,6 @@ describe('getStageDisplayName', () => {
   });
 });
 
-// ─── getEventStatusColor ───────────────────────────────────────────────────────
 
 describe('getEventStatusColor', () => {
   it('returns green for completed status', () => {
@@ -143,7 +135,6 @@ describe('getEventStatusColor', () => {
   });
 
   it('is case-sensitive (returns fallback for uppercase variant)', () => {
-    // The function does exact string matching; 'COMPLETED' is not a known key
     expect(getEventStatusColor('COMPLETED')).toBe('bg-gray-400');
   });
 });

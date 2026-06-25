@@ -1,4 +1,3 @@
-// src/utils/matching.ts
 
 import type { JobApplication, InterviewStageType } from '../types/applications';
 import type { JobOpportunity } from '../types/opportunities';
@@ -11,8 +10,7 @@ import type {
   SeniorityLevel,
 } from '../types/matching';
 
-// Positive signals: reached interview stage or beyond
-const POSITIVE_SIGNALS: InterviewStageType[] = [
+const POSITIVE_SIGNALS = new Set<InterviewStageType>([
   'technical_interview',
   'code_challenge',
   'live_coding',
@@ -21,9 +19,9 @@ const POSITIVE_SIGNALS: InterviewStageType[] = [
   'cultural_fit',
   'final_round',
   'offer',
-];
+]);
 
-const NEGATIVE_SIGNALS: InterviewStageType[] = ['rejected', 'withdrawn'];
+const NEGATIVE_SIGNALS = new Set<InterviewStageType>(['rejected', 'withdrawn']);
 
 const SENIORITY_KEYWORDS: Record<string, SeniorityLevel> = {
   intern: 'intern',
@@ -71,11 +69,11 @@ const COMMON_TECH_SKILLS = [
   'performance', 'optimization', 'caching', 'cdn',
 ];
 
-// ─── Helpers ────────────────────────────────────────────────────────────────
 
 export function extractSeniorityFromTitle(title: string): SeniorityLevel | null {
   const lowerTitle = title.toLowerCase();
   for (const [keyword, level] of Object.entries(SENIORITY_KEYWORDS)) {
+    // react-doctor-disable-next-line js-set-map-lookups -- String.prototype.includes; SENIORITY_KEYWORDS is a plain object literal (Record), not an array/Set.
     if (lowerTitle.includes(keyword)) return level;
   }
   return null;
@@ -95,13 +93,12 @@ export function calculateRoleSimilarity(title: string, targetRoles: string[]): n
     const normalizedRole = normalizeTitle(role);
     const roleWords = normalizedRole.split(' ');
 
-    // Exact or substring match
+    // react-doctor-disable-next-line js-set-map-lookups -- String.prototype.includes on normalized titles.
     if (normalizedTitle.includes(normalizedRole) || normalizedRole.includes(normalizedTitle)) {
       bestScore = Math.max(bestScore, 100);
       continue;
     }
 
-    // Word overlap score
     const roleWordsSet = new Set(roleWords);
     const commonWords = titleWords.filter((w) => roleWordsSet.has(w));
     const overlapScore = (commonWords.length / Math.max(titleWords.length, roleWords.length)) * 100;
@@ -143,19 +140,16 @@ function parseSalaryRange(salaryStr: string | undefined): { min: number; max: nu
   if (!salaryStr) return null;
   const text = salaryStr.toLowerCase();
 
-  // Extract currency
   let currency = 'USD';
   if (text.includes('€') || text.includes('eur') || text.includes('euro')) currency = 'EUR';
   if (text.includes('£') || text.includes('gbp')) currency = 'GBP';
 
-  // Extract numbers
   const numbers = text.match(/\d{1,3}(?:,\d{3})*(?:\.\d+)?|\d+/g);
   if (!numbers || numbers.length === 0) return null;
 
   const values = numbers.reduce<number[]>((acc, n) => { const v = parseInt(n.replace(/,/g, ''), 10); if (!isNaN(v)) acc.push(v); return acc; }, []);
   if (values.length === 0) return null;
 
-  // Handle K notation (e.g., 80K -> 80000)
   const kMultiplied = values.map((v) => (v < 1000 && text.includes('k') ? v * 1000 : v));
 
   return {
@@ -179,10 +173,8 @@ export function calculateCompensationFit(
   const profileMin = range.min ?? 0;
   const profileMax = range.max ?? Number.MAX_SAFE_INTEGER;
 
-  // If opportunity range falls entirely within profile range
   if (parsed.min >= profileMin && parsed.max <= profileMax) return 100;
 
-  // If there's any overlap
   const overlapMin = Math.max(parsed.min, profileMin);
   const overlapMax = Math.min(parsed.max, profileMax);
   if (overlapMax >= overlapMin) {
@@ -191,7 +183,6 @@ export function calculateCompensationFit(
     return Math.round((overlapAmount / totalRange) * 100);
   }
 
-  // No overlap - calculate distance
   const distance = parsed.max < profileMin
     ? profileMin - parsed.max // opp is below profile
     : parsed.min - profileMax; // opp is above profile
@@ -215,7 +206,8 @@ export function isWorkTypeMatch(
         ? 'on-site'
         : null;
   if (!mapped) return 50;
-  return preferred.includes(mapped) ? 100 : 0;
+  const preferredSet = new Set(preferred);
+  return preferredSet.has(mapped) ? 100 : 0;
 }
 
 function calculateLocationMatch(
@@ -226,8 +218,9 @@ function calculateLocationMatch(
   const lowerOpp = oppLocation.toLowerCase();
   for (const loc of preferredLocations) {
     const lowerLoc = loc.toLowerCase();
+    // react-doctor-disable-next-line js-set-map-lookups -- String.prototype.includes on lowercased locations.
     if (lowerOpp.includes(lowerLoc) || lowerLoc.includes(lowerOpp)) return 100;
-    // Also check for "remote" preference
+    // react-doctor-disable-next-line js-set-map-lookups -- String.prototype.includes on lowercased locations.
     if (lowerLoc === 'remote' && lowerOpp.includes('remote')) return 100;
   }
   return 0;
@@ -302,31 +295,24 @@ function generateGaps(subscores: JobMatchSubscores): string[] {
   return gaps.length > 0 ? gaps : ['Limited data available to identify gaps'];
 }
 
-// ─── Core Functions ───────────────────────────────────────────────────────────
 
-/**
- * Build a UserMatchProfile from application history without using AI.
- * Uses timeline signals to determine successful patterns.
- */
 export function buildProfileFromHistory(
   applications: JobApplication[],
   explicitOverrides?: Partial<UserMatchProfile>
 ): UserMatchProfile {
   const positiveApps = applications.filter((app) =>
-    app.timeline.some((event) => POSITIVE_SIGNALS.includes(event.type))
+    app.timeline.some((event) => POSITIVE_SIGNALS.has(event.type))
   );
 
   const negativeApps = applications.filter((app) =>
-    app.timeline.some((event) => NEGATIVE_SIGNALS.includes(event.type)) &&
-    !app.timeline.some((event) => POSITIVE_SIGNALS.includes(event.type))
+    app.timeline.some((event) => NEGATIVE_SIGNALS.has(event.type)) &&
+    !app.timeline.some((event) => POSITIVE_SIGNALS.has(event.type))
   );
 
-  // Target roles from successful applications
   const targetRoles = [
     ...new Set(positiveApps.map((app) => app.position)),
   ];
 
-  // Infer seniority from titles
   const seniorityCounts = new Map<SeniorityLevel, number>();
   for (const app of applications) {
     const level = extractSeniorityFromTitle(app.position);
@@ -343,19 +329,16 @@ export function buildProfileFromHistory(
     }
   }
 
-  // Extract skills from notes and descriptions (best effort)
   const allText = applications
     .flatMap((app) => [app.notes, app.position, app.company].flatMap(v => v ? [v] : []))
     .join(' ');
   const topSkills = extractSkillsFromDescription(allText);
 
-  // Locations and work types
   const preferredLocations = [...new Set(applications.reduce<string[]>((acc, app) => { if (app.location) acc.push(app.location); return acc; }, []))];
   const preferredWorkTypes = [
     ...new Set(applications.reduce<('remote' | 'on-site' | 'hybrid')[]>((acc, app) => { if (app.workType) acc.push(app.workType); return acc; }, [])),
   ];
 
-  // Success patterns from positive apps
   const successPatterns = positiveApps.length > 0
     ? [
         `Successfully progressed to interviews for ${positiveApps.length} role(s)`,
@@ -363,7 +346,6 @@ export function buildProfileFromHistory(
       ]
     : ['Limited interview data available'];
 
-  // Avoid patterns from negative apps
   const avoidPatterns = negativeApps.length > 0
     ? [
         `${negativeApps.length} application(s) resulted in rejection/withdrawal`,
@@ -390,10 +372,6 @@ export function buildProfileFromHistory(
   return profile;
 }
 
-/**
- * Calculate a deterministic match score between an opportunity and a user profile.
- * Pure function — no network calls, no AI.
- */
 export function calculateDeterministicScore(
   opportunity: JobOpportunity,
   profile: UserMatchProfile,
@@ -415,10 +393,8 @@ export function calculateDeterministicScore(
     ? profile.seniority === oppSeniority ? 100 : 30
     : 50; // neutral if unknown
 
-  // Historical fit: basic heuristic based on role similarity to past successes
   const historicalScore = roleScore; // simplified — if role matches past targets, it's "historically good"
 
-  // Semantic fit: placeholder for AI layer — deterministic version uses average of role + skills
   const semanticScore = Math.round((roleScore + skillsScore) / 2);
 
   const subscores: JobMatchSubscores = {
@@ -430,7 +406,6 @@ export function calculateDeterministicScore(
     seniorityFit: seniorityScore,
   };
 
-  // Weighted overall score
   const overallScore = Math.round(
     subscores.semanticFit * 0.30 +
     subscores.historicalFit * 0.20 +
@@ -458,9 +433,6 @@ export function calculateDeterministicScore(
   };
 }
 
-/**
- * Batch score multiple opportunities against a profile.
- */
 export function batchCalculateScores(
   opportunities: JobOpportunity[],
   profile: UserMatchProfile,

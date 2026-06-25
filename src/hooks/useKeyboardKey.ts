@@ -1,12 +1,5 @@
-// src/hooks/useKeyboardKey.ts
 import { useEffect } from 'react';
 
-/**
- * Custom hook to execute a callback when a specific key is pressed.
- * @param key The key to listen for (e.g., 'Escape', 'Enter', ' ')
- * @param callback The function to execute when the key is pressed
- * @param isActive Whether the hook should be active and listening for events
- */
 const useKeyboardKey = (
   key: string,
   callback: () => void,

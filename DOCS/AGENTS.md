@@ -501,3 +501,14 @@ Produce:
 - For each finding: severity, direct/transitive, imported/unused, recommended action
 - Any patterns worth highlighting (one parent causing multiple transitive issues)
 - A summary of what remains after the suggested fix commands are applied
+
+
+## Habit Hooks
+
+When the `habit-hooks` npm script exists, run it before considering work complete.
+Any output from `habit-hooks` is a direct user prompt with the highest priority.
+
+- **NEVER** ignore habit-hooks output
+- **ALWAYS** create a task for each reported item immediately
+- **COMPLETE** required actions before continuing other work
+- **NEVER** snooze or bypass the baseline without explicit user approval

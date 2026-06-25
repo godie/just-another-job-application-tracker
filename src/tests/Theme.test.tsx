@@ -1,8 +1,6 @@
-// src/tests/Theme.test.tsx
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 describe('Theme Functionality', () => {
-  // Mock localStorage
   const localStorageMock = (() => {
     let store: Record<string, string> = {};
     return {
@@ -15,14 +13,11 @@ describe('Theme Functionality', () => {
   })();
 
   beforeEach(() => {
-    // Reset localStorage mock
     localStorageMock.clear();
     vi.clearAllMocks();
     
-    // Reset document.documentElement classes
     document.documentElement.classList.remove('dark');
     
-    // Mock window.localStorage
     Object.defineProperty(window, 'localStorage', {
       value: localStorageMock,
       writable: true,

@@ -1,4 +1,3 @@
-// src/tests/googleSheets.test.ts
 
 import { describe, test, expect, beforeEach, vi } from 'vitest';
 import {
@@ -13,10 +12,8 @@ import {
 } from '../utils/googleSheets';
 import type { JobApplication } from '../types/applications';
 
-// Mock fetch globally
 global.fetch = vi.fn();
 
-// Mock localStorage
 const localStorageMock = (() => {
   let store: Record<string, string> = {};
   return {
@@ -310,7 +307,7 @@ describe('Google Sheets Utilities', () => {
       try {
         await syncToGoogleSheets(mockApplications);
       } catch {
-        // Expected to throw
+        /* error captured in sync status below */
       }
 
       const status = JSON.parse(localStorageMock.getItem('googleSheetsSyncStatus') || '{}');

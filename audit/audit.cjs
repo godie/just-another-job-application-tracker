@@ -1,9 +1,5 @@
 #!/usr/bin/env node
 
-/**
- * Audit Script for Job Application Tracker
- * Runs ESLint and generates structured audit reports
- */
 
 const { execSync } = require('child_process');
 const fs = require('fs');
@@ -15,7 +11,6 @@ const DOCS_DIR = path.join(ROOT_DIR, 'DOCS');
 const JSON_REPORT_PATH = path.join(REPORT_DIR, 'audit-report.json');
 const MD_REPORT_PATH = path.join(DOCS_DIR, 'AUDIT.md');
 
-// Exclusions from the plan
 const EXCLUDED_PATTERNS = [
   'chrome-extension/**',
   'node_modules/**',
@@ -39,7 +34,6 @@ function runESLint() {
     
     return JSON.parse(output);
   } catch (error) {
-    // ESLint returns exit code 1 when there are errors
     if (error.stdout) {
       try {
         return JSON.parse(error.stdout);
@@ -75,7 +69,6 @@ function categorizeIssues(results) {
     warning: [],
   };
 
-  // Map ESLint rule severity to our categories
   const severityMap = {
     2: 'critical', // error
     1: 'warning',  // warning
@@ -89,7 +82,6 @@ function categorizeIssues(results) {
       const severity = severityMap[msg.severity] || 'medium';
       const ruleId = msg.ruleId || 'unknown';
       
-      // Categorize specific rules
       let category = severity;
       
       if (ruleId.includes('no-explicit-any')) {
@@ -187,7 +179,6 @@ function generateMarkdownReport(auditData) {
 function main() {
   console.log('=== Code Audit Script ===\n');
   
-  // Get current git branch
   let branch = 'unknown';
   try {
     branch = execSync('git rev-parse --abbrev-ref HEAD', { 
@@ -195,14 +186,11 @@ function main() {
       encoding: 'utf-8' 
     }).trim();
   } catch (e) {
-    // Ignore git errors
   }
   
-  // Run ESLint
   const rawResults = runESLint();
   const filteredResults = filterResults(rawResults);
   
-  // Process results
   const allMessages = [];
   const analyzedFiles = [];
   
@@ -213,10 +201,8 @@ function main() {
     }
   });
   
-  // Categorize issues
   const categories = categorizeIssues(filteredResults);
   
-  // Calculate summary
   const summary = {
     total: allMessages.length,
     critical: categories.critical.length,
@@ -227,7 +213,6 @@ function main() {
     filesAnalyzed: analyzedFiles.length,
   };
   
-  // Prepare audit data
   const auditData = {
     timestamp: new Date().toISOString(),
     branch,
@@ -237,17 +222,14 @@ function main() {
     rawResults: filteredResults,
   };
   
-  // Write JSON report
   const jsonOutput = JSON.stringify(auditData, null, 2);
   fs.writeFileSync(JSON_REPORT_PATH, jsonOutput, 'utf-8');
   console.log(`✓ JSON report written to: ${JSON_REPORT_PATH}`);
   
-  // Generate and write Markdown report
   const mdReport = generateMarkdownReport(auditData);
   fs.writeFileSync(MD_REPORT_PATH, mdReport, 'utf-8');
   console.log(`✓ Markdown report written to: ${MD_REPORT_PATH}`);
   
-  // Print summary
   console.log('\n=== Audit Summary ===');
   console.log(`Total Issues: ${summary.total}`);
   console.log(`  - Critical: ${summary.critical}`);

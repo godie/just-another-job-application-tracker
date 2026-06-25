@@ -33,7 +33,7 @@ const KeyboardHelp: React.FC<KeyboardHelpProps> = ({ isOpen, onClose }) => {
   return (
     <div
       role="none"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-earth-900/80 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm"
       onClick={(e) => {
         if (e.target === e.currentTarget) {
           onClose();
@@ -48,13 +48,13 @@ const KeyboardHelp: React.FC<KeyboardHelpProps> = ({ isOpen, onClose }) => {
         ref={modalRef}
         aria-modal="true"
         aria-labelledby="keyboard-help-title"
-        className="bg-white dark:bg-earth-800 rounded-lg shadow-xl max-w-md w-full mx-4 border border-earth-200 dark:border-earth-700"
+        className="bg-card rounded-lg shadow-xl max-w-md w-full mx-4 border border-border"
       >
         <div className="p-6">
           <div className="flex items-center justify-between mb-4">
             <h2
               id="keyboard-help-title"
-              className="text-xl font-semibold text-earth-900 dark:text-earth-100"
+              className="text-xl font-semibold text-foreground"
             >
               Keyboard Shortcuts
             </h2>
@@ -63,7 +63,7 @@ const KeyboardHelp: React.FC<KeyboardHelpProps> = ({ isOpen, onClose }) => {
               size="icon"
               onClick={onClose}
               aria-label="Close keyboard shortcuts help"
-              className="text-earth-500 hover:text-earth-700 dark:text-earth-400 dark:hover:text-earth-200"
+              className="text-muted-foreground hover:text-foreground dark:text-muted-foreground dark:hover:text-muted-foreground"
             >
               <svg className="size-5" fill="currentColor" viewBox="0 0 20 20">
                 <path
@@ -75,7 +75,7 @@ const KeyboardHelp: React.FC<KeyboardHelpProps> = ({ isOpen, onClose }) => {
             </Button>
           </div>
 
-          <p className="text-sm text-earth-600 dark:text-earth-400 mb-4">
+          <p className="text-sm text-muted-foreground mb-4">
             Use these keyboard shortcuts to navigate the application more efficiently.
           </p>
 
@@ -83,12 +83,12 @@ const KeyboardHelp: React.FC<KeyboardHelpProps> = ({ isOpen, onClose }) => {
             {shortcuts.map((shortcut) => (
               <li
                 key={shortcut.key}
-                className="flex items-center justify-between py-2 border-b border-earth-100 dark:border-earth-700 last:border-0"
+                className="flex items-center justify-between py-2 border-b border-border dark:border-border last:border-0"
               >
-                <kbd className="px-2 py-1 bg-earth-100 dark:bg-earth-700 rounded text-sm font-mono text-earth-700 dark:text-earth-300 border border-earth-200 dark:border-earth-600">
+                <kbd className="px-2 py-1 bg-muted rounded text-sm font-mono text-foreground border border-border">
                   {shortcut.key}
                 </kbd>
-                <span className="text-sm text-earth-600 dark:text-earth-400">
+                <span className="text-sm text-muted-foreground">
                   {shortcut.description}
                 </span>
               </li>

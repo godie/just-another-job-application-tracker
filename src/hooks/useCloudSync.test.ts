@@ -1,4 +1,3 @@
-// src/hooks/useCloudSync.test.ts
 import { describe, it, expect, beforeEach } from 'vitest';
 import { useMergeStore } from '../stores/mergeStore';
 import { markInitialLoadDone, resetInitialLoadDone } from './useCloudSync';
@@ -15,7 +14,6 @@ describe('useCloudSync', () => {
   });
 
   it('should allow marking and resetting initial load state', () => {
-    // These are module-level flags — just verify they don't throw
     expect(() => markInitialLoadDone()).not.toThrow();
     expect(() => resetInitialLoadDone()).not.toThrow();
   });

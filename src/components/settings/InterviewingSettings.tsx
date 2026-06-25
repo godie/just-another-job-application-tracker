@@ -30,9 +30,9 @@ const InterviewingSettings: React.FC<InterviewingSettingsProps> = ({
   return (
     <div className='space-y-8'>
       {/* Form Section */}
-      <div className='bg-earth-50 dark:bg-earth-800/50 rounded p-6 border border-earth-200 dark:border-earth-700'>
-        <h3 className='text-lg font-semibold text-earth-900 dark:text-earth-100 mb-6 flex items-center gap-2'>
-          <span className='p-1.5 bg-sage-100 dark:bg-sage-900/40 text-sage-600 dark:text-sage-400 rounded'>
+      <div className='bg-muted/50 rounded p-6 border border-border'>
+        <h3 className='text-lg font-semibold text-foreground mb-6 flex items-center gap-2'>
+          <span className='p-1.5 bg-primary/5 dark:bg-primary/10 text-primary rounded'>
             <svg xmlns='http://www.w3.org/2000/svg' className='size-5' viewBox='0 0 20 20' fill='currentColor'>
               <path fillRule='evenodd' d='M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z' clipRule='evenodd' />
             </svg>
@@ -42,7 +42,7 @@ const InterviewingSettings: React.FC<InterviewingSettingsProps> = ({
 
         <div className='space-y-4'>
           <div>
-            <label htmlFor='interview-event-label' className='block text-sm font-bold text-earth-700 dark:text-earth-300 mb-2'>
+            <label htmlFor='interview-event-label' className='block text-sm font-bold text-muted-foreground mb-2'>
               {t('settings.interviewing.label')}
             </label>
             <input
@@ -52,7 +52,7 @@ const InterviewingSettings: React.FC<InterviewingSettingsProps> = ({
               onChange={(e) => setInterviewEventForm({ ...interviewEventForm, label: e.target.value })}
               placeholder='e.g., Phone Screen, Panel Interview'
               aria-label={t('settings.interviewing.label')}
-              className='w-full px-4 py-3 border border-earth-300 dark:border-earth-600 rounded focus:ring-2 focus:ring-sage-500 focus:border-sage-500 bg-white dark:bg-earth-800 text-earth-900 dark:text-earth-100 transition-all'
+              className='w-full px-4 py-3 border border-input rounded focus:ring-2 focus:ring-ring focus:border-ring bg-background text-foreground transition-all'
             />
           </div>
 
@@ -65,8 +65,8 @@ const InterviewingSettings: React.FC<InterviewingSettingsProps> = ({
                   disabled={!interviewEventForm.label}
                   className={`px-6 py-2.5 rounded text-sm font-bold transition-all ${
                     interviewEventForm.label
-                      ? 'bg-sage-600 text-white hover:bg-sage-700'
-                      : 'bg-earth-200 text-earth-500 dark:text-earth-400 cursor-not-allowed'
+                      ? 'bg-primary text-primary-foreground hover:bg-primary/90'
+                      : 'bg-muted text-muted-foreground cursor-not-allowed'
                   }`}
                 >
                   {t('settings.interviewing.update')}
@@ -74,7 +74,7 @@ const InterviewingSettings: React.FC<InterviewingSettingsProps> = ({
                 <button
                   type='button'
                   onClick={onCancelEdit}
-                  className='px-6 py-2.5 rounded text-sm font-bold border border-earth-300 dark:border-earth-600 text-earth-700 dark:text-earth-300 hover:bg-earth-100 dark:hover:bg-earth-700 transition-all'
+                  className='px-6 py-2.5 rounded text-sm font-bold border border-border text-muted-foreground hover:bg-muted transition-all'
                 >
                   {t('common.cancel')}
                 </button>
@@ -86,8 +86,8 @@ const InterviewingSettings: React.FC<InterviewingSettingsProps> = ({
                 disabled={!interviewEventForm.label}
                 className={`px-6 py-2.5 rounded text-sm font-bold transition-all ${
                   interviewEventForm.label
-                    ? 'bg-sage-600 text-white hover:bg-sage-700'
-                    : 'bg-earth-200 text-earth-500 dark:text-earth-400 cursor-not-allowed'
+                    ? 'bg-primary text-primary-foreground hover:bg-primary/90'
+                    : 'bg-muted text-muted-foreground cursor-not-allowed'
                 }`}
               >
                 {t('settings.interviewing.addEvent')}
@@ -99,7 +99,7 @@ const InterviewingSettings: React.FC<InterviewingSettingsProps> = ({
 
       {/* List Section */}
       <div className='space-y-4'>
-        <h3 className='text-sm font-semibold text-earth-500 dark:text-earth-400 uppercase tracking-wider px-1'>
+        <h3 className='text-sm font-semibold text-muted-foreground uppercase tracking-wider px-1'>
           {t('settings.interviewing.title')}
         </h3>
 
@@ -108,11 +108,11 @@ const InterviewingSettings: React.FC<InterviewingSettingsProps> = ({
             {customInterviewEvents.map((event) => (
               <div
                 key={event.id}
-                className='flex items-center justify-between p-4 bg-white dark:bg-earth-800 border border-earth-200 dark:border-earth-700 rounded hover:border-sage-300 dark:hover:border-sage-600 transition-all group'
+                className='flex items-center justify-between p-4 bg-card border border-border rounded hover:border-primary/30 transition-all group'
               >
                 <div className='flex items-center gap-3'>
-                  <div className='size-2 rounded-full bg-sage-500' />
-                  <span className='font-bold text-earth-900 dark:text-earth-100'>
+                  <div className='size-2 rounded-full bg-primary' />
+                  <span className='font-bold text-foreground'>
                     {event.label}
                   </span>
                 </div>
@@ -120,7 +120,7 @@ const InterviewingSettings: React.FC<InterviewingSettingsProps> = ({
                   <button
                     type='button'
                     onClick={() => onEditInterviewEvent(event)}
-                    className='p-2 text-sage-600 hover:bg-sage-50 dark:hover:bg-sage-900/30 rounded transition-colors'
+                    className='p-2 text-primary hover:bg-primary/5 dark:hover:bg-primary/10 rounded transition-colors'
                     title={t('common.edit')}
                     aria-label={t('common.edit')}
                   >
@@ -131,7 +131,7 @@ const InterviewingSettings: React.FC<InterviewingSettingsProps> = ({
                   <button
                     type='button'
                     onClick={() => onDeleteInterviewEvent(event.id)}
-                    className='p-2 text-terracotta-600 hover:bg-terracotta-50 dark:hover:bg-terracotta-900/30 rounded transition-colors'
+                    className='p-2 text-destructive hover:bg-destructive/5 dark:hover:bg-destructive/10 rounded transition-colors'
                     title={t('common.delete')}
                     aria-label={t('common.delete')}
                   >
@@ -144,8 +144,8 @@ const InterviewingSettings: React.FC<InterviewingSettingsProps> = ({
             ))}
           </div>
         ) : (
-          <div className='text-center py-12 bg-earth-50 dark:bg-earth-800/50 rounded border-2 border-dashed border-earth-200 dark:border-earth-700'>
-            <p className='text-sm text-earth-500 dark:text-earth-400'>{t('settings.interviewing.noEvents')}</p>
+          <div className='text-center py-12 bg-muted/50 rounded border-2 border-dashed border-border'>
+            <p className='text-sm text-muted-foreground'>{t('settings.interviewing.noEvents')}</p>
           </div>
         )}
       </div>

@@ -1,4 +1,3 @@
-// src/mails/providers/fake/fakeProvider.ts
 import type { EmailProvider, RawEmail, Email } from '../../types';
 
 type SeedMessage = {
@@ -17,7 +16,6 @@ export class FakeEmailProvider implements EmailProvider {
     seed.forEach(m => this.addSeed(m));
   }
 
-  // Añade mensajes de prueba al store
   addSeed(msg: SeedMessage) {
     const id = msg.id ?? cryptoRandomId();
     const internalDate = msg.internalDate ?? String(Date.now());
@@ -33,7 +31,6 @@ export class FakeEmailProvider implements EmailProvider {
     };
   }
 
-  /** Extract meaningful keywords from Gmail-style query for simple matching in tests. */
   private keywordsFromQuery(query: string): string[] {
     const lower = query.toLowerCase();
     const words = lower.split(/\s+/).filter((w) => w.length > 2 && !/^[():"]+$/.test(w));
@@ -55,14 +52,12 @@ export class FakeEmailProvider implements EmailProvider {
     return Promise.resolve(ids);
   }
 
-  // Devuelve el RawEmail por id
   async getMessage(id: string): Promise<RawEmail> {
     const msg = this.store[id];
     if (!msg) throw new Error(`FakeEmailProvider: message ${id} not found`);
     return Promise.resolve(msg);
   }
 
-  // Normaliza RawEmail a Email
   normalize(raw: RawEmail): Email {
     const subject = raw.headers['subject'] ?? '';
     const from = raw.headers['from'] ?? '';
@@ -79,18 +74,15 @@ export class FakeEmailProvider implements EmailProvider {
     };
   }
 
-  // Utilidad para limpiar el store (tests)
   clear() {
     this.store = {};
   }
 
-  // Utilidad para listar todos los mensajes (tests)
   listAll(): Email[] {
     return Object.values(this.store).map(r => this.normalize(r));
   }
 }
 
-// Helper simple para generar ids en entornos sin crypto.randomUUID
 function cryptoRandomId() {
   if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
     return crypto.randomUUID();

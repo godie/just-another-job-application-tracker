@@ -1,4 +1,3 @@
-// src/components/ApplicationCard.test.tsx
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import ApplicationCard from './ApplicationCard';

@@ -1,17 +1,12 @@
 import React, { useMemo, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { type JobApplication } from '../types/applications';
-import { StatCard } from './ui';
+import { StatCard } from './ui/StatCard';
 
 interface MetricsSummaryProps {
   applications: JobApplication[];
 }
 
-/**
- * MetricsSummary component displays a summary of job application metrics.
- * Asymmetric layout: Applications is the dominant metric (2-col span),
- * Interviews and Offers are compact secondary metrics.
- */
 const MetricsSummary: React.FC<MetricsSummaryProps> = ({ applications }) => {
   const { t } = useTranslation();
 
@@ -34,24 +29,24 @@ const MetricsSummary: React.FC<MetricsSummaryProps> = ({ applications }) => {
   const offers = stats.offers;
 
   return (
-    <section className='grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-10' data-testid='metrics-summary'>
+    <section className='grid grid-cols-2 sm:grid-cols-4 gap-x-6 gap-y-8 sm:gap-x-10 sm:gap-y-10 mb-14' data-testid='metrics-summary'>
       <StatCard
         title={t('home.metrics.applications')}
         value={applications.length}
-        variant="earth"
+        variant="default"
         isLarge
       />
 
       <StatCard
         title={t('home.metrics.interviews')}
         value={interviews}
-        variant="sage"
+        variant="terracotta"
       />
 
       <StatCard
         title={t('home.metrics.offers')}
         value={offers}
-        variant="earth-muted"
+        variant="sage"
       />
     </section>
   );

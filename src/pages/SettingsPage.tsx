@@ -2,7 +2,6 @@ import React, { useReducer, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSEO } from '../seo/useSEO';
 import { usePreferencesStore } from '../stores/preferencesStore';
-import { useAuthStore } from '../stores/authStore';
 import { useAlert } from '../components/AlertProvider';
 import { DEFAULT_FIELDS } from '../utils/constants';
 import { type PageType } from '../App';
@@ -23,18 +22,20 @@ import { useApplicationsStore } from '../stores/applicationsStore';
 import { useOpportunitiesStore } from '../stores/opportunitiesStore';
 import { saveMatchProfile } from '../storage/matching';
 import { getCurrentISOString } from '../utils/dateHelpers';
-import { ConnectGoogleButton } from '../components/ConnectGoogleButton';
 
-import Footer from '../components/Footer';
 import { Card } from '../components/ui/Card';
 import { PageHeader } from '../components/ui/PageHeader';
+import Footer from '../components/Footer';
+import { SettingsSidebar, type SettingsSection } from '../components/settings/SettingsSidebar';
+import { SettingsSectionHeader } from '../components/settings/SettingsSectionHeader';
+import { CloudAccountSection } from '../components/settings/CloudAccountSection';
 import packageJson from '../../package.json';
 
 interface SettingsPageProps {
   onNavigate?: (page: PageType) => void;
 }
 
-type SettingsSection = 'fields' | 'view' | 'date' | 'custom' | 'interviewing' | 'emailScan' | 'atsSearch' | 'cloud' | 'tools' | 'matching';
+
 
 interface SettingsState {
   activeSection: SettingsSection;
@@ -94,7 +95,6 @@ const SettingsPageContent: React.FC<SettingsPageProps> = ({ onNavigate }) => {
     title: t('seo.settings.title'),
     description: t('seo.settings.description'),
   });
-  const { currentUser: user, isAuthenticated } = useAuthStore();
   const { showSuccess, showError } = useAlert();
   const [state, dispatch] = useReducer(settingsReducer, initialState);
 
@@ -115,12 +115,10 @@ const SettingsPageContent: React.FC<SettingsPageProps> = ({ onNavigate }) => {
     resetError,
   } = useMatchingStore();
 
-  // Load matching state on mount
   useEffect(() => {
     loadMatchingState();
   }, [loadMatchingState]);
 
-  // Show compute errors via alert
   useEffect(() => {
     if (computeError) {
       showError(computeError);
@@ -393,63 +391,7 @@ const SettingsPageContent: React.FC<SettingsPageProps> = ({ onNavigate }) => {
           />
         );
       case 'cloud':
-        return (
-          <div className='space-y-8'>
-            <div className='bg-sage-50 dark:bg-sage-900/20 border border-sage-200 dark:border-sage-700 p-8'>
-              {isAuthenticated ? (
-                <div className='flex flex-col sm:flex-row items-center gap-6'>
-                  <div className='size-16 bg-sage-600 rounded flex items-center justify-center text-white text-2xl font-bold'>
-                    {user?.email?.charAt(0).toUpperCase()}
-                  </div>
-                  <div className='flex-1 text-center sm:text-left'>
-                    <p className='text-sm font-semibold text-sage-600 dark:text-sage-400 uppercase tracking-wider'>{t('settings.categories.account')}</p>
-                    <p className='font-serif text-xl font-bold text-earth-900 dark:text-earth-100 mt-1'>{user?.email}</p>
-                    <div className='flex items-center justify-center sm:justify-start gap-2 mt-2 text-sage-600 dark:text-sage-400'>
-                       <svg xmlns='http://www.w3.org/2000/svg' className='size-5' viewBox='0 0 20 20' fill='currentColor'>
-                        <path fillRule='evenodd' d='M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z' clipRule='evenodd' />
-                      </svg>
-                      <span className='text-sm font-medium'>{t('backupSync.loggedIn.syncedSecure')}</span>
-                    </div>
-                    {!user?.googleId && (
-                      <div className='mt-3'>
-                        <ConnectGoogleButton />
-                      </div>
-                    )}
-                    {user?.googleId && (
-                      <p className='text-xs text-sage-600 dark:text-sage-400 mt-1'>Google connected</p>
-                    )}
-                  </div>
-                  <button
-                    type='button'
-                    onClick={() => onNavigate?.('backup-sync')}
-                    className='px-6 py-2.5 bg-sage-600 text-white text-sm font-semibold hover:bg-sage-700 transition-colors'
-                  >
-                    {t('nav.backupSync')} →
-                  </button>
-                </div>
-              ) : (
-                <div className='text-center py-6'>
-                  <div className='size-16 bg-earth-100 dark:bg-earth-700 rounded flex items-center justify-center text-earth-400 mx-auto mb-4'>
-                     <svg xmlns='http://www.w3.org/2000/svg' className='size-8' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
-                      <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z' />
-                    </svg>
-                  </div>
-                  <h4 className='font-serif text-lg font-semibold text-earth-900 dark:text-earth-100 mb-2'>{t('backupSync.notLoggedIn.title')}</h4>
-                  <p className='text-earth-600 dark:text-earth-400 mb-8 max-w-md mx-auto'>{t('backupSync.notLoggedIn.description')}</p>
-                  <div className='flex flex-col sm:flex-row justify-center gap-4'>
-                    <button
-                      type='button'
-                      onClick={() => onNavigate?.('backup-sync')}
-                      className='px-6 py-2.5 bg-sage-600 text-white text-sm font-semibold hover:bg-sage-700 transition-colors'
-                    >
-                      {t('nav.backupSync')} →
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        );
+        return <CloudAccountSection onNavigate={onNavigate} />;
       default:
         return null;
     }
@@ -466,103 +408,23 @@ const SettingsPageContent: React.FC<SettingsPageProps> = ({ onNavigate }) => {
       />
 
       <div className='lg:grid lg:grid-cols-12 lg:gap-x-12'>
-        {/* Sidebar Navigation */}
-        <aside className='py-6 lg:col-span-3'>
-          <nav className='space-y-8'>
-            {categories.map((category) => (
-              <div key={category.id}>
-                <h3 className='px-4 text-xs font-semibold text-earth-500 dark:text-earth-400 uppercase tracking-wider mb-3'>
-                  {category.label}
-                </h3>
-                <div className='space-y-1'>
-                  {category.sections.map((sectionId) => {
-                    const section = sections.find((s) => s.id === sectionId);
-                    if (!section) return null;
-                    const isActive = activeSection === sectionId;
-                    return (
-                      <button
-                        type="button"
-                        key={sectionId}
-                        onClick={() => dispatch({ type: 'SET_FIELD', field: 'activeSection', value: sectionId })}
-                        className={`group flex items-center px-4 py-3 text-sm font-semibold w-full transition-colors ${
-                          isActive
-                            ? 'bg-sage-600 text-white'
-                            : 'text-earth-600 dark:text-earth-400 hover:bg-earth-100 dark:hover:bg-earth-800 hover:text-earth-900 dark:hover:text-earth-100'
-                        }`}
-                      >
-                        <span className={`mr-3 text-xl ${isActive ? 'text-white' : 'text-earth-400 group-hover:text-earth-600'}`}>
-                          {section.icon}
-                        </span>
-                        <span className='truncate'>{section.label}</span>
-                        {isActive && (
-                          <span className='ml-auto'>
-                             <svg xmlns='http://www.w3.org/2000/svg' className='size-4' viewBox='0 0 20 20' fill='currentColor'>
-                              <path fillRule='evenodd' d='M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z' clipRule='evenodd' />
-                            </svg>
-                          </span>
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            ))}
-          </nav>
-        </aside>
+        <SettingsSidebar
+          categories={categories}
+          sections={sections}
+          activeSection={activeSection}
+          onSelectSection={(sectionId) => dispatch({ type: 'SET_FIELD', field: 'activeSection', value: sectionId })}
+        />
 
         {/* Main Content Area */}
         <div className='lg:col-span-9 mt-8 lg:mt-0'>
-          {/* Header for current section */}
-          <Card className={`mb-8 overflow-hidden ${activeSection === 'atsSearch' ? 'border-l-2 border-l-sage-600' : ''}`}>
-            <div className='p-8'>
-              <div className='flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-4'>
-                <div className='flex items-center gap-4'>
-                  <div className='size-14 bg-earth-50 dark:bg-earth-700 rounded flex items-center justify-center text-3xl'>
-                    {currentSection?.icon}
-                  </div>
-                  <div>
-                    <h2 className='font-serif text-2xl font-semibold text-earth-900 dark:text-earth-100'>
-                      {currentSection?.label}
-                    </h2>
-                    <p className='text-sm text-earth-600 dark:text-earth-400 mt-1'>
-                      {currentSection?.description}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Save/Reset Controls for desktop inside the header */}
-                <div className='hidden sm:flex items-center gap-4'>
-                  <button
-                    type='button'
-                    onClick={handleReset}
-                    className='px-5 py-2.5 text-sm font-semibold text-earth-600 dark:text-earth-400 bg-white dark:bg-earth-800 border border-earth-200 dark:border-earth-700 hover:bg-earth-50 dark:hover:bg-earth-700 transition-colors'
-                  >
-                    {t('settings.resetDefault')}
-                  </button>
-                  <button
-                    type='button'
-                    onClick={handleSave}
-                    disabled={!hasChanges}
-                    className={`inline-flex items-center px-6 py-2.5 border border-transparent text-sm font-semibold transition-colors ${
-                      hasChanges
-                        ? 'bg-sage-600 text-white hover:bg-sage-700'
-                        : 'bg-earth-200 text-earth-400 dark:text-earth-500 cursor-not-allowed'
-                    }`}
-                  >
-                    {t('settings.saveChanges')}
-                  </button>
-                </div>
-              </div>
-              {hasChanges && (
-                <div className='flex items-center gap-2 mt-4 px-4 py-2 bg-terracotta-50 dark:bg-terracotta-900/20 border border-terracotta-200 dark:border-terracotta-700 w-fit'>
-                   <div className='size-2 rounded-full bg-terracotta-500' />
-                   <span className='text-xs text-terracotta-700 dark:text-terracotta-400 font-semibold uppercase tracking-wider'>
-                    {t('settings.unsavedChanges')}
-                  </span>
-                </div>
-              )}
-            </div>
-          </Card>
+          {currentSection && (
+            <SettingsSectionHeader
+              section={currentSection}
+              hasChanges={hasChanges}
+              onSave={handleSave}
+              onReset={handleReset}
+            />
+          )}
 
           {/* Section Content Card */}
           <Card className='overflow-hidden min-h-[500px]'>
@@ -578,7 +440,7 @@ const SettingsPageContent: React.FC<SettingsPageProps> = ({ onNavigate }) => {
                 onClick={handleSave}
                 disabled={!hasChanges}
                 className={`w-full flex justify-center py-4 px-4 text-sm font-semibold transition-colors ${
-                  hasChanges ? 'bg-sage-600 text-white hover:bg-sage-700' : 'bg-earth-200 text-earth-400 dark:text-earth-500'
+                  hasChanges ? 'bg-primary text-primary-foreground hover:bg-primary/90' : 'bg-muted text-muted-foreground'
                 }`}
               >
                 {t('settings.saveChanges')}
@@ -586,7 +448,7 @@ const SettingsPageContent: React.FC<SettingsPageProps> = ({ onNavigate }) => {
               <button
                 type='button'
                 onClick={handleReset}
-                className='w-full flex justify-center p-4 text-sm font-semibold text-earth-700 dark:text-earth-300 bg-white dark:bg-earth-800 hover:bg-earth-50 dark:hover:bg-earth-700 transition-colors'
+                className='w-full flex justify-center p-4 text-sm font-semibold text-muted-foreground bg-card hover:bg-muted transition-colors'
               >
                 {t('settings.resetDefault')}
               </button>
@@ -594,7 +456,7 @@ const SettingsPageContent: React.FC<SettingsPageProps> = ({ onNavigate }) => {
         </div>
       </div>
 
-      <div className='mt-20 border-t border-earth-200 dark:border-earth-700 pt-10'>
+      <div className='mt-20 border-t border-border pt-10'>
         <Footer version={packageJson.version} />
       </div>
 

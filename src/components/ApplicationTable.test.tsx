@@ -1,11 +1,9 @@
-// src/components/ApplicationTable.test.tsx
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import ApplicationTable from './ApplicationTable';
 import type { JobApplication } from '../types/applications';
 import type { TableColumn } from '../types/table';
 
-// Mock DOMPurify
 vi.mock('dompurify', () => ({
   default: {
     sanitize: (html: string) => html,
@@ -56,7 +54,6 @@ describe('ApplicationTable', () => {
       />
     );
 
-    // Empty state appears in both mobile and desktop views, so use getAllByText
     const emptyMessages = screen.getAllByText(/Use the "\+ Add Entry" button to start tracking your applications!/i);
     expect(emptyMessages.length).toBeGreaterThan(0);
   });
@@ -72,16 +69,13 @@ describe('ApplicationTable', () => {
       />
     );
 
-    // Check table exists
     const table = screen.getByTestId('application-table');
     expect(table).toBeInTheDocument();
 
-    // Check table headers
     defaultColumns.forEach(column => {
       expect(screen.getByRole('columnheader', { name: column.label })).toBeInTheDocument();
     });
 
-    // Check table data (should exist in both views, but we're checking desktop view)
     expect(screen.getAllByText('Software Engineer').length).toBeGreaterThan(0);
     expect(screen.getAllByText('Tech Corp').length).toBeGreaterThan(0);
     expect(screen.getAllByText('Applied').length).toBeGreaterThan(0);
@@ -98,7 +92,6 @@ describe('ApplicationTable', () => {
       />
     );
 
-    // Mobile card view should exist (even if hidden on desktop via CSS)
     const mobileCardContainer = container.querySelector('.md\\:hidden');
     expect(mobileCardContainer).toBeInTheDocument();
     
@@ -117,7 +110,6 @@ describe('ApplicationTable', () => {
       />
     );
 
-    // Find the table row and click on a cell
     const row = screen.getByTestId('row-1');
     const firstCell = row.querySelector('td');
     expect(firstCell).toBeInTheDocument();
@@ -163,7 +155,6 @@ describe('ApplicationTable', () => {
     fireEvent.mouseEnter(row);
 
     await waitFor(() => {
-      // Delete button may appear in both mobile and desktop, so check it exists
       const deleteButtons = screen.getAllByTestId('delete-btn-1');
       expect(deleteButtons.length).toBeGreaterThan(0);
     });
@@ -180,11 +171,9 @@ describe('ApplicationTable', () => {
       />
     );
 
-    // Mobile cards always show delete button (use getAllByText since there might be multiple Delete buttons)
     const deleteButtons = screen.getAllByText('Delete');
     expect(deleteButtons.length).toBeGreaterThan(0);
     
-    // At least one should be in the mobile card
     const mobileCardDelete = deleteButtons.find(btn => 
       btn.closest('[data-testid^="card-"]') !== null
     );
@@ -202,12 +191,10 @@ describe('ApplicationTable', () => {
       />
     );
 
-    // Use the first delete button (mobile card always shows it)
     await waitFor(() => {
       const deleteButtons = screen.getAllByTestId('delete-btn-1');
       expect(deleteButtons.length).toBeGreaterThan(0);
       
-      // Click the first delete button
       fireEvent.click(deleteButtons[0]);
     });
 
@@ -228,7 +215,6 @@ describe('ApplicationTable', () => {
       />
     );
 
-    // Link may appear in both mobile and desktop views
     const links = screen.getAllByRole('link');
     const jobLink = links.find(link => link.getAttribute('href') === 'https://example.com/job');
     expect(jobLink).toBeInTheDocument();
@@ -250,7 +236,6 @@ describe('ApplicationTable', () => {
     const card = container.querySelector('[data-testid="card-1"]');
     expect(card).toBeInTheDocument();
     
-    // These should exist in both views, so we check they're present
     expect(screen.getAllByText('Software Engineer').length).toBeGreaterThan(0);
     expect(screen.getAllByText('Tech Corp').length).toBeGreaterThan(0);
   });
@@ -266,7 +251,6 @@ describe('ApplicationTable', () => {
       />
     );
 
-    // Status should be visible in mobile card (may appear multiple times)
     expect(screen.getAllByText('Applied').length).toBeGreaterThan(0);
   });
 
@@ -292,7 +276,6 @@ describe('ApplicationTable', () => {
       />
     );
 
-    // These may appear in both mobile and desktop views
     expect(screen.getAllByText('Software Engineer').length).toBeGreaterThan(0);
     expect(screen.getAllByText('Product Manager').length).toBeGreaterThan(0);
     expect(screen.getAllByText('Tech Corp').length).toBeGreaterThan(0);
@@ -321,7 +304,6 @@ describe('ApplicationTable', () => {
       />
     );
 
-    // Should render without errors (may appear in both views)
     expect(screen.getAllByText('Software Engineer').length).toBeGreaterThan(0);
   });
 });

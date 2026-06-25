@@ -8,7 +8,6 @@ import type { JobApplication } from '../types/applications';
 import type { JobOpportunity } from '../types/opportunities';
 import type { MergeData, MergeStrategy } from './mergeData';
 
-// ── Helpers ────────────────────────────────────────────────────────────────
 
 function makeApp(overrides: Partial<JobApplication> & { id: string; position: string; company: string }): JobApplication {
   return {
@@ -30,7 +29,6 @@ function makeOpp(overrides: Partial<JobOpportunity> & { id: string; position: st
   return { ...overrides };
 }
 
-// ── mergeApplications ─────────────────────────────────────────────────────
 
 describe('mergeApplications', () => {
   it('returns empty array when both inputs are empty', () => {
@@ -98,7 +96,6 @@ describe('mergeApplications', () => {
       ],
     });
     const result = mergeApplications([local], [cloud]);
-    // Cloud has a newer timeline event (2024-04-20 > 2024-02-15)
     expect(result[0].position).toBe('Dev (Cloud)');
   });
 
@@ -122,8 +119,6 @@ describe('mergeApplications', () => {
   });
 
   it('compares dates numerically instead of lexicographically', () => {
-    // String comparison would wrongly pick '09/2024' > '2024-12' due to char ordering
-    // Numeric comparison via parseLocalDate handles this correctly
     const local = makeApp({ id: '1', position: 'Local', company: 'A', applicationDate: '2024-12-01' });
     const cloud = makeApp({ id: '1', position: 'Cloud', company: 'A', applicationDate: '2024-06-01' });
     const result = mergeApplications([local], [cloud]);
@@ -164,7 +159,6 @@ describe('mergeApplications', () => {
   });
 });
 
-// ── mergeOpportunities ─────────────────────────────────────────────────────
 
 describe('mergeOpportunities', () => {
   it('returns empty array when both inputs are empty', () => {
@@ -214,8 +208,6 @@ describe('mergeOpportunities', () => {
   });
 
   it('compares dates numerically instead of lexicographically', () => {
-    // String sort would wrongly favor '2024-06' < '2024-12' only by accident,
-    // but non-ISO or mixed formats break lexicographic ordering
     const local = makeOpp({ id: '1', position: 'Local', company: 'A', link: 'http://a', capturedDate: '2024-12-01', postedDate: '2024-12-01' });
     const cloud = makeOpp({ id: '1', position: 'Cloud', company: 'A', link: 'http://a', capturedDate: '2024-06-01', postedDate: '2024-06-01' });
     const result = mergeOpportunities([local], [cloud]);
@@ -223,7 +215,6 @@ describe('mergeOpportunities', () => {
   });
 });
 
-// ── resolveMerge ───────────────────────────────────────────────────────────
 
 describe('resolveMerge', () => {
   const localData: MergeData = {

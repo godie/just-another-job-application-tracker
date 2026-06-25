@@ -59,19 +59,12 @@ describe('KanbanView', () => {
     fireEvent.click(screen.getByText(/Fullstack Eng/));
     expect(onSelectJob).toHaveBeenCalledWith(applications[0]);
 
-    // Click delete button - this opens the confirmation dialog
     const deleteButtons = screen.getAllByRole('button', { name: /Delete/i });
-    // The first one is the delete button in the card
     fireEvent.click(deleteButtons[0]);
     
-    // Wait for dialog to appear and find the confirm button
-    // The dialog has a title "Delete Application"
     expect(screen.getByText(/Delete Application/i)).toBeInTheDocument();
     
-    // Find the confirm button in the dialog (it should be the one with text "Delete" that's not the card button)
     const confirmButtons = screen.getAllByRole('button', { name: /Delete/i });
-    // The confirm button in the dialog should be different from the card delete button
-    // Click the last one which should be in the dialog
     const confirmButton = confirmButtons[confirmButtons.length - 1];
     fireEvent.click(confirmButton);
     
@@ -79,7 +72,6 @@ describe('KanbanView', () => {
   });
 
   test('groups Interviewing applications by timeline sub-status', () => {
-    // Use future dates to ensure they are detected as upcoming events
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const futureDate1 = new Date(today);
@@ -136,12 +128,10 @@ describe('KanbanView', () => {
 
     render(<KanbanView applications={applications} />);
 
-    // Should create sub-columns for Interviewing status
     expect(screen.getByText('Interviewing - First Contact')).toBeInTheDocument();
     expect(screen.getByText('Interviewing - Code Challenge')).toBeInTheDocument();
     expect(screen.getByText('Interviewing - Technical Interview')).toBeInTheDocument();
     
-    // Applications should be in their respective sub-columns
     expect(screen.getByText(/Frontend Dev/)).toBeInTheDocument();
     expect(screen.getByText(/Backend Dev/)).toBeInTheDocument();
     expect(screen.getByText(/Fullstack Dev/)).toBeInTheDocument();
@@ -159,7 +149,6 @@ describe('KanbanView', () => {
 
     render(<KanbanView applications={applications} />);
 
-    // Should show regular "Interviewing" column if no timeline
     expect(screen.getByText('Interviewing')).toBeInTheDocument();
     expect(screen.getByText(/DevOps Eng/)).toBeInTheDocument();
   });

@@ -1,6 +1,7 @@
-import React from 'react';
+import * as React from 'react';
+import { cn } from '@/lib/utils';
 
-type StatCardVariant = 'earth' | 'sage' | 'earth-muted';
+type StatCardVariant = 'default' | 'sage' | 'terracotta' | 'muted';
 
 interface StatCardProps {
   title: string;
@@ -11,57 +12,68 @@ interface StatCardProps {
   className?: string;
 }
 
-const variantStyles: Record<StatCardVariant, string> = {
-  earth: 'bg-earth-50 dark:bg-earth-800 border-earth-400 dark:border-earth-500',
-  sage: 'bg-sage-50 dark:bg-sage-900/30 border-sage-400 dark:border-sage-600',
-  'earth-muted': 'bg-earth-100 dark:bg-earth-700/50 border-earth-500 dark:border-earth-500',
+const variantStyles: Record<StatCardVariant, { text: string; value: string }> = {
+  default: {
+    text: 'text-muted-foreground',
+    value: 'text-foreground',
+  },
+  sage: {
+    text: 'text-primary',
+    value: 'text-primary dark:text-primary-foreground',
+  },
+  terracotta: {
+    text: 'text-destructive',
+    value: 'text-destructive dark:text-destructive-foreground',
+  },
+  muted: {
+    text: 'text-muted-foreground',
+    value: 'text-foreground',
+  },
 };
 
-const titleStyles: Record<StatCardVariant, string> = {
-  earth: 'text-earth-500 dark:text-earth-400',
-  sage: 'text-sage-600 dark:text-sage-400',
-  'earth-muted': 'text-earth-600 dark:text-earth-300',
-};
-
-const valueStyles: Record<StatCardVariant, string> = {
-  earth: 'text-earth-900 dark:text-earth-50',
-  sage: 'text-sage-800 dark:text-sage-100',
-  'earth-muted': 'text-earth-800 dark:text-earth-100',
-};
-
-export const StatCard: React.FC<StatCardProps> = ({
+const StatCard: React.FC<StatCardProps> = ({
   title,
   value,
-  variant = 'earth',
+  variant = 'default',
   isLarge = false,
   description,
   className = '',
 }) => {
+  const styles = variantStyles[variant];
+
   return (
     <div
-      className={`border-l-2 transition-colors duration-300 ${
-        isLarge ? 'col-span-2 p-4 sm:p-6' : 'p-4 sm:p-5'
-      } ${variantStyles[variant]} ${className}`}
+      className={cn(
+        'group relative',
+        isLarge ? 'col-span-2' : '',
+        className
+      )}
     >
       <p
-        className={`font-medium tracking-wide uppercase ${
-          isLarge ? 'text-sm' : 'text-xs'
-        } ${titleStyles[variant]}`}
+        className={cn(
+          'font-medium tracking-[0.15em] uppercase',
+          isLarge ? 'text-xs md:text-sm' : 'text-[11px]',
+          styles.text
+        )}
       >
         {title}
       </p>
       <p
-        className={`font-serif font-bold leading-none ${
-          isLarge ? 'text-5xl sm:text-6xl mt-2' : 'text-3xl mt-1'
-        } ${valueStyles[variant]}`}
+        className={cn(
+          'font-serif font-bold leading-none tracking-tight tabular-nums',
+          isLarge
+            ? 'text-6xl sm:text-7xl md:text-8xl mt-2'
+            : 'text-4xl sm:text-5xl mt-1.5',
+          styles.value
+        )}
       >
         {value}
       </p>
       {description && (
-        <p className="mt-0.5 text-xs text-earth-500 dark:text-earth-400">
-          {description}
-        </p>
+        <p className="mt-1 text-xs text-muted-foreground">{description}</p>
       )}
     </div>
   );
 };
+
+export { StatCard };

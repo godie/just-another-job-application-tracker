@@ -1,0 +1,12 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`LandingPage > matches LandingPage structural snapshot 1`] = `
+{
+  "ctaButtons": 2,
+  "decorativeSvgs": 3,
+  "featureCards": 6,
+  "footerSections": 1,
+  "navLinks": 2,
+  "roadmapItems": 4,
+}
+`;

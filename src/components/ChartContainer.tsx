@@ -1,4 +1,3 @@
-// src/components/ChartContainer.tsx
 import React, { memo } from 'react';
 
 type AccentColor = 'sage' | 'terracotta' | 'earth';
@@ -11,19 +10,19 @@ interface ChartContainerProps {
 
 const accentColorMap: Record<AccentColor, { border: string; title: string; bg: string }> = {
   sage: {
-    border: 'border-l-sage-500',
-    title: 'text-sage-700 dark:text-sage-300',
-    bg: 'bg-sage-50 dark:bg-sage-900/20',
+    border: 'border-l-primary',
+    title: 'text-primary',
+    bg: 'bg-primary/5 dark:bg-primary/10',
   },
   terracotta: {
-    border: 'border-l-terracotta-500',
-    title: 'text-terracotta-700 dark:text-terracotta-300',
-    bg: 'bg-terracotta-50 dark:bg-terracotta-900/20',
+    border: 'border-l-destructive',
+    title: 'text-destructive',
+    bg: 'bg-destructive/5 dark:bg-destructive/10',
   },
   earth: {
-    border: 'border-l-earth-500',
-    title: 'text-earth-700 dark:text-earth-300',
-    bg: 'bg-earth-50 dark:bg-earth-900/20',
+    border: 'border-l-border',
+    title: 'text-foreground',
+    bg: 'bg-muted',
   },
 };
 
@@ -31,11 +30,11 @@ const ChartContainer: React.FC<ChartContainerProps> = ({ title, accentColor = 's
   const colors = accentColorMap[accentColor];
 
   return (
-    <div className={`bg-white dark:bg-earth-800 border border-earth-200 dark:border-earth-700 border-l-2 ${colors.border} rounded-lg overflow-hidden`}>
-      <div className={`px-6 py-4 ${colors.bg} border-b border-earth-200 dark:border-earth-700`}>
+    <div className={`bg-card border border-border border-l-2 ${colors.border} rounded-lg overflow-hidden`}>
+      <div className={`px-6 py-4 ${colors.bg} border-b border-border`}>
         <h3 className={`font-serif text-lg font-semibold ${colors.title}`}>{title}</h3>
       </div>
-      <div className='p-6 text-earth-700 dark:text-earth-300'>
+      <div className='p-6 text-foreground'>
         {children}
       </div>
     </div>
@@ -53,16 +52,16 @@ interface ChartTooltipProps {
 
 const tooltipColorMap: Record<AccentColor, { accent: string; badge: string }> = {
   sage: {
-    accent: 'text-sage-600 dark:text-sage-400',
-    badge: 'bg-sage-100 dark:bg-sage-900/40 text-sage-700 dark:text-sage-300',
+    accent: 'text-primary',
+    badge: 'bg-primary/5 dark:bg-primary/10 text-primary',
   },
   terracotta: {
-    accent: 'text-terracotta-600 dark:text-terracotta-400',
-    badge: 'bg-terracotta-100 dark:bg-terracotta-900/40 text-terracotta-700 dark:text-terracotta-300',
+    accent: 'text-destructive',
+    badge: 'bg-destructive/10 dark:bg-destructive/10 text-destructive',
   },
   earth: {
-    accent: 'text-earth-600 dark:text-earth-400',
-    badge: 'bg-earth-100 dark:bg-earth-900/40 text-earth-700 dark:text-earth-300',
+    accent: 'text-muted-foreground',
+    badge: 'bg-muted text-foreground',
   },
 };
 
@@ -70,9 +69,9 @@ export const ChartTooltip: React.FC<ChartTooltipProps> = ({ name, value, unit, a
   const colors = tooltipColorMap[accentColor];
 
   return (
-    <div className='bg-white dark:bg-earth-800 border border-earth-200 dark:border-earth-700 rounded-lg px-4 py-3 shadow-lg'>
+    <div className='bg-card border border-border rounded-lg px-4 py-3 shadow-lg'>
       <p className={`text-sm font-semibold ${colors.accent}`}>{name}</p>
-      <p className='text-lg font-bold text-earth-900 dark:text-earth-100 mt-1'>
+      <p className='text-lg font-bold text-foreground mt-1'>
         {value}{' '}
         <span className={`text-xs font-medium px-2 py-0.5 rounded ${colors.badge}`}>{unit}</span>
       </p>

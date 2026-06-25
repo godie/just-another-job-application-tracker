@@ -4,10 +4,6 @@ import { render, screen } from '@testing-library/react';
 import MainLayout from '../../layouts/MainLayout';
 import { AlertProvider } from '../../components/AlertProvider';
 
-/**
- * Accessibility tests for MainLayout component
- * These tests verify landmark navigation and skip links
- */
 const renderWithProvider = (ui: React.ReactElement) => {
   return render(<AlertProvider>{ui}</AlertProvider>);
 };
@@ -20,7 +16,6 @@ describe('MainLayout Accessibility', () => {
       </MainLayout>
     );
 
-    // The skip link is visually hidden but present in DOM
     const skipLink = screen.getByText('Skip to main content');
     expect(skipLink).toBeInTheDocument();
     expect(skipLink.tagName.toLowerCase()).toBe('a');

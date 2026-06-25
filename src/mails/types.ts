@@ -4,9 +4,7 @@ export interface RawEmail {
   id: string;
   headers: Record<string, string>;
   body: string;
-  /** Gmail-style internal date (ms). */
   internalDate?: string;
-  /** ISO date string (preferred by normalize). */
   date?: string;
 }
 
@@ -82,7 +80,6 @@ export const QUERIES = {
     )`,
 } as const;
 
-/** Spanish Gmail search queries for job application emails. */
 export const QUERIES_ES = {
   application_submitted: (daysBack: number = 30) =>
     `in:inbox newer_than:${daysBack}d -in:chats ${NO_PROMOTIONS_AND_SOCIAL_MEDIA} (
@@ -152,14 +149,12 @@ export interface EmailProvider {
   normalize(raw: RawEmail): Email;
 }
 
-/** One proposed new application from a "application submitted" email (for manual review). */
 export interface ProposedAddition {
   id: string;
   data: Omit<JobApplication, 'id'>;
   source: { subject: string; date: string };
 }
 
-/** One proposed timeline event to add to an existing application (for manual review). */
 export interface ProposedUpdate {
   id: string;
   applicationId: string;
@@ -169,14 +164,12 @@ export interface ProposedUpdate {
   source: { subject: string; date: string };
 }
 
-/** Result of scan without applying: user can review and then apply selected. */
 export interface ScanPreview {
   proposedAdditions: ProposedAddition[];
   proposedUpdates: ProposedUpdate[];
   emails: Email[];
 }
 
-/** Result of applying selected additions/updates. */
 export interface ApplyResult {
   added: number;
   updated: number;

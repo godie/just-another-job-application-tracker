@@ -1,13 +1,9 @@
-// src/storage/opportunities.ts
 import { OPPORTUNITIES_STORAGE_KEY } from '../utils/constants';
 import { generateId } from '../utils/id';
 import { sanitizeObject } from '../utils/url';
 import type { JobOpportunity } from '../types/opportunities';
 import type { JobApplication } from '../types/applications';
 
-/**
- * Obtiene las oportunidades guardadas o un array vacío si no hay datos.
- */
 export const getOpportunities = (): JobOpportunity[] => {
   try {
     const data = localStorage.getItem(OPPORTUNITIES_STORAGE_KEY);
@@ -16,7 +12,6 @@ export const getOpportunities = (): JobOpportunity[] => {
     const rawOpportunities = JSON.parse(data);
     if (!Array.isArray(rawOpportunities)) return [];
 
-    // ⚡ Bolt: Centralized sanitization on load to avoid expensive runtime sanitization in components.
     const opportunities = rawOpportunities.map(opp =>
       typeof opp === 'object' && opp !== null
         ? sanitizeObject(opp as Record<string, unknown>)
@@ -30,9 +25,6 @@ export const getOpportunities = (): JobOpportunity[] => {
   }
 };
 
-/**
- * Guarda el array de oportunidades en localStorage.
- */
 export const saveOpportunities = (opportunities: JobOpportunity[]): void => {
   try {
     localStorage.setItem(OPPORTUNITIES_STORAGE_KEY, JSON.stringify(opportunities));
@@ -41,7 +33,6 @@ export const saveOpportunities = (opportunities: JobOpportunity[]): void => {
   }
 };
 
-/** Map opportunity jobType (e.g. "Remote", "Hybrid") to JobApplication workType */
 function toWorkType(jobType?: string): JobApplication['workType'] | undefined {
   if (!jobType) return undefined;
   const normalized = jobType.toLowerCase().replace(/\s+/g, '-');
@@ -51,10 +42,6 @@ function toWorkType(jobType?: string): JobApplication['workType'] | undefined {
   return undefined;
 }
 
-/**
- * Convierte una oportunidad en una aplicación de trabajo.
- * Crea un JobApplication con status "Applied" y fecha actual.
- */
 export const convertOpportunityToApplication = (opportunity: JobOpportunity): JobApplication => {
   const now = new Date().toISOString().split('T')[0];
 

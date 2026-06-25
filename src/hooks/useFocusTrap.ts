@@ -1,9 +1,5 @@
 import { useEffect, type RefObject } from 'react';
 
-/**
- * Custom hook to trap focus within a container element.
- * Useful for modals and dialogs to ensure accessibility.
- */
 const useFocusTrap = (ref: RefObject<HTMLElement | null>, isActive: boolean = true) => {
   useEffect(() => {
     if (!isActive || !ref.current) return;
@@ -15,7 +11,6 @@ const useFocusTrap = (ref: RefObject<HTMLElement | null>, isActive: boolean = tr
     const last = elements[elements.length - 1];
     const previous = document.activeElement as HTMLElement;
 
-    // Focus the first element when active
     const frameId = requestAnimationFrame(() => {
       if (document.activeElement !== first) first?.focus();
     });

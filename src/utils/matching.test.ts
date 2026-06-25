@@ -1,4 +1,3 @@
-// src/utils/matching.test.ts
 
 import { describe, it, expect } from 'vitest';
 import type { JobApplication, InterviewEvent } from '../types/applications';
@@ -16,7 +15,6 @@ import {
   batchCalculateScores,
 } from './matching';
 
-// ─── Helpers ────────────────────────────────────────────────────────────────
 
 function makeApp(overrides: Partial<JobApplication> = {}): JobApplication {
   return {
@@ -76,7 +74,6 @@ function makeProfile(overrides: Partial<UserMatchProfile> = {}): UserMatchProfil
   };
 }
 
-// ─── extractSeniorityFromTitle ────────────────────────────────────────────
 
 describe('extractSeniorityFromTitle', () => {
   it('detects junior roles', () => {
@@ -112,7 +109,6 @@ describe('extractSeniorityFromTitle', () => {
   });
 });
 
-// ─── calculateRoleSimilarity ────────────────────────────────────────────────
 
 describe('calculateRoleSimilarity', () => {
   it('returns 100 for exact match', () => {
@@ -143,7 +139,6 @@ describe('calculateRoleSimilarity', () => {
   });
 });
 
-// ─── extractSkillsFromDescription ─────────────────────────────────────────
 
 describe('extractSkillsFromDescription', () => {
   it('finds common tech skills', () => {
@@ -176,7 +171,6 @@ describe('extractSkillsFromDescription', () => {
   });
 });
 
-// ─── calculateSkillsMatch ─────────────────────────────────────────────────
 
 describe('calculateSkillsMatch', () => {
   it('returns 100 when all profile skills are found', () => {
@@ -204,7 +198,6 @@ describe('calculateSkillsMatch', () => {
   });
 });
 
-// ─── calculateCompensationFit ─────────────────────────────────────────────
 
 describe('calculateCompensationFit', () => {
   const range = { min: 100000, max: 160000, currency: 'USD' };
@@ -236,7 +229,6 @@ describe('calculateCompensationFit', () => {
   });
 });
 
-// ─── isWorkTypeMatch ──────────────────────────────────────────────────────
 
 describe('isWorkTypeMatch', () => {
   it('returns 100 for matching work type', () => {
@@ -262,7 +254,6 @@ describe('isWorkTypeMatch', () => {
   });
 });
 
-// ─── buildProfileFromHistory ──────────────────────────────────────────────
 
 describe('buildProfileFromHistory', () => {
   it('builds profile from empty applications', () => {
@@ -348,7 +339,6 @@ describe('buildProfileFromHistory', () => {
   });
 });
 
-// ─── calculateDeterministicScore ──────────────────────────────────────────
 
 describe('calculateDeterministicScore', () => {
   it('returns a complete JobMatchResult structure', () => {
@@ -408,7 +398,6 @@ describe('calculateDeterministicScore', () => {
   });
 });
 
-// ─── batchCalculateScores ─────────────────────────────────────────────────
 
 describe('batchCalculateScores', () => {
   it('scores multiple opportunities', () => {

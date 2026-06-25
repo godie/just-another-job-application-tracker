@@ -29,7 +29,7 @@ export const ProposedAdditionItem: React.FC<ProposedAdditionItemProps> = ({
       className={`group flex items-start gap-4 p-4 rounded-xl border transition-all duration-200 ${
         duplicate
           ? 'bg-amber-50/50 border-amber-200 dark:bg-amber-900/10 dark:border-amber-900/30'
-          : 'bg-white dark:bg-earth-800 border-earth-100 dark:border-earth-700 hover:border-sage-300 dark:hover:border-sage-500/50'
+          : 'bg-card border-border dark:border-border hover:border-primary/20 dark:hover:border-primary/50'
       }`}
     >
       <input
@@ -39,14 +39,14 @@ export const ProposedAdditionItem: React.FC<ProposedAdditionItemProps> = ({
         onChange={onToggle}
         disabled={disabled}
         aria-label={`Select addition: ${addition.data.position} at ${addition.data.company}`}
-        className='mt-1 size-5 text-sage-600 border-earth-300 dark:border-earth-600 rounded focus:ring-sage-500 disabled:opacity-30'
+        className='mt-1 size-5 text-primary border-border rounded focus:ring-ring disabled:opacity-30'
       />
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between mb-1">
-          <label htmlFor={addition.id} className='font-bold text-earth-900 dark:text-earth-100 cursor-pointer group-hover:text-sage-600 dark:group-hover:text-sage-400 transition-colors'>
-            {addition.data.position} <span className='text-earth-400 font-normal mx-1'>@</span> {addition.data.company}
+          <label htmlFor={addition.id} className='font-bold text-foreground cursor-pointer group-hover:text-primary dark:group-hover:text-primary transition-colors'>
+            {addition.data.position} <span className='text-muted-foreground font-normal mx-1'>@</span> {addition.data.company}
           </label>
-          <span className='text-[10px] font-medium px-2 py-0.5 rounded-full bg-earth-100 dark:bg-earth-700 text-earth-500 dark:text-earth-400 uppercase tracking-wider'>
+          <span className='text-[10px] font-medium px-2 py-0.5 rounded-full bg-muted text-muted-foreground uppercase tracking-wider'>
             {addition.data.platform}
           </span>
         </div>
@@ -59,13 +59,13 @@ export const ProposedAdditionItem: React.FC<ProposedAdditionItemProps> = ({
               </svg>
               {t('settings.emailScan.duplicateWarning')}
             </div>
-            <label className="flex items-center gap-2 text-xs text-earth-600 dark:text-earth-400 cursor-pointer">
+            <label className="flex items-center gap-2 text-xs text-muted-foreground cursor-pointer">
               <input
                 type="checkbox"
                 checked={isForced}
                 onChange={(e) => onToggleForce(e.target.checked)}
                 aria-label={t('settings.emailScan.addAnyway')}
-                className='size-3.5 rounded border-earth-300 dark:border-earth-600 text-sage-600'
+                className='size-3.5 rounded border-border text-primary'
               />
               {t('settings.emailScan.addAnyway')}
             </label>
@@ -73,10 +73,10 @@ export const ProposedAdditionItem: React.FC<ProposedAdditionItemProps> = ({
         )}
 
         <div className="flex items-center gap-3 mt-1">
-          <p className="text-xs text-earth-500 dark:text-earth-400 truncate flex-1">
+          <p className="text-xs text-muted-foreground truncate flex-1">
             {addition.source.subject}
           </p>
-          <span className="text-xs text-earth-400 dark:text-earth-500 whitespace-nowrap">
+          <span className="text-xs text-muted-foreground whitespace-nowrap">
             {formatDate(addition.source.date)}
           </span>
         </div>

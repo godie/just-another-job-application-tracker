@@ -1,10 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { parseLocalDate } from '../utils/date';
 
-/**
- * Hook for locale-aware date formatting.
- * Uses parseLocalDate to prevent timezone shifts and i18next for the current language.
- */
 export function useFormatDate() {
   const { i18n } = useTranslation();
 

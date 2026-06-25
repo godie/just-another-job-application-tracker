@@ -47,7 +47,6 @@ const CSVActions: React.FC = () => {
         const importedApps = parseCSV(text);
 
         if (importedApps.length > 0) {
-          // Merge with existing apps, checking for duplicates by ID
           const existingIds = new Set(applications.map(app => app.id));
           const uniqueNewApps = importedApps.filter(app => !existingIds.has(app.id));
 
@@ -62,7 +61,6 @@ const CSVActions: React.FC = () => {
         console.error('Error importing CSV:', error);
         showError(t('csv.importError'));
       }
-      // Reset input
       if (fileInputRef.current) fileInputRef.current.value = '';
     };
     reader.readAsText(file);
@@ -73,7 +71,7 @@ const CSVActions: React.FC = () => {
       <button
         type="button"
         onClick={handleExport}
-        className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-earth-700 dark:text-earth-200 bg-white dark:bg-earth-800 border border-earth-300 dark:border-earth-600 rounded hover:bg-earth-100 dark:hover:bg-earth-700 transition-colors"
+        className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-foreground bg-card border border-border rounded hover:bg-muted transition-colors"
         title={t('csv.export')}
       >
         <HiDownload className="size-4" />
@@ -83,7 +81,7 @@ const CSVActions: React.FC = () => {
       <button
         type="button"
         onClick={handleImportClick}
-        className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-earth-700 dark:text-earth-200 bg-white dark:bg-earth-800 border border-earth-300 dark:border-earth-600 rounded hover:bg-earth-100 dark:hover:bg-earth-700 transition-colors"
+        className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-foreground bg-card border border-border rounded hover:bg-muted transition-colors"
         title={t('csv.import')}
       >
         <HiUpload className="size-4" />

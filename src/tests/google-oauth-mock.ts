@@ -1,4 +1,3 @@
-// src/tests/google-oauth-mock.ts
 import { vi } from 'vitest';
 
 vi.mock('@react-oauth/google', () => ({

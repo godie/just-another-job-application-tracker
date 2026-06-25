@@ -1,29 +1,48 @@
-import React from 'react';
+import * as React from 'react';
+import { cn } from '@/lib/utils';
+import { cva, type VariantProps } from 'class-variance-authority';
 
-export interface BadgeProps extends React.HTMLAttributes<HTMLDivElement> {
-  variant?: 'default' | 'secondary' | 'outline' | 'danger' | 'success' | 'warning' | 'sage';
-}
+const badgeVariants = cva(
+  'inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2',
+  {
+    variants: {
+      variant: {
+        default:
+          'border-transparent bg-primary text-primary-foreground shadow hover:bg-primary/80',
+        secondary:
+          'border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80',
+        outline: 'text-foreground',
+        danger:
+          'border-transparent bg-destructive text-destructive-foreground shadow hover:bg-destructive/80',
+        success:
+          'border-transparent bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300',
+        warning:
+          'border-transparent bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300',
+        sage: 'border-transparent bg-primary/10 text-primary dark:bg-primary/10 dark:text-primary',
+      },
+    },
+    defaultVariants: {
+      variant: 'default',
+    },
+  }
+);
 
-export const Badge: React.FC<BadgeProps> = ({
-  className = '',
-  variant = 'default',
-  ...props
-}) => {
-  const baseStyles = 'inline-block px-2 py-1 text-xs font-semibold rounded transition-colors';
+export interface BadgeProps
+  extends React.ComponentProps<'div'>,
+    VariantProps<typeof badgeVariants> {}
 
-  const variants = {
-    default: 'bg-earth-200 text-earth-800 dark:bg-earth-700 dark:text-earth-100',
-    secondary: 'bg-earth-100 text-earth-700 dark:bg-earth-600 dark:text-earth-200',
-    outline: 'border border-earth-300 text-earth-700 dark:border-earth-600 dark:text-earth-300 bg-transparent',
-    danger: 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300',
-    success: 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300',
-    warning: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300',
-    sage: 'bg-sage-100 text-sage-800 dark:bg-sage-900/40 dark:text-sage-300',
+const Badge = ({
+  className, variant, ref, ...props
+}: BadgeProps) => {
+    return (
+      <div
+        ref={ref}
+        className={cn(badgeVariants({ variant }), className)}
+        {...props}
+      />
+    );
   };
-
-  const combinedClassName = `${baseStyles} ${variants[variant]} ${className}`;
-
-  return <div className={combinedClassName} {...props} />;
-};
-
 Badge.displayName = 'Badge';
+
+// eslint-disable-next-line react-refresh/only-export-components
+export { Badge, badgeVariants };

@@ -52,7 +52,7 @@ const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate, onSuccess }) =>
   };
 
   return (
-    <div className='min-h-screen flex items-center justify-center bg-earth-50 dark:bg-earth-900 px-4 py-12 sm:px-6 lg:px-8'>
+    <div className='min-h-screen flex items-center justify-center bg-background dark:bg-muted px-4 py-12 sm:px-6 lg:px-8'>
       <Card className='max-w-md w-full p-6 sm:p-10'>
         {/* Header */}
         <div className='mb-8'>
@@ -60,20 +60,20 @@ const RegisterPage: React.FC<RegisterPageProps> = ({ onNavigate, onSuccess }) =>
              <img src='/jajat-logo.png' alt='JAJAT Logo' className='h-12 w-auto' />
           </div>
           <div className='flex items-center gap-3 mt-6 mb-4'>
-            <div className='w-8 h-0.5 bg-sage-500'></div>
-            <span className='text-sage-600 dark:text-sage-400 text-sm font-medium tracking-wider uppercase'>
+            <div className='w-8 h-0.5 bg-primary/80'></div>
+            <span className='text-primary text-sm font-medium tracking-wider uppercase'>
               Get Started
             </span>
           </div>
-          <h1 className='font-serif text-3xl font-semibold text-earth-900 dark:text-earth-50'>
+          <h1 className='font-serif text-3xl font-semibold text-foreground'>
             Create your account
           </h1>
-          <p className='mt-2 text-sm text-earth-600 dark:text-earth-400'>
+          <p className='mt-2 text-sm text-muted-foreground'>
             Already have an account?{' '}
             <button
               type='button'
               onClick={() => onNavigate('login')}
-              className='font-medium text-sage-600 hover:text-sage-700 dark:text-sage-400 dark:hover:text-sage-300 focus:outline-none focus:underline'
+              className='font-medium text-primary hover:text-primary dark:text-primary dark:hover:text-primary focus:outline-none focus:underline'
             >
               Sign in instead
             </button>

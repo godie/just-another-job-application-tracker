@@ -1,4 +1,3 @@
-/** @type {import('tailwindcss').Config} */
 export default {
   content: [
     "./index.html",
@@ -8,7 +7,6 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Natural/Organic palette
         earth: {
           50: '#faf8f5',
           100: '#f5f0e8',

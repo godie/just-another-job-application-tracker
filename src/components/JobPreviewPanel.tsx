@@ -1,4 +1,3 @@
-// src/components/JobPreviewPanel.tsx
 import React, { useEffect, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useApplicationsStore } from '../stores/applicationsStore';
@@ -31,15 +30,12 @@ const JobPreviewPanel: React.FC<JobPreviewPanelProps> = ({
   const applications = useApplicationsStore((state) => state.applications);
   const panelRef = useRef<HTMLElement>(null);
 
-  // Trap focus within the panel for keyboard accessibility
   useFocusTrap(panelRef);
 
   const application = applications.find((app) => app.id === jobId);
 
-  // Navigate to full job details page
   const handleOpenFullDetails = useCallback(() => {
     if (!application) return;
-    // Update URL with jobId before navigating
     if (typeof window !== 'undefined') {
       const url = new URL(window.location.href);
       url.searchParams.set('page', 'job-details');
@@ -49,7 +45,6 @@ const JobPreviewPanel: React.FC<JobPreviewPanelProps> = ({
     onNavigate?.('job-details');
   }, [application, onNavigate]);
 
-  // Close on Escape key
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
@@ -60,7 +55,6 @@ const JobPreviewPanel: React.FC<JobPreviewPanelProps> = ({
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [onClose]);
 
-  // Prevent body scroll when panel is open
   useEffect(() => {
     const originalOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
@@ -79,16 +73,16 @@ const JobPreviewPanel: React.FC<JobPreviewPanelProps> = ({
           aria-hidden="true"
         />
         {/* Empty Panel */}
-        <div className="fixed right-0 top-0 bottom-0 w-full sm:w-[480px] bg-white dark:bg-earth-800 shadow-2xl z-50 flex flex-col">
+        <div className="fixed right-0 top-0 bottom-0 w-full sm:w-[480px] bg-card shadow-2xl z-50 flex flex-col">
           <div className="flex-1 flex items-center justify-center p-6 text-center">
             <div>
               <div className="text-4xl mb-3">🔍</div>
-              <p className="text-earth-600 dark:text-earth-400 text-sm">
+              <p className="text-muted-foreground text-sm">
                 {t('jobPreview.notFound', 'Application not found.')}
               </p>
             </div>
           </div>
-          <div className="p-4 border-t border-earth-200 dark:border-earth-700">
+          <div className="p-4 border-t border-border">
             <Button variant="ghost" onClick={onClose} className="w-full">
               {t('common.close', 'Close')}
             </Button>
@@ -128,26 +122,28 @@ const JobPreviewPanel: React.FC<JobPreviewPanelProps> = ({
       {/* Panel */}
       <aside
         ref={panelRef}
-        className="fixed right-0 top-0 bottom-0 w-full sm:w-[480px] bg-white dark:bg-earth-800 shadow-2xl z-50 flex flex-col animate-slide-in-right"
+        className="fixed right-0 top-0 bottom-0 w-full sm:w-[480px] bg-card shadow-2xl z-50 flex flex-col animate-slide-in-right"
         aria-label={t('jobPreview.panelTitle', 'Job Preview')}
         data-testid="preview-panel"
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-earth-200 dark:border-earth-700 bg-sage-50 dark:bg-sage-900/20 flex-shrink-0">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-earth-600 dark:text-earth-400">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-border bg-primary/10 flex-shrink-0">
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
             {t('jobPreview.preview', 'Job Preview')}
           </h2>
-          <button
+          <Button
             type="button"
+            variant="ghost"
+            size="sm"
             onClick={onClose}
-            className="p-1.5 rounded hover:bg-earth-200 dark:hover:bg-earth-700 transition-colors text-earth-500 dark:text-earth-400"
+            className="p-1.5 text-muted-foreground hover:text-foreground"
             aria-label={t('common.close', 'Close')}
             data-testid="preview-close"
           >
             <svg className="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
-          </button>
+          </Button>
         </div>
 
         {/* Scrollable Content */}
@@ -156,11 +152,11 @@ const JobPreviewPanel: React.FC<JobPreviewPanelProps> = ({
           <button
             type="button"
             onClick={handleOpenFullDetails}
-            className="group inline-flex items-center gap-1.5 text-xs font-mono text-sage-600 dark:text-sage-400 hover:text-sage-700 dark:hover:text-sage-300 hover:underline transition-colors"
+            className="group inline-flex items-center gap-1.5 text-xs font-mono text-primary hover:text-primary/80 hover:underline transition-colors"
             aria-label={t('jobPreview.openFullDetails', 'Open full job details')}
             data-testid="preview-job-id"
           >
-            <span className="bg-earth-100 dark:bg-earth-700 px-2 py-0.5 rounded group-hover:bg-sage-100 dark:group-hover:bg-sage-900/40 transition-colors">
+            <span className="bg-secondary px-2 py-0.5 rounded group-hover:bg-primary/10 transition-colors">
               {application.id}
             </span>
             <svg className="size-3.5 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -170,10 +166,10 @@ const JobPreviewPanel: React.FC<JobPreviewPanelProps> = ({
 
           {/* Title & Company */}
           <div>
-            <h3 className="text-xl font-serif font-bold text-earth-900 dark:text-earth-100 leading-tight break-words">
+            <h3 className="text-xl font-bold text-foreground leading-tight break-words">
               {application.position}
             </h3>
-            <p className="text-base text-earth-600 dark:text-earth-400 mt-1">{application.company}</p>
+            <p className="text-base text-muted-foreground mt-1">{application.company}</p>
           </div>
 
           {/* Status Badge */}
@@ -189,64 +185,64 @@ const JobPreviewPanel: React.FC<JobPreviewPanelProps> = ({
           <dl className="grid grid-cols-2 gap-x-4 gap-y-3">
             {application.location && (
               <div>
-                <dt className="text-[11px] font-semibold uppercase tracking-wide text-earth-400 dark:text-earth-500">
+                <dt className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground/70">
                   {t('jobPreview.location', 'Location')}
                 </dt>
-                <dd className="text-sm text-earth-900 dark:text-earth-100 mt-0.5">{application.location}</dd>
+                <dd className="text-sm text-foreground mt-0.5">{application.location}</dd>
               </div>
             )}
             {application.workType && (
               <div>
-                <dt className="text-[11px] font-semibold uppercase tracking-wide text-earth-400 dark:text-earth-500">
+                <dt className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground/70">
                   {t('jobPreview.workType', 'Work Type')}
                 </dt>
-                <dd className="text-sm text-earth-900 dark:text-earth-100 mt-0.5 capitalize">{application.workType}</dd>
+                <dd className="text-sm text-foreground mt-0.5 capitalize">{application.workType}</dd>
               </div>
             )}
             {application.salary && (
               <div>
-                <dt className="text-[11px] font-semibold uppercase tracking-wide text-earth-400 dark:text-earth-500">
+                <dt className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground/70">
                   {t('jobPreview.salary', 'Salary')}
                 </dt>
-                <dd className="text-sm text-earth-900 dark:text-earth-100 mt-0.5">{application.salary}</dd>
+                <dd className="text-sm text-foreground mt-0.5">{application.salary}</dd>
               </div>
             )}
             {application.platform && (
               <div>
-                <dt className="text-[11px] font-semibold uppercase tracking-wide text-earth-400 dark:text-earth-500">
+                <dt className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground/70">
                   {t('jobPreview.platform', 'Platform')}
                 </dt>
-                <dd className="text-sm text-earth-900 dark:text-earth-100 mt-0.5">{application.platform}</dd>
+                <dd className="text-sm text-foreground mt-0.5">{application.platform}</dd>
               </div>
             )}
           </dl>
 
           {/* Dates */}
           <div className="space-y-2">
-            <h4 className="text-[11px] font-semibold uppercase tracking-wide text-earth-400 dark:text-earth-500">
+            <h4 className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground/70">
               {t('jobPreview.dates', 'Dates')}
             </h4>
-            <div className="bg-earth-50 dark:bg-earth-700/50 rounded p-3 space-y-1.5 text-sm">
+            <div className="bg-muted rounded p-3 space-y-1.5 text-sm">
               {application.applicationDate && (
                 <div className="flex justify-between">
-                  <span className="text-earth-500 dark:text-earth-400">{t('jobPreview.applied', 'Applied')}</span>
-                  <span className="font-medium text-earth-900 dark:text-earth-100">{formatDate(application.applicationDate)}</span>
+                  <span className="text-muted-foreground">{t('jobPreview.applied', 'Applied')}</span>
+                  <span className="font-medium text-foreground">{formatDate(application.applicationDate)}</span>
                 </div>
               )}
               {application.interviewDate && (
                 <div className="flex justify-between">
-                  <span className="text-earth-500 dark:text-earth-400">{t('jobPreview.interview', 'Interview')}</span>
-                  <span className="font-medium text-earth-900 dark:text-earth-100">{formatDate(application.interviewDate)}</span>
+                  <span className="text-muted-foreground">{t('jobPreview.interview', 'Interview')}</span>
+                  <span className="font-medium text-foreground">{formatDate(application.interviewDate)}</span>
                 </div>
               )}
               {application.followUpDate && (
                 <div className="flex justify-between">
-                  <span className="text-earth-500 dark:text-earth-400">{t('jobPreview.followUp', 'Follow-up')}</span>
-                  <span className="font-medium text-earth-900 dark:text-earth-100">{formatDate(application.followUpDate)}</span>
+                  <span className="text-muted-foreground">{t('jobPreview.followUp', 'Follow-up')}</span>
+                  <span className="font-medium text-foreground">{formatDate(application.followUpDate)}</span>
                 </div>
               )}
               {!application.applicationDate && !application.interviewDate && !application.followUpDate && (
-                <p className="text-earth-400 dark:text-earth-500 italic text-sm">
+                <p className="text-muted-foreground/70 italic text-sm">
                   {t('jobPreview.noDates', 'No dates recorded')}
                 </p>
               )}
@@ -256,24 +252,24 @@ const JobPreviewPanel: React.FC<JobPreviewPanelProps> = ({
           {/* Contact */}
           {application.contactName && (
             <div>
-              <h4 className="text-[11px] font-semibold uppercase tracking-wide text-earth-400 dark:text-earth-500 mb-1">
+              <h4 className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground/70 mb-1">
                 {t('jobPreview.contact', 'Contact')}
               </h4>
-              <p className="text-sm text-earth-900 dark:text-earth-100">{application.contactName}</p>
+              <p className="text-sm text-foreground">{application.contactName}</p>
             </div>
           )}
 
           {/* Link */}
           {application.link && (
             <div>
-              <h4 className="text-[11px] font-semibold uppercase tracking-wide text-earth-400 dark:text-earth-500 mb-1">
+              <h4 className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground/70 mb-1">
                 {t('jobPreview.jobLink', 'Job Link')}
               </h4>
               <a
                 href={sanitizeUrl(application.link)}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-sm text-sage-600 dark:text-sage-400 hover:underline break-all"
+                className="text-sm text-primary hover:underline break-all"
               >
                 {application.link}
               </a>
@@ -283,10 +279,10 @@ const JobPreviewPanel: React.FC<JobPreviewPanelProps> = ({
           {/* Notes Excerpt */}
           {notesExcerpt && (
             <div>
-              <h4 className="text-[11px] font-semibold uppercase tracking-wide text-earth-400 dark:text-earth-500 mb-1">
+              <h4 className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground/70 mb-1">
                 {t('jobPreview.notes', 'Notes')}
               </h4>
-              <p className="text-sm text-earth-600 dark:text-earth-400 whitespace-pre-line break-words">
+              <p className="text-sm text-muted-foreground whitespace-pre-line break-words">
                 {notesExcerpt}
               </p>
             </div>
@@ -294,7 +290,7 @@ const JobPreviewPanel: React.FC<JobPreviewPanelProps> = ({
 
           {/* Meta counts */}
           {(timelineCount > 0 || customFieldsCount > 0) && (
-            <div className="flex items-center gap-3 text-xs text-earth-500 dark:text-earth-400">
+            <div className="flex items-center gap-3 text-xs text-muted-foreground">
               {timelineCount > 0 && (
                 <span>
                   {t('jobPreview.timelineEvents', '{{count}} timeline event(s)', { count: timelineCount })}
@@ -310,7 +306,7 @@ const JobPreviewPanel: React.FC<JobPreviewPanelProps> = ({
         </div>
 
         {/* Footer Actions */}
-        <div className="px-6 py-4 border-t border-earth-200 dark:border-earth-700 bg-earth-50 dark:bg-earth-900/50 flex items-center gap-3 flex-shrink-0">
+        <div className="px-6 py-4 border-t border-border bg-muted flex items-center gap-3 flex-shrink-0">
           <Button
             variant="outline"
             size="sm"

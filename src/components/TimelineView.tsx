@@ -1,4 +1,3 @@
-// src/components/TimelineView.tsx
 import React, { useState, useMemo, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelection } from '../hooks/useSelection';
@@ -17,7 +16,17 @@ interface TimelineViewProps {
 
 const ITEMS_PER_PAGE = 10;
 
-// Memoized to prevent re-renders when filteredApplications reference changes but content is the same
+const TIMELINE_STATUS_COLORS: Record<string, string> = {
+  completed: 'bg-green-500',
+  scheduled: 'bg-blue-500',
+  cancelled: 'bg-gray-400',
+  pending: 'bg-yellow-500',
+};
+
+const getStatusColor = (status: string): string => {
+  return TIMELINE_STATUS_COLORS[status] || 'bg-gray-400';
+};
+
 const TimelineView: React.FC<TimelineViewProps> = ({ applications, onSelectJob, onEdit, onDelete }) => {
   const { t } = useTranslation();
   const { formatLocaleDate } = useFormatDate();
@@ -35,20 +44,7 @@ const TimelineView: React.FC<TimelineViewProps> = ({ applications, onSelectJob, 
     return t(`insights.interviewTypes.${type}`, type);
   };
 
-  const getStatusColor = (status: string): string => {
-    const colors: Record<string, string> = {
-      'completed': 'bg-green-500',
-      'scheduled': 'bg-blue-500',
-      'cancelled': 'bg-gray-400',
-      'pending': 'bg-yellow-500',
-    };
-    return colors[status] || 'bg-gray-400';
-  };
-
-  // Pagination logic
   const totalPages = Math.max(Math.ceil(applications.length / ITEMS_PER_PAGE), 1);
-  // Derive the effective page: clamp currentPage within valid range.
-  // When data shrinks and currentPage exceeds totalPages, this returns 1.
   const effectivePage = useMemo(() => {
     return Math.min(currentPage, totalPages);
   }, [currentPage, totalPages]);
@@ -60,13 +56,12 @@ const TimelineView: React.FC<TimelineViewProps> = ({ applications, onSelectJob, 
 
   const goToPage = (page: number) => {
     setCurrentPage(page);
-    // Scroll to top of timeline view
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   if (applications.length === 0) {
     return (
-      <div className='bg-white dark:bg-earth-800 rounded border border-dashed border-earth-300 dark:border-earth-600 p-8 text-center text-earth-500 dark:text-earth-400'>
+      <div className='bg-card rounded border border-dashed border-border p-8 text-center text-muted-foreground'>
         <p className="font-medium">{t('timeline.noApplications')}</p>
         <p className="text-sm mt-2">{t('timeline.startAdding')}</p>
       </div>
@@ -77,8 +72,6 @@ const TimelineView: React.FC<TimelineViewProps> = ({ applications, onSelectJob, 
     <div className="space-y-5">
       {paginatedApplications.map((app) => {
         const isExpanded = expandedApps.isSelected(app.id);
-        // ⚡ Bolt: Using pre-calculated sortedTimeline and nextEvent from useFilteredApplications
-        // to avoid expensive sorting and finding operations on every render cycle.
         const sortedEvents = app.sortedTimeline || [];
         const nextEvent = app.nextEvent;
 
@@ -107,7 +100,7 @@ const TimelineView: React.FC<TimelineViewProps> = ({ applications, onSelectJob, 
             type="button"
             onClick={() => goToPage(effectivePage - 1)}
             disabled={effectivePage === 1}
-            className="px-4 py-2 text-sm font-medium text-earth-700 dark:text-earth-300 bg-white dark:bg-earth-800 border border-earth-300 dark:border-earth-600 rounded hover:bg-earth-50 dark:hover:bg-earth-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
+            className="px-4 py-2 text-sm font-medium text-foreground bg-card border border-border rounded hover:bg-accent disabled:opacity-50 disabled:cursor-not-allowed transition"
             aria-label={t('common.previous')}
           >
             {t('common.previous')}
@@ -119,10 +112,9 @@ const TimelineView: React.FC<TimelineViewProps> = ({ applications, onSelectJob, 
                 type="button"
                 key={page}
                 onClick={() => goToPage(page)}
-                className={`px-3 py-2 text-sm font-medium rounded transition ${
-                  effectivePage === page
-                    ? 'bg-sage-600 text-white'
-                    : 'text-earth-700 dark:text-earth-300 bg-white dark:bg-earth-800 border border-earth-300 dark:border-earth-600 hover:bg-earth-50 dark:hover:bg-earth-700'
+                className={`px-3 py-2 text-sm font-medium rounded transition ${                    effectivePage === page
+                    ? 'bg-primary text-primary-foreground'
+                    : 'text-foreground bg-card border border-border hover:bg-accent'
                 }`}
                 aria-label={t('common.goToPage', { page })}
                 aria-current={effectivePage === page ? 'page' : undefined}
@@ -136,7 +128,7 @@ const TimelineView: React.FC<TimelineViewProps> = ({ applications, onSelectJob, 
             type="button"
             onClick={() => goToPage(effectivePage + 1)}
             disabled={effectivePage === totalPages}
-            className="px-4 py-2 text-sm font-medium text-earth-700 dark:text-earth-300 bg-white dark:bg-earth-800 border border-earth-300 dark:border-earth-600 rounded hover:bg-earth-50 dark:hover:bg-earth-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
+            className="px-4 py-2 text-sm font-medium text-foreground bg-card border border-border rounded hover:bg-accent disabled:opacity-50 disabled:cursor-not-allowed transition"
             aria-label={t('common.next')}
           >
             {t('common.next')}

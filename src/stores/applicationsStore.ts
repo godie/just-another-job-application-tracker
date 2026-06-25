@@ -1,4 +1,3 @@
-// src/stores/applicationsStore.ts
 import { create } from 'zustand';
 import type { JobApplication } from '../types/applications';
 import { generateId } from '../utils/id';
@@ -9,7 +8,6 @@ interface ApplicationsState {
   applications: JobApplication[];
   isLoading: boolean;
   
-  // Actions
   loadApplications: () => void;
   addApplication: (application: Omit<JobApplication, 'id'>) => void;
   updateApplication: (id: string, updates: Partial<JobApplication>) => void;
@@ -18,10 +16,6 @@ interface ApplicationsState {
   refreshApplications: () => void;
 }
 
-/**
- * Zustand store for managing job applications.
- * Persistence is handled by the storage layer (src/storage/applications.ts)
- */
 export const useApplicationsStore = create<ApplicationsState>()((set) => ({
   applications: [],
   isLoading: false,
@@ -29,12 +23,8 @@ export const useApplicationsStore = create<ApplicationsState>()((set) => ({
   loadApplications: () => {
     set({ isLoading: true });
     try {
-      // ⚡ Bolt: getApplications() already performs migration in-memory.
-      // We just need to check if any migration occurred to persist it once.
       const apps = getApplications();
       
-      // ⚡ Bolt: Check if migration is needed by looking for legacy format in storage.
-      // This is a one-time operation during loadApplications.
       const rawData = localStorage.getItem(STORAGE_KEY);
       const needsMigration = rawData && !rawData.includes('"timeline":');
 
@@ -75,7 +65,6 @@ export const useApplicationsStore = create<ApplicationsState>()((set) => ({
 
   deleteApplication: (id) => {
     set((state) => {
-      // Mark as deleted instead of removing
       const updated = state.applications.map((app) =>
         app.id === id ? { ...app, status: 'Deleted' } : app
       );

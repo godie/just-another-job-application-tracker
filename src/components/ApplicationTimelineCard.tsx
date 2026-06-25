@@ -36,46 +36,47 @@ const ApplicationTimelineCard: React.FC<ApplicationTimelineCardProps> = ({
   const { t } = useTranslation();
 
   return (
-    <div className='bg-white dark:bg-earth-800 rounded border border-earth-200 dark:border-earth-700 overflow-hidden hover:border-sage-300 dark:hover:border-sage-600 transition'>
+    <div className='bg-card rounded border border-border overflow-hidden hover:border-primary/30 transition'>
       {/* Header - Accordion Toggle */}
-      <div
-        className='bg-sage-50 dark:bg-sage-900/30 px-4 sm:px-6 py-4 border-b border-earth-200 dark:border-earth-700 cursor-pointer'
-        onClick={() => onSelectJob?.(app)}
-      >
+      <div className='bg-primary/5 dark:bg-primary/10 px-4 sm:px-6 py-4 border-b border-border'>
         <div className='flex items-center justify-between'>
-          <div className='flex-1 min-w-0'>
+          <button
+            type='button'
+            className='flex-1 min-w-0 text-left'
+            onClick={() => onSelectJob?.(app)}
+          >
             <div className='flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-3'>
               <div className='space-y-1 flex-1 min-w-0'>
-                <h3 className='text-lg sm:text-xl font-semibold text-earth-900 dark:text-earth-100 truncate'>{app.position}</h3>
+                <h3 className='text-lg sm:text-xl font-semibold text-foreground truncate'>{app.position}</h3>
                 <div className='flex items-center gap-2 flex-wrap'>
-                  <p className='text-earth-600 dark:text-earth-300 font-medium text-sm sm:text-base truncate'>{app.company}</p>
+                  <p className='text-muted-foreground font-medium text-sm sm:text-base truncate'>{app.company}</p>
                   <Badge variant={getBadgeVariantForStatus(app.status)}>
                     {app.translatedStatus || app.status}
                   </Badge>
                 </div>
               </div>
               {nextEvent && !isExpanded && (
-                <div className='flex items-center gap-2 bg-white dark:bg-earth-700 px-3 sm:px-4 py-1.5 sm:py-2 rounded border border-earth-200 dark:border-earth-600 flex-shrink-0'>
-                  <span className='inline-block size-2 bg-sage-500 rounded-full animate-pulse'></span>
-                  <span className='text-xs sm:text-sm font-medium text-earth-700 dark:text-earth-300'>
+                <div className='flex items-center gap-2 bg-background px-3 sm:px-4 py-1.5 sm:py-2 rounded border border-border flex-shrink-0'>
+                  <span className='inline-block size-2 bg-primary rounded-full animate-pulse'></span>
+                  <span className='text-xs sm:text-sm font-medium text-foreground'>
                     {t('timeline.nextEvent', { date: formatDate(nextEvent.date) })}
                   </span>
                 </div>
               )}
             </div>
-          </div>
+          </button>
           <button
             type="button"
             onClick={(e) => {
               e.stopPropagation();
               onToggleExpand();
             }}
-            className='ml-4 flex-shrink-0 p-2 rounded hover:bg-white dark:hover:bg-earth-700 transition-colors'
+            className='ml-4 flex-shrink-0 p-2 rounded hover:bg-background transition-colors'
             aria-label={isExpanded ? t('timeline.collapse') : t('timeline.expand')}
             aria-expanded={isExpanded}
           >
             <svg
-              className={`size-5 text-earth-600 dark:text-earth-300 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+              className={`size-5 text-muted-foreground transition-transform ${isExpanded ? 'rotate-180' : ''}`}
               fill='none'
               viewBox='0 0 24 24'
               stroke='currentColor'
@@ -99,12 +100,12 @@ const ApplicationTimelineCard: React.FC<ApplicationTimelineCardProps> = ({
           </div>
 
           {/* Actions */}
-          <div className='px-4 sm:px-6 py-4 bg-earth-50 dark:bg-earth-900 border-t border-earth-200 dark:border-earth-700 flex flex-col gap-2 sm:flex-row sm:justify-end'>
+          <div className='px-4 sm:px-6 py-4 bg-muted border-t border-border flex flex-col gap-2 sm:flex-row sm:justify-end'>
             {onEdit && (
               <button
                 type="button"
                 onClick={() => onEdit(app)}
-                className='px-4 py-2 text-sm font-medium text-sage-700 dark:text-sage-300 bg-sage-100 dark:bg-sage-900 hover:bg-sage-200 dark:hover:bg-sage-800 rounded transition'
+                className='px-4 py-2 text-sm font-medium text-primary bg-primary/5 dark:bg-primary/10 hover:bg-primary/10 dark:hover:bg-primary/20 rounded transition'
               >
                 {t('common.edit')}
               </button>
@@ -113,7 +114,7 @@ const ApplicationTimelineCard: React.FC<ApplicationTimelineCardProps> = ({
               <button
                 type="button"
                 onClick={() => onDelete?.(app)}
-                className='px-4 py-2 text-sm font-medium text-terracotta-700 dark:text-terracotta-300 bg-terracotta-100 dark:bg-terracotta-900 hover:bg-terracotta-200 dark:hover:bg-terracotta-800 rounded transition'
+                className='px-4 py-2 text-sm font-medium text-destructive bg-destructive/5 dark:bg-destructive/10 hover:bg-destructive/10 dark:hover:bg-destructive/20 rounded transition'
               >
                 {t('common.delete')}
               </button>

@@ -1,4 +1,3 @@
-// src/components/sync/SyncNavIcon.test.tsx
 import { describe, it, expect } from 'vitest';
 import { render } from '@testing-library/react';
 import SyncNavIcon from './SyncNavIcon';

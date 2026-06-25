@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import type { JobApplication, InterviewEvent } from '../types/applications';
 import type { ApplicationWithMetadata } from '../types/applications';
 import { parseLocalDate } from '../utils/date';
+import { Button } from './ui/Button';
 
 interface CalendarViewProps {
   applications: ApplicationWithMetadata[];
@@ -32,29 +33,14 @@ const addMonths = (date: Date, amount: number) =>
 const isSameDay = (a: Date, b: Date) =>
   a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
 
-// isToday helper removed — use isSameDay(date, referenceDate) directly in component
 
-/**
- * Formats a Date object into a YYYY-MM-DD string for map keying.
- */
 const formatDateKey = (date: Date): string =>
   `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 
-/**
- * Maps an application status to Tailwind color classes for the calendar.
- * Distinguishes events based on status:
- * - Applied: blue
- * - Interviewing: emerald (leaf)
- * - Rejected: red
- * - Hold: yellow
- * - Offer: green
- */
 const getEventStyles = (status: string, isPast: boolean) => {
   const s = status.toLowerCase();
   const baseClasses = 'w-full text-left text-[10px] sm:text-[11px] px-1.5 sm:px-2 py-1 sm:py-1.5 min-h-[44px] rounded-sm border-l-2 transition';
 
-  // Status to colors mapping with full Tailwind classes to prevent purging during production builds.
-  // ⚡ Bolt: Tailwind scans for full class names in the source code.
   const statusStyles: Record<string, { button: string; time: string; borderPast: string }> = {
     applied: {
       button: 'bg-blue-50 hover:bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 dark:text-blue-300 border-blue-500 dark:border-blue-400',
@@ -94,15 +80,15 @@ const getEventStyles = (status: string, isPast: boolean) => {
   };
 
   const config = statusStyles[s] || {
-    button: 'bg-sage-50 hover:bg-sage-100 text-sage-700 dark:bg-sage-900/30 dark:hover:bg-sage-900/50 dark:text-sage-300 border-sage-500 dark:border-sage-400',
-    time: 'text-sage-600 dark:text-sage-400 font-medium',
-    borderPast: 'border-sage-300 dark:border-sage-700',
+    button: 'bg-primary/10 hover:bg-primary/20 text-primary dark:bg-primary/20 dark:hover:bg-primary/30 dark:text-primary border-primary dark:border-primary',
+    time: 'text-primary dark:text-primary/80 font-medium',
+    borderPast: 'border-primary/40 dark:border-primary/60',
   };
 
   if (isPast) {
     return {
-      button: `${baseClasses} bg-earth-100 dark:bg-earth-700 hover:bg-earth-200 dark:hover:bg-earth-600 text-earth-700 dark:text-earth-300 ${config.borderPast}`,
-      time: 'text-earth-500 dark:text-earth-400',
+      button: `${baseClasses} bg-muted hover:bg-accent text-muted-foreground ${config.borderPast}`,
+      time: 'text-muted-foreground/70',
     };
   }
 
@@ -112,7 +98,6 @@ const getEventStyles = (status: string, isPast: boolean) => {
   };
 };
 
-// Calculate days difference between two dates (referenceDate prevents hydration mismatch)
 const getDaysDifference = (eventDate: Date, referenceDate: Date): number => {
   const ref = new Date(referenceDate);
   ref.setHours(0, 0, 0, 0);
@@ -122,7 +107,6 @@ const getDaysDifference = (eventDate: Date, referenceDate: Date): number => {
   return Math.round(diffTime / (1000 * 60 * 60 * 24));
 };
 
-// Format relative time indicator
 const formatRelativeTime = (eventDate: Date, referenceDate: Date, t: TranslateFn): string => {
   const daysDiff = getDaysDifference(eventDate, referenceDate);
 
@@ -139,7 +123,6 @@ const formatRelativeTime = (eventDate: Date, referenceDate: Date, t: TranslateFn
   }
 };
 
-// Memoized to prevent re-renders when filteredApplications reference changes but content is the same
 const CalendarView: React.FC<CalendarViewProps> = ({ applications, onSelectJob }) => {
   const { t, i18n } = useTranslation();
   const [focusMonth, setFocusMonth] = useState(() => startOfMonth(getTodayDate()));
@@ -151,17 +134,12 @@ const CalendarView: React.FC<CalendarViewProps> = ({ applications, onSelectJob }
 
     const days: CalendarDay[] = [];
 
-    // ⚡ Bolt: Pre-group events by date string (YYYY-MM-DD) for O(1) lookup.
-    // This optimization replaces a nested loop (O(42 * Apps * Events)) with a
-    // single pass over all events (O(Apps * Events)) plus a flat grid loop (O(42)).
-    // It significantly improves performance for users with many applications.
     const eventsByDate = new Map<string, { application: ApplicationWithMetadata; event: InterviewEvent }[]>();
 
     applications.forEach((application) => {
       application.timeline?.forEach((event) => {
         if (!event.date) return;
 
-        // ⚡ Bolt: Normalize date using parseLocalDate for robustness, then format as YYYY-MM-DD
         const dateObj = parseLocalDate(event.date);
         const dateKey = formatDateKey(dateObj);
 
@@ -176,7 +154,6 @@ const CalendarView: React.FC<CalendarViewProps> = ({ applications, onSelectJob }
       const current = cloneDate(startDay);
       current.setDate(startDay.getDate() + i);
 
-      // ⚡ Bolt: Use the same helper for grid date formatting
       const dateKey = formatDateKey(current);
 
       days.push({
@@ -190,38 +167,41 @@ const CalendarView: React.FC<CalendarViewProps> = ({ applications, onSelectJob }
   }, [applications, focusMonth]);
 
   return (
-    <div className='bg-white dark:bg-earth-800 border border-earth-200 dark:border-earth-700 rounded overflow-hidden'>
-      <header className='flex items-center justify-between px-4 py-3 bg-earth-50 dark:bg-earth-800 border-b border-earth-200 dark:border-earth-700 flex-wrap gap-3'>
+    <div className='bg-card border border-border rounded overflow-hidden'>
+      <header className='flex items-center justify-between px-4 py-3 bg-muted border-b border-border flex-wrap gap-3'>
         <div>
-          <h2 className='text-lg font-semibold text-earth-900 dark:text-earth-100'>{t('calendar.title')}</h2>
-          <p className='text-sm text-earth-500 dark:text-earth-400'>{formatMonthYear(focusMonth, i18n.language)}</p>
+          <h2 className='text-lg font-semibold text-foreground'>{t('calendar.title')}</h2>
+          <p className='text-sm text-muted-foreground'>{formatMonthYear(focusMonth, i18n.language)}</p>
         </div>
         <div className='flex items-center gap-2 text-sm'>
-          <button
+          <Button
             type='button'
+            variant='outline'
+            size='sm'
             onClick={() => setFocusMonth((prev) => addMonths(prev, -1))}
-            className='px-3 py-1.5 rounded border border-earth-300 dark:border-earth-600 hover:bg-earth-100 dark:hover:bg-earth-700 transition'
           >
             {t('common.previous')}
-          </button>
-          <button
+          </Button>
+          <Button
             type='button'
+            variant='primary'
+            size='sm'
             onClick={() => setFocusMonth(startOfMonth(getTodayDate()))}
-            className='px-3 py-1.5 rounded border border-sage-300 dark:border-sage-600 bg-sage-50 dark:bg-sage-900/30 text-sage-700 dark:text-sage-300 hover:bg-sage-100 dark:hover:bg-sage-900/50 transition'
           >
             {t('calendar.today')}
-          </button>
-          <button
+          </Button>
+          <Button
             type='button'
+            variant='outline'
+            size='sm'
             onClick={() => setFocusMonth((prev) => addMonths(prev, 1))}
-            className='px-3 py-1.5 rounded border border-earth-300 dark:border-earth-600 hover:bg-earth-100 dark:hover:bg-earth-700 transition'
           >
             {t('common.next')}
-          </button>
+          </Button>
         </div>
       </header>
 
-      <div className='grid grid-cols-7 bg-earth-100 dark:bg-earth-800 border-b border-earth-200 dark:border-earth-700 text-xs font-semibold uppercase tracking-wide text-earth-600 dark:text-earth-400'>
+      <div className='grid grid-cols-7 bg-muted border-b border-border text-xs font-semibold uppercase tracking-wide text-muted-foreground'>
         {WEEKDAY_LABELS.map((label, index) => (
           <div key={label} className='px-1 sm:px-3 py-2 text-center' aria-label={t(`calendar.weekdays.${label}`)}>
             <span className='sm:hidden'>{WEEKDAY_ABBREV[index]}</span>
@@ -236,26 +216,26 @@ const CalendarView: React.FC<CalendarViewProps> = ({ applications, onSelectJob }
           return (
             <div
               key={day.date.toISOString()}
-              className={`min-h-[80px] sm:min-h-[110px] px-2 sm:px-3 py-1.5 sm:py-2 border-earth-200 ${
+              className={`min-h-[80px] sm:min-h-[110px] px-2 sm:px-3 py-1.5 sm:py-2 border-border ${
                 isToday
-                  ? 'bg-sage-50 dark:bg-sage-900/30 border-2 border-sage-400 dark:border-sage-500'
+                  ? 'bg-primary/10 border-2 border-primary/60'
                   : day.isCurrentMonth
-                  ? 'bg-white dark:bg-earth-800'
-                  : 'bg-earth-50 dark:bg-earth-900 text-earth-400 dark:text-earth-600'
+                  ? 'bg-card'
+                  : 'bg-muted text-muted-foreground/60'
               }`}
             >
               <div className='flex justify-between items-center'>
                 <span
                   className={`text-xs font-semibold ${
                     isToday
-                      ? 'bg-sage-600 text-white rounded-full size-6 flex items-center justify-center'
-                      : 'text-earth-600 dark:text-earth-400'
+                      ? 'bg-primary text-primary-foreground rounded-full size-6 flex items-center justify-center'
+                      : 'text-muted-foreground'
                   }`}
                 >
                   {day.date.getDate()}
                 </span>
                 {day.events.length > 0 && (
-                  <span className='text-[11px] font-semibold text-sage-600 dark:text-sage-400'>{day.events.length}</span>
+                  <span className='text-[11px] font-semibold text-primary'>{day.events.length}</span>
                 )}
               </div>
               <ul className='mt-1 space-y-0.5 sm:space-y-1'>
@@ -288,7 +268,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({ applications, onSelectJob }
                   );
                 })}
                 {day.events.length > 3 && (
-                  <li className='text-[10px] sm:text-[11px] text-earth-500 dark:text-earth-400'>
+                  <li className='text-[10px] sm:text-[11px] text-muted-foreground/70'>
                     {t('kanban.more', { count: day.events.length - 3 })}
                   </li>
                 )}
@@ -299,7 +279,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({ applications, onSelectJob }
       </div>
 
       {applications.length === 0 && (
-        <div className='px-4 py-3 bg-earth-50 dark:bg-earth-800 border-t border-earth-200 dark:border-earth-700 text-sm text-earth-500 dark:text-earth-400'>
+        <div className='px-4 py-3 bg-muted border-t border-border text-sm text-muted-foreground'>
           {t('calendar.noApplications')}
         </div>
       )}

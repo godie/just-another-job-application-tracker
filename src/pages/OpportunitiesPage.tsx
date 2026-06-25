@@ -1,5 +1,4 @@
-// src/pages/OpportunitiesPage.tsx
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useReducer, useEffect, useMemo, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSEO } from '../seo/useSEO';
 import Footer from '../components/Footer';
@@ -28,6 +27,68 @@ interface OpportunitiesPageContentProps {
   onNavigate?: (page: PageType) => void;
 }
 
+interface OpportunitiesPageState {
+  searchTerm: string;
+  isFormOpen: boolean;
+  searchResults: UnifiedJobResult[];
+  isSearching: boolean;
+  searchError: string | null;
+  searchTotal: number;
+  searchHasMore: boolean;
+  searchErrors: Array<{ source: string; message: string }>;
+  savedSearchIds: Set<string>;
+  deleteConfirm: { isOpen: boolean; opportunity: JobOpportunity | null };
+  recentCount: number;
+}
+
+type OpportunitiesPageAction =
+  | { type: 'SET_SEARCH_TERM'; value: string }
+  | { type: 'TOGGLE_FORM'; value: boolean }
+  | { type: 'SET_SEARCH_RESULTS'; value: UnifiedJobResult[] }
+  | { type: 'SET_IS_SEARCHING'; value: boolean }
+  | { type: 'SET_SEARCH_ERROR'; value: string | null }
+  | { type: 'SET_SEARCH_TOTAL'; value: number }
+  | { type: 'SET_SEARCH_HAS_MORE'; value: boolean }
+  | { type: 'SET_SEARCH_ERRORS'; value: Array<{ source: string; message: string }> }
+  | { type: 'APPEND_SEARCH_RESULTS'; value: UnifiedJobResult[] }
+  | { type: 'APPEND_SEARCH_ERRORS'; value: Array<{ source: string; message: string }> }
+  | { type: 'ADD_SAVED_SEARCH_IDS'; value: string[] }
+  | { type: 'SET_DELETE_CONFIRM'; value: { isOpen: boolean; opportunity: JobOpportunity | null } }
+  | { type: 'SET_RECENT_COUNT'; value: number };
+
+function opportunitiesPageReducer(state: OpportunitiesPageState, action: OpportunitiesPageAction): OpportunitiesPageState {
+  switch (action.type) {
+    case 'SET_SEARCH_TERM':
+      return { ...state, searchTerm: action.value };
+    case 'TOGGLE_FORM':
+      return { ...state, isFormOpen: action.value };
+    case 'SET_SEARCH_RESULTS':
+      return { ...state, searchResults: action.value };
+    case 'SET_IS_SEARCHING':
+      return { ...state, isSearching: action.value };
+    case 'SET_SEARCH_ERROR':
+      return { ...state, searchError: action.value };
+    case 'SET_SEARCH_TOTAL':
+      return { ...state, searchTotal: action.value };
+    case 'SET_SEARCH_HAS_MORE':
+      return { ...state, searchHasMore: action.value };
+    case 'SET_SEARCH_ERRORS':
+      return { ...state, searchErrors: action.value };
+    case 'APPEND_SEARCH_RESULTS':
+      return { ...state, searchResults: [...state.searchResults, ...action.value] };
+    case 'APPEND_SEARCH_ERRORS':
+      return { ...state, searchErrors: [...state.searchErrors, ...action.value] };
+    case 'ADD_SAVED_SEARCH_IDS':
+      return { ...state, savedSearchIds: new Set<string>([...state.savedSearchIds, ...action.value]) };
+    case 'SET_DELETE_CONFIRM':
+      return { ...state, deleteConfirm: action.value };
+    case 'SET_RECENT_COUNT':
+      return { ...state, recentCount: action.value };
+    default:
+      return state;
+  }
+}
+
 const OpportunitiesPageContent: React.FC<OpportunitiesPageContentProps> = () => {
   const { t } = useTranslation();
   const { showSuccess, showError } = useAlert();
@@ -38,7 +99,6 @@ const OpportunitiesPageContent: React.FC<OpportunitiesPageContentProps> = () => 
   });
   const { formatLocaleDate } = useFormatDate();
   
-  // Use Zustand stores
   const opportunities = useOpportunitiesStore((state) => state.opportunities);
   const loadOpportunities = useOpportunitiesStore((state) => state.loadOpportunities);
   const addOpportunity = useOpportunitiesStore((state) => state.addOpportunity);
@@ -47,39 +107,32 @@ const OpportunitiesPageContent: React.FC<OpportunitiesPageContentProps> = () => 
   
   const addApplication = useApplicationsStore((state) => state.addApplication);
   
-  const [searchTerm, setSearchTerm] = useState('');
-  const [isFormOpen, setIsFormOpen] = useState(false);
-
-  // Job search state
-  const [searchResults, setSearchResults] = useState<UnifiedJobResult[]>([]);
-  const [isSearching, setIsSearching] = useState(false);
-  const [searchError, setSearchError] = useState<string | null>(null);
-  const [searchTotal, setSearchTotal] = useState(0);
-  const [searchHasMore, setSearchHasMore] = useState(false);
-  const [searchErrors, setSearchErrors] = useState<Array<{ source: string; message: string }>>([]);
-  const [searchParams, setSearchParams] = useState<JobSearchParams | null>(null);
-
-  // Track IDs of jobs already saved as opportunities
-  const [savedSearchIds, setSavedSearchIds] = useState<Set<string>>(new Set());
-  const [deleteConfirm, setDeleteConfirm] = useState<{
-    isOpen: boolean;
-    opportunity: JobOpportunity | null;
-  }>({
-    isOpen: false,
-    opportunity: null,
+  const [state, dispatch] = useReducer(opportunitiesPageReducer, {
+    searchTerm: '',
+    isFormOpen: false,
+    searchResults: [],
+    isSearching: false,
+    searchError: null,
+    searchTotal: 0,
+    searchHasMore: false,
+    searchErrors: [],
+    savedSearchIds: new Set<string>(),
+    deleteConfirm: { isOpen: false, opportunity: null },
+    recentCount: 0,
   });
+
+  const { searchTerm, isFormOpen, searchResults, isSearching, searchError, searchTotal, searchHasMore, searchErrors, savedSearchIds, deleteConfirm, recentCount } = state;
+  const searchParamsRef = useRef<JobSearchParams | null>(null);
 
   useEffect(() => {
     loadOpportunities();
     
-    // Listen for storage changes (from Chrome extension)
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === 'jobOpportunities' || e.key === null) {
         refreshOpportunities();
       }
     };
     
-    // Listen for custom event from webapp-content script
     const handleOpportunitiesUpdate = () => {
       refreshOpportunities();
     };
@@ -87,7 +140,6 @@ const OpportunitiesPageContent: React.FC<OpportunitiesPageContentProps> = () => 
     window.addEventListener('storage', handleStorageChange);
     window.addEventListener('jobOpportunitiesUpdated', handleOpportunitiesUpdate as EventListener);
     
-    // Also poll for changes (in case extension uses chrome.storage.local)
     const interval = setInterval(() => {
       refreshOpportunities();
     }, 2000);
@@ -101,13 +153,10 @@ const OpportunitiesPageContent: React.FC<OpportunitiesPageContentProps> = () => 
 
   const handleApply = (opportunity: JobOpportunity) => {
     try {
-      // Convert to application
       const application = convertOpportunityToApplication(opportunity);
       
-      // Add application using store
       addApplication(application);
       
-      // Remove opportunity (same as Delete so extension doesn't re-sync it)
       deleteOpportunity(opportunity.id);
       try {
         window.postMessage({
@@ -126,7 +175,7 @@ const OpportunitiesPageContent: React.FC<OpportunitiesPageContentProps> = () => 
   };
 
   const handleDelete = (opportunity: JobOpportunity) => {
-    setDeleteConfirm({ isOpen: true, opportunity });
+    dispatch({ type: 'SET_DELETE_CONFIRM', value: { isOpen: true, opportunity } });
   };
 
   const confirmDelete = () => {
@@ -134,9 +183,7 @@ const OpportunitiesPageContent: React.FC<OpportunitiesPageContentProps> = () => 
       const opportunity = deleteConfirm.opportunity;
       deleteOpportunity(opportunity.id);
       
-      // Also delete from chrome.storage.local via content script
       try {
-        console.log('[Web App] Sending DELETE_OPPORTUNITY message to extension:', opportunity.id);
         window.postMessage({
           type: 'DELETE_OPPORTUNITY',
           opportunityId: opportunity.id,
@@ -146,7 +193,7 @@ const OpportunitiesPageContent: React.FC<OpportunitiesPageContentProps> = () => 
       }
       
       showSuccess(t('opportunities.success.deleted', { position: opportunity.position }));
-      setDeleteConfirm({ isOpen: false, opportunity: null });
+      dispatch({ type: 'SET_DELETE_CONFIRM', value: { isOpen: false, opportunity: null } });
     }
   };
 
@@ -155,14 +202,12 @@ const OpportunitiesPageContent: React.FC<OpportunitiesPageContentProps> = () => 
       const newOpportunity = addOpportunity(opportunityData);
       showSuccess(t('opportunities.success.added', { position: opportunityData.position, company: opportunityData.company }));
       
-      // Also sync to chrome.storage.local if extension is available
       try {
         window.postMessage({
           type: 'SYNC_OPPORTUNITY',
           data: newOpportunity,
         }, window.location.origin);
       } catch (error) {
-        // Ignore if extension is not available
         console.debug('Extension not available for sync:', error);
       }
     } catch (error) {
@@ -171,55 +216,55 @@ const OpportunitiesPageContent: React.FC<OpportunitiesPageContentProps> = () => 
     }
   }, [addOpportunity, showSuccess, showError, t]);
 
-  // ── Job Search Handlers ──
   const handleJobSearch = useCallback(async (params: JobSearchParams) => {
-    setIsSearching(true);
-    setSearchError(null);
-    setSearchResults([]);
-    setSearchErrors([]);
-    setSearchParams(params);
-    setSearchTotal(0);
-    setSearchHasMore(false);
+    dispatch({ type: 'SET_IS_SEARCHING', value: true });
+    dispatch({ type: 'SET_SEARCH_ERROR', value: null });
+    dispatch({ type: 'SET_SEARCH_RESULTS', value: [] });
+    dispatch({ type: 'SET_SEARCH_ERRORS', value: [] });
+    searchParamsRef.current = params;
+    dispatch({ type: 'SET_SEARCH_TOTAL', value: 0 });
+    dispatch({ type: 'SET_SEARCH_HAS_MORE', value: false });
 
     try {
       const response = await searchJobs(params);
-      setSearchResults(response.results);
-      setSearchTotal(response.total);
-      setSearchHasMore(response.hasMore);
+      dispatch({ type: 'SET_SEARCH_RESULTS', value: response.results });
+      dispatch({ type: 'SET_SEARCH_TOTAL', value: response.total });
+      dispatch({ type: 'SET_SEARCH_HAS_MORE', value: response.hasMore });
       if (response.errors?.length) {
-        setSearchErrors(response.errors);
+        dispatch({ type: 'SET_SEARCH_ERRORS', value: response.errors });
       }
     } catch (err) {
       const error = err as { message?: string };
-      setSearchError(error.message ?? 'Search failed. Please try again.');
+      dispatch({ type: 'SET_SEARCH_ERROR', value: error.message ?? 'Search failed. Please try again.' });
     } finally {
-      setIsSearching(false);
+      dispatch({ type: 'SET_IS_SEARCHING', value: false });
     }
   }, []);
 
   const handleLoadMore = useCallback(async () => {
+    const searchParams = searchParamsRef.current;
     if (!searchParams || isSearching) return;
 
-    setIsSearching(true);
-    setSearchError(null);
+    dispatch({ type: 'SET_IS_SEARCHING', value: true });
+    dispatch({ type: 'SET_SEARCH_ERROR', value: null });
 
     try {
       const nextParams = { ...searchParams, page: searchParams.page + 1 };
-      setSearchParams(nextParams);
+      searchParamsRef.current = nextParams;
       const response = await searchJobs(nextParams);
-      setSearchResults((prev) => [...prev, ...response.results]);
-      setSearchTotal(response.total);
-      setSearchHasMore(response.hasMore);
+      dispatch({ type: 'APPEND_SEARCH_RESULTS', value: response.results });
+      dispatch({ type: 'SET_SEARCH_TOTAL', value: response.total });
+      dispatch({ type: 'SET_SEARCH_HAS_MORE', value: response.hasMore });
       if (response.errors?.length) {
-        setSearchErrors((prev) => [...prev, ...response.errors]);
+        dispatch({ type: 'APPEND_SEARCH_ERRORS', value: response.errors });
       }
     } catch (err) {
       const error = err as { message?: string };
-      setSearchError(error.message ?? 'Failed to load more results.');
+      dispatch({ type: 'SET_SEARCH_ERROR', value: error.message ?? 'Failed to load more results.' });
     } finally {
-      setIsSearching(false);
+      dispatch({ type: 'SET_IS_SEARCHING', value: false });
     }
-  }, [searchParams, isSearching]);
+  }, [isSearching]);
 
   const handleSaveAsOpportunity = useCallback((job: UnifiedJobResult) => {
     handleAddOpportunity({
@@ -232,7 +277,7 @@ const OpportunitiesPageContent: React.FC<OpportunitiesPageContentProps> = () => 
       salary: job.salary ?? undefined,
       postedDate: job.postedDate ?? undefined,
     });
-    setSavedSearchIds((prev) => new Set([...prev, job.id]));
+    dispatch({ type: 'ADD_SAVED_SEARCH_IDS', value: [job.id] });
   }, [handleAddOpportunity]);
 
   const filteredOpportunities = useMemo(() => {
@@ -247,15 +292,13 @@ const OpportunitiesPageContent: React.FC<OpportunitiesPageContentProps> = () => 
     );
   }, [opportunities, searchTerm]);
 
-  // Derived metrics — asymmetric layout
-  const [recentCount, setRecentCount] = useState(0);
   useEffect(() => {
     const oneWeekAgo = getTodayDate();
     oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-    setRecentCount(opportunities.filter(opp => {
+    dispatch({ type: 'SET_RECENT_COUNT', value: opportunities.filter(opp => {
       const captured = opp.capturedDate ? parseDateString(opp.capturedDate) : null;
       return captured && captured >= oneWeekAgo;
-    }).length);
+    }).length });
   }, [opportunities]);
 
   const remoteCount = useMemo(() => {
@@ -273,37 +316,37 @@ const OpportunitiesPageContent: React.FC<OpportunitiesPageContentProps> = () => 
         title={t('opportunities.title')}
         description={t('opportunities.subtitle')}
         actionLabel={t('opportunities.addOpportunity')}
-        onAction={() => setIsFormOpen(true)}
+        onAction={() => dispatch({ type: 'TOGGLE_FORM', value: true })}
       />
 
       {/* ── METRICS ── Asymmetric layout: Opportunities dominant, Recent & Remote compact ── */}
       <section className='grid grid-cols-2 sm:grid-cols-4 gap-4 mb-10' data-testid='opportunities-metrics'>
         {/* Dominant metric: Total Opportunities — spans 2 columns */}
-        <div className='col-span-2 bg-earth-50 dark:bg-earth-800 p-6 border-l-2 border-earth-400 dark:border-earth-500 transition-colors duration-300'>
-          <p className='text-sm font-medium text-earth-500 dark:text-earth-400 tracking-wide uppercase'>
+        <div className='col-span-2 bg-muted p-6 border-l-2 border-border transition-colors duration-300'>
+          <p className='text-sm font-medium text-muted-foreground tracking-wide uppercase'>
             {t('opportunities.metrics.total', 'Total Opportunities')}
           </p>
-          <p className='mt-2 font-serif text-5xl sm:text-6xl font-bold text-earth-900 dark:text-earth-50 leading-none'>
+          <p className='mt-2 font-serif text-5xl sm:text-6xl font-bold text-foreground leading-none'>
             {opportunities.length}
           </p>
         </div>
 
         {/* Compact metric: Recent (last 7 days) */}
-        <div className='bg-sage-50 dark:bg-sage-900/30 p-5 border-l-2 border-sage-400 dark:border-sage-600 transition-colors duration-300'>
-          <p className='text-xs font-medium text-sage-600 dark:text-sage-400 tracking-wide uppercase'>
+        <div className='bg-primary/5 dark:bg-primary/10 p-5 border-l-2 border-primary/30 dark:border-primary transition-colors duration-300'>
+          <p className='text-xs font-medium text-primary tracking-wide uppercase'>
             {t('opportunities.metrics.thisWeek', 'This Week')}
           </p>
-          <p className='mt-1 font-serif text-3xl font-bold text-sage-800 dark:text-sage-100'>
+          <p className='mt-1 font-serif text-3xl font-bold text-primary dark:text-primary-foreground'>
             {recentCount}
           </p>
         </div>
 
         {/* Compact metric: Remote */}
-        <div className='bg-earth-100 dark:bg-earth-700/50 p-5 border-l-2 border-earth-500 dark:border-earth-500 transition-colors duration-300'>
-          <p className='text-xs font-medium text-earth-600 dark:text-earth-300 tracking-wide uppercase'>
+        <div className='bg-muted p-5 border-l-2 border-border transition-colors duration-300'>
+          <p className='text-xs font-medium text-muted-foreground tracking-wide uppercase'>
             {t('opportunities.metrics.remote', 'Remote')}
           </p>
-          <p className='mt-1 font-serif text-3xl font-bold text-earth-800 dark:text-earth-100'>
+          <p className='mt-1 font-serif text-3xl font-bold text-foreground'>
             {remoteCount}
           </p>
         </div>
@@ -312,10 +355,10 @@ const OpportunitiesPageContent: React.FC<OpportunitiesPageContentProps> = () => 
       {/* ── JOB SEARCH ── ── */}
       <div className='mb-8'>
         <div className='mb-3'>
-          <h2 className='text-xl font-semibold text-earth-800 dark:text-earth-100'>
+          <h2 className='text-xl font-semibold text-foreground'>
             {t('opportunities.jobSearch.title')}
           </h2>
-          <p className='text-sm text-earth-500 dark:text-earth-400 mt-1'>
+          <p className='text-sm text-muted-foreground mt-1'>
             {t('opportunities.jobSearch.subtitle')}
           </p>
         </div>
@@ -344,7 +387,7 @@ const OpportunitiesPageContent: React.FC<OpportunitiesPageContentProps> = () => 
             opportunities={opportunities}
             filteredOpportunities={filteredOpportunities}
             searchTerm={searchTerm}
-            onSearchChange={setSearchTerm}
+            onSearchChange={(v) => dispatch({ type: 'SET_SEARCH_TERM', value: v })}
             onApply={handleApply}
             onDelete={handleDelete}
             formatDate={formatLocaleDate}
@@ -352,7 +395,7 @@ const OpportunitiesPageContent: React.FC<OpportunitiesPageContentProps> = () => 
         )}
       <OpportunityForm
         isOpen={isFormOpen}
-        onClose={() => setIsFormOpen(false)}
+        onClose={() => dispatch({ type: 'TOGGLE_FORM', value: false })}
         onSave={handleAddOpportunity}
       />
       <ConfirmDialog
@@ -366,7 +409,7 @@ const OpportunitiesPageContent: React.FC<OpportunitiesPageContentProps> = () => 
         cancelText={t('common.cancel')}
         type='danger'
         onConfirm={confirmDelete}
-        onCancel={() => setDeleteConfirm({ isOpen: false, opportunity: null })}
+        onCancel={() => dispatch({ type: 'SET_DELETE_CONFIRM', value: { isOpen: false, opportunity: null } })}
       />
       <Footer version="2.1.4" />
     </div>

@@ -1,4 +1,3 @@
-// src/components/settings/MatchingSettings.tsx
 
 import React from 'react';
 import type { MatchingPreferences } from '../../types/matching';
@@ -44,16 +43,16 @@ export const MatchingSettings: React.FC<MatchingSettingsProps> = ({
       <section>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-sage-100 dark:bg-sage-900/30 text-sage-600 dark:text-sage-400 rounded-lg">
+            <div className="p-2 bg-primary/5 dark:bg-primary/10 text-primary rounded-lg">
               <svg className="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
               </svg>
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-earth-800 dark:text-earth-100">
+              <h3 className="text-lg font-semibold text-foreground">
                 AI-Powered Job Matching
               </h3>
-              <p className="text-sm text-earth-500 dark:text-earth-400">
+              <p className="text-sm text-muted-foreground">
                 Automatically score how well opportunities match your profile
               </p>
             </div>
@@ -71,7 +70,7 @@ export const MatchingSettings: React.FC<MatchingSettingsProps> = ({
                 />
             <div
               aria-hidden="true"
-              className="w-11 h-6 bg-earth-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-sage-300 dark:peer-focus:ring-sage-800 rounded-full peer dark:bg-earth-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-earth-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-earth-600 peer-checked:bg-sage-600"
+              className="w-11 h-6 bg-muted peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-ring rounded-full peer dark:bg-muted peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-border after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-border peer-checked:bg-primary"
             />
           </label>
         </div>
@@ -80,13 +79,13 @@ export const MatchingSettings: React.FC<MatchingSettingsProps> = ({
       {preferences.enabled && (
         <>
           {/* Gemini Toggle */}
-          <section className="border-t border-earth-200 dark:border-earth-700 pt-6">
+          <section className="border-t border-border pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <h4 className="text-base font-semibold text-earth-800 dark:text-earth-100">
+                <h4 className="text-base font-semibold text-foreground">
                   Use Gemini AI for Scoring
                 </h4>
-                <p className="text-sm text-earth-500 dark:text-earth-400">
+                <p className="text-sm text-muted-foreground">
                   Enable AI-enhanced semantic analysis (requires Gemini API key)
                 </p>
               </div>
@@ -103,15 +102,15 @@ export const MatchingSettings: React.FC<MatchingSettingsProps> = ({
                 />
                 <div
                   aria-hidden="true"
-                  className="w-11 h-6 bg-earth-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-sage-300 dark:peer-focus:ring-sage-800 rounded-full peer dark:bg-earth-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-earth-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-earth-600 peer-checked:bg-sage-600"
+                  className="w-11 h-6 bg-muted peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-ring rounded-full peer dark:bg-muted peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-border after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-border peer-checked:bg-primary"
                 />
               </label>
             </div>
           </section>
 
           {/* Data Source Toggles */}
-          <section className="border-t border-earth-200 dark:border-earth-700 pt-6">
-            <h4 className="text-base font-semibold text-earth-800 dark:text-earth-100 mb-4">
+          <section className="border-t border-border pt-6">
+            <h4 className="text-base font-semibold text-foreground mb-4">
               Data Sources
             </h4>
             <div className="space-y-3">
@@ -122,11 +121,11 @@ export const MatchingSettings: React.FC<MatchingSettingsProps> = ({
                   checked={preferences.includeTimeline}
                   onChange={() => handleToggle('includeTimeline')}
                   aria-label="Include Timeline Events"
-                  className="size-4 text-sage-600 border-earth-300 dark:border-earth-600 rounded focus:ring-sage-500"
+                  className="size-4 text-primary border-input rounded focus:ring-ring"
                 />
                 <div>
-                  <span className="text-sm font-medium text-earth-700 dark:text-earth-300">Include Timeline Events</span>
-                  <p className="text-xs text-earth-500 dark:text-earth-400">
+                  <span className="text-sm font-medium text-muted-foreground">Include Timeline Events</span>
+                  <p className="text-xs text-muted-foreground">
                     Use interview history to infer successful patterns
                   </p>
                 </div>
@@ -139,11 +138,11 @@ export const MatchingSettings: React.FC<MatchingSettingsProps> = ({
                   checked={preferences.includeNotes}
                   onChange={() => handleToggle('includeNotes')}
                   aria-label="Include Application Notes"
-                  className="size-4 text-sage-600 border-earth-300 dark:border-earth-600 rounded focus:ring-sage-500"
+                  className="size-4 text-primary border-input rounded focus:ring-ring"
                 />
                 <div>
-                  <span className="text-sm font-medium text-earth-700 dark:text-earth-300">Include Application Notes</span>
-                  <p className="text-xs text-earth-500 dark:text-earth-400">
+                  <span className="text-sm font-medium text-muted-foreground">Include Application Notes</span>
+                  <p className="text-xs text-muted-foreground">
                     Use notes text for skill and preference inference
                   </p>
                 </div>
@@ -156,11 +155,11 @@ export const MatchingSettings: React.FC<MatchingSettingsProps> = ({
                   checked={preferences.includeCvText}
                   onChange={() => handleToggle('includeCvText')}
                   aria-label="Include CV/Resume Text"
-                  className="size-4 text-sage-600 border-earth-300 dark:border-earth-600 rounded focus:ring-sage-500"
+                  className="size-4 text-primary border-input rounded focus:ring-ring"
                 />
                 <div>
-                  <span className="text-sm font-medium text-earth-700 dark:text-earth-300">Include CV/Resume Text</span>
-                  <p className="text-xs text-earth-500 dark:text-earth-400">
+                  <span className="text-sm font-medium text-muted-foreground">Include CV/Resume Text</span>
+                  <p className="text-xs text-muted-foreground">
                     Use pasted CV text for profile enrichment
                   </p>
                 </div>
@@ -169,8 +168,8 @@ export const MatchingSettings: React.FC<MatchingSettingsProps> = ({
           </section>
 
           {/* Behavior Settings */}
-          <section className="border-t border-earth-200 dark:border-earth-700 pt-6">
-            <h4 className="text-base font-semibold text-earth-800 dark:text-earth-100 mb-4">
+          <section className="border-t border-border pt-6">
+            <h4 className="text-base font-semibold text-foreground mb-4">
               Behavior
             </h4>
 
@@ -182,10 +181,10 @@ export const MatchingSettings: React.FC<MatchingSettingsProps> = ({
                   checked={preferences.autoComputeOnOpportunityAdd}
                   onChange={() => handleToggle('autoComputeOnOpportunityAdd')}
                   aria-label="Auto-compute scores on new opportunity"
-                  className="size-4 text-sage-600 border-earth-300 dark:border-earth-600 rounded focus:ring-sage-500"
+                  className="size-4 text-primary border-input rounded focus:ring-ring"
                 />
                 <div>
-                  <span className="text-sm font-medium text-earth-700 dark:text-earth-300">
+                  <span className="text-sm font-medium text-muted-foreground">
                     Auto-compute scores on new opportunity
                   </span>
                 </div>
@@ -198,10 +197,10 @@ export const MatchingSettings: React.FC<MatchingSettingsProps> = ({
                   checked={preferences.prioritizeRemote}
                   onChange={() => handleToggle('prioritizeRemote')}
                   aria-label="Prioritize remote opportunities"
-                  className="size-4 text-sage-600 border-earth-300 dark:border-earth-600 rounded focus:ring-sage-500"
+                  className="size-4 text-primary border-input rounded focus:ring-ring"
                 />
                 <div>
-                  <span className="text-sm font-medium text-earth-700 dark:text-earth-300">
+                  <span className="text-sm font-medium text-muted-foreground">
                     Prioritize remote opportunities
                   </span>
                 </div>
@@ -210,10 +209,10 @@ export const MatchingSettings: React.FC<MatchingSettingsProps> = ({
               {/* Threshold Slider */}
               <div className="pt-2">
                 <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm font-medium text-earth-700 dark:text-earth-300">
+                  <span className="text-sm font-medium text-muted-foreground">
                     Minimum Match Threshold
                   </span>
-                  <span className="text-sm font-bold text-sage-600 dark:text-sage-400">
+                  <span className="text-sm font-bold text-primary">
                     {preferences.minMatchThreshold}%
                   </span>
                 </div>
@@ -225,9 +224,9 @@ export const MatchingSettings: React.FC<MatchingSettingsProps> = ({
                   value={preferences.minMatchThreshold}
                   onChange={(e) => handleSliderChange('minMatchThreshold', parseInt(e.target.value, 10))}
                   aria-label="Minimum Match Threshold"
-                  className="w-full h-2 bg-earth-200 dark:bg-earth-700 rounded-lg appearance-none cursor-pointer accent-sage-600"
+                  className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer accent-primary"
                 />
-                <div className="flex justify-between text-xs text-earth-500 dark:text-earth-400 mt-1">
+                <div className="flex justify-between text-xs text-muted-foreground mt-1">
                   <span>Any match</span>
                   <span>Strong matches only</span>
                 </div>
@@ -236,15 +235,15 @@ export const MatchingSettings: React.FC<MatchingSettingsProps> = ({
           </section>
 
           {/* Actions */}
-          <section className="border-t border-earth-200 dark:border-earth-700 pt-6">
-            <h4 className="text-base font-semibold text-earth-800 dark:text-earth-100 mb-4">
+          <section className="border-t border-border pt-6">
+            <h4 className="text-base font-semibold text-foreground mb-4">
               Profile & Scoring
             </h4>
             <div className="flex flex-wrap gap-3">
               <button
                 type='button'
                 onClick={onOpenProfileModal}
-                className="px-4 py-2 text-sm font-medium bg-earth-100 dark:bg-earth-700 text-earth-700 dark:text-earth-300 hover:bg-earth-200 dark:hover:bg-earth-600 rounded-lg transition border border-earth-200 dark:border-earth-600"
+                className="px-4 py-2 text-sm font-medium bg-muted text-muted-foreground hover:bg-accent rounded-lg transition border border-border"
               >
                 Edit Profile
               </button>
@@ -253,7 +252,7 @@ export const MatchingSettings: React.FC<MatchingSettingsProps> = ({
                 onClick={onBuildProfile}
                 disabled={profileStatus === 'building'}
                 aria-busy={profileStatus === 'building'}
-                className="px-4 py-2 text-sm font-medium bg-sage-600 text-white hover:bg-sage-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition flex items-center gap-2"
+                className="px-4 py-2 text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition flex items-center gap-2"
               >
                 {profileStatus === 'building' ? (
                   <>
@@ -272,7 +271,7 @@ export const MatchingSettings: React.FC<MatchingSettingsProps> = ({
                 onClick={onComputeScores}
                 disabled={isComputingScores || profileStatus === 'none'}
                 aria-busy={isComputingScores}
-                className="px-4 py-2 text-sm font-medium bg-earth-800 dark:bg-earth-600 text-white hover:bg-earth-900 dark:hover:bg-earth-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition flex items-center gap-2"
+                className="px-4 py-2 text-sm font-medium bg-secondary text-secondary-foreground hover:bg-secondary/80 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition flex items-center gap-2"
               >
                 {isComputingScores ? (
                   <>
@@ -288,14 +287,14 @@ export const MatchingSettings: React.FC<MatchingSettingsProps> = ({
               </button>
             </div>
             {profileLastComputed && (
-              <p className="text-xs text-earth-500 dark:text-earth-400 mt-3">
+              <p className="text-xs text-muted-foreground mt-3">
                 Last profile update: {getLocaleDateString(profileLastComputed)}
               </p>
             )}
           </section>
 
           {/* Danger Zone */}
-          <section className="border-t border-earth-200 dark:border-earth-700 pt-6">
+          <section className="border-t border-border pt-6">
             <button
               type='button'
               onClick={onClearData}

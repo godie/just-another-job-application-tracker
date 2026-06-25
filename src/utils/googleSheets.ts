@@ -1,9 +1,4 @@
-// src/utils/googleSheets.ts
 
-/**
- * Google Sheets integration utilities
- * Handles synchronization between local storage and Google Sheets
- */
 
 import type { JobApplication } from '../types/applications';
 
@@ -25,9 +20,6 @@ export interface SyncStatus {
 const SYNC_STATUS_KEY = 'googleSheetsSyncStatus';
 const SPREADSHEET_ID_KEY = 'googleSheetsSpreadsheetId';
 
-/**
- * Get stored sync status
- */
 export const getSyncStatus = (): SyncStatus => {
   try {
     const stored = localStorage.getItem(SYNC_STATUS_KEY);
@@ -46,9 +38,6 @@ export const getSyncStatus = (): SyncStatus => {
   };
 };
 
-/**
- * Save sync status
- */
 export const saveSyncStatus = (status: Partial<SyncStatus>): void => {
   try {
     const current = getSyncStatus();
@@ -59,9 +48,6 @@ export const saveSyncStatus = (status: Partial<SyncStatus>): void => {
   }
 };
 
-/**
- * Get stored spreadsheet ID
- */
 export const getStoredSpreadsheetId = (): string | null => {
   try {
     return localStorage.getItem(SPREADSHEET_ID_KEY);
@@ -70,9 +56,6 @@ export const getStoredSpreadsheetId = (): string | null => {
   }
 };
 
-/**
- * Store spreadsheet ID
- */
 export const storeSpreadsheetId = (spreadsheetId: string): void => {
   try {
     localStorage.setItem(SPREADSHEET_ID_KEY, spreadsheetId);
@@ -82,9 +65,6 @@ export const storeSpreadsheetId = (spreadsheetId: string): void => {
   }
 };
 
-/**
- * Create a new Google Sheet (Laravel POST /api/google-sheets).
- */
 export const createSpreadsheet = async (title: string = 'Job Application Tracker'): Promise<SheetInfo> => {
   try {
     const response = await fetch(`${API_BASE_URL}/google-sheets`, {
@@ -110,7 +90,6 @@ export const createSpreadsheet = async (title: string = 'Job Application Tracker
       throw new Error(result.error || 'Failed to create spreadsheet');
     }
 
-    // Store spreadsheet ID
     storeSpreadsheetId(result.spreadsheetId);
     saveSyncStatus({
       lastSyncError: null,
@@ -130,9 +109,6 @@ export const createSpreadsheet = async (title: string = 'Job Application Tracker
   }
 };
 
-/**
- * Sync job applications to Google Sheet
- */
 export const syncToGoogleSheets = async (
   applications: JobApplication[],
   spreadsheetId?: string
@@ -170,7 +146,6 @@ export const syncToGoogleSheets = async (
       throw new Error(result.error || 'Failed to sync data');
     }
 
-    // Update sync status
     saveSyncStatus({
       isSyncing: false,
       lastSyncTime: new Date().toISOString(),
@@ -191,29 +166,21 @@ export const syncToGoogleSheets = async (
   }
 };
 
-/**
- * Set spreadsheet ID manually (for selecting existing spreadsheet)
- */
 export const setSpreadsheetId = async (spreadsheetIdOrUrl: string): Promise<SheetInfo> => {
-  // Extract ID from URL if full URL is provided
   let spreadsheetId = spreadsheetIdOrUrl.trim();
   
-  // Check if it's a full URL
   const urlMatch = spreadsheetId.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
   if (urlMatch) {
     spreadsheetId = urlMatch[1];
   }
   
-  // Validate format (Google Sheets IDs are alphanumeric with dashes/underscores)
   if (!/^[a-zA-Z0-9-_]+$/.test(spreadsheetId)) {
     throw new Error('Invalid spreadsheet ID or URL format');
   }
   
   try {
-    // Verify the spreadsheet exists and is accessible
     const info = await getSpreadsheetInfo(spreadsheetId);
     
-    // Store the spreadsheet ID
     storeSpreadsheetId(spreadsheetId);
     saveSyncStatus({
       lastSyncError: null,
@@ -235,9 +202,6 @@ export const setSpreadsheetId = async (spreadsheetIdOrUrl: string): Promise<Shee
   }
 };
 
-/**
- * Get spreadsheet information
- */
 const getSpreadsheetInfo = async (spreadsheetId: string): Promise<Record<string, unknown>> => {
   try {
     const response = await fetch(`${API_BASE_URL}/google-sheets`, {
@@ -270,15 +234,11 @@ const getSpreadsheetInfo = async (spreadsheetId: string): Promise<Record<string,
   }
 };
 
-/**
- * Format last sync time for display
- */
 export const formatLastSyncTime = (isoString: string | null): string => {
   if (!isoString) return 'Never';
   
   try {
     const date = new Date(isoString);
-    // Check if date is valid
     if (isNaN(date.getTime())) {
       return 'Unknown';
     }

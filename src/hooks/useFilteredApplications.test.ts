@@ -48,7 +48,6 @@ describe('useFilteredApplications referential identity', () => {
     const firstResult = result.current.filteredApplications;
     const firstApp1 = firstResult.find(a => a.id === '1');
 
-    // Create a new applications array with one item updated but the other kept the same
     const updatedApplications: JobApplication[] = [
       mockApplications[0], // Same reference
       { ...mockApplications[1], status: 'Rejected' }, // New reference
@@ -59,13 +58,11 @@ describe('useFilteredApplications referential identity', () => {
     const secondResult = result.current.filteredApplications;
     const secondApp1 = secondResult.find(a => a.id === '1');
 
-    // This should now PASS with the optimization
     expect(secondApp1).toBe(firstApp1);
 
     const firstApp2 = firstResult.find(a => a.id === '2');
     const secondApp2 = secondResult.find(a => a.id === '2');
 
-    // Changed applications SHOULD have new references
     expect(secondApp2).not.toBe(firstApp2);
     expect(secondApp2?.status).toBe('Rejected');
   });

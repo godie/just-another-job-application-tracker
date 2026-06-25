@@ -1,10 +1,14 @@
-// src/components/ProfileSetupModal.tsx
 
-import React, { useState, useRef, useCallback } from 'react';
-import type { KeyboardEvent } from 'react';
-import useFocusTrap from '../hooks/useFocusTrap';
-import useKeyboardEscape from '../hooks/useKeyboardEscape';
-import type { UserMatchProfile, SeniorityLevel } from '../types/matching';
+import React, { useReducer, useCallback } from 'react';
+import type { UserMatchProfile } from '../types/matching';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from './ui/Dialog';
 
 interface ProfileSetupModalProps {
   isOpen: boolean;
@@ -13,22 +17,8 @@ interface ProfileSetupModalProps {
   onSave: (profile: Partial<UserMatchProfile>) => void;
 }
 
-const SENIORITY_OPTIONS: { value: SeniorityLevel; label: string }[] = [
-  { value: 'intern', label: 'Intern' },
-  { value: 'junior', label: 'Junior' },
-  { value: 'mid', label: 'Mid-level' },
-  { value: 'senior', label: 'Senior' },
-  { value: 'staff', label: 'Staff' },
-  { value: 'lead', label: 'Lead' },
-  { value: 'principal', label: 'Principal' },
-  { value: 'executive', label: 'Executive' },
-];
-
-const WORK_TYPE_OPTIONS: { value: 'remote' | 'on-site' | 'hybrid'; label: string }[] = [
-  { value: 'remote', label: 'Remote' },
-  { value: 'hybrid', label: 'Hybrid' },
-  { value: 'on-site', label: 'On-site' },
-];
+import { profileSetupReducer } from './profileSetupReducer';
+import { ManualInputTab } from './ManualInputTab';
 
 export const ProfileSetupModal: React.FC<ProfileSetupModalProps> = ({
   isOpen,
@@ -36,29 +26,26 @@ export const ProfileSetupModal: React.FC<ProfileSetupModalProps> = ({
   existingProfile,
   onSave,
 }) => {
-  const modalRef = useRef<HTMLDialogElement>(null);
-  useFocusTrap(modalRef, isOpen);
-  useKeyboardEscape(onClose, isOpen);
+  const [state, dispatch] = useReducer(profileSetupReducer, {
+    targetRoles: existingProfile?.targetRoles.join(', ') ?? '',
+    seniority: existingProfile?.seniority ?? '',
+    topSkills: existingProfile?.topSkills.join(', ') ?? '',
+    preferredLocations: existingProfile?.preferredLocations.join(', ') ?? '',
+    salaryMin: existingProfile?.salaryRange?.min?.toString() ?? '',
+    salaryMax: existingProfile?.salaryRange?.max?.toString() ?? '',
+    salaryCurrency: existingProfile?.salaryRange?.currency ?? 'USD',
+    selectedWorkTypes: existingProfile?.preferredWorkTypes ?? [],
+    cvText: existingProfile?.cvText ?? '',
+    activeTab: 'manual' as const,
+  });
 
-  // Initialize form state from existingProfile on first mount.
-  // The component fully unmounts when isOpen becomes false (via `if (!isOpen) return null`),
-  // so state is naturally reset on every open without needing a useEffect.
-  const [targetRoles, setTargetRoles] = useState(() => existingProfile?.targetRoles.join(', ') ?? '');
-  const [seniority, setSeniority] = useState<SeniorityLevel | ''>(() => existingProfile?.seniority ?? '');
-  const [topSkills, setTopSkills] = useState(() => existingProfile?.topSkills.join(', ') ?? '');
-  const [preferredLocations, setPreferredLocations] = useState(() => existingProfile?.preferredLocations.join(', ') ?? '');
-  const [salaryMin, setSalaryMin] = useState(() => existingProfile?.salaryRange?.min?.toString() ?? '');
-  const [salaryMax, setSalaryMax] = useState(() => existingProfile?.salaryRange?.max?.toString() ?? '');
-  const [salaryCurrency, setSalaryCurrency] = useState(() => existingProfile?.salaryRange?.currency ?? 'USD');
-  const [selectedWorkTypes, setSelectedWorkTypes] = useState<('remote' | 'on-site' | 'hybrid')[]>(() => existingProfile?.preferredWorkTypes ?? []);
-  const [cvText, setCvText] = useState(() => existingProfile?.cvText ?? '');
-  const [activeTab, setActiveTab] = useState<'manual' | 'cv'>('manual');
+  const { targetRoles, seniority, topSkills, preferredLocations, salaryMin, salaryMax, salaryCurrency, selectedWorkTypes, cvText, activeTab } = state;
 
-  const handleToggleWorkType = (wt: 'remote' | 'on-site' | 'hybrid') => {
-    setSelectedWorkTypes((prev) =>
-      prev.includes(wt) ? prev.filter((w) => w !== wt) : [...prev, wt]
-    );
-  };
+  const handleOpenChange = useCallback((open: boolean) => {
+    if (!open) {
+      onClose();
+    }
+  }, [onClose]);
 
   const handleSubmit = useCallback(() => {
     const profile: Partial<UserMatchProfile> = {
@@ -84,71 +71,33 @@ export const ProfileSetupModal: React.FC<ProfileSetupModalProps> = ({
     onSave, onClose,
   ]);
 
-  const handleDialogKeyDown = useCallback((e: KeyboardEvent) => {
-    if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
-      e.preventDefault();
-      handleSubmit();
-    }
-  }, [handleSubmit]);
-
-  if (!isOpen) return null;
-
   return (
-    <div
-      role="none"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 relative"
-    >
-      <button
-        type="button"
-        onClick={onClose}
-        aria-label="Close modal backdrop"
-        className="absolute inset-0 h-full w-full"
-      />
-      <dialog
-        open
-        aria-modal="true"
-        aria-labelledby="profile-setup-title"
-        ref={modalRef}
-        className="relative z-10 w-full max-w-2xl bg-white dark:bg-earth-800 rounded-xl shadow-2xl border border-earth-200 dark:border-earth-700 overflow-hidden animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] flex flex-col"
-        onKeyDown={handleDialogKeyDown}
+    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
+      <DialogContent
+        className="max-w-2xl max-h-[90vh] flex flex-col p-0 gap-0"
+        onPointerDownOutside={(e) => e.preventDefault()}
       >
-        <div className="contents">
-        {/* Header */}
-        <div className="px-6 py-4 border-b border-earth-200 dark:border-earth-700 flex items-center justify-between flex-shrink-0">
-          <div>
-            <h2 id="profile-setup-title" className="text-xl font-semibold text-earth-900 dark:text-earth-100">
-              Matching Profile Setup
-            </h2>
-            <p className="text-sm text-earth-500 dark:text-earth-400 mt-0.5">
-              Help us find the best opportunities for you
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="p-1 rounded-lg text-earth-400 hover:text-earth-600 dark:hover:text-earth-300 hover:bg-earth-100 dark:hover:bg-earth-700 transition"
-            aria-label="Close"
-          >
-            <svg className="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
+        <DialogHeader className="px-6 pt-6 pb-4 border-b border-border flex-shrink-0">
+          <DialogTitle className="text-xl">Matching Profile Setup</DialogTitle>
+          <DialogDescription>
+            Help us find the best opportunities for you
+          </DialogDescription>
+        </DialogHeader>
 
         {/* Tabs */}
         <div className="px-6 pt-4 flex-shrink-0">
-          <div className="flex gap-1 p-1 bg-earth-100 dark:bg-earth-700/50 rounded-lg w-fit" role="tablist">
+          <div className="flex gap-1 p-1 bg-muted rounded-lg w-fit" role="tablist">
             <button
               type="button"
               role="tab"
               id="tab-manual"
               aria-controls="panel-manual"
               aria-selected={activeTab === 'manual'}
-              onClick={() => setActiveTab('manual')}
+              onClick={() => dispatch({ type: 'SET_ACTIVE_TAB', value: 'manual' })}
               className={`px-4 py-1.5 text-sm font-medium rounded-md transition ${
                 activeTab === 'manual'
-                  ? 'bg-white dark:bg-earth-600 text-earth-900 dark:text-earth-100 shadow-sm'
-                  : 'text-earth-600 dark:text-earth-400 hover:text-earth-800 dark:hover:text-earth-200'
+                  ? 'bg-white dark:bg-muted text-foreground shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground'
               }`}
             >
               Manual Input
@@ -159,11 +108,11 @@ export const ProfileSetupModal: React.FC<ProfileSetupModalProps> = ({
               id="tab-cv"
               aria-controls="panel-cv"
               aria-selected={activeTab === 'cv'}
-              onClick={() => setActiveTab('cv')}
+              onClick={() => dispatch({ type: 'SET_ACTIVE_TAB', value: 'cv' })}
               className={`px-4 py-1.5 text-sm font-medium rounded-md transition ${
                 activeTab === 'cv'
-                  ? 'bg-white dark:bg-earth-600 text-earth-900 dark:text-earth-100 shadow-sm'
-                  : 'text-earth-600 dark:text-earth-400 hover:text-earth-800 dark:hover:text-earth-200'
+                  ? 'bg-white dark:bg-muted text-foreground shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground'
               }`}
             >
               Paste CV
@@ -172,182 +121,47 @@ export const ProfileSetupModal: React.FC<ProfileSetupModalProps> = ({
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto px-6">
           <div
-            className="p-6 space-y-5"
+            className="py-4 space-y-5"
             role="tabpanel"
             id="panel-manual"
             aria-labelledby="tab-manual"
             hidden={activeTab !== 'manual'}
           >
-            {/* Target Roles */}
-            <div className="space-y-1.5">
-              <label htmlFor="target-roles" className="block text-sm font-semibold text-earth-700 dark:text-earth-300">
-                Target Roles
-              </label>
-              <input
-                type="text"
-                id="target-roles"
-                value={targetRoles}
-                onChange={(e) => setTargetRoles(e.target.value)}
-                placeholder="e.g., Software Engineer, Backend Developer, Data Scientist"
-                aria-label="Target Roles"
-                className="w-full px-3 py-2 border border-earth-300 dark:border-earth-600 rounded-lg bg-white dark:bg-earth-900 text-earth-900 dark:text-earth-100 text-sm focus:ring-2 focus:ring-sage-500 focus:border-sage-500 outline-none transition"
-              />
-              <p className="text-xs text-earth-500 dark:text-earth-400">
-                Comma-separated list of job titles you are targeting
-              </p>
-            </div>
-
-            {/* Seniority */}
-            <div className="space-y-1.5">
-              <label htmlFor="seniority" className="block text-sm font-semibold text-earth-700 dark:text-earth-300">
-                Seniority Level
-              </label>
-              <select
-                id="seniority"
-                value={seniority}
-                onChange={(e) => setSeniority(e.target.value as SeniorityLevel | '')}
-                aria-label="Seniority Level"
-                className="w-full px-3 py-2 border border-earth-300 dark:border-earth-600 rounded-lg bg-white dark:bg-earth-900 text-earth-900 dark:text-earth-100 text-sm focus:ring-2 focus:ring-sage-500 focus:border-sage-500 outline-none transition"
-              >
-                <option value="">Select</option>
-                {SENIORITY_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Skills */}
-            <div className="space-y-1.5">
-              <label htmlFor="top-skills" className="block text-sm font-semibold text-earth-700 dark:text-earth-300">
-                Top Skills
-              </label>
-              <input
-                type="text"
-                id="top-skills"
-                value={topSkills}
-                onChange={(e) => setTopSkills(e.target.value)}
-                placeholder="e.g., React, Node.js, Python, Kubernetes"
-                aria-label="Top Skills"
-                className="w-full px-3 py-2 border border-earth-300 dark:border-earth-600 rounded-lg bg-white dark:bg-earth-900 text-earth-900 dark:text-earth-100 text-sm focus:ring-2 focus:ring-sage-500 focus:border-sage-500 outline-none transition"
-              />
-              <p className="text-xs text-earth-500 dark:text-earth-400">
-                Comma-separated list of your strongest skills
-              </p>
-            </div>
-
-            {/* Work Types */}
-            <div className="space-y-1.5">
-              <span className="block text-sm font-semibold text-earth-700 dark:text-earth-300">
-                Preferred Work Arrangement
-              </span>
-              <div className="flex gap-3">
-                {WORK_TYPE_OPTIONS.map((opt) => (
-                  <label
-                    key={opt.value}
-                    htmlFor={`work-type-${opt.value}`}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-lg border-2 cursor-pointer transition ${
-                      selectedWorkTypes.includes(opt.value)
-                        ? 'border-sage-600 bg-sage-50 dark:bg-sage-900/20 text-sage-700 dark:text-sage-300'
-                        : 'border-earth-200 dark:border-earth-700 hover:border-earth-300 dark:hover:border-earth-600 text-earth-600 dark:text-earth-400'
-                    }`}
-                  >
-                    <input
-                      type="checkbox"
-                      id={`work-type-${opt.value}`}
-                      checked={selectedWorkTypes.includes(opt.value)}
-                      onChange={() => handleToggleWorkType(opt.value)}
-                      className="sr-only"
-                      aria-label={opt.label}
-                    />
-                    <span className="text-sm font-medium">{opt.label}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            {/* Locations */}
-            <div className="space-y-1.5">
-              <label htmlFor="preferred-locations" className="block text-sm font-semibold text-earth-700 dark:text-earth-300">
-                Preferred Locations
-              </label>
-              <input
-                type="text"
-                id="preferred-locations"
-                value={preferredLocations}
-                onChange={(e) => setPreferredLocations(e.target.value)}
-                placeholder="e.g., Remote, San Francisco, Berlin"
-                aria-label="Preferred Locations"
-                className="w-full px-3 py-2 border border-earth-300 dark:border-earth-600 rounded-lg bg-white dark:bg-earth-900 text-earth-900 dark:text-earth-100 text-sm focus:ring-2 focus:ring-sage-500 focus:border-sage-500 outline-none transition"
-              />
-            </div>
-
-            {/* Salary */}
-            <div className="space-y-1.5">
-              <label htmlFor="salary-min" className="block text-sm font-semibold text-earth-700 dark:text-earth-300">
-                Salary Expectations
-              </label>
-              <div className="flex gap-3">                  <div className="flex-1">
-                    <input
-                      type="number"
-                      id="salary-min"
-                      value={salaryMin}
-                      onChange={(e) => setSalaryMin(e.target.value)}
-                      placeholder="Min"
-                      aria-label="Minimum Salary"
-                    className="w-full px-3 py-2 border border-earth-300 dark:border-earth-600 rounded-lg bg-white dark:bg-earth-900 text-earth-900 dark:text-earth-100 text-sm focus:ring-2 focus:ring-sage-500 focus:border-sage-500 outline-none transition"
-                  />
-                </div>                  <div className="flex-1">
-                    <input
-                      type="number"
-                      id="salary-max"
-                      value={salaryMax}
-                      onChange={(e) => setSalaryMax(e.target.value)}
-                      placeholder="Max"
-                      aria-label="Maximum Salary"
-                    className="w-full px-3 py-2 border border-earth-300 dark:border-earth-600 rounded-lg bg-white dark:bg-earth-900 text-earth-900 dark:text-earth-100 text-sm focus:ring-2 focus:ring-sage-500 focus:border-sage-500 outline-none transition"
-                  />
-                </div>
-                <select
-                  value={salaryCurrency}
-                  onChange={(e) => setSalaryCurrency(e.target.value)}
-                  aria-label="Salary Currency"
-                  className="px-3 py-2 border border-earth-300 dark:border-earth-600 rounded-lg bg-white dark:bg-earth-900 text-earth-900 dark:text-earth-100 text-sm focus:ring-2 focus:ring-sage-500 focus:border-sage-500 outline-none transition"
-                >
-                  <option value="USD">USD</option>
-                  <option value="EUR">EUR</option>
-                  <option value="GBP">GBP</option>
-                  <option value="CAD">CAD</option>
-                  <option value="AUD">AUD</option>
-                </select>
-              </div>
-            </div>
+            <ManualInputTab
+              targetRoles={targetRoles}
+              seniority={seniority}
+              topSkills={topSkills}
+              preferredLocations={preferredLocations}
+              salaryMin={salaryMin}
+              salaryMax={salaryMax}
+              salaryCurrency={salaryCurrency}
+              selectedWorkTypes={selectedWorkTypes}
+              dispatch={dispatch}
+            />
           </div>
 
           <div
-            className="p-6 space-y-5"
+            className="py-4 space-y-5"
             role="tabpanel"
             id="panel-cv"
             aria-labelledby="tab-cv"
             hidden={activeTab !== 'cv'}
           >
             <div className="space-y-1.5">
-              <label htmlFor="cv-text" className="block text-sm font-semibold text-earth-700 dark:text-earth-300">
+              <label htmlFor="cv-text" className="block text-sm font-semibold text-foreground">
                 CV / Resume Text
               </label>
               <textarea
                 id="cv-text"
                 value={cvText}
-                onChange={(e) => setCvText(e.target.value)}
+                onChange={(e) => dispatch({ type: 'SET_CV_TEXT', value: e.target.value })}
                 rows={12}
                 placeholder="Paste your CV or resume text here. Our AI will analyze it to extract your skills, experience, and preferences..."
-                aria-label="CV / Resume Text"
-                className="w-full px-3 py-2 border border-earth-300 dark:border-earth-600 rounded-lg bg-white dark:bg-earth-900 text-earth-900 dark:text-earth-100 text-sm focus:ring-2 focus:ring-sage-500 focus:border-sage-500 outline-none transition resize-none font-mono"
+                className="w-full px-3 py-2 border border-input rounded-lg bg-background text-foreground text-sm focus:ring-2 focus:ring-ring focus:border-ring outline-none transition resize-none font-mono"
               />
-              <p className="text-xs text-earth-500 dark:text-earth-400">
+              <p className="text-xs text-muted-foreground">
                 Your CV text is stored locally and used to enhance matching. You can also fill in the Manual Input tab for explicit control.
               </p>
             </div>
@@ -355,8 +169,8 @@ export const ProfileSetupModal: React.FC<ProfileSetupModalProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 border-t border-earth-200 dark:border-earth-700 bg-earth-50 dark:bg-earth-800/50 flex justify-between items-center flex-shrink-0">
-          <p className="text-xs text-earth-500 dark:text-earth-400">
+        <DialogFooter className="px-6 py-4 border-t border-border bg-muted/50 flex-shrink-0 sm:justify-between">
+          <p className="text-xs text-muted-foreground text-left">
             {activeTab === 'manual'
               ? 'Tip: You can also paste your CV in the other tab for AI-powered extraction.'
               : 'Tip: Fill manual fields for explicit control over your profile.'}
@@ -365,21 +179,20 @@ export const ProfileSetupModal: React.FC<ProfileSetupModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-sm font-medium text-earth-700 dark:text-earth-300 hover:bg-earth-100 dark:hover:bg-earth-700 rounded-lg transition border border-earth-300 dark:border-earth-600"
+              className="px-4 py-2 text-sm font-medium text-foreground hover:bg-muted rounded-lg transition border border-border"
             >
               Cancel
             </button>
             <button
               type="button"
               onClick={handleSubmit}
-              className="px-4 py-2 text-sm font-medium bg-sage-600 text-white hover:bg-sage-700 rounded-lg transition"
+              className="px-4 py-2 text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg transition"
             >
               Save Profile
             </button>
           </div>
-        </div>
-        </div>
-      </dialog>
-    </div>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 };

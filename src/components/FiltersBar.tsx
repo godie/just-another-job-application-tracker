@@ -1,9 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Card } from './ui/Card';
 import { Input } from './ui/Input';
 import { Select } from './ui/Select';
-import { Button } from './ui/Button';
 
 export interface Filters {
   search: string;
@@ -23,20 +21,11 @@ interface FiltersBarProps {
   onClear: () => void;
 }
 
-// ⚡ Bolt: Memoize component to prevent re-renders when HomePage re-renders
-// but filters and available options haven't changed. This is especially
-// effective when combined with the referential stability optimizations in
-// useFilteredApplications for availableStatuses and availablePlatforms.
 const FiltersBar: React.FC<FiltersBarProps> = React.memo(({ filters, onFiltersChange, availableStatuses, availablePlatforms, onClear }) => {
   const { t } = useTranslation();
-  // Initialize searchTerm from filters.search using a ref to avoid derived-state diagnostic.
-  // The component manages its own local search state, debouncing up to the parent.
   const initialSearchRef = useRef(filters.search);
   const [searchTerm, setSearchTerm] = useState(initialSearchRef.current);
   
-  // Use refs to maintain stable references for the debounce effect
-  // Update refs synchronously during render to ensure they're always current
-  // This is safe because refs are mutable and don't trigger re-renders
   const filtersRef = useRef(filters);
   const onFiltersChangeRef = useRef(onFiltersChange);
   const isMountedRef = useRef(false);
@@ -45,8 +34,8 @@ const FiltersBar: React.FC<FiltersBarProps> = React.memo(({ filters, onFiltersCh
   filtersRef.current = filters;
   onFiltersChangeRef.current = onFiltersChange;
 
-  // Sync searchTerm when filters.search changes externally (e.g., clear filters, localStorage restore).
-  // Skip the initial render since searchTerm is already initialized from the ref above.
+  //
+  // react-doctor-disable-next-line no-derived-state,no-chain-state-updates --
   useEffect(() => {
     const currentSearchTerm = searchTerm;
     if (!isMountedRef.current) {
@@ -61,19 +50,14 @@ const FiltersBar: React.FC<FiltersBarProps> = React.memo(({ filters, onFiltersCh
     }
   }, [filters.search, searchTerm]);
 
-  // Debounce: when searchTerm changes, wait 300ms then call onFiltersChange
-  // Only update the search field, preserving other filter values
   useEffect(() => {
-    // Skip debounce on mount to avoid unnecessary calls
     if (!isMountedRef.current) {
       return;
     }
 
-    // Capture the current searchTerm value at the time the effect runs
     const currentSearchTerm = searchTerm;
 
     const timerId = setTimeout(() => {
-      // Always update to ensure searchTerm is synced with parent filters
       onFiltersChangeRef.current({ ...filtersRef.current, search: currentSearchTerm });
       lastSearchFromPropsRef.current = currentSearchTerm;
     }, 300);
@@ -109,133 +93,129 @@ const FiltersBar: React.FC<FiltersBarProps> = React.memo(({ filters, onFiltersCh
     });
   };
 
-  // Initialize arrays if they don't exist (for backward compatibility)
   const statusInclude = filters.statusInclude || [];
   const statusExclude = filters.statusExclude || [];
 
   return (
-    <Card className='p-4 md:p-5 border border-earth-200 dark:border-earth-700 space-y-4'>
-      <div className='md:flex md:flex-wrap md:items-end md:gap-5'>
-        <div className='flex-1 min-w-[180px]'>
+    <div className='flex flex-wrap items-end gap-3 sm:gap-4 py-3 border-b border-border dark:border-border'>
+      <div className='flex-1 min-w-[160px]'>
+        <Input
+          id='search'
+          label={t('filters.search')}
+          type='text'
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          placeholder={t('filters.searchPlaceholder')}
+        />
+      </div>
+
+      {/* Status filters - Advanced mode */}
+      <div className='min-w-[200px] relative'>
+        <div className='block text-xs font-semibold text-muted-foreground mb-2'>{t('filters.status')}</div>
+        <div className='flex gap-3'>
+          <div className='flex-1 relative'>
+            <details className='group'>
+              <summary className='cursor-pointer text-xs px-3 py-2 border border-input rounded bg-muted hover:bg-accent text-foreground hover:text-accent-foreground transition-colors'>
+                {statusInclude.length > 0 ? t('filters.includeWithCount', { count: statusInclude.length }) : t('filters.include')}
+              </summary>
+              <div className='absolute mt-1 max-h-48 overflow-y-auto border border-border rounded p-2 bg-popover shadow-lg z-20 w-48'>
+                {availableStatuses.map((status) => (
+                  <label key={status} className='flex items-center gap-2 py-1.5 px-2 cursor-pointer hover:bg-accent rounded transition-colors'>
+                    <input
+                      id={`status-include-${status}`}
+                      name={`status-include-${status}`}
+                      type='checkbox'
+                      checked={statusInclude.includes(status)}
+                      onChange={() => handleStatusIncludeToggle(status)}
+                      className='rounded border-input text-primary focus:ring-ring bg-background'
+                      aria-label={t(`statuses.${status.toLowerCase()}`, status)}
+                    />
+                    <span className='text-xs text-foreground'>{t(`statuses.${status.toLowerCase()}`, status)}</span>
+                  </label>
+                ))}
+              </div>
+            </details>
+          </div>
+          <div className='flex-1 relative'>
+            <details className='group'>
+              <summary className='cursor-pointer text-xs px-3 py-2 border border-input rounded bg-muted hover:bg-destructive/10 text-foreground hover:text-destructive transition-colors'>
+                {statusExclude.length > 0 ? t('filters.excludeWithCount', { count: statusExclude.length }) : t('filters.exclude')}
+              </summary>
+              <div className='absolute mt-1 max-h-48 overflow-y-auto border border-border rounded p-2 bg-popover shadow-lg z-20 w-48'>
+                {availableStatuses.map((status) => (
+                  <label key={status} className='flex items-center gap-2 py-1.5 px-2 cursor-pointer hover:bg-destructive/10 rounded transition-colors'>
+                    <input
+                      id={`status-exclude-${status}`}
+                      name={`status-exclude-${status}`}
+                      type='checkbox'
+                      checked={statusExclude.includes(status)}
+                      onChange={() => handleStatusExcludeToggle(status)}
+                      className='rounded border-input text-destructive focus:ring-destructive bg-background'
+                      aria-label={`${t('filters.exclude')}: ${t(`statuses.${status.toLowerCase()}`, status)}`}
+                    />
+                    <span className='text-xs text-foreground'>{t(`statuses.${status.toLowerCase()}`, status)}</span>
+                  </label>
+                ))}
+              </div>
+            </details>
+          </div>
+        </div>
+        {(statusInclude.length > 0 || statusExclude.length > 0) && (
+          <button
+            type='button'
+            onClick={() => onFiltersChange({ ...filters, statusInclude: [], statusExclude: [] })}
+            className='mt-2 text-xs text-muted-foreground hover:text-foreground underline transition-colors'
+          >
+            {t('filters.clearStatus')}
+          </button>
+        )}
+      </div>
+
+      <div className='min-w-[160px]'>
+        <Select
+          id='platform-filter'
+          label={t('filters.platform')}
+          value={filters.platform}
+          onChange={createFilterChangeHandler('platform')}
+        >
+          <option value=''>{t('filters.all')}</option>
+          {availablePlatforms.map((platform) => (
+            <option key={platform} value={platform}>{t(`form.platforms.${platform}`, platform)}</option>
+          ))}
+        </Select>
+      </div>
+
+      <div className='flex items-end gap-3'>
+        <div className='min-w-[140px]'>
           <Input
-            id='search'
-            label={t('filters.search')}
-            type='text'
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder={t('filters.searchPlaceholder')}
+            id='date-from'
+            label={t('filters.from')}
+            type='date'
+            value={filters.dateFrom}
+            onChange={createFilterChangeHandler('dateFrom')}
           />
         </div>
-
-        {/* Status filters - Advanced mode */}
-        <div className='min-w-[200px] relative'>
-          <div className='block text-xs font-semibold text-earth-600 dark:text-earth-400 mb-2'>{t('filters.status')}</div>
-          <div className='flex gap-3'>
-            <div className='flex-1 relative'>
-              <details className='group'>
-                <summary className='cursor-pointer text-xs px-3 py-2 border border-earth-300 dark:border-earth-600 rounded bg-earth-50 dark:bg-earth-800 hover:bg-sage-50 dark:hover:bg-sage-900/30 text-earth-700 dark:text-earth-300 hover:text-sage-700 dark:hover:text-sage-300 transition-colors'>
-                  {statusInclude.length > 0 ? t('filters.includeWithCount', { count: statusInclude.length }) : t('filters.include')}
-                </summary>
-                <div className='absolute mt-1 max-h-48 overflow-y-auto border border-earth-200 dark:border-earth-700 rounded p-2 bg-white dark:bg-earth-800 shadow-lg z-20 w-48'>
-                  {availableStatuses.map((status) => (
-                    <label key={status} className='flex items-center gap-2 py-1.5 px-2 cursor-pointer hover:bg-sage-50 dark:hover:bg-sage-900/30 rounded transition-colors'>
-                      <input
-                        id={`status-include-${status}`}
-                        name={`status-include-${status}`}
-                        type='checkbox'
-                        checked={statusInclude.includes(status)}
-                        onChange={() => handleStatusIncludeToggle(status)}
-                        className='rounded border-earth-300 dark:border-earth-600 text-sage-600 focus:ring-sage-500 bg-white dark:bg-earth-700'
-                        aria-label={t(`statuses.${status.toLowerCase()}`, status)}
-                      />
-                      <span className='text-xs text-earth-700 dark:text-earth-300'>{t(`statuses.${status.toLowerCase()}`, status)}</span>
-                    </label>
-                  ))}
-                </div>
-              </details>
-            </div>
-            <div className='flex-1 relative'>
-              <details className='group'>
-                <summary className='cursor-pointer text-xs px-3 py-2 border border-earth-300 dark:border-earth-600 rounded bg-earth-50 dark:bg-earth-800 hover:bg-terracotta-50 dark:hover:bg-terracotta-900/30 text-earth-700 dark:text-earth-300 hover:text-terracotta-700 dark:hover:text-terracotta-300 transition-colors'>
-                  {statusExclude.length > 0 ? t('filters.excludeWithCount', { count: statusExclude.length }) : t('filters.exclude')}
-                </summary>
-                <div className='absolute mt-1 max-h-48 overflow-y-auto border border-earth-200 dark:border-earth-700 rounded p-2 bg-white dark:bg-earth-800 shadow-lg z-20 w-48'>
-                  {availableStatuses.map((status) => (
-                    <label key={status} className='flex items-center gap-2 py-1.5 px-2 cursor-pointer hover:bg-terracotta-50 dark:hover:bg-terracotta-900/30 rounded transition-colors'>
-                      <input
-                        id={`status-exclude-${status}`}
-                        name={`status-exclude-${status}`}
-                        type='checkbox'
-                        checked={statusExclude.includes(status)}
-                        onChange={() => handleStatusExcludeToggle(status)}
-                        className='rounded border-earth-300 dark:border-earth-600 text-terracotta-600 focus:ring-terracotta-500 bg-white dark:bg-earth-700'
-                        aria-label={`${t('filters.exclude')}: ${t(`statuses.${status.toLowerCase()}`, status)}`}
-                      />
-                      <span className='text-xs text-earth-700 dark:text-earth-300'>{t(`statuses.${status.toLowerCase()}`, status)}</span>
-                    </label>
-                  ))}
-                </div>
-              </details>
-            </div>
-          </div>
-          {(statusInclude.length > 0 || statusExclude.length > 0) && (
-            <button
-              type='button'
-              onClick={() => onFiltersChange({ ...filters, statusInclude: [], statusExclude: [] })}
-              className='mt-2 text-xs text-earth-500 dark:text-earth-400 hover:text-earth-700 dark:hover:text-earth-300 underline transition-colors'
-            >
-              {t('filters.clearStatus')}
-            </button>
-          )}
-        </div>
-
-        <div className='min-w-[160px]'>
-          <Select
-            id='platform-filter'
-            label={t('filters.platform')}
-            value={filters.platform}
-            onChange={createFilterChangeHandler('platform')}
-          >
-            <option value=''>{t('filters.all')}</option>
-            {availablePlatforms.map((platform) => (
-              <option key={platform} value={platform}>{t(`form.platforms.${platform}`, platform)}</option>
-            ))}
-          </Select>
-        </div>
-
-        <div className='flex flex-col sm:flex-row sm:items-end gap-3'>
-          <div className='min-w-[140px]'>
-            <Input
-              id='date-from'
-              label={t('filters.from')}
-              type='date'
-              value={filters.dateFrom}
-              onChange={createFilterChangeHandler('dateFrom')}
-            />
-          </div>
-          <div className='min-w-[140px]'>
-            <Input
-              id='date-to'
-              label={t('filters.to')}
-              type='date'
-              value={filters.dateTo}
-              onChange={createFilterChangeHandler('dateTo')}
-            />
-          </div>
-        </div>
-
-        <div className='flex items-center gap-2 mt-2 md:mt-0'>
-          <Button
-            variant='outline'
-            size='sm'
-            type='button'
-            onClick={onClear}
-          >
-            {t('filters.clear')}
-          </Button>
+        <div className='min-w-[140px]'>
+          <Input
+            id='date-to'
+            label={t('filters.to')}
+            type='date'
+            value={filters.dateTo}
+            onChange={createFilterChangeHandler('dateTo')}
+          />
         </div>
       </div>
-    </Card>
+
+      <div className='flex items-center gap-2'>
+        <button
+          type='button'
+          onClick={onClear}
+          className='text-xs font-medium text-muted-foreground hover:text-foreground transition-colors'
+        >
+          {t('filters.clear')}
+        </button>
+      </div>
+    </div>
   );
 });
 

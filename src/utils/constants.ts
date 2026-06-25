@@ -1,4 +1,3 @@
-// src/utils/constants.ts
 import type { UserPreferences, FieldDefinition } from "../types/preferences";
 import type { InterviewStageType } from "../types/applications";
 

@@ -1,4 +1,3 @@
-// src/components/MatchScoreBadge.tsx
 
 import React, { useMemo } from 'react';
 import type { JobMatchResult, MatchVerdict } from '../types/matching';
@@ -12,17 +11,17 @@ interface MatchScoreBadgeProps {
 }
 
 function getScoreColor(_score: number, verdict: MatchVerdict): string {
-  if (verdict === 'excellent_fit') return 'bg-sage-600 text-white';
-  if (verdict === 'good_fit') return 'bg-sage-400 text-earth-900';
-  if (verdict === 'partial_fit') return 'bg-earth-400 text-earth-900';
-  return 'bg-earth-300 text-earth-700';
+  if (verdict === 'excellent_fit') return 'bg-primary text-primary-foreground';
+  if (verdict === 'good_fit') return 'bg-primary/70 text-foreground';
+  if (verdict === 'partial_fit') return 'bg-muted text-foreground';
+  return 'bg-muted/70 text-muted-foreground';
 }
 
 function getScoreBorder(_score: number, verdict: MatchVerdict): string {
-  if (verdict === 'excellent_fit') return 'border-sage-700 dark:border-sage-500';
-  if (verdict === 'good_fit') return 'border-sage-500 dark:border-sage-400';
-  if (verdict === 'partial_fit') return 'border-earth-400 dark:border-earth-500';
-  return 'border-earth-300 dark:border-earth-600';
+  if (verdict === 'excellent_fit') return 'border-primary/80';
+  if (verdict === 'good_fit') return 'border-primary/60';
+  if (verdict === 'partial_fit') return 'border-border';
+  return 'border-border/70';
 }
 
 function getVerdictLabel(verdict: MatchVerdict): string {
@@ -57,10 +56,10 @@ export const MatchScoreBadge: React.FC<MatchScoreBadgeProps> = ({
   const styles = useMemo(() => {
     if (!result) {
       return {
-        bg: 'bg-earth-200 dark:bg-earth-700',
-        text: 'text-earth-500 dark:text-earth-400',
-        border: 'border-earth-300 dark:border-earth-600',
-        ring: 'border-earth-300 dark:border-earth-600',
+        bg: 'bg-muted',
+        text: 'text-muted-foreground',
+        border: 'border-border',
+        ring: 'border-border',
       };
     }
     return {
@@ -109,4 +108,3 @@ export const MatchScoreBadge: React.FC<MatchScoreBadgeProps> = ({
     </button>
   );
 };
-

@@ -1,4 +1,3 @@
-// src/components/ProfileSetupModal.test.tsx
 
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
@@ -112,7 +111,7 @@ describe('ProfileSetupModal', () => {
         onSave={vi.fn()}
       />
     );
-    fireEvent.click(screen.getByLabelText('Close'));
+    fireEvent.click(screen.getByRole('button', { name: /close/i }));
     expect(handleClose).toHaveBeenCalledTimes(1);
   });
 
@@ -126,14 +125,11 @@ describe('ProfileSetupModal', () => {
       />
     );
 
-    // Default: manual tab
     expect(screen.getByText('Target Roles')).toBeInTheDocument();
 
-    // Switch to CV tab
     fireEvent.click(screen.getByText('Paste CV'));
     expect(screen.getByText('CV / Resume Text')).toBeInTheDocument();
 
-    // Switch back
     fireEvent.click(screen.getByText('Manual Input'));
     expect(screen.getByText('Target Roles')).toBeInTheDocument();
   });
@@ -198,12 +194,10 @@ describe('ProfileSetupModal', () => {
       />
     );
 
-    // Verify profile data is pre-filled
     expect(screen.getByDisplayValue('Software Engineer, Backend Developer')).toBeInTheDocument();
     expect(screen.getByDisplayValue('react, node.js')).toBeInTheDocument();
     expect(screen.getByDisplayValue('Remote, San Francisco')).toBeInTheDocument();
 
-    // Close modal
     rerender(
       <ProfileSetupModal
         key="closed-modal"
@@ -214,7 +208,6 @@ describe('ProfileSetupModal', () => {
       />
     );
 
-    // Re-open without existingProfile — using a new key forces clean remount
     rerender(
       <ProfileSetupModal
         key="new-profile"
@@ -225,16 +218,13 @@ describe('ProfileSetupModal', () => {
       />
     );
 
-    // Check that previously filled fields are now empty
     expect((screen.getByLabelText('Target Roles') as HTMLInputElement).value).toBe('');
     expect((screen.getByLabelText('Top Skills') as HTMLInputElement).value).toBe('');
     expect((screen.getByLabelText('Preferred Locations') as HTMLInputElement).value).toBe('');
 
-    // Salary inputs should be empty
     expect(screen.getByPlaceholderText('Min')).toHaveValue(null);
     expect(screen.getByPlaceholderText('Max')).toHaveValue(null);
 
-    // Default currency should be USD
     expect(screen.getByDisplayValue('USD')).toBeInTheDocument();
   });
 });

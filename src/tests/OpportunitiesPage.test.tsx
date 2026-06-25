@@ -1,4 +1,3 @@
-// src/tests/OpportunitiesPage.test.tsx
 import React from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
@@ -6,7 +5,6 @@ import OpportunitiesPage from '../pages/OpportunitiesPage';
 import { AlertProvider } from '../components/AlertProvider';
 import type { JobOpportunity } from '../types/opportunities';
 
-// Hoisted state for store mocks - must be defined before vi.mock
 const mockOpportunitiesState = vi.hoisted(() => ({
   opportunities: [] as JobOpportunity[],
   loadOpportunities: vi.fn(),
@@ -87,13 +85,13 @@ describe('OpportunitiesPage', () => {
   it('should render add opportunity button', () => {
     renderWithProviders(<OpportunitiesPage />);
 
-    expect(screen.getByText('+ Add Opportunity')).toBeInTheDocument();
+    expect(screen.getByText('Add Opportunity')).toBeInTheDocument();
   });
 
   it('should open form when add button is clicked', () => {
     renderWithProviders(<OpportunitiesPage />);
 
-    const addButton = screen.getByText('+ Add Opportunity');
+    const addButton = screen.getByText('Add Opportunity');
     fireEvent.click(addButton);
 
     expect(screen.getByText('Add New Opportunity')).toBeInTheDocument();
@@ -125,7 +123,7 @@ describe('OpportunitiesPage', () => {
   it('should handle adding opportunity manually', async () => {
     renderWithProviders(<OpportunitiesPage />);
 
-    const addButton = screen.getByText('+ Add Opportunity');
+    const addButton = screen.getByText('Add Opportunity');
     fireEvent.click(addButton);
 
     await waitFor(() => {

@@ -2,10 +2,6 @@ import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import Alert from '../../components/Alert';
 
-/**
- * Accessibility tests for Alert component
- * These tests verify WCAG compliance for alerts and notifications
- */
 describe('Alert Accessibility', () => {
   it('renders with role alert', () => {
     render(<Alert type="info" message="Test message" />);
@@ -39,7 +35,6 @@ describe('Alert Accessibility', () => {
     render(<Alert type="info" message="Test message" onClose={() => {}} />);
 
     const closeButton = screen.getByLabelText('Close alert');
-    // Buttons are natively focusable; tabIndex is not required
     expect(closeButton.tagName.toLowerCase()).toBe('button');
     expect(closeButton.className).toContain('focus');
   });

@@ -1,7 +1,111 @@
 @import "tailwindcss";
+@plugin 'tailwindcss-animate';
 @config "../tailwind.config.js";
 
 @custom-variant dark (&:where(.dark, .dark *));
+
+@theme inline {
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  /* Keep existing custom colors from tailwind.config.js accessible */
+  --color-earth-50: #faf8f5;
+  --color-earth-100: #f5f0e8;
+  --color-earth-200: #e8dfd3;
+  --color-earth-300: #d4c4ae;
+  --color-earth-400: #b8a088;
+  --color-earth-500: #9a7d5e;
+  --color-earth-600: #7a6048;
+  --color-earth-700: #5c4835;
+  --color-earth-800: #3d302a;
+  --color-earth-900: #1f1915;
+  --color-sage-50: #f4f7f4;
+  --color-sage-100: #e6ece6;
+  --color-sage-200: #ccd9cc;
+  --color-sage-300: #a3b8a3;
+  --color-sage-400: #7a947a;
+  --color-sage-500: #5a7a5a;
+  --color-sage-600: #456145;
+  --color-sage-700: #374c37;
+  --color-sage-800: #2a3a2a;
+  --color-sage-900: #1d261d;
+  --color-terracotta-50: #fdf5f2;
+  --color-terracotta-100: #fce8e0;
+  --color-terracotta-200: #f9d0c2;
+  --color-terracotta-300: #f4ab95;
+  --color-terracotta-400: #ec8567;
+  --color-terracotta-500: #df5f3a;
+  --color-terracotta-600: #c44a2a;
+  --color-terracotta-700: #a03a22;
+  --color-terracotta-800: #7c2f1e;
+  --color-terracotta-900: #5c2419;
+}
+
+:root {
+  --background: 0 0% 100%;
+  --foreground: 30 8% 12%;
+  --card: 0 0% 100%;
+  --card-foreground: 30 8% 12%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 30 8% 12%;
+  --primary: 120 18% 33%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 40 20% 96%;
+  --secondary-foreground: 30 8% 12%;
+  --muted: 40 20% 96%;
+  --muted-foreground: 30 4% 40%;
+  --accent: 40 20% 96%;
+  --accent-foreground: 30 8% 12%;
+  --destructive: 12 65% 48%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 30 12% 88%;
+  --input: 30 12% 88%;
+  --ring: 120 18% 33%;
+  --radius: 0.5rem;
+}
+
+.dark {
+  --background: 30 8% 6%;
+  --foreground: 30 15% 92%;
+  --card: 30 8% 10%;
+  --card-foreground: 30 15% 92%;
+  --popover: 30 8% 10%;
+  --popover-foreground: 30 15% 92%;
+  --primary: 120 18% 55%;
+  --primary-foreground: 120 30% 8%;
+  --secondary: 30 8% 18%;
+  --secondary-foreground: 30 15% 92%;
+  --muted: 30 8% 18%;
+  --muted-foreground: 30 10% 60%;
+  --accent: 30 8% 18%;
+  --accent-foreground: 30 15% 92%;
+  --destructive: 12 62% 35%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 30 8% 20%;
+  --input: 30 8% 20%;
+  --ring: 120 18% 55%;
+}
 
 @keyframes slideInRight {
   from { transform: translateX(100%); }
