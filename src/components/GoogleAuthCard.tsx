@@ -24,13 +24,13 @@ const variantConfig = {
     ),
   },
   warning: {
-    container: 'bg-earth-50 dark:bg-earth-800/40 border-earth-200 dark:border-earth-700',
-    iconBg: 'bg-earth-100 dark:bg-earth-700',
-    title: 'text-earth-700 dark:text-earth-200',
-    description: 'text-earth-600 dark:text-earth-400',
-    button: 'bg-earth-600 hover:bg-earth-700 text-white',
+    container: 'bg-muted dark:bg-muted/40 border-border dark:border-border',
+    iconBg: 'bg-muted-foreground/10 dark:bg-muted-foreground/20',
+    title: 'text-foreground',
+    description: 'text-muted-foreground',
+    button: 'bg-secondary hover:bg-secondary/80 text-secondary-foreground',
     icon: (
-      <svg className="size-6 text-earth-600 dark:text-earth-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <svg className="size-6 text-muted-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
         <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m0-8v4m0 0a9 9 0 110-18 9 9 0 010 18z" />
       </svg>
     ),

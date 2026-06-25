@@ -13,8 +13,8 @@ interface SheetsAuthGateProps {
 
 const NotAuthenticated: React.FC = () => {
   return (
-    <div className="bg-earth-50 border border-earth-200 rounded-lg p-4 mb-4">
-      <p className="text-sm text-earth-700">
+    <div className="bg-muted border border-border rounded-lg p-4 mb-4">
+      <p className="text-sm text-foreground">
         <Trans i18nKey="sheets.loginRequired">
           <strong>Google Sheets Sync:</strong> Please log in with Google to enable spreadsheet synchronization.
         </Trans>
