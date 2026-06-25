@@ -234,12 +234,22 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
               <img
                 src='/screenshots/table_view.png'
                 alt='Table View'
+                // Intrinsic dims match the source file (1280x720 = 16:9).
+                // Defense-in-depth: width/height lets browsers reserve space
+                // before image arrives, preventing CLS even if a future
+                // style change removes the implicit aspect ratio.
+                width={1280}
+                height={720}
+                decoding='async'
                 className='w-full border border-border'
                 loading='lazy'
               />
               <img
                 src='/screenshots/kanban_view.png'
                 alt='Kanban View'
+                width={1280}
+                height={720}
+                decoding='async'
                 className='w-full border border-border'
                 loading='lazy'
               />
@@ -253,6 +263,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
               <img
                 src='/screenshots/insights_page.png'
                 alt='Insights Page'
+                width={1280}
+                height={720}
+                decoding='async'
                 className='w-full border border-border'
                 loading='lazy'
               />
