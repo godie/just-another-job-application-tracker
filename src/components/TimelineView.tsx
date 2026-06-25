@@ -19,12 +19,12 @@ const ITEMS_PER_PAGE = 10;
 const TIMELINE_STATUS_COLORS: Record<string, string> = {
   completed: 'bg-green-500',
   scheduled: 'bg-blue-500',
-  cancelled: 'bg-gray-400',
+  cancelled: 'bg-muted-foreground',
   pending: 'bg-yellow-500',
 };
 
 const getStatusColor = (status: string): string => {
-  return TIMELINE_STATUS_COLORS[status] || 'bg-gray-400';
+  return TIMELINE_STATUS_COLORS[status] || 'bg-muted-foreground';
 };
 
 const TimelineView: React.FC<TimelineViewProps> = ({ applications, onSelectJob, onEdit, onDelete }) => {
