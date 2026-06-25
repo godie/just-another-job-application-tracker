@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { setSkipAuthModal } from '../storage/auth';
 import { type PageType } from '../App';
 import { useSEO } from '../seo/useSEO';
+import { Button } from '../components/ui/Button';
 
 interface LandingPageProps {
   onNavigate: (page: PageType) => void;
@@ -70,56 +71,51 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
       {/* Subtle organic background pattern */}
       <div className='fixed inset-0 pointer-events-none overflow-hidden' aria-hidden='true'>
         <div className='absolute top-20 left-10 opacity-30 dark:opacity-20'>
-          <LeafPattern className='size-32 text-sage-500' />
+          <LeafPattern className='size-32 text-primary' />
         </div>
         <div className='absolute top-40 right-20 opacity-20 dark:opacity-10'>
-          <OrganicShape className='size-64 text-terracotta-400' />
+          <OrganicShape className='size-64 text-destructive' />
         </div>
         <div className='absolute bottom-40 left-1/4 opacity-20 dark:opacity-10'>
-          <LeafPattern className='size-24 text-sage-400 rotate-45' />
+          <LeafPattern className='size-24 text-primary rotate-45' />
         </div>
       </div>
 
       {/* Navigation / Lang Switcher + Enter CTA */}
       <nav className='relative max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-6 flex justify-between items-center gap-4' aria-label='Main navigation'>
-        <button
-          type='button'
+        <Button
+          variant='primary'
+          size='md'
+          className='gap-2'
           onClick={handleEnterApp}
-          className='inline-flex items-center gap-2 bg-terracotta-600 hover:bg-terracotta-700 active:bg-terracotta-800 text-white font-semibold py-2.5 px-6 rounded transition-colors shadow-sm hover:shadow-md border border-terracotta-700 hover:border-terracotta-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2'
         >
           {t('landing.enterApp')}
           <svg className='size-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
             <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M17 8l4 4m0 0l-4 4m4-4H3' />
           </svg>
-        </button>
+        </Button>
         <div className='flex items-center gap-4'>
           <div className='hidden sm:flex items-center gap-3 text-sm'>
             <a href='/privacy.html' className='text-muted-foreground hover:text-foreground transition-colors'>{t('common.footer.privacyPolicy')}</a>
             <a href='/terms.html' className='text-muted-foreground hover:text-foreground transition-colors'>{t('common.footer.termsOfUse')}</a>
           </div>
           <div className='flex items-center gap-2' aria-label='Language selector'>
-            <button
-              type='button'
+            <Button
+              variant={i18n.language.startsWith('en') ? 'primary' : 'outline'}
+              size='sm'
               onClick={() => changeLanguage('en')}
-              className={`px-4 py-2 text-sm font-semibold rounded transition-all duration-200 ${
-                i18n.language.startsWith('en') 
-                  ? 'bg-primary text-primary-foreground shadow-sm' 
-                  : 'bg-background text-foreground hover:bg-muted border border-border shadow-sm'
-              }`}
+              className='px-4 py-2 h-auto text-xs font-bold'
             >
               EN
-            </button>
-            <button
-              type='button'
+            </Button>
+            <Button
+              variant={i18n.language.startsWith('es') ? 'primary' : 'outline'}
+              size='sm'
               onClick={() => changeLanguage('es')}
-              className={`px-4 py-2 text-sm font-semibold rounded transition-all duration-200 ${
-                i18n.language.startsWith('es') 
-                  ? 'bg-primary text-primary-foreground shadow-sm' 
-                  : 'bg-background text-foreground hover:bg-muted border border-border shadow-sm'
-              }`}
+              className='px-4 py-2 h-auto text-xs font-bold'
             >
               ES
-            </button>
+            </Button>
           </div>
         </div>
       </nav>
@@ -131,51 +127,53 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
           <div className='lg:col-span-7'>
             {/* Decorative element */}
             <div className='flex items-center gap-3 mb-8'>
-              <div className='w-12 h-0.5 bg-sage-500'></div>
+              <div className='w-12 h-0.5 bg-primary'></div>
               <span className='text-primary text-sm font-medium tracking-wider uppercase'>
                 Job Application Tracker
               </span>
             </div>
-            
+
             {/* Main heading - Serif for editorial feel */}
             <h1 className='font-serif text-5xl md:text-6xl lg:text-7xl font-semibold leading-tight mb-8 text-foreground'>
               {t('landing.heroTitle')}
             </h1>
-            
+
             <p className='text-xl md:text-2xl text-muted-foreground mb-10 max-w-xl leading-relaxed'>
               {t('landing.heroSubtitle')}
             </p>
-            
+
             <div className='flex flex-col sm:flex-row gap-4'>
-              <button
-                type='button'
+              <Button
+                variant='primary'
+                size='lg'
+                className='gap-2 text-lg py-4 px-8 h-auto'
                 onClick={handleEnterApp}
-                className='inline-flex items-center justify-center gap-2 bg-terracotta-600 hover:bg-terracotta-700 active:bg-terracotta-800 text-white font-semibold py-4 px-8 text-lg rounded transition-colors shadow-sm hover:shadow-md border border-terracotta-700 hover:border-terracotta-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2'
               >
                 {t('landing.getStarted')}
                 <svg className='size-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                   <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M17 8l4 4m0 0l-4 4m4-4H3' />
                 </svg>
-              </button>
-              <button
-                type='button'
+              </Button>
+              <Button
+                variant='outline'
+                size='lg'
+                className='text-lg py-4 px-8 h-auto'
                 onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}
-                className='inline-flex items-center justify-center gap-2 border border-border text-foreground font-semibold py-4 px-8 text-lg rounded transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2'
               >
                 See Features
-              </button>
+              </Button>
             </div>
           </div>
-          
+
           {/* Right side - Decorative illustration */}
           <div className='lg:col-span-5 relative'>
             <div className='relative'>
               {/* Organic blob shape background */}
               <div className='absolute inset-0 md:-inset-4 bg-gradient-to-br from-sage-200 via-terracotta-100 to-earth-100 dark:from-sage-900 dark:via-terracotta-900 dark:to-earth-800 rounded transform rotate-3'></div>
               <div className='relative aspect-square bg-gradient-to-br from-sage-100 to-earth-100 dark:from-sage-800 dark:to-earth-800 rounded overflow-hidden'>
-                <img 
-                  src='/screenshots/table_view.png' 
-                  alt='Application tracking interface' 
+                <img
+                  src='/screenshots/table_view.png'
+                  alt='Application tracking interface'
                   className='w-full h-full object-cover'
                 />
                 <div className='absolute inset-0 bg-gradient-to-t from-earth-900/20 to-transparent'></div>
@@ -190,7 +188,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
         <div className='max-w-7xl mx-auto px-4 md:px-6 lg:px-8'>
           {/* Section header */}
           <div className='max-w-2xl mb-20'>
-            <span className='text-terracotta-600 dark:text-terracotta-400 text-sm font-medium tracking-wider uppercase mb-4 block'>
+            <span className='text-destructive text-sm font-medium tracking-wider uppercase mb-4 block'>
               Features
             </span>
             <h2 className='font-serif text-4xl md:text-5xl font-semibold text-foreground mb-6'>
@@ -215,26 +213,27 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                     <div className='text-muted-foreground text-sm'>Sort, filter, and analyze all your applications</div>
                   </div>
                   <div className='bg-card p-4 border border-border'>
-                    <div className='text-terracotta-600 dark:text-terracotta-400 font-semibold mb-1'>Kanban Board</div>
+                    <div className='text-destructive font-semibold mb-1'>Kanban Board</div>
                     <div className='text-muted-foreground text-sm'>Visualize your job search pipeline</div>
                   </div>
                 </div>
               </div>
             </div>
-            
+
             {/* Feature 1 - Screenshots */}
-            <div className='space-y-6'>                <img 
-                  src='/screenshots/table_view.png' 
-                  alt='Table View' 
-                  className='w-full border border-border' 
-                  loading='lazy'
-                />
-                <img 
-                  src='/screenshots/kanban_view.png' 
-                  alt='Kanban View' 
-                  className='w-full border border-border' 
-                  loading='lazy'
-                />
+            <div className='space-y-6'>
+              <img
+                src='/screenshots/table_view.png'
+                alt='Table View'
+                className='w-full border border-border'
+                loading='lazy'
+              />
+              <img
+                src='/screenshots/kanban_view.png'
+                alt='Kanban View'
+                className='w-full border border-border'
+                loading='lazy'
+              />
             </div>
           </div>
 
@@ -242,14 +241,14 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
           <div className='grid lg:grid-cols-2 gap-16 mb-24'>
             {/* Feature 3 - Screenshots */}
             <div className='order-last lg:order-first'>
-              <img 
-                src='/screenshots/insights_page.png' 
-                alt='Insights Page' 
-                className='w-full border border-border' 
+              <img
+                src='/screenshots/insights_page.png'
+                alt='Insights Page'
+                className='w-full border border-border'
                 loading='lazy'
               />
             </div>
-            
+
             {/* Feature 3 - Content */}
             <div className='relative'>
               <div className='sticky top-8'>
@@ -259,7 +258,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                 <p className='text-lg text-muted-foreground mb-8 leading-relaxed'>
                   {t('landing.feature3Desc')}
                 </p>
-                
+
                 {/* Stats */}
                 <div className='grid grid-cols-3 gap-6'>
                   <div className='text-center'>
@@ -267,7 +266,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                     <div className='text-sm text-muted-foreground mt-1'>Local Storage</div>
                   </div>
                   <div className='text-center'>
-                    <div className='font-serif text-4xl font-bold text-terracotta-600 dark:text-terracotta-400'>0</div>
+                    <div className='font-serif text-4xl font-bold text-destructive'>0</div>
                     <div className='text-sm text-muted-foreground mt-1'>Data Leaks</div>
                   </div>
                   <div className='text-center'>
@@ -283,16 +282,16 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
           <div className='space-y-6'>
             {/* Feature 2 - Chrome Extension */}
             <div className='group flex items-start gap-8 bg-card p-8 border border-border hover:border-primary/30 transition-colors duration-300'>
-              <div className='flex-shrink-0 size-16 bg-terracotta-100 dark:bg-terracotta-900 flex items-center justify-center'>
-                <svg className='size-8 text-terracotta-600 dark:text-terracotta-300' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+              <div className='flex-shrink-0 size-16 bg-destructive/10 dark:bg-destructive/5 flex items-center justify-center'>
+                <svg className='size-8 text-destructive' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                   <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={1.5} d='M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9' />
                 </svg>
               </div>
               <div className='flex-1'>
                 <h3 className='font-semibold text-xl mb-2 text-foreground'>
-                  <a 
-                    href='https://chromewebstore.google.com/detail/job-application-tracker/inlfdhmkpfikjfgjgnininfcgdnlhlcc?pli=1' 
-                    target='_blank' 
+                  <a
+                    href='https://chromewebstore.google.com/detail/job-application-tracker/inlfdhmkpfikjfgjgnininfcgdnlhlcc?pli=1'
+                    target='_blank'
                     rel='noopener noreferrer'
                     className='hover:text-primary transition-colors'
                   >
@@ -336,8 +335,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
 
             {/* Feature 6 - Calendar */}
             <div className='group flex items-start gap-8 bg-card p-8 border border-border hover:border-primary/30 transition-colors duration-300'>
-              <div className='flex-shrink-0 size-16 bg-terracotta-100 dark:bg-terracotta-900 flex items-center justify-center'>
-                <svg className='size-8 text-terracotta-600 dark:text-terracotta-300' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+              <div className='flex-shrink-0 size-16 bg-destructive/10 dark:bg-destructive/5 flex items-center justify-center'>
+                <svg className='size-8 text-destructive' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                   <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={1.5} d='M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z' />
                 </svg>
               </div>
@@ -357,7 +356,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
         <div className='grid lg:grid-cols-12 gap-12 items-start'>
           {/* Left column - Section header */}
           <div className='lg:col-span-4'>
-            <span className='text-terracotta-600 dark:text-terracotta-400 text-sm font-medium tracking-wider uppercase mb-4 block'>
+            <span className='text-destructive text-sm font-medium tracking-wider uppercase mb-4 block'>
               Roadmap
             </span>
             <h2 className='font-serif text-3xl md:text-4xl font-semibold text-foreground mb-6'>
@@ -367,16 +366,16 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
               We're constantly working to make your job search experience even better.
             </p>
           </div>
-          
+
           {/* Right column - Roadmap items */}
           <div className='lg:col-span-8'>
             <div className='space-y-0'>
               {roadmapItems.map((item, i) => (
-                <div 
-                  key={item} 
+                <div
+                  key={item}
                   className='group flex items-center gap-6 py-6 border-b border-border last:border-b-0'
                 >
-                  <div className='flex-shrink-0 size-10 bg-primary/5 dark:bg-primary/10 flex items-center justify-center font-serif text-lg font-bold text-primary group-hover:bg-primary group-hover:text-white transition-colors duration-300'>
+                  <div className='flex-shrink-0 size-10 bg-primary/5 dark:bg-primary/10 flex items-center justify-center font-serif text-lg font-bold text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300'>
                     {String(i + 1).padStart(2, '0')}
                   </div>
                   <p className='text-lg font-medium text-foreground group-hover:text-primary transition-colors'>
@@ -400,7 +399,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
             <rect fill='url(#dots)' width='100%' height='100%' />
           </svg>
         </div>
-        
+
         <div className='relative max-w-4xl mx-auto px-4 md:px-6 lg:px-8 text-center'>
           <h2 className='font-serif text-3xl md:text-5xl font-semibold mb-8'>
             {t('landing.ready')}
@@ -408,16 +407,17 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
           <p className='text-xl text-white/90 mb-12 max-w-2xl mx-auto'>
             Join thousands of job seekers who have organized their search and landed their dream roles.
           </p>
-          <button
-            type='button'
+          <Button
+            variant='secondary'
+            size='lg'
+            className='gap-3 text-lg py-4 px-10 h-auto bg-white text-foreground hover:bg-background border-border shadow-md hover:shadow-lg'
             onClick={handleEnterApp}
-            className='inline-flex items-center gap-3 bg-white text-terracotta-700 hover:bg-terracotta-50 font-bold py-4 px-10 text-lg rounded transition-colors border border-terracotta-200 hover:border-terracotta-300 shadow-md hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2'
           >
             {t('landing.enterApp')}
             <svg className='size-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
               <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M17 8l4 4m0 0l-4 4m4-4H3' />
             </svg>
-          </button>
+          </Button>
         </div>
       </section>
 
@@ -427,7 +427,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
           <div className='flex flex-col md:flex-row justify-between items-center gap-6'>
             <div className='flex items-center gap-3'>
               <div className='size-8 bg-primary rounded flex items-center justify-center'>
-                <svg className='size-4 text-white' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                <svg className='size-4 text-primary-foreground' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                   <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2' />
                 </svg>
               </div>

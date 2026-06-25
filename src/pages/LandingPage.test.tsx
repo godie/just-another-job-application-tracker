@@ -90,23 +90,21 @@ describe('LandingPage', () => {
       expect(privacyLink.className).toMatch(/\bhover:text-foreground\b/);
     });
 
-    it('language switcher uses shadcn tokens for active/inactive states', () => {
+    it('language switcher uses Button component with primary/outline variants', () => {
       const enButton = screen.getByText('EN');
       expect(enButton.className).toMatch(/\bbg-primary\b/);
       expect(enButton.className).toMatch(/\btext-primary-foreground\b/);
 
       const esButton = screen.getByText('ES');
       expect(esButton.className).toMatch(/\bbg-background\b/);
-      expect(esButton.className).toMatch(/\btext-foreground\b/);
-      expect(esButton.className).toMatch(/\bhover:bg-muted\b/);
-      expect(esButton.className).toMatch(/\bborder-border\b/);
+      // outline variant uses border-input and hover:bg-accent via Button component
+      expect(esButton.className).toMatch(/\bborder-\b/);
     });
 
-    it('See Features button uses border-border text-foreground hover:bg-muted', () => {
+    it('See Features button uses outline variant from design system', () => {
       const seeFeatures = screen.getByText('See Features');
-      expect(seeFeatures.className).toMatch(/\bborder-border\b/);
-      expect(seeFeatures.className).toMatch(/\btext-foreground\b/);
-      expect(seeFeatures.className).toMatch(/\bhover:bg-muted\b/);
+      expect(seeFeatures.className).toMatch(/\bbg-background\b/);
+      expect(seeFeatures.className).toMatch(/\bborder-\b/);
     });
 
     it('features section uses bg-muted/50 as background', () => {
@@ -148,16 +146,15 @@ describe('LandingPage', () => {
       container = rendered.container;
     });
 
-    it('CTA buttons use terracotta brand colors', () => {
+    it('CTA buttons use design-system primary color', () => {
       const getStarted = screen.getAllByText('Get Started')[0];
-      expect(getStarted.className).toMatch(/\bbg-terracotta-600\b/);
-      expect(getStarted.className).toMatch(/\bhover:bg-terracotta-700\b/);
-      expect(getStarted.className).toMatch(/\bborder-terracotta-700\b/);
+      expect(getStarted.className).toMatch(/\bbg-primary\b/);
+      expect(getStarted.className).toMatch(/\btext-primary-foreground\b/);
     });
 
-    it('Enter Application nav button uses terracotta brand colors', () => {
+    it('Enter Application nav button uses design-system primary color', () => {
       const enterApp = screen.getAllByText('Enter Application')[0];
-      expect(enterApp.className).toMatch(/\bbg-terracotta-600\b/);
+      expect(enterApp.className).toMatch(/\bbg-primary\b/);
     });
 
     it('hero gradient uses brand colors (sage + terracotta + earth)', () => {
@@ -170,32 +167,32 @@ describe('LandingPage', () => {
       expect(ctaGradient).not.toBeNull();
     });
 
-    it('white CTA button uses terracotta text and border', () => {
-      const whiteButton = container.querySelector('.bg-white.text-terracotta-700');
+    it('bottom CTA button uses white background with foreground text', () => {
+      const whiteButton = container.querySelector('.bg-white.text-foreground');
       expect(whiteButton).not.toBeNull();
     });
 
-    it('features section label uses terracotta accent text', () => {
-      const featuresLabel = container.querySelector('.text-terracotta-600');
+    it('features section label uses destructive accent text', () => {
+      const featuresLabel = container.querySelector('#features .text-destructive');
       expect(featuresLabel).not.toBeNull();
       expect(featuresLabel?.textContent?.trim()).toBe('Features');
     });
 
-    it('roadmap section label uses terracotta accent text', () => {
+    it('roadmap section label uses destructive accent text', () => {
       const roadmapLabel = screen.getByText('Roadmap');
-      expect(roadmapLabel.className).toMatch(/\btext-terracotta-600\b/);
+      expect(roadmapLabel.className).toMatch(/\btext-destructive\b/);
     });
 
-    it('decorative SVG patterns use brand colors', () => {
+    it('decorative SVG patterns use design-system tokens', () => {
       const decorativeSvgs = container.querySelectorAll('[aria-hidden="true"] svg');
       expect(decorativeSvgs.length).toBeGreaterThanOrEqual(1);
 
-      const hasBrandColor = Array.from(decorativeSvgs).some(
+      const hasTokenColor = Array.from(decorativeSvgs).some(
         (svg) =>
-          svg.className.includes('text-sage-') ||
-          svg.className.includes('text-terracotta-')
+          svg.className.includes('text-primary') ||
+          svg.className.includes('text-destructive')
       );
-      expect(hasBrandColor).toBe(true);
+      expect(hasTokenColor).toBe(true);
     });
   });
 
@@ -266,7 +263,7 @@ describe('LandingPage', () => {
       const { container } = render(<LandingPage onNavigate={onNavigate} />);
 
       const structure = {
-        ctaButtons: container.querySelectorAll('.bg-terracotta-600').length,
+        ctaButtons: container.querySelectorAll('.bg-primary').length,
         featureCards: container.querySelectorAll('.bg-card.border.border-border').length,
         roadmapItems: container.querySelectorAll('.group-hover\\:text-primary, [class*="group-hover:text-primary"]').length ||
           Array.from(container.querySelectorAll('[class]')).filter((el) =>

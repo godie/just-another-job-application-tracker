@@ -2,11 +2,11 @@
 
 exports[`LandingPage > matches LandingPage structural snapshot 1`] = `
 {
-  "ctaButtons": 2,
+  "ctaButtons": 5,
   "decorativeSvgs": 3,
   "featureCards": 6,
   "footerSections": 1,
   "navLinks": 2,
-  "roadmapItems": 4,
+  "roadmapItems": 8,
 }
 `;
