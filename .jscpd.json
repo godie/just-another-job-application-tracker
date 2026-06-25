@@ -1,0 +1,15 @@
+{
+  "threshold": 10,
+  "ignore": [
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/api/vendor/**",
+    "**/.git/**",
+    "**/public/**",
+    "**/scripts/**"
+  ],
+  "reporters": ["json"],
+  "absolute": true
+}
