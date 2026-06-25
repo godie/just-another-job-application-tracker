@@ -175,6 +175,9 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigate }) => {
                   src='/screenshots/table_view.png'
                   alt='Application tracking interface'
                   className='w-full h-full object-cover'
+                  // Hero image is the LCP candidate: prioritize fetch, decode off-main-thread
+                  fetchPriority='high'
+                  decoding='async'
                 />
                 <div className='absolute inset-0 bg-gradient-to-t from-earth-900/20 to-transparent'></div>
               </div>
