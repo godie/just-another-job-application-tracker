@@ -15,13 +15,15 @@ The audit memo's historical note records that the file last passed at commit `af
 
 ## Snapshot staleness
 
-Measurements below are **anchored at commit `cdafe81`** (the audit memo pair + the audit memo's anchor commit). Working tree grew slightly to **224 LOC** (vs audit snapshot of 207 LOC); +17 LOC, an **8% drift** since the audit. **8% drift is well within acceptable bounds — it is NOT a refactor trigger today.** The audit memo's stated 300-LOC threshold remains the right bar; this doc is not chasing a moving target, it is documenting where the next move becomes worthwhile. **Re-measure before doing the refactor**; if either value drifts significantly, **re-anchor at the new commit hash** so this doc stays accurate.
+**Empirical anchor correction (commit `aec2bfb`):** The audit memo previously stated the `FiltersBar.tsx` LOC anchor as **207 LOC at `cdafe81`**. That figure was a minor stale measurement (~8% off) at the time the memo was authored. `git show cdafe81:src/components/FiltersBar.tsx | wc -l` returns **224 LOC** — the same value as the working tree today. There is no actual drift between anchor and HEAD; both values equal 224 LOC.
+
+Working tree: **224 LOC** (`aec2bfb` verified via `wc -l`). Audit anchor (`cdafe81`): **224 LOC** (`aec2bfb` verified via `git show`). Same value, no drift. The audit memo's stated 300-LOC threshold remains the right bar; this doc is not chasing a moving target, it is documenting where the next move becomes worthwhile. **Re-measure before doing the refactor**; if either value drifts in the future, **re-anchor at the new commit hash** so this doc stays accurate.
 
 ## Current state (snapshot at commit `5310761`)
 
 | Measurement                                                              | Value      | Drift from audit (`cdafe81`) |
 |--------------------------------------------------------------------------|------------|------------------------------|
-| `src/components/FiltersBar.tsx` LOC                                      | 224        | +17 (8% growth)              |
+| `src/components/FiltersBar.tsx` LOC                                      | 224        | **0 (verified — anchor + working tree both 224)** |
 | `react-doctor-disable-next-line` suppressions                            | 1          | unchanged (line 51, both `no-derived-state` + `no-chain-state-updates`) |
 | `Filters` interface fields (search, status, statusInclude, statusExclude, platform, dateFrom, dateTo) | 7 | unchanged |
 | Mount / prop-watch refs (initialSearchRef, filtersRef, onFiltersChangeRef, isMountedRef, lastSearchFromPropsRef) | 5 | unchanged |
@@ -73,12 +75,12 @@ Mechanics (high level):
 
 ## References
 
-- `DOCS/REACT_DOCTOR_AUDIT.md` § "Projected next refactor candidates" + "Live suppression inventory" — original analysis + audit memo (207 LOC anchor + rationale-by-name convention for the line 51 suppression).
+- `DOCS/REACT_DOCTOR_AUDIT.md` § "Projected next refactor candidates" + "Live suppression inventory" — original analysis + audit memo (224 LOC anchor corrected in `aec2bfb` from previously-stated 207; rationale-by-name convention for the line 51 suppression).
 - `DOCS/HABIT_HOOKS_AUDIT.md` — confirms rules still pass at the snapshot; cross-reference for the `// ---` banner discipline that produced the af0b04f normalisation.
 - commit **`af0b04f`** — `FiltersBar.tsx` `// ---` banner normalisation + the disable-directive rationale-by-name it carries today.
 - commit **`bd534ec`** — OpportunitiesPage refactor that produced `syncSearchTermToCanonicalProp` extracted from a parallel fix on OpportunitiesPage's filter plumbing; **the helper's name is the audit-cited rationale, do not rename.**
 - commit **`997c7a0`** — OpportunitiesPage `recentCount` duplicate-state cleanup; included as the precedent for state-model simplification rather than hook split.
-- commit **`cdafe81`** — the audit memo pair that established the projected threshold + 207 LOC anchor for `FiltersBar.tsx`.
+- commit **`cdafe81`** — the audit memo pair that established the projected threshold for `FiltersBar.tsx`. The 207 LOC anchor figure in earlier revisions was a minor ~8% stale measurement, corrected to **224 LOC** in `aec2bfb` against `git show cdafe81:src/components/FiltersBar.tsx | wc -l`.
 - commit **`5310761`** — current branch HEAD (`FiltersBar.tsx` at 224 LOC — drift noted above). **Re-anchor here on next revision.**
 
 ## Estimate (well-informed gut, not engineering-grade)

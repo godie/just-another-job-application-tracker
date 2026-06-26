@@ -127,7 +127,9 @@ full detail (mechanics + non-goals + acceptance criteria) at
 Pick up the task from that doc when the trigger condition fires;
 don't re-derive the plan here.
 
-### `src/components/FiltersBar.tsx` — 207 LOC
+### `src/components/FiltersBar.tsx` — 224 LOC at audit anchor
+
+**Correction (commit `aec2bfb`, caught during cross-doc sanity-check while fixing matching.ts):** The audit memo header previously stated **207 LOC**, but `git show cdafe81:src/components/FiltersBar.tsx | wc -l` returns **224 LOC** — the same value as the working tree today. The 207 figure was a minor stale measurement (~8% off) at the time the memo was authored; the actual anchor value is **224 LOC**. The 1-suppression inventory entry (`no-derived-state`, `no-chain-state-updates` at line 51) is unchanged and stable.
 
 Already passed once (commit `af0b04f` normalised a habit-hooks
 finding on its `// ---` banner and the disable-directive WHY kept
@@ -143,7 +145,9 @@ at [`DOCS/FOLLOWUP_FILTERSBAR_REFACTOR.md`](../DOCS/FOLLOWUP_FILTERSBAR_REFACTOR
 Pick up the task from that doc when the trigger condition fires;
 don't re-derive the plan here.
 
-### `src/utils/matching.ts` — 141 LOC
+### `src/utils/matching.ts` — 446 LOC at audit anchor (NOT 141)
+
+**Correction (commit `aec2bfb`):** The audit memo header previously stated **141 LOC**, but `git show cdafe81:src/utils/matching.ts | wc -l` returns **446 LOC** — the same value as the working tree today. The 141 figure was a measurement error (~3× stale) at the time the memo was authored; the actual anchor value is **446 LOC**. The 4-suppression inventory entries (lines 76, 96, 221, 223) are unchanged and stable across `cdafe81` → HEAD. **Before any future contributor builds a refactor strategy off a memo LOC figure, verify it with `git show <anchor>:<file> | wc -l`** — this correction is the second finding in a row showing the memo's stated LOC anchors have been stale on author submission.
 
 Four `js-set-map-lookups` suppressions are concentrated here. If a
 fifth is added under future refactor, **stop and consider**: the
@@ -161,8 +165,9 @@ adding a fifth.
 **Followup tracking:** the candidate splits above are tracked in
 full detail (profile-first + scoring sub-module +
 suppression-preservation disambiguation + empirically-measured
-working-tree drift distribution from audit-anchor 141 LOC →
-current 446 LOC) at
+working-tree drift distribution from audit-anchor **446 LOC at
+`cdafe81`** — same as today; zero growth in `cdafe81..4f11fd3` per
+`git log`) at
 [`DOCS/FOLLOWUP_MATCHING_REFACTOR.md`](../DOCS/FOLLOWUP_MATCHING_REFACTOR.md).
 Pick up the task from that doc when the trigger condition (LOC
 > ~700 OR a 5th `js-set-map-lookups` suppression) fires; don't
@@ -209,3 +214,24 @@ prompt (e.g. `habit-hooks-prompts/react-doctor-suppression-sync.md`)
 is a future option, but it would only fire when a
 `react-doctor` rule actually triggers — which is the realistic
 case for any brand-new suppression.
+
+**Anchor-figure verification (commit 466936d, expanded):**
+the following LOC figures in this audit memo AND in the companion
+`DOCS/HABIT_HOOKS_AUDIT.md` were empirically cross-checked against
+`git show <commit>:<path> | wc -l` (SettingsPage.tsx) and
+a `const SettingsPageContent`-bounded measurement
+(`useSettingsManager` arrow block, lines 88-389):
+
+| File / claim                                            | Stated value       | Verified against                                | Status                                       |
+|---------------------------------------------------------|-------------------:|-------------------------------------------------|----------------------------------------------|
+| `src/utils/matching.ts`                                 | 446 LOC            | `cdafe81` + HEAD                                | **Verified (was 141 in prior memos — now 446)** |
+| `src/components/FiltersBar.tsx`                         | 224 LOC            | `cdafe81` + HEAD                                | **Verified (was 207 in prior memos — now 224)** |
+| `src/pages/SettingsPage.tsx`                            | 578 LOC            | `cdafe81` + `23ff536` + `997c7a0` + HEAD        | **Verified (was already 578, all anchors agree)** |
+| `useSettingsManager()` hook (HABIT_HOOKS_AUDIT § oversized-*) | 302 LOC      | `cdafe81` + `23ff536` + `997c7a0` + HEAD        | **Verified (was 302 at all anchors — 578 LOC file, 391-2-88+1 = 302-line hook block)** |
+
+**Other LOC-style claims in this memo, in `DOCS/HABIT_HOOKS_AUDIT.md`, and in the FOLLOWUP_*.md trackers are forward-looking projections (`X LOC after refactor`) or trigger thresholds (`X LOC file-size cut-off`).** These are NOT anchor claims and are NOT subject to empirical `git show` re-anchoring; they describe what would happen IF a refactor landed or IF the file grew past the threshold. Examples:
+- `~700 LOC` triggers in `REACT_DOCTOR_AUDIT.md` and `FOLLOWUP_SETTINGS_PAGE_REFACTOR.md` — forward threshold, NOT an anchor.
+- `FiltersBar.tsx LOC ≤ 180 (estimated after the extraction)` — post-refactor projection, NOT an anchor.
+- `~50 LOC` orchestrator-shrinkage estimates in the SettingsPage candidates — post-refactor projection, NOT an anchor.
+
+Future contributors should re-verify any SPECIFIC HISTORICAL LOC CLAIM (i.e., a numeric value tied to a commit-hash anchor) with `git show <commit>:<path> | wc -l` before quoting it; the non-goal in `DOCS/FOLLOWUP_MATCHING_REFACTOR.md § Non-goals` captures this discipline. **No new stale-anchor findings surfaced in this verification expansion** — the audit-memo pair's stated empirical claims (4 LOC figures across 3 files) are all consistent with `git show` measurements.

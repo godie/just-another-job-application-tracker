@@ -144,3 +144,24 @@ vitest            ✅ 815/815 tests
   aligned**; adding or removing a `react-doctor-disable-next-line`
   should refresh the sibling in the same commit. **There is no
   automated gate enforcing this today.**
+
+## Anchor-figure verification (commit `466936d`)
+
+The LOC figures cited in the audit-memo pair were empirically
+cross-checked against `git show <commit>:<path> | wc -l` and the
+**bounding-marker technique** for in-file blocks: find
+`const SettingsPageContent: React.FC` (the line immediately after
+`useSettingsManager` closes), walk backward 2 lines to find the
+`};` that closes the function body, and compute the LOC delta from
+the `const useSettingsManager = () => {` declaration.
+
+| Claim                                                | Stated in this memo | Verified against                                | Status                                       |
+|------------------------------------------------------|--------------------:|-------------------------------------------------|----------------------------------------------|
+| `SettingsPage.tsx` total LOC                         | 578 LOC             | `cdafe81` + `23ff536` + `997c7a0` + HEAD        | **Verified (was already 578, all anchors agree)** |
+| `useSettingsManager()` hook LOC                      | 302 LOC             | `cdafe81` + `23ff536` + `997c7a0` + HEAD        | **Verified (matches `391 - 2 - 88 + 1 = 302`)** |
+| `useSettingsManager` declaration starts              | (line) 88           | working tree                                     | **Verified (matches `grep -n`)**             |
+| `useSettingsManager` block ends                      | (line) 389          | working tree                                     | **Verified (matches `awk`-based balanced-brace scan against the `SettingsPageContent`-bounded window)** |
+
+**No new stale-anchor findings.** `npx habit-hooks` reported `0` violations at all four anchor commits for both files referenced above; the audit memo's negative-finding claim ("rule thresholds are sized such that we'd have to grow SettingsPage further before it triggered") is the right framing.
+
+Future contributors cross-referencing this audit memo for historical LOC claims should re-verify any SPECIFIC HISTORICAL LOC CLAIM (tied to a commit-hash anchor) with `git show <commit>:<path> | wc -l` before quoting it. Forward-looking claims (trigger thresholds, post-refactor projections) are NOT audited here.
