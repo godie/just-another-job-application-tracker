@@ -28,9 +28,9 @@ const SyncStatusInfo: React.FC<SyncStatusInfoProps> = ({
       <p className="text-sm text-muted-foreground">
         <span className="font-medium">{t('sheets.status')}:</span>{' '}
         {syncStatus.lastSyncError ? (
-          <span className="text-red-600 dark:text-red-400">{t('common.status')}: {syncStatus.lastSyncError}</span>
+          <span className="text-red-600 dark:text-red-300">{t('common.status')}: {syncStatus.lastSyncError}</span>
         ) : syncStatus.lastSyncTime ? (
-          <span className="text-green-600 dark:text-green-400">{t('sheets.synced', { time: formatLastSyncTime(syncStatus.lastSyncTime) })}</span>
+          <span className="text-green-600 dark:text-green-300">{t('sheets.synced', { time: formatLastSyncTime(syncStatus.lastSyncTime) })}</span>
         ) : (
           <span className="text-muted-foreground">{t('sheets.notSynced')}</span>
         )}

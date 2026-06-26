@@ -27,14 +27,14 @@ export const ProposedUpdateItem: React.FC<ProposedUpdateItemProps> = ({
         checked={isSelected}
         onChange={onToggle}
         aria-label={`Select update: ${update.position} at ${update.company}`}
-        className="mt-1 size-5 text-green-600 dark:text-green-400 border-border rounded focus:ring-green-500"
+        className="mt-1 size-5 text-green-600 dark:text-green-300 border-border rounded focus:ring-green-500"
       />
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-1">
           <label htmlFor={update.id} className="font-bold text-foreground cursor-pointer group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors">
             {update.position} <span className="text-muted-foreground font-normal mx-1">@</span> {update.company}
           </label>
-          <span className="px-2 py-0.5 rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-[10px] font-bold uppercase tracking-wider">
+          <span className="px-2 py-0.5 rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 text-[10px] font-bold uppercase tracking-wider">
             +{t(`insights.interviewTypes.${update.newEvent.type}`)}
           </span>
         </div>
