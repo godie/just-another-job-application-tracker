@@ -11,7 +11,6 @@ import type { JobOpportunity } from '../types/opportunities';
 import OpportunityForm from '../components/OpportunityForm';
 import ConfirmDialog from '../components/ConfirmDialog';
 
-
 import { useOpportunitiesStore } from '../stores/opportunitiesStore';
 import { useApplicationsStore } from '../stores/applicationsStore';
 import OpportunitiesEmptyState from '../components/OpportunitiesEmptyState';
@@ -22,10 +21,6 @@ import { PageHeader } from '../components/ui/PageHeader';
 import { type PageType } from '../App';
 import type { JobSearchParams, UnifiedJobResult } from '../types/jobSearch';
 import { getTodayDate, parseDateString } from '../utils/dateHelpers';
-
-interface OpportunitiesPageContentProps {
-  onNavigate?: (page: PageType) => void;
-}
 
 interface OpportunitiesPageState {
   searchTerm: string;
@@ -89,24 +84,212 @@ function opportunitiesPageReducer(state: OpportunitiesPageState, action: Opportu
   }
 }
 
+interface OpportunitiesPageContentProps {
+  onNavigate?: (page: PageType) => void;
+}
+
 const OpportunitiesPageContent: React.FC<OpportunitiesPageContentProps> = () => {
   const { t } = useTranslation();
-  const { showSuccess, showError } = useAlert();
 
   useSEO({
     title: t('seo.opportunities.title'),
     description: t('seo.opportunities.description'),
   });
+
   const { formatLocaleDate } = useFormatDate();
-  
+  const opportunities = useOpportunitiesStore((state) => state.opportunities);
+
+  const manager = useOpportunitiesManager();
+
+  return (
+    <div className='max-w-7xl mx-auto px-6 lg:px-8 py-8'>
+      {/* ── HERO ZONE ── Header + Add Opportunity CTA ── */}
+      <PageHeader
+        category="Pipeline"
+        title={t('opportunities.title')}
+        description={t('opportunities.subtitle')}
+        actionLabel={t('opportunities.addOpportunity')}
+        onAction={manager.openForm}
+      />
+
+      {/* ── METRICS ── Asymmetric layout: Opportunities dominant, Recent & Remote compact ── */}
+      <OpportunitiesMetrics
+        total={opportunities.length}
+        recentCount={manager.recentCount}
+        remoteCount={manager.remoteCount}
+      />
+
+      {/* ── JOB SEARCH ── ── */}
+      <OpportunitiesJobSearchSection
+        isSearching={manager.isSearching}
+        searchResults={manager.searchResults}
+        searchError={manager.searchError}
+        searchTotal={manager.searchTotal}
+        searchHasMore={manager.searchHasMore}
+        searchErrors={manager.searchErrors}
+        savedSearchIds={manager.savedSearchIds}
+        onSearch={manager.handleJobSearch}
+        onLoadMore={manager.handleLoadMore}
+        onSaveAsOpportunity={manager.handleSaveAsOpportunity}
+      />
+
+      {/* ── CONTENT ── Table or Empty State ── */}
+      {opportunities.length === 0 ? (
+        <OpportunitiesEmptyState />
+      ) : (
+        <OpportunitiesTable
+          opportunities={opportunities}
+          filteredOpportunities={manager.filteredOpportunities}
+          searchTerm={manager.searchTerm}
+          onSearchChange={manager.setSearchTerm}
+          onApply={manager.handleApply}
+          onDelete={manager.handleDelete}
+          formatDate={formatLocaleDate}
+        />
+      )}
+
+      <OpportunityForm
+        isOpen={manager.isFormOpen}
+        onClose={manager.closeForm}
+        onSave={manager.handleAddOpportunity}
+      />
+      <ConfirmDialog
+        isOpen={manager.deleteConfirm.isOpen}
+        title={t('opportunities.deleteConfirm.title')}
+        message={t('opportunities.deleteConfirm.message', {
+          position: manager.deleteConfirm.opportunity?.position,
+          company: manager.deleteConfirm.opportunity?.company
+        })}
+        confirmText={t('common.delete')}
+        cancelText={t('common.cancel')}
+        type='danger'
+        onConfirm={manager.confirmDelete}
+        onCancel={manager.closeDeleteConfirm}
+      />
+      <Footer version="2.1.4" />
+    </div>
+  );
+};
+
+interface OpportunitiesPageProps {
+  onNavigate?: (page: PageType) => void;
+}
+
+const OpportunitiesPage: React.FC<OpportunitiesPageProps> = ({ onNavigate }) => {
+  return <OpportunitiesPageContent onNavigate={onNavigate} />;
+};
+
+export default OpportunitiesPage;
+
+interface OpportunitiesMetricsProps {
+  total: number;
+  recentCount: number;
+  remoteCount: number;
+}
+
+const OpportunitiesMetrics: React.FC<OpportunitiesMetricsProps> = ({ total, recentCount, remoteCount }) => {
+  const { t } = useTranslation();
+  return (
+    <section className='grid grid-cols-2 sm:grid-cols-4 gap-4 mb-10' data-testid='opportunities-metrics'>
+      {/* Dominant metric: Total Opportunities — spans 2 columns */}
+      <div className='col-span-2 bg-muted p-6 border-l-2 border-border transition-colors duration-300'>
+        <p className='text-sm font-medium text-muted-foreground tracking-wide uppercase'>
+          {t('opportunities.metrics.total', 'Total Opportunities')}
+        </p>
+        <p className='mt-2 font-serif text-5xl sm:text-6xl font-bold text-foreground leading-none'>
+          {total}
+        </p>
+      </div>
+
+      {/* Compact metric: Recent (last 7 days) */}
+      <div className='bg-primary/5 dark:bg-primary/10 p-5 border-l-2 border-primary/30 dark:border-primary transition-colors duration-300'>
+        <p className='text-xs font-medium text-primary tracking-wide uppercase'>
+          {t('opportunities.metrics.thisWeek', 'This Week')}
+        </p>
+        <p className='mt-1 font-serif text-3xl font-bold text-primary dark:text-primary-foreground'>
+          {recentCount}
+        </p>
+      </div>
+
+      {/* Compact metric: Remote */}
+      <div className='bg-muted p-5 border-l-2 border-border transition-colors duration-300'>
+        <p className='text-xs font-medium text-muted-foreground tracking-wide uppercase'>
+          {t('opportunities.metrics.remote', 'Remote')}
+        </p>
+        <p className='mt-1 font-serif text-3xl font-bold text-foreground'>
+          {remoteCount}
+        </p>
+      </div>
+    </section>
+  );
+};
+
+interface OpportunitiesJobSearchSectionProps {
+  isSearching: boolean;
+  searchResults: UnifiedJobResult[];
+  searchError: string | null;
+  searchTotal: number;
+  searchHasMore: boolean;
+  searchErrors: Array<{ source: string; message: string }>;
+  savedSearchIds: Set<string>;
+  onSearch: (params: JobSearchParams) => Promise<void>;
+  onLoadMore: () => Promise<void>;
+  onSaveAsOpportunity: (job: UnifiedJobResult) => void;
+}
+
+const OpportunitiesJobSearchSection: React.FC<OpportunitiesJobSearchSectionProps> = ({
+  isSearching,
+  searchResults,
+  searchError,
+  searchTotal,
+  searchHasMore,
+  searchErrors,
+  savedSearchIds,
+  onSearch,
+  onLoadMore,
+  onSaveAsOpportunity,
+}) => {
+  const { t } = useTranslation();
+  return (
+    <div className='mb-8'>
+      <div className='mb-3'>
+        <h2 className='text-xl font-semibold text-foreground'>
+          {t('opportunities.jobSearch.title')}
+        </h2>
+        <p className='text-sm text-muted-foreground mt-1'>
+          {t('opportunities.jobSearch.subtitle')}
+        </p>
+      </div>
+      <JobSearchForm
+        onSearch={onSearch}
+        isSearching={isSearching}
+      />
+      <JobSearchResults
+        results={searchResults}
+        isLoading={isSearching}
+        error={searchError}
+        totalCount={searchTotal}
+        hasMore={searchHasMore}
+        onLoadMore={onLoadMore}
+        onSaveAsOpportunity={onSaveAsOpportunity}
+        savedIds={savedSearchIds}
+        errors={searchErrors}
+      />
+    </div>
+  );
+};
+
+function useOpportunitiesManager() {
+  const { t } = useTranslation();
+  const { showSuccess, showError } = useAlert();
+
   const opportunities = useOpportunitiesStore((state) => state.opportunities);
   const loadOpportunities = useOpportunitiesStore((state) => state.loadOpportunities);
   const addOpportunity = useOpportunitiesStore((state) => state.addOpportunity);
   const deleteOpportunity = useOpportunitiesStore((state) => state.deleteOpportunity);
   const refreshOpportunities = useOpportunitiesStore((state) => state.refreshOpportunities);
-  
   const addApplication = useApplicationsStore((state) => state.addApplication);
-  
+
   const [state, dispatch] = useReducer(opportunitiesPageReducer, {
     searchTerm: '',
     isFormOpen: false,
@@ -126,24 +309,24 @@ const OpportunitiesPageContent: React.FC<OpportunitiesPageContentProps> = () => 
 
   useEffect(() => {
     loadOpportunities();
-    
+
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === 'jobOpportunities' || e.key === null) {
         refreshOpportunities();
       }
     };
-    
+
     const handleOpportunitiesUpdate = () => {
       refreshOpportunities();
     };
-    
+
     window.addEventListener('storage', handleStorageChange);
     window.addEventListener('jobOpportunitiesUpdated', handleOpportunitiesUpdate as EventListener);
-    
+
     const interval = setInterval(() => {
       refreshOpportunities();
     }, 2000);
-    
+
     return () => {
       window.removeEventListener('storage', handleStorageChange);
       window.removeEventListener('jobOpportunitiesUpdated', handleOpportunitiesUpdate as EventListener);
@@ -154,9 +337,9 @@ const OpportunitiesPageContent: React.FC<OpportunitiesPageContentProps> = () => 
   const handleApply = (opportunity: JobOpportunity) => {
     try {
       const application = convertOpportunityToApplication(opportunity);
-      
+
       addApplication(application);
-      
+
       deleteOpportunity(opportunity.id);
       try {
         window.postMessage({
@@ -166,7 +349,7 @@ const OpportunitiesPageContent: React.FC<OpportunitiesPageContentProps> = () => 
       } catch (error) {
         console.debug('Extension not available for delete sync:', error);
       }
-      
+
       showSuccess(t('opportunities.success.addedToApps', { position: opportunity.position, company: opportunity.company }));
     } catch (error) {
       console.error('Error converting opportunity:', error);
@@ -182,7 +365,7 @@ const OpportunitiesPageContent: React.FC<OpportunitiesPageContentProps> = () => 
     if (deleteConfirm.opportunity) {
       const opportunity = deleteConfirm.opportunity;
       deleteOpportunity(opportunity.id);
-      
+
       try {
         window.postMessage({
           type: 'DELETE_OPPORTUNITY',
@@ -191,7 +374,7 @@ const OpportunitiesPageContent: React.FC<OpportunitiesPageContentProps> = () => 
       } catch (error) {
         console.error('Error sending delete message to extension:', error);
       }
-      
+
       showSuccess(t('opportunities.success.deleted', { position: opportunity.position }));
       dispatch({ type: 'SET_DELETE_CONFIRM', value: { isOpen: false, opportunity: null } });
     }
@@ -201,7 +384,7 @@ const OpportunitiesPageContent: React.FC<OpportunitiesPageContentProps> = () => 
     try {
       const newOpportunity = addOpportunity(opportunityData);
       showSuccess(t('opportunities.success.added', { position: opportunityData.position, company: opportunityData.company }));
-      
+
       try {
         window.postMessage({
           type: 'SYNC_OPPORTUNITY',
@@ -282,9 +465,9 @@ const OpportunitiesPageContent: React.FC<OpportunitiesPageContentProps> = () => 
 
   const filteredOpportunities = useMemo(() => {
     if (!searchTerm.trim()) return opportunities;
-    
+
     const normalized = searchTerm.toLowerCase();
-    return opportunities.filter(opp => 
+    return opportunities.filter(opp =>
       opp.position.toLowerCase().includes(normalized) ||
       opp.company.toLowerCase().includes(normalized) ||
       opp.location?.toLowerCase().includes(normalized) ||
@@ -302,126 +485,36 @@ const OpportunitiesPageContent: React.FC<OpportunitiesPageContentProps> = () => 
   }, [opportunities]);
 
   const remoteCount = useMemo(() => {
-    return opportunities.filter(opp => 
-      opp.location?.toLowerCase().includes('remote') || 
+    return opportunities.filter(opp =>
+      opp.location?.toLowerCase().includes('remote') ||
       opp.jobType?.toLowerCase().includes('remote')
     ).length;
   }, [opportunities]);
 
-  return (
-    <div className='max-w-7xl mx-auto px-6 lg:px-8 py-8'>
-      {/* ── HERO ZONE ── Header + Add Opportunity CTA ── */}
-      <PageHeader
-        category="Pipeline"
-        title={t('opportunities.title')}
-        description={t('opportunities.subtitle')}
-        actionLabel={t('opportunities.addOpportunity')}
-        onAction={() => dispatch({ type: 'TOGGLE_FORM', value: true })}
-      />
-
-      {/* ── METRICS ── Asymmetric layout: Opportunities dominant, Recent & Remote compact ── */}
-      <section className='grid grid-cols-2 sm:grid-cols-4 gap-4 mb-10' data-testid='opportunities-metrics'>
-        {/* Dominant metric: Total Opportunities — spans 2 columns */}
-        <div className='col-span-2 bg-muted p-6 border-l-2 border-border transition-colors duration-300'>
-          <p className='text-sm font-medium text-muted-foreground tracking-wide uppercase'>
-            {t('opportunities.metrics.total', 'Total Opportunities')}
-          </p>
-          <p className='mt-2 font-serif text-5xl sm:text-6xl font-bold text-foreground leading-none'>
-            {opportunities.length}
-          </p>
-        </div>
-
-        {/* Compact metric: Recent (last 7 days) */}
-        <div className='bg-primary/5 dark:bg-primary/10 p-5 border-l-2 border-primary/30 dark:border-primary transition-colors duration-300'>
-          <p className='text-xs font-medium text-primary tracking-wide uppercase'>
-            {t('opportunities.metrics.thisWeek', 'This Week')}
-          </p>
-          <p className='mt-1 font-serif text-3xl font-bold text-primary dark:text-primary-foreground'>
-            {recentCount}
-          </p>
-        </div>
-
-        {/* Compact metric: Remote */}
-        <div className='bg-muted p-5 border-l-2 border-border transition-colors duration-300'>
-          <p className='text-xs font-medium text-muted-foreground tracking-wide uppercase'>
-            {t('opportunities.metrics.remote', 'Remote')}
-          </p>
-          <p className='mt-1 font-serif text-3xl font-bold text-foreground'>
-            {remoteCount}
-          </p>
-        </div>
-      </section>
-
-      {/* ── JOB SEARCH ── ── */}
-      <div className='mb-8'>
-        <div className='mb-3'>
-          <h2 className='text-xl font-semibold text-foreground'>
-            {t('opportunities.jobSearch.title')}
-          </h2>
-          <p className='text-sm text-muted-foreground mt-1'>
-            {t('opportunities.jobSearch.subtitle')}
-          </p>
-        </div>
-        <JobSearchForm
-          onSearch={handleJobSearch}
-          isSearching={isSearching}
-        />
-        <JobSearchResults
-          results={searchResults}
-          isLoading={isSearching}
-          error={searchError}
-          totalCount={searchTotal}
-          hasMore={searchHasMore}
-          onLoadMore={handleLoadMore}
-          onSaveAsOpportunity={handleSaveAsOpportunity}
-          savedIds={savedSearchIds}
-          errors={searchErrors}
-        />
-      </div>
-
-      {/* ── CONTENT ── Table or Empty State ── */}
-      {opportunities.length === 0 ? (
-          <OpportunitiesEmptyState />
-        ) : (
-          <OpportunitiesTable
-            opportunities={opportunities}
-            filteredOpportunities={filteredOpportunities}
-            searchTerm={searchTerm}
-            onSearchChange={(v) => dispatch({ type: 'SET_SEARCH_TERM', value: v })}
-            onApply={handleApply}
-            onDelete={handleDelete}
-            formatDate={formatLocaleDate}
-          />
-        )}
-      <OpportunityForm
-        isOpen={isFormOpen}
-        onClose={() => dispatch({ type: 'TOGGLE_FORM', value: false })}
-        onSave={handleAddOpportunity}
-      />
-      <ConfirmDialog
-        isOpen={deleteConfirm.isOpen}
-        title={t('opportunities.deleteConfirm.title')}
-        message={t('opportunities.deleteConfirm.message', {
-          position: deleteConfirm.opportunity?.position,
-          company: deleteConfirm.opportunity?.company
-        })}
-        confirmText={t('common.delete')}
-        cancelText={t('common.cancel')}
-        type='danger'
-        onConfirm={confirmDelete}
-        onCancel={() => dispatch({ type: 'SET_DELETE_CONFIRM', value: { isOpen: false, opportunity: null } })}
-      />
-      <Footer version="2.1.4" />
-    </div>
-  );
-};
-
-interface OpportunitiesPageProps {
-  onNavigate?: (page: PageType) => void;
+  return {
+    searchTerm,
+    isFormOpen,
+    searchResults,
+    isSearching,
+    searchError,
+    searchTotal,
+    searchHasMore,
+    searchErrors,
+    savedSearchIds,
+    deleteConfirm,
+    recentCount,
+    remoteCount,
+    filteredOpportunities,
+    setSearchTerm: (value: string) => dispatch({ type: 'SET_SEARCH_TERM', value }),
+    openForm: () => dispatch({ type: 'TOGGLE_FORM', value: true }),
+    closeForm: () => dispatch({ type: 'TOGGLE_FORM', value: false }),
+    confirmDelete,
+    closeDeleteConfirm: () => dispatch({ type: 'SET_DELETE_CONFIRM', value: { isOpen: false, opportunity: null } }),
+    handleApply,
+    handleDelete,
+    handleAddOpportunity,
+    handleJobSearch,
+    handleLoadMore,
+    handleSaveAsOpportunity,
+  };
 }
-
-const OpportunitiesPage: React.FC<OpportunitiesPageProps> = ({ onNavigate }) => {
-  return <OpportunitiesPageContent onNavigate={onNavigate} />;
-};
-
-export default OpportunitiesPage;
