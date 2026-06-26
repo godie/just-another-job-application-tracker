@@ -151,9 +151,10 @@ export const useFilteredApplications = (applications: JobApplication[], filters:
       availablePlatforms: availablePlatformsRef.current,
       nonDeletedApplications: nonDeletedApplicationsRef.current,
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- cache invalidation on locale change; metadataCache is ref-backed.
-    // react-doctor-disable-next-line exhaustive-deps -- i18n.language triggers cache invalidation on locale change; metadataCache is derived from cacheRef.current (ref-backed). All deps listed.
-  }, [applications, t, currentTime, i18n.language, metadataCache]);
+    // Note: `i18n.language` intentionally absent from deps. react-i18next re-binds `t`
+    // on locale change, which forces this useMemo to re-execute and rebuild translations.
+    // The metadata cache is independently cleared on language shift (render body above).
+  }, [applications, t, currentTime, metadataCache]);
 
   const filteredApplications = useMemo(() => {
     const normalizedSearch = filters.search.trim().toLowerCase();
