@@ -121,6 +121,12 @@ splits (in order of **yield vs. blast-radius**):
    so it is a lower-yield second move once the per-section move is
    out of the way.
 
+**Followup tracking:** the candidate splits above are tracked in
+full detail (mechanics + non-goals + acceptance criteria) at
+[`DOCS/FOLLOWUP_SETTINGS_PAGE_REFACTOR.md`](../DOCS/FOLLOWUP_SETTINGS_PAGE_REFACTOR.md).
+Pick up the task from that doc when the trigger condition fires;
+don't re-derive the plan here.
+
 ### `src/components/FiltersBar.tsx` — 207 LOC
 
 Already passed once (commit `af0b04f` normalised a habit-hooks
