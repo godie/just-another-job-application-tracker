@@ -133,3 +133,14 @@ vitest            ✅ 815/815 tests
   cleanup (orthogonal; included here because it tightened the
   manager hook, keeping it well under the `oversized-function`
   threshold for the foreseeable future).
+
+## Companion document
+
+- **`DOCS/REACT_DOCTOR_AUDIT.md`** — the React-correctness sibling
+  inventory. Covers the 7 `react-doctor-disable-next-line`
+  suppressions in `src/`, the policy on adding new ones, and the
+  projected next refactor candidates for SettingsPage, FiltersBar,
+  and matching.ts. **Recommended that these two inventories stay
+  aligned**; adding or removing a `react-doctor-disable-next-line`
+  should refresh the sibling in the same commit. **There is no
+  automated gate enforcing this today.**
