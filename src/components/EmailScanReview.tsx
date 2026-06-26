@@ -24,7 +24,6 @@ import { emailScanReviewReducer } from './emailScanReducer';
 
 type ActiveTab = 'automatic' | 'manual';
 
-// --- Sub-components (kept co-located: strictly private to this panel) ---
 
 const EmailScanHeader: React.FC = () => {
   const { t } = useTranslation();

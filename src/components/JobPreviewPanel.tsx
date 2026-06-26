@@ -21,7 +21,6 @@ interface JobPreviewPanelProps {
 
 const NOTES_EXCERPT_MAX_LENGTH = 150;
 
-// --- Sub-components (kept co-located: strictly private to the panel) ---
 
 const PreviewHeader: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const { t } = useTranslation();
