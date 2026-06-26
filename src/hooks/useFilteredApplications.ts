@@ -151,9 +151,6 @@ export const useFilteredApplications = (applications: JobApplication[], filters:
       availablePlatforms: availablePlatformsRef.current,
       nonDeletedApplications: nonDeletedApplicationsRef.current,
     };
-    // Note: `i18n.language` intentionally absent from deps. react-i18next re-binds `t`
-    // on locale change, which forces this useMemo to re-execute and rebuild translations.
-    // The metadata cache is independently cleared on language shift (render body above).
   }, [applications, t, currentTime, metadataCache]);
 
   const filteredApplications = useMemo(() => {

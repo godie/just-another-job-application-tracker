@@ -34,6 +34,11 @@ const FiltersBar: React.FC<FiltersBarProps> = React.memo(({ filters, onFiltersCh
   filtersRef.current = filters;
   onFiltersChangeRef.current = onFiltersChange;
 
+  const syncSearchTermToCanonicalProp = (canonical: string) => {
+    setSearchTerm(canonical);
+    lastSearchFromPropsRef.current = canonical;
+  };
+
   useEffect(() => {
     const currentSearchTerm = searchTerm;
     if (!isMountedRef.current) {
@@ -43,9 +48,8 @@ const FiltersBar: React.FC<FiltersBarProps> = React.memo(({ filters, onFiltersCh
     }
 
     if (filters.search !== lastSearchFromPropsRef.current && filters.search !== currentSearchTerm) {
-      // react-doctor-disable-next-line no-derived-state,no-chain-state-updates -- intentional prop→state debounce sync
-      setSearchTerm(filters.search);
-      lastSearchFromPropsRef.current = filters.search;
+      // react-doctor-disable-next-line no-derived-state,no-chain-state-updates
+      syncSearchTermToCanonicalProp(filters.search);
     }
   }, [filters.search, searchTerm]);
 
