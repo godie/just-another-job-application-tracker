@@ -33,7 +33,6 @@ interface OpportunitiesPageState {
   searchErrors: Array<{ source: string; message: string }>;
   savedSearchIds: Set<string>;
   deleteConfirm: { isOpen: boolean; opportunity: JobOpportunity | null };
-  recentCount: number;
 }
 
 type OpportunitiesPageAction =
@@ -48,8 +47,7 @@ type OpportunitiesPageAction =
   | { type: 'APPEND_SEARCH_RESULTS'; value: UnifiedJobResult[] }
   | { type: 'APPEND_SEARCH_ERRORS'; value: Array<{ source: string; message: string }> }
   | { type: 'ADD_SAVED_SEARCH_IDS'; value: string[] }
-  | { type: 'SET_DELETE_CONFIRM'; value: { isOpen: boolean; opportunity: JobOpportunity | null } }
-  | { type: 'SET_RECENT_COUNT'; value: number };
+  | { type: 'SET_DELETE_CONFIRM'; value: { isOpen: boolean; opportunity: JobOpportunity | null } };
 
 function opportunitiesPageReducer(state: OpportunitiesPageState, action: OpportunitiesPageAction): OpportunitiesPageState {
   switch (action.type) {
@@ -77,8 +75,6 @@ function opportunitiesPageReducer(state: OpportunitiesPageState, action: Opportu
       return { ...state, savedSearchIds: new Set<string>([...state.savedSearchIds, ...action.value]) };
     case 'SET_DELETE_CONFIRM':
       return { ...state, deleteConfirm: action.value };
-    case 'SET_RECENT_COUNT':
-      return { ...state, recentCount: action.value };
     default:
       return state;
   }
@@ -97,9 +93,8 @@ const OpportunitiesPageContent: React.FC<OpportunitiesPageContentProps> = () => 
   });
 
   const { formatLocaleDate } = useFormatDate();
-  const opportunities = useOpportunitiesStore((state) => state.opportunities);
-
   const manager = useOpportunitiesManager();
+  const opportunities = manager.opportunities;
 
   return (
     <div className='max-w-7xl mx-auto px-6 lg:px-8 py-8'>
@@ -301,10 +296,9 @@ function useOpportunitiesManager() {
     searchErrors: [],
     savedSearchIds: new Set<string>(),
     deleteConfirm: { isOpen: false, opportunity: null },
-    recentCount: 0,
   });
 
-  const { searchTerm, isFormOpen, searchResults, isSearching, searchError, searchTotal, searchHasMore, searchErrors, savedSearchIds, deleteConfirm, recentCount } = state;
+  const { searchTerm, isFormOpen, searchResults, isSearching, searchError, searchTotal, searchHasMore, searchErrors, savedSearchIds, deleteConfirm } = state;
   const searchParamsRef = useRef<JobSearchParams | null>(null);
 
   useEffect(() => {
@@ -475,13 +469,13 @@ function useOpportunitiesManager() {
     );
   }, [opportunities, searchTerm]);
 
-  useEffect(() => {
+  const recentCount = useMemo(() => {
     const oneWeekAgo = getTodayDate();
     oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-    dispatch({ type: 'SET_RECENT_COUNT', value: opportunities.filter(opp => {
+    return opportunities.filter(opp => {
       const captured = opp.capturedDate ? parseDateString(opp.capturedDate) : null;
       return captured && captured >= oneWeekAgo;
-    }).length });
+    }).length;
   }, [opportunities]);
 
   const remoteCount = useMemo(() => {
@@ -492,6 +486,7 @@ function useOpportunitiesManager() {
   }, [opportunities]);
 
   return {
+    opportunities,
     searchTerm,
     isFormOpen,
     searchResults,
