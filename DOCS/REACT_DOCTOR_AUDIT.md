@@ -136,6 +136,13 @@ extract `useFiltersState()` (searchTerm, lastSearchRef, sync helper)
 into `src/hooks/useFiltersState.ts`. The pattern in
 `useFilteredApplications.ts` is the model.
 
+**Followup tracking:** the candidate split above is tracked in
+full detail (mechanics + non-goals + acceptance criteria +
+rationale-by-name preservation for `syncSearchTermToCanonicalProp`)
+at [`DOCS/FOLLOWUP_FILTERSBAR_REFACTOR.md`](../DOCS/FOLLOWUP_FILTERSBAR_REFACTOR.md).
+Pick up the task from that doc when the trigger condition fires;
+don't re-derive the plan here.
+
 ### `src/utils/matching.ts` — 141 LOC
 
 Four `js-set-map-lookups` suppressions are concentrated here. If a
@@ -150,6 +157,15 @@ trigger is size or hotness, not suppression count alone. With
 **4 suppressions concentrated here**, however, one of those
 arrays is very likely large or hot — read the call sites before
 adding a fifth.
+
+**Followup tracking:** the candidate splits above are tracked in
+full detail (constants extraction + scoring sub-module +
+suppression-preservation disambiguation + working-tree drift
+notice from audit-anchor 141 LOC → current 446 LOC) at
+[`DOCS/FOLLOWUP_MATCHING_REFACTOR.md`](../DOCS/FOLLOWUP_MATCHING_REFACTOR.md).
+Pick up the task from that doc when the trigger condition (LOC
+> ~700 OR a 5th `js-set-map-lookups` suppression) fires; don't
+re-derive the plan here.
 
 ## Verification snapshot
 
