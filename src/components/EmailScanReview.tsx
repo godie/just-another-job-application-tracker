@@ -22,6 +22,160 @@ import { ManualProcessingPanel } from './ManualProcessingPanel';
 
 import { emailScanReviewReducer } from './emailScanReducer';
 
+type ActiveTab = 'automatic' | 'manual';
+
+// --- Sub-components (kept co-located: strictly private to this panel) ---
+
+const EmailScanHeader: React.FC = () => {
+  const { t } = useTranslation();
+  return (
+    <>
+      <h2 className="text-2xl font-semibold text-foreground mb-2">
+        {t('settings.emailScan.title')}
+      </h2>
+      <p className="text-sm text-muted-foreground mb-6">
+        {t('settings.emailScan.subtitle')}
+      </p>
+    </>
+  );
+};
+
+const EmailScanTabs: React.FC<{
+  activeTab: ActiveTab;
+  onTabChange: (tab: ActiveTab) => void;
+}> = ({ activeTab, onTabChange }) => {
+  const { t } = useTranslation();
+  return (
+    <div className="flex border-b border-border mb-6">
+      <button
+        className={`px-4 py-2 font-medium text-sm transition-colors ${
+          activeTab === 'automatic'
+            ? 'border-b-2 border-primary text-primary'
+            : 'text-muted-foreground hover:text-foreground dark:text-muted-foreground'
+        }`}
+        onClick={() => onTabChange('automatic')}
+        type="button"
+      >
+        {t('settings.emailScan.tabs.automatic')}
+      </button>
+      <button
+        className={`px-4 py-2 font-medium text-sm transition-colors ${
+          activeTab === 'manual'
+            ? 'border-b-2 border-primary text-primary'
+            : 'text-muted-foreground hover:text-foreground dark:text-muted-foreground'
+        }`}
+        onClick={() => onTabChange('manual')}
+        type="button"
+      >
+        {t('settings.emailScan.tabs.manual')}
+      </button>
+    </div>
+  );
+};
+
+const EmailScanErrorBanner: React.FC<{ error: Error | null }> = ({ error }) => {
+  const { t } = useTranslation();
+  if (!error) return null;
+  const message = isGmailRateLimitError(error)
+    ? t('settings.emailScan.rateLimitError')
+    : error.message;
+  return (
+    <div
+      className="mb-4 p-3 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 text-sm"
+      role="alert"
+    >
+      {message}
+    </div>
+  );
+};
+
+interface EmailScanControlsProps {
+  scanMonths: number;
+  onScanMonthsChange: (months: number) => void;
+  onScan: () => void;
+  loading: boolean;
+  hasPreview: boolean;
+  onClearPreview: () => void;
+  onApply: () => void;
+  applying: boolean;
+  selectionCount: number;
+}
+
+const EmailScanControls: React.FC<EmailScanControlsProps> = ({
+  scanMonths,
+  onScanMonthsChange,
+  onScan,
+  loading,
+  hasPreview,
+  onClearPreview,
+  onApply,
+  applying,
+  selectionCount,
+}) => {
+  const { t } = useTranslation();
+  return (
+    <div className="flex flex-wrap items-end gap-4 mb-6">
+      <div className="flex flex-col gap-1.5">
+        <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+          {t('settings.emailScan.scanPeriod')}
+        </label>
+        <select
+          value={scanMonths}
+          onChange={(e) => onScanMonthsChange(parseInt(e.target.value))}
+          disabled={loading}
+          aria-label={t('settings.emailScan.scanPeriod')}
+          className='px-3 py-2 rounded border-border bg-card text-sm font-medium focus:ring-2 focus:ring-ring outline-none disabled:opacity-50 transition-all'
+        >
+          <option value={3}>{t('settings.emailScan.months', { count: 3 })}</option>
+          <option value={6}>{t('settings.emailScan.months', { count: 6 })}</option>
+          <option value={9}>{t('settings.emailScan.months', { count: 9 })}</option>
+          <option value={12}>{t('settings.emailScan.months', { count: 12 })}</option>
+        </select>
+      </div>
+
+      <button
+        type="button"
+        onClick={onScan}
+        disabled={loading}
+        className='px-4 py-2 rounded font-medium bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition h-[38px] flex items-center gap-2'
+      >
+        {loading ? (
+          <>
+            <svg className="animate-spin size-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            {t('settings.emailScan.scanning')}
+          </>
+        ) : (
+          t('settings.emailScan.scanGmail')
+        )}
+      </button>
+      {hasPreview && (
+        <>
+          <button
+            type="button"
+            onClick={onClearPreview}
+            className='px-4 py-2 rounded font-medium border border-border text-foreground hover:bg-muted transition'
+          >
+            {t('settings.emailScan.clearPreview')}
+          </button>
+          <button
+            type="button"
+            onClick={onApply}
+            disabled={applying || selectionCount === 0}
+            className='px-4 py-2 rounded font-medium bg-green-600 text-white hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition'
+          >
+            {applying
+              ? t('settings.emailScan.applying')
+              : t('settings.emailScan.applySelected', { count: selectionCount })}
+          </button>
+        </>
+      )}
+    </div>
+  );
+};
+
 export function EmailScanReview() {
   const { t } = useTranslation();
   const { formatShortDate } = useFormatDate();
@@ -80,8 +234,6 @@ export function EmailScanReview() {
       showError(message);
     }
   }, [scan, scanMonths, showError, t, selectedAdditions, selectedUpdates, selectedEmailIds, checkToken]);
-
-
 
   const handleApplySelected = useCallback(async () => {
     if (!preview) return;
@@ -230,129 +382,44 @@ export function EmailScanReview() {
     setDecryptedKey(apiKey);
   }, [setDecryptedKey]);
 
-
+  const showAuthed = hasGoogleLinked && hasValidToken;
 
   return (
     <div className="space-y-6">
       <div className='bg-card rounded p-6 border border-border dark:border-border'>
-        <h2 className="text-2xl font-semibold text-foreground mb-2">
-          {t('settings.emailScan.title')}
-        </h2>
-        <p className="text-sm text-muted-foreground mb-6">
-          {t('settings.emailScan.subtitle')}
-        </p>
+        <EmailScanHeader />
 
         <ScanAuthGate
           status={scanAuthStatus}
           onTokenCheck={checkToken}
         >
 
-        {hasGoogleLinked && hasValidToken && (
-        <div className="flex border-b border-border mb-6">
-          <button
-            className={`px-4 py-2 font-medium text-sm transition-colors ${
-              activeTab === 'automatic'
-                ? 'border-b-2 border-primary text-primary'
-                : 'text-muted-foreground hover:text-foreground dark:text-muted-foreground'
-            }`}
-            onClick={() => dispatch({ type: 'SET_ACTIVE_TAB', value: 'automatic' })}
-            type="button"
-          >
-            {t('settings.emailScan.tabs.automatic')}
-          </button>
-          <button
-            className={`px-4 py-2 font-medium text-sm transition-colors ${
-              activeTab === 'manual'
-                ? 'border-b-2 border-primary text-primary'
-                : 'text-muted-foreground hover:text-foreground dark:text-muted-foreground'
-            }`}
-            onClick={() => dispatch({ type: 'SET_ACTIVE_TAB', value: 'manual' })}
-            type="button"
-          >
-            {t('settings.emailScan.tabs.manual')}
-          </button>
-        </div>
+        {showAuthed && (
+          <EmailScanTabs
+            activeTab={activeTab}
+            onTabChange={(v) => dispatch({ type: 'SET_ACTIVE_TAB', value: v })}
+          />
         )}
 
-        {hasGoogleLinked && hasValidToken && error && (
-          <div
-            className="mb-4 p-3 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 text-sm"
-            role="alert"
-          >
-            {isGmailRateLimitError(error)
-              ? t('settings.emailScan.rateLimitError')
-              : error.message}
-          </div>
+        {showAuthed && (
+          <EmailScanErrorBanner error={error} />
         )}
 
-        {hasGoogleLinked && hasValidToken && (
-        <div className="flex flex-wrap items-end gap-4 mb-6">
-          <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-              {t('settings.emailScan.scanPeriod')}
-            </label>
-            <select
-              value={scanMonths}
-              onChange={(e) => dispatch({ type: 'SET_SCAN_MONTHS', value: parseInt(e.target.value) })}
-              disabled={loading}
-              aria-label={t('settings.emailScan.scanPeriod')}
-              className='px-3 py-2 rounded border-border bg-card text-sm font-medium focus:ring-2 focus:ring-ring outline-none disabled:opacity-50 transition-all'
-            >
-              <option value={3}>{t('settings.emailScan.months', { count: 3 })}</option>
-              <option value={6}>{t('settings.emailScan.months', { count: 6 })}</option>
-              <option value={9}>{t('settings.emailScan.months', { count: 9 })}</option>
-              <option value={12}>{t('settings.emailScan.months', { count: 12 })}</option>
-            </select>
-          </div>
-
-          <button
-            type="button"
-            onClick={handleScanGmail}
-            disabled={loading}
-            className='px-4 py-2 rounded font-medium bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition h-[38px] flex items-center gap-2'
-          >
-            {loading ? (
-              <>
-                <svg className="animate-spin size-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                {t('settings.emailScan.scanning')}
-              </>
-            ) : (
-              t('settings.emailScan.scanGmail')
-            )}
-          </button>
-          {preview && (
-            <>
-              <button
-                type="button"
-                onClick={clearPreview}
-                className='px-4 py-2 rounded font-medium border border-border text-foreground hover:bg-muted transition'
-              >
-                {t('settings.emailScan.clearPreview')}
-              </button>
-              <button
-                type="button"
-                onClick={handleApplySelected}
-                disabled={
-                  applying ||
-                  (selectedAdditions.size === 0 && selectedUpdates.size === 0)
-                }
-                className='px-4 py-2 rounded font-medium bg-green-600 text-white hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition'
-              >
-                {applying
-                  ? t('settings.emailScan.applying')
-                  : t('settings.emailScan.applySelected', {
-                      count: selectedAdditions.size + selectedUpdates.size,
-                    })}
-              </button>
-            </>
-          )}
-        </div>
+        {showAuthed && (
+          <EmailScanControls
+            scanMonths={scanMonths}
+            onScanMonthsChange={(v) => dispatch({ type: 'SET_SCAN_MONTHS', value: v })}
+            onScan={handleScanGmail}
+            loading={loading}
+            hasPreview={!!preview}
+            onClearPreview={clearPreview}
+            onApply={handleApplySelected}
+            applying={applying}
+            selectionCount={selectedAdditions.size + selectedUpdates.size}
+          />
         )}
 
-        {hasGoogleLinked && hasValidToken && activeTab === 'manual' && (
+        {showAuthed && activeTab === 'manual' && (
           <ManualProcessingPanel
             preview={preview}
             snippetLength={snippetLength}
@@ -370,7 +437,7 @@ export function EmailScanReview() {
           />
         )}
 
-        {hasGoogleLinked && hasValidToken && preview && (
+        {showAuthed && preview && (
           <ScanResults
             preview={preview}
             applications={applications}
