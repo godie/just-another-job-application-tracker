@@ -12,6 +12,9 @@
 
 /** @type {import('habit-hooks').Config} */
 export default {
+  // Project-local override prompts (see ./habit-hooks-prompts/<rule>.md).
+  prompts: './habit-hooks-prompts',
+
   // (1) Global scope: ignore third-party vendor code (PHPUnit fixtures, minified JS).
   scope: {
     exclude: ['api/vendor/**'],
