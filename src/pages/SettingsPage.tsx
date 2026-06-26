@@ -429,6 +429,7 @@ const SettingsPageContent: React.FC<SettingsPageProps> = ({ onNavigate }) => {
           {/* Section Content Card */}
           <Card className='overflow-hidden min-h-[500px]'>
             <div className='p-8 sm:p-12'>
+              {/* react-doctor-disable-next-line no-render-in-render -- centralized section router; inlining requires prop-drilling ~25 state/handler values */}
               {renderSection()}
             </div>
           </Card>
