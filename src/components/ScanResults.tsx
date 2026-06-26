@@ -104,7 +104,7 @@ export const ScanResults: React.FC<ScanResultsProps> = ({
         <section className="animate-in fade-in slide-in-from-bottom-4 duration-500 delay-150">
           <div className="flex items-center justify-between mb-3">
             <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
-              <span className="flex size-6 items-center justify-center rounded-full bg-green-100 text-green-700 text-xs dark:bg-green-900/40 dark:text-green-300">
+              <span className="flex size-6 items-center justify-center rounded-full bg-green-100 text-green-700 text-xs dark:bg-green-900/40 dark:text-green-200">
                 {preview.proposedUpdates.length}
               </span>
               {t('settings.emailScan.updatesToExisting', {

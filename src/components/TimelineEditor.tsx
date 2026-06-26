@@ -127,10 +127,10 @@ const TimelineEditor: React.FC<TimelineEditorProps> = ({ events, onChange }) => 
                     </span>
                     <span className='text-sm text-muted-foreground'>{event.date}</span>
                     <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${
-                      event.status === 'completed' ? 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300' :
-                      event.status === 'scheduled' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300' :
+                      event.status === 'completed' ? 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200' :
+                      event.status === 'scheduled' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-200' :
                       event.status === 'cancelled' ? 'bg-muted text-foreground dark:bg-muted dark:text-foreground' :
-                      'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300'
+                      'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-200'
                     }`}>
                       {event.status}
                     </span>

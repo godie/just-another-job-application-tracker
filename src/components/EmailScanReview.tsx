@@ -80,7 +80,7 @@ const EmailScanErrorBanner: React.FC<{ error: Error | null }> = ({ error }) => {
     : error.message;
   return (
     <div
-      className="mb-4 p-3 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 text-sm"
+      className="mb-4 p-3 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-200 text-sm"
       role="alert"
     >
       {message}

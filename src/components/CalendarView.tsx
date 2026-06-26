@@ -43,38 +43,38 @@ const getEventStyles = (status: string, isPast: boolean) => {
 
   const statusStyles: Record<string, { button: string; time: string; borderPast: string }> = {
     applied: {
-      button: 'bg-blue-50 hover:bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 dark:text-blue-300 border-blue-500 dark:border-blue-400',
-      time: 'text-blue-600 dark:text-blue-400 font-medium',
+      button: 'bg-blue-50 hover:bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 dark:text-blue-200 border-blue-500 dark:border-blue-400',
+      time: 'text-blue-600 dark:text-blue-200 font-medium',
       borderPast: 'border-blue-300 dark:border-blue-700',
     },
     interviewing: {
-      button: 'bg-emerald-50 hover:bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:hover:bg-emerald-900/50 dark:text-emerald-300 border-emerald-500 dark:border-emerald-400',
-      time: 'text-emerald-600 dark:text-emerald-400 font-medium',
+      button: 'bg-emerald-50 hover:bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:hover:bg-emerald-900/50 dark:text-emerald-200 border-emerald-500 dark:border-emerald-400',
+      time: 'text-emerald-600 dark:text-emerald-200 font-medium',
       borderPast: 'border-emerald-300 dark:border-emerald-700',
     },
     rejected: {
-      button: 'bg-red-50 hover:bg-red-100 text-red-700 dark:bg-red-900/30 dark:hover:bg-red-900/50 dark:text-red-300 border-red-500 dark:border-red-400',
-      time: 'text-red-600 dark:text-red-400 font-medium',
+      button: 'bg-red-50 hover:bg-red-100 text-red-700 dark:bg-red-900/30 dark:hover:bg-red-900/50 dark:text-red-200 border-red-500 dark:border-red-400',
+      time: 'text-red-600 dark:text-red-200 font-medium',
       borderPast: 'border-red-300 dark:border-red-700',
     },
     hold: {
-      button: 'bg-yellow-50 hover:bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:hover:bg-yellow-900/50 dark:text-yellow-300 border-yellow-500 dark:border-yellow-400',
-      time: 'text-yellow-600 dark:text-yellow-400 font-medium',
+      button: 'bg-yellow-50 hover:bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:hover:bg-yellow-900/50 dark:text-yellow-200 border-yellow-500 dark:border-yellow-400',
+      time: 'text-yellow-600 dark:text-yellow-200 font-medium',
       borderPast: 'border-yellow-300 dark:border-yellow-700',
     },
     offer: {
-      button: 'bg-green-50 hover:bg-green-100 text-green-700 dark:bg-green-900/30 dark:hover:bg-green-900/50 dark:text-green-300 border-green-500 dark:border-green-400',
-      time: 'text-green-600 dark:text-green-400 font-medium',
+      button: 'bg-green-50 hover:bg-green-100 text-green-700 dark:bg-green-900/30 dark:hover:bg-green-900/50 dark:text-green-200 border-green-500 dark:border-green-400',
+      time: 'text-green-600 dark:text-green-200 font-medium',
       borderPast: 'border-green-300 dark:border-green-700',
     },
     withdrawn: {
-      button: 'bg-slate-50 hover:bg-slate-100 text-slate-700 dark:bg-slate-900/30 dark:hover:bg-slate-900/50 dark:text-slate-300 border-slate-500 dark:border-slate-400',
-      time: 'text-slate-600 dark:text-slate-400 font-medium',
+      button: 'bg-slate-50 hover:bg-slate-100 text-slate-700 dark:bg-slate-900/30 dark:hover:bg-slate-900/50 dark:text-slate-200 border-slate-500 dark:border-slate-400',
+      time: 'text-slate-600 dark:text-slate-200 font-medium',
       borderPast: 'border-slate-300 dark:border-slate-700',
     },
     ghosted: {
-      button: 'bg-slate-50 hover:bg-slate-100 text-slate-700 dark:bg-slate-900/30 dark:hover:bg-slate-900/50 dark:text-slate-300 border-slate-500 dark:border-slate-400',
-      time: 'text-slate-600 dark:text-slate-400 font-medium',
+      button: 'bg-slate-50 hover:bg-slate-100 text-slate-700 dark:bg-slate-900/30 dark:hover:bg-slate-900/50 dark:text-slate-200 border-slate-500 dark:border-slate-400',
+      time: 'text-slate-600 dark:text-slate-200 font-medium',
       borderPast: 'border-slate-300 dark:border-slate-700',
     },
   };
@@ -88,7 +88,7 @@ const getEventStyles = (status: string, isPast: boolean) => {
   if (isPast) {
     return {
       button: `${baseClasses} bg-muted hover:bg-accent text-muted-foreground ${config.borderPast}`,
-      time: 'text-muted-foreground/70',
+      time: 'text-muted-foreground',
     };
   }
 
@@ -221,7 +221,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({ applications, onSelectJob }
                   ? 'bg-primary/10 border-2 border-primary/60'
                   : day.isCurrentMonth
                   ? 'bg-card'
-                  : 'bg-muted text-muted-foreground/60'
+                  : 'bg-muted text-muted-foreground'
               }`}
             >
               <div className='flex justify-between items-center'>
@@ -268,7 +268,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({ applications, onSelectJob }
                   );
                 })}
                 {day.events.length > 3 && (
-                  <li className='text-[10px] sm:text-[11px] text-muted-foreground/70'>
+                  <li className='text-[10px] sm:text-[11px] text-muted-foreground'>
                     {t('kanban.more', { count: day.events.length - 3 })}
                   </li>
                 )}

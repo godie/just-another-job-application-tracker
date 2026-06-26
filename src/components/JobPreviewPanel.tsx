@@ -52,7 +52,7 @@ const PreviewKeyInfoGrid: React.FC<{ application: JobApplication }> = ({ applica
     <dl className="grid grid-cols-2 gap-x-4 gap-y-3">
       {application.location && (
         <div>
-          <dt className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground/70">
+          <dt className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
             {t('jobPreview.location', 'Location')}
           </dt>
           <dd className="text-sm text-foreground mt-0.5">{application.location}</dd>
@@ -60,7 +60,7 @@ const PreviewKeyInfoGrid: React.FC<{ application: JobApplication }> = ({ applica
       )}
       {application.workType && (
         <div>
-          <dt className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground/70">
+          <dt className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
             {t('jobPreview.workType', 'Work Type')}
           </dt>
           <dd className="text-sm text-foreground mt-0.5 capitalize">{application.workType}</dd>
@@ -68,7 +68,7 @@ const PreviewKeyInfoGrid: React.FC<{ application: JobApplication }> = ({ applica
       )}
       {application.salary && (
         <div>
-          <dt className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground/70">
+          <dt className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
             {t('jobPreview.salary', 'Salary')}
           </dt>
           <dd className="text-sm text-foreground mt-0.5">{application.salary}</dd>
@@ -76,7 +76,7 @@ const PreviewKeyInfoGrid: React.FC<{ application: JobApplication }> = ({ applica
       )}
       {application.platform && (
         <div>
-          <dt className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground/70">
+          <dt className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
             {t('jobPreview.platform', 'Platform')}
           </dt>
           <dd className="text-sm text-foreground mt-0.5">{application.platform}</dd>
@@ -90,7 +90,7 @@ const PreviewDates: React.FC<{ application: JobApplication }> = ({ application }
   const { t } = useTranslation();
   return (
     <div className="space-y-2">
-      <h4 className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground/70">
+      <h4 className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
         {t('jobPreview.dates', 'Dates')}
       </h4>
       <div className="bg-muted rounded p-3 space-y-1.5 text-sm">
@@ -113,7 +113,7 @@ const PreviewDates: React.FC<{ application: JobApplication }> = ({ application }
           </div>
         )}
         {!application.applicationDate && !application.interviewDate && !application.followUpDate && (
-          <p className="text-muted-foreground/70 italic text-sm">
+          <p className="text-muted-foreground italic text-sm">
             {t('jobPreview.noDates', 'No dates recorded')}
           </p>
         )}
@@ -179,7 +179,7 @@ const PreviewBody: React.FC<{
       {/* Contact */}
       {application.contactName && (
         <div>
-          <h4 className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground/70 mb-1">
+          <h4 className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground mb-1">
             {t('jobPreview.contact', 'Contact')}
           </h4>
           <p className="text-sm text-foreground">{application.contactName}</p>
@@ -189,7 +189,7 @@ const PreviewBody: React.FC<{
       {/* Link */}
       {application.link && (
         <div>
-          <h4 className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground/70 mb-1">
+          <h4 className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground mb-1">
             {t('jobPreview.jobLink', 'Job Link')}
           </h4>
           <a
@@ -206,7 +206,7 @@ const PreviewBody: React.FC<{
       {/* Notes Excerpt */}
       {notesExcerpt && (
         <div>
-          <h4 className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground/70 mb-1">
+          <h4 className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground mb-1">
             {t('jobPreview.notes', 'Notes')}
           </h4>
           <p className="text-sm text-muted-foreground whitespace-pre-line break-words">

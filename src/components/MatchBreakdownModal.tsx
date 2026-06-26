@@ -27,7 +27,7 @@ const verdictConfig = {
   excellent_fit: { color: 'text-primary', bg: 'bg-primary/10', border: 'border-primary/30' },
   good_fit: { color: 'text-primary/80', bg: 'bg-primary/5', border: 'border-primary/20' },
   partial_fit: { color: 'text-muted-foreground', bg: 'bg-muted', border: 'border-border' },
-  low_fit: { color: 'text-muted-foreground/70', bg: 'bg-muted/50', border: 'border-border/70' },
+  low_fit: { color: 'text-muted-foreground', bg: 'bg-muted/50', border: 'border-border/70' },
 };
 
 function ScoreBar({ label, score, max = 100 }: { label: string; score: number; max?: number }) {

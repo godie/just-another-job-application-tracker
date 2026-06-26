@@ -20,17 +20,17 @@ interface JobSearchResultsProps {
 }
 
 const SOURCE_COLORS: Record<string, string> = {
-  jooble: 'bg-violet-100 dark:bg-violet-900/40 text-violet-700 dark:text-violet-300',
-  theirstack: 'bg-cyan-100 dark:bg-cyan-900/40 text-cyan-700 dark:text-cyan-300',
-  adzuna: 'bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300',
-  careerjet: 'bg-rose-100 dark:bg-rose-900/40 text-rose-700 dark:text-rose-300',
+  jooble: 'bg-violet-100 dark:bg-violet-900/40 text-violet-700 dark:text-violet-200',
+  theirstack: 'bg-cyan-100 dark:bg-cyan-900/40 text-cyan-700 dark:text-cyan-200',
+  adzuna: 'bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-200',
+  careerjet: 'bg-rose-100 dark:bg-rose-900/40 text-rose-700 dark:text-rose-200',
 };
 
 const TECH_COLORS = [
-  'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300',
-  'bg-sky-100 dark:bg-sky-900/40 text-sky-700 dark:text-sky-300',
-  'bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300',
-  'bg-rose-100 dark:bg-rose-900/40 text-rose-700 dark:text-rose-300',
+  'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-200',
+  'bg-sky-100 dark:bg-sky-900/40 text-sky-700 dark:text-sky-200',
+  'bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-200',
+  'bg-rose-100 dark:bg-rose-900/40 text-rose-700 dark:text-rose-200',
 ];
 
 export const JobSearchResults: React.FC<JobSearchResultsProps> = ({
@@ -71,7 +71,7 @@ export const JobSearchResults: React.FC<JobSearchResultsProps> = ({
             </svg>
             <div>
               <p className="text-sm font-semibold text-red-800 dark:text-red-200">{error}</p>
-              <p className="text-sm text-red-600 dark:text-red-300 mt-1">
+              <p className="text-sm text-red-600 dark:text-red-200 mt-1">
                 {t('opportunities.jobSearch.noResults', 'No jobs found. Try broader keywords or remove location filter.')}
               </p>
             </div>
@@ -118,7 +118,7 @@ export const JobSearchResults: React.FC<JobSearchResultsProps> = ({
 
       {/* Partial source errors */}
       {errors && errors.length > 0 && (
-        <div className="mb-4 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded text-sm text-amber-700 dark:text-amber-300">
+        <div className="mb-4 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded text-sm text-amber-700 dark:text-amber-200">
           {errors.map((e, i) => (
             <span key={e.source}>
               {i > 0 && ' · '}
@@ -222,7 +222,7 @@ export const JobSearchResults: React.FC<JobSearchResultsProps> = ({
 
                   {/* Posted date */}
                   {job.postedDate && (
-                    <p className="text-xs text-muted-foreground/70 mt-2">
+                    <p className="text-xs text-muted-foreground mt-2">
                       Posted: {job.postedDate}
                     </p>
                   )}
@@ -292,7 +292,7 @@ export const JobSearchResults: React.FC<JobSearchResultsProps> = ({
 
       {/* Error banner for subsequent page errors */}
       {error && results.length > 0 && (
-        <div className="mt-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded text-sm text-red-700 dark:text-red-300">
+        <div className="mt-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded text-sm text-red-700 dark:text-red-200">
           {error}
         </div>
       )}

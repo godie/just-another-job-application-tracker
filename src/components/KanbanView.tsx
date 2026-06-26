@@ -168,11 +168,11 @@ const KanbanView: React.FC<KanbanViewProps> = ({ applications, onSelectJob, onEd
                                   ? event.customTypeName
                                   : t(`insights.interviewTypes.${event.type}`, event.type.replace(/_/g, ' '))}
                               </span>
-                              {event.date && <span className='text-muted-foreground/70'>· {event.date}</span>}
+                              {event.date && <span className='text-muted-foreground'>· {event.date}</span>}
                             </li>
                           ))}
                           {application.timeline.length > 2 && (
-                            <li className='text-xs text-muted-foreground/70'>{t('kanban.more', { count: application.timeline.length - 2 })}</li>
+                            <li className='text-xs text-muted-foreground'>{t('kanban.more', { count: application.timeline.length - 2 })}</li>
                           )}
                         </ul>
                       </div>

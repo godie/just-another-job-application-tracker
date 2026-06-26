@@ -19,9 +19,9 @@ export const badgeVariants = cva(
         danger:
           'border-transparent bg-destructive text-destructive-foreground shadow hover:bg-destructive/80',
         success:
-          'border-transparent bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300',
+          'border-transparent bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200',
         warning:
-          'border-transparent bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300',
+          'border-transparent bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-200',
         sage: 'border-transparent bg-primary/10 text-primary dark:bg-primary/10 dark:text-primary',
       },
     },

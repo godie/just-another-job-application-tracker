@@ -100,7 +100,7 @@ export const JobSearchForm: React.FC<JobSearchFormProps> = ({
             onChange={(tags) => dispatch({ type: 'SET_KEYWORDS', value: tags })}
             placeholder="customer success engineer, react developer"
           />
-          <p className="text-xs text-muted-foreground/70 mt-1">
+          <p className="text-xs text-muted-foreground mt-1">
             {t('opportunities.jobSearch.keywordsHint', 'Try job titles, skills, or companies')}
           </p>
         </div>
@@ -119,7 +119,7 @@ export const JobSearchForm: React.FC<JobSearchFormProps> = ({
             aria-label={t('opportunities.jobSearch.location', 'Location')}
             className="w-full px-4 py-3 border border-border rounded focus:ring-2 focus:ring-ring focus:border-ring bg-background text-foreground transition-all"
           />
-          <p className="text-xs text-muted-foreground/70 mt-1">
+          <p className="text-xs text-muted-foreground mt-1">
             {t('opportunities.jobSearch.locationHint', 'City, country, or remote')}
           </p>
         </div>
@@ -175,7 +175,7 @@ export const JobSearchForm: React.FC<JobSearchFormProps> = ({
 
       {/* Row 2: Source picker + Tech stack (collapsible advanced) */}
       <details className="mt-4 group">
-        <summary className="text-xs text-muted-foreground/70 cursor-pointer hover:text-muted-foreground transition-colors select-none">
+        <summary className="text-xs text-muted-foreground cursor-pointer hover:text-muted-foreground transition-colors select-none">
           {t('opportunities.jobSearch.advancedFilters', 'Advanced filters')}
         </summary>
         <div className="mt-3 flex flex-col lg:flex-row gap-4 items-end">
@@ -208,7 +208,7 @@ export const JobSearchForm: React.FC<JobSearchFormProps> = ({
                 onChange={(tags) => dispatch({ type: 'SET_TECH_STACK', value: tags })}
                 placeholder="react, typescript, python, aws"
               />
-              <p className="text-xs text-muted-foreground/70 mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 {t('opportunities.jobSearch.techStackHint', 'Filter by technologies — uses TheirStack data')}
               </p>
             </div>

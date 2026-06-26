@@ -164,7 +164,7 @@ export function GeminiKeyModal({ isOpen, onClose, onSuccess }: GeminiKeyModalPro
 
         {error && (
           <div
-            className="p-3 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 text-sm flex items-start gap-2"
+            className="p-3 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-200 text-sm flex items-start gap-2"
             role="alert"
           >
             <svg className="size-4 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">

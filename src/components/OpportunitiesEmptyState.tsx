@@ -7,7 +7,7 @@ const OpportunitiesEmptyState: React.FC = () => {
   return (
     <div className='bg-card rounded p-8 text-center border border-border'>
       <p className='text-muted-foreground text-lg mb-2'>{t('opportunities.noOpportunities')}</p>
-      <p className='text-muted-foreground/70 text-sm'>
+      <p className='text-muted-foreground text-sm'>
         <a
           href='https://chromewebstore.google.com/detail/job-application-tracker/inlfdhmkpfikjfgjgnininfcgdnlhlcc?pli=1'
           className='text-primary hover:text-primary/80'
