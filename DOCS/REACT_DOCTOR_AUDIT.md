@@ -159,9 +159,10 @@ arrays is very likely large or hot — read the call sites before
 adding a fifth.
 
 **Followup tracking:** the candidate splits above are tracked in
-full detail (constants extraction + scoring sub-module +
-suppression-preservation disambiguation + working-tree drift
-notice from audit-anchor 141 LOC → current 446 LOC) at
+full detail (profile-first + scoring sub-module +
+suppression-preservation disambiguation + empirically-measured
+working-tree drift distribution from audit-anchor 141 LOC →
+current 446 LOC) at
 [`DOCS/FOLLOWUP_MATCHING_REFACTOR.md`](../DOCS/FOLLOWUP_MATCHING_REFACTOR.md).
 Pick up the task from that doc when the trigger condition (LOC
 > ~700 OR a 5th `js-set-map-lookups` suppression) fires; don't
