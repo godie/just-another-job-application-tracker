@@ -18,7 +18,7 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['jajat-logo.png', 'vite.svg'],
+      includeAssets: ['jajat-logo.png'],
       manifest: {
         name: 'JAJAT - Job Application Tracker',
         short_name: 'JAJAT',
@@ -43,7 +43,7 @@ export default defineConfig({
         ],
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+        globPatterns: ['**/*.{js,css,html,ico,png,woff2}'],
         navigateFallback: '/index.html',
       },
       devOptions: {
