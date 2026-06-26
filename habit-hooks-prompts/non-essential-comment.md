@@ -20,3 +20,6 @@ same line — that's the WHY, not a non-essential comment.
 **Expected outcome:** A single commit normalises every banner of the
 same shape class-wide; suppression directives keep their rationale
 so future reviewers see the justification for every lint opt-out.
+
+**See also:** `habit-hooks-prompts/react-doctor-suppression-sync.md`
+— the suppression-side half of the same coupling.
