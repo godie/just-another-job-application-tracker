@@ -61,14 +61,30 @@ export default defineConfig({
         },
         manualChunks(id) {
           if (id.includes('node_modules')) {
+            // React core: react + react-dom + scheduler only. The previous
+            // broad `/react/` substring match also caught `/lucide-react/`
+            // and `/@radix-ui/react-*/`, dumping non-core packages into the
+            // `react` chunk and producing the `vendor -> react -> vendor`
+            // circular chunk warning. Restrict to actual core paths.
+            if (
+              id.includes('/node_modules/react/') ||
+              id.includes('/node_modules/react-dom/') ||
+              id.includes('/node_modules/scheduler/')
+            ) return 'react';
             if (id.includes('recharts')) return 'recharts';
-            if (id.includes('react-dom')) return 'react';
-            if (id.includes('/react/')) return 'react';
-            if (id.includes('scheduler')) return 'react';
             if (id.includes('i18next') || id.includes('react-i18next')) return 'i18n';
             if (id.includes('@react-oauth')) return 'google-auth';
             if (id.includes('@googleapis')) return 'google-sheets';
-            if (id.includes('react-icons')) return 'react-icons';
+            // Radix UI primitives get their own chunk. They transitively
+            // depend on @radix-ui/* sub-packages that don't carry the
+            // `react-` substring and would otherwise fall through to the
+            // `vendor` fallback — bundling them with the rest of their
+            // widget family avoids back-and-forth cross-chunk imports.
+            if (id.match(/\/node_modules\/@radix-ui\/react-/)) return 'radix-ui';
+            // Icons (react-icons + lucide-react) share a chunk so the
+            // icon tree-shaking happens once per bundle load instead of
+            // pulling Lucide into the `react` core chunk.
+            if (id.includes('react-icons') || id.includes('lucide-react')) return 'react-icons';
             if (id.includes('zustand')) return 'vendor';
             if (id.includes('dompurify')) return 'vendor';
             return 'vendor';

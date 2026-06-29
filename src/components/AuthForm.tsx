@@ -36,6 +36,11 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode, onNavigate, onSuccess }) => {
       const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        // credentials: 'include' is REQUIRED on /api/auth/login and
+        // /api/auth/register — both endpoints issue Set-Cookie in the
+        // response and the browser must be told to store/forward them,
+        // otherwise the session is silently dropped after auth succeeds.
+        credentials: 'include',
         body: JSON.stringify({ email, password }),
       });
 

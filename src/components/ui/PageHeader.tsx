@@ -23,18 +23,21 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
 }) => {
   return (
     <header className={className}>
-      <div className='flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6'>
+      <div className='flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between'>
         <div className='flex-1'>
           {category && (
-            <span className='inline-block text-xs font-medium tracking-[0.2em] uppercase text-destructive mb-4'>
-              {category}
-            </span>
+            <div className='mb-5 flex items-center gap-4'>
+              <span className='h-px w-14 bg-primary/70' aria-hidden='true' />
+              <span className='inline-block text-xs font-semibold tracking-[0.18em] uppercase text-primary'>
+                {category}
+              </span>
+            </div>
           )}
-          <h1 className='font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-foreground tracking-tight leading-none'>
+          <h1 className='font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-foreground tracking-tight leading-[0.95]'>
             {title}
           </h1>
           {description && (
-            <p className='mt-4 text-base md:text-lg text-muted-foreground max-w-prose leading-relaxed'>
+            <p className='mt-4 max-w-4xl text-base md:text-lg text-muted-foreground leading-relaxed'>
               {description}
             </p>
           )}
@@ -42,7 +45,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
         {onAction && actionLabel && (
           <button
             type="button"
-            className='group self-start sm:self-end inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-destructive bg-destructive/5 dark:bg-destructive/10 border border-destructive/30 rounded-lg hover:bg-destructive/10 dark:hover:bg-destructive/10 hover:border-destructive/50 transition-all duration-200'
+            className='group inline-flex self-start items-center gap-2 rounded-md border border-destructive/80 bg-destructive px-6 py-4 text-base font-semibold text-destructive-foreground shadow-sm transition-colors duration-200 hover:bg-destructive/90 lg:mt-4'
             onClick={onAction}
             aria-label={actionLabel}
             data-testid={actionTestId}
@@ -50,12 +53,11 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
             <svg className='size-4 transition-transform duration-200 group-hover:scale-110' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
               <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 4v16m8-8H4' />
             </svg>
-            {actionLabel.replace(/^\+\s*/, '')}
+            {actionLabel.replace(/^(?:\+\s*)+/, '')}
           </button>
         )}
         {children}
       </div>
-      <div className='mt-8 h-px bg-gradient-to-r from-border dark:from-border via-muted-foreground/20 dark:via-muted-foreground/20 to-transparent' />
     </header>
   );
 };

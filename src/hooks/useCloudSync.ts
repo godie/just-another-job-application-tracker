@@ -6,6 +6,11 @@ import { useMergeStore } from '../stores/mergeStore';
 import type { JobApplication } from '../types/applications';
 import type { JobOpportunity } from '../types/opportunities';
 import type { MergeData } from '../utils/mergeData';
+import {
+  parseApplicationsSyncResponse,
+  parseOpportunitiesSyncResponse,
+  safeJson,
+} from '../utils/syncSchemas';
 
 let _initialLoadDone = false;
 export function markInitialLoadDone() {
@@ -18,33 +23,71 @@ export function resetInitialLoadDone() {
 async function pullCloudData(
   setApplications: (apps: JobApplication[]) => void,
   setOpportunities: (opps: JobOpportunity[]) => void,
-  setConflict: (local: MergeData, cloud: MergeData) => void
+  setConflict: (local: MergeData, cloud: MergeData) => void,
 ): Promise<'done' | 'conflict'> {
   try {
-    const appRes = await fetch('/api/sync/applications');
-    const appData = await appRes.json();
-    const cloudApps = (appRes.ok && appData.success) ? appData.applications : [];
+    // credentials: 'include' is REQUIRED on the pull side so the server can
+    // identify the user and return only their data — without it the request is
+    // unauthenticated and any session cookie is ignored. The previous version
+    // omitted this flag, which was both broken and a tenant-isolation risk.
+    const appRes = await fetch('/api/sync/applications', { credentials: 'include' });
+    const appParsed = appRes.ok
+      ? parseApplicationsSyncResponse(await safeJson(appRes))
+      : { items: [], dropped: 0, truncated: 0, envelopeError: `http ${appRes.status}` };
+    if (appParsed.envelopeError) {
+      console.warn('[useCloudSync] applications envelope error:', appParsed.envelopeError);
+    }
+    if (appParsed.dropped > 0) {
+      console.warn(`[useCloudSync] dropped ${appParsed.dropped} application(s) failed validation`);
+    }
+    if (appParsed.truncated > 0) {
+      console.warn(
+        `[useCloudSync] truncated ${appParsed.truncated} application(s) beyond the 1000-row DoS cap`,
+      );
+    }
 
-    const oppRes = await fetch('/api/sync/opportunities');
-    const oppData = await oppRes.json();
-    const cloudOpps = (oppRes.ok && oppData.success) ? oppData.opportunities : [];
+    const oppRes = await fetch('/api/sync/opportunities', { credentials: 'include' });
+    const oppParsed = oppRes.ok
+      ? parseOpportunitiesSyncResponse(await safeJson(oppRes))
+      : { items: [], dropped: 0, truncated: 0, envelopeError: `http ${oppRes.status}` };
+    if (oppParsed.envelopeError) {
+      console.warn('[useCloudSync] opportunities envelope error:', oppParsed.envelopeError);
+    }
+    if (oppParsed.dropped > 0) {
+      console.warn(`[useCloudSync] dropped ${oppParsed.dropped} opportunit(ies) failed validation`);
+    }
+    if (oppParsed.truncated > 0) {
+      console.warn(
+        `[useCloudSync] truncated ${oppParsed.truncated} opportunit(ies) beyond the 1000-row DoS cap`,
+      );
+    }
+
+    const cloudApps = appParsed.items;
+    const cloudOpps = oppParsed.items;
 
     const localApps = useApplicationsStore.getState().applications;
     const localOpps = useOpportunitiesStore.getState().opportunities;
 
+    // Treat each leg as "has cloud data" only when the envelope succeeded AND
+    // the array returned at least one row. This avoids false-positive
+    // conflicts when one leg has a transient server error (envelopeError set,
+    // items: []) but the other leg has valid data.
+    const cloudAppsOk = appParsed.envelopeError === null && cloudApps.length > 0;
+    const cloudOppsOk = oppParsed.envelopeError === null && cloudOpps.length > 0;
+
     const hasLocalData = localApps.length > 0 || localOpps.length > 0;
-    const hasCloudData = cloudApps.length > 0 || cloudOpps.length > 0;
+    const hasCloudData = cloudAppsOk || cloudOppsOk;
 
     if (hasLocalData && hasCloudData) {
       setConflict(
         { applications: [...localApps], opportunities: [...localOpps] },
-        { applications: cloudApps, opportunities: cloudOpps }
+        { applications: cloudApps, opportunities: cloudOpps },
       );
       return 'conflict';
     }
 
-    if (cloudApps.length > 0) setApplications(cloudApps);
-    if (cloudOpps.length > 0) setOpportunities(cloudOpps);
+    if (cloudAppsOk) setApplications(cloudApps);
+    if (cloudOppsOk) setOpportunities(cloudOpps);
     return 'done';
   } catch (err) {
     console.error('Failed to pull data from cloud', err);
@@ -54,18 +97,20 @@ async function pullCloudData(
 
 async function pushCloudData(
   applications: JobApplication[],
-  opportunities: JobOpportunity[]
+  opportunities: JobOpportunity[],
 ): Promise<void> {
   try {
     await fetch('/api/sync/applications', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
       body: JSON.stringify(applications),
     });
 
     await fetch('/api/sync/opportunities', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
       body: JSON.stringify(opportunities),
     });
   } catch (err) {

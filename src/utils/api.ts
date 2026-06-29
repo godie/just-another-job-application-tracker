@@ -1,11 +1,8 @@
 
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
+import { defaultFetchOptions } from './fetchDefaults';
 
-const defaultFetchOptions: RequestInit = {
-  credentials: 'include',
-  headers: { 'Content-Type': 'application/json' },
-};
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
 
 export interface AuthUser {
   id: number;

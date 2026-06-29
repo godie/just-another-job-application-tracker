@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Card } from './ui/Card';
 import { Button } from './ui/Button';
 import { Badge } from './ui/Badge';
+import { sanitizeUrl } from '../utils/url';
 
 import type { UnifiedJobResult } from '../types/jobSearch';
 
@@ -142,10 +143,13 @@ export const JobSearchResults: React.FC<JobSearchResultsProps> = ({
               <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
                 {/* Left: job details */}
                 <div className="flex-1 min-w-0">
-                  {/* Position — clickable */}
+                  {/* Position — clickable. `sanitizeUrl` runs at the API
+                      boundary too (jobSearchApi.ts) but re-applying here is
+                      defence in depth: an attacker-controlled third-party
+                      provider cannot inject `javascript:` via href. */}
                   <h3 className="text-base font-semibold text-foreground mb-1">
                     <a
-                      href={job.url}
+                      href={sanitizeUrl(job.url)}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="hover:text-primary transition-colors"
@@ -251,7 +255,11 @@ export const JobSearchResults: React.FC<JobSearchResultsProps> = ({
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => window.open(job.url, '_blank', 'noopener,noreferrer')}
+                    onClick={() => {
+                      const safe = sanitizeUrl(job.url);
+                      if (safe === '#') return;
+                      window.open(safe, '_blank', 'noopener,noreferrer');
+                    }}
                     className="text-sm whitespace-nowrap"
                     title={t('opportunities.jobSearch.openLink', 'Open in new tab')}
                   >

@@ -29,7 +29,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, currentPage, onNaviga
   };
 
   return (
-    <div className="flex flex-col h-screen bg-background">
+    <div className="flex flex-col h-screen bg-secondary">
       {/* Skip navigation link for keyboard users */}
       <a
         href="#main-content"
@@ -63,7 +63,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, currentPage, onNaviga
             isSidebarOpen ? 'md:ml-64' : 'ml-0'
           }`}
         >
-          <main id="main-content" className="h-full overflow-y-auto p-4 md:p-8 pb-16 md:pb-8" tabIndex={-1}>
+          <main id="main-content" className="h-full overflow-y-auto bg-secondary p-4 md:p-8 pb-16 md:pb-8" tabIndex={-1}>
             {children}
           </main>
         </div>

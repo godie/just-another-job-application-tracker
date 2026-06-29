@@ -43,11 +43,13 @@ describe('Sidebar', () => {
       const { rerender } = render(<Sidebar currentPage="applications" onNavigate={mockNavigate} />);
       
       const applicationsButton = screen.getByText('Applications').closest('button');
-      expect(applicationsButton?.className).toContain('bg-muted');
+      expect(applicationsButton).toHaveAttribute('aria-current', 'page');
+      expect(applicationsButton?.className).toContain('border-border');
 
       rerender(<Sidebar currentPage="opportunities" onNavigate={mockNavigate} />);
       const opportunitiesButton = screen.getByText('Opportunities').closest('button');
-      expect(opportunitiesButton?.className).toContain('bg-muted');
+      expect(opportunitiesButton).toHaveAttribute('aria-current', 'page');
+      expect(opportunitiesButton?.className).toContain('border-border');
     });
 
     it('calls onNavigate when navigation button is clicked', () => {

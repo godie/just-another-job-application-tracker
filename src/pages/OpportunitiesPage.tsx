@@ -185,33 +185,30 @@ interface OpportunitiesMetricsProps {
 const OpportunitiesMetrics: React.FC<OpportunitiesMetricsProps> = ({ total, recentCount, remoteCount }) => {
   const { t } = useTranslation();
   return (
-    <section className='grid grid-cols-2 sm:grid-cols-4 gap-4 mb-10' data-testid='opportunities-metrics'>
-      {/* Dominant metric: Total Opportunities — spans 2 columns */}
-      <div className='col-span-2 bg-muted p-6 border-l-2 border-border transition-colors duration-300'>
-        <p className='text-sm font-medium text-muted-foreground tracking-wide uppercase'>
+    <section className='mb-10 grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)]' data-testid='opportunities-metrics'>
+      <div className='bg-card border-l-2 border-earth-300 px-8 py-7 transition-colors duration-300'>
+        <p className='text-sm font-semibold uppercase tracking-[0.12em] text-earth-500'>
           {t('opportunities.metrics.total', 'Total Opportunities')}
         </p>
-        <p className='mt-2 font-serif text-5xl sm:text-6xl font-bold text-foreground leading-none'>
+        <p className='mt-4 font-serif text-7xl font-bold leading-none text-foreground sm:text-8xl'>
           {total}
         </p>
       </div>
 
-      {/* Compact metric: Recent (last 7 days) */}
-      <div className='bg-primary/5 dark:bg-primary/10 p-5 border-l-2 border-primary/30 dark:border-primary transition-colors duration-300'>
-        <p className='text-xs font-medium text-primary tracking-wide uppercase'>
+      <div className='bg-sage-50 border-l-2 border-primary/50 px-7 py-7 transition-colors duration-300'>
+        <p className='text-sm font-semibold uppercase tracking-[0.12em] text-primary'>
           {t('opportunities.metrics.thisWeek', 'This Week')}
         </p>
-        <p className='mt-1 font-serif text-3xl font-bold text-primary dark:text-primary-foreground'>
+        <p className='mt-4 font-serif text-5xl font-bold leading-none text-primary sm:text-6xl'>
           {recentCount}
         </p>
       </div>
 
-      {/* Compact metric: Remote */}
-      <div className='bg-muted p-5 border-l-2 border-border transition-colors duration-300'>
-        <p className='text-xs font-medium text-muted-foreground tracking-wide uppercase'>
+      <div className='bg-card border-l-2 border-earth-300 px-7 py-7 transition-colors duration-300'>
+        <p className='text-sm font-semibold uppercase tracking-[0.12em] text-earth-500'>
           {t('opportunities.metrics.remote', 'Remote')}
         </p>
-        <p className='mt-1 font-serif text-3xl font-bold text-foreground'>
+        <p className='mt-4 font-serif text-5xl font-bold leading-none text-foreground sm:text-6xl'>
           {remoteCount}
         </p>
       </div>

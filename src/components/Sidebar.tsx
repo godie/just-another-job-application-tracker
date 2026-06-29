@@ -72,11 +72,12 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPage = 'applications', onNavig
               variant={currentPage === item.page ? 'secondary' : 'ghost'}
               size='lg'
               onClick={() => handleNavigation(item.page)}
-              aria-current={currentPage === item.page ? 'page' : undefined}                  className={`w-full justify-start text-lg relative ${
-                    currentPage === item.page
-                      ? 'bg-muted text-foreground'
-                      : ''
-                  }`}
+              aria-current={currentPage === item.page ? 'page' : undefined}
+              className={`w-full justify-start text-lg relative ${
+                currentPage === item.page
+                  ? 'border border-border bg-muted bg-secondary text-foreground shadow-sm hover:bg-secondary'
+                  : ''
+              }`}
             >
               {item.icon && <span className='mr-2'>{item.icon}</span>}
               {item.label}
