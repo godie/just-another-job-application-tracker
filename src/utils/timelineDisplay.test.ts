@@ -5,20 +5,20 @@ import { formatDate, getStageDisplayName, getEventStatusColor } from './timeline
 
 describe('formatDate', () => {
   it('formats a valid YYYY-MM-DD date string to locale format', () => {
-    const result = formatDate('2025-06-15');
+    const result = formatDate('2025-06-15', 'en-US');
     expect(result).toBe('Jun 15, 2025');
   });
 
   it('formats a date in January correctly', () => {
-    expect(formatDate('2025-01-01')).toBe('Jan 1, 2025');
+    expect(formatDate('2025-01-01', 'en-US')).toBe('Jan 1, 2025');
   });
 
   it('formats a date in December correctly', () => {
-    expect(formatDate('2025-12-31')).toBe('Dec 31, 2025');
+    expect(formatDate('2025-12-31', 'en-US')).toBe('Dec 31, 2025');
   });
 
   it('handles single-digit month and day', () => {
-    expect(formatDate('2025-03-05')).toBe('Mar 5, 2025');
+    expect(formatDate('2025-03-05', 'en-US')).toBe('Mar 5, 2025');
   });
 
   it('returns the input string unchanged when the date is unparseable', () => {

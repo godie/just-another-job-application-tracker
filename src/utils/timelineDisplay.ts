@@ -1,15 +1,30 @@
+const formatterCache = new Map<string, Intl.DateTimeFormat>();
 
-const englishDateFormatter = new Intl.DateTimeFormat('en-US', {
-  year: 'numeric',
-  month: 'short',
-  day: 'numeric',
-});
+function getDateFormatter(locale?: string): Intl.DateTimeFormat {
+  const resolvedLocale =
+    locale ||
+    document.documentElement.lang ||
+    navigator.language ||
+    'en-US';
 
-export function formatDate(dateStr: string): string {
+  let formatter = formatterCache.get(resolvedLocale);
+  if (!formatter) {
+    formatter = new Intl.DateTimeFormat(resolvedLocale, {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    });
+    formatterCache.set(resolvedLocale, formatter);
+  }
+
+  return formatter;
+}
+
+export function formatDate(dateStr: string, locale?: string): string {
   try {
     const d = new Date(dateStr + 'T00:00:00');
     if (isNaN(d.getTime())) return dateStr;
-    return englishDateFormatter.format(d);
+    return getDateFormatter(locale).format(d);
   } catch {
     return dateStr;
   }

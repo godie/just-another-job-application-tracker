@@ -61,10 +61,12 @@ function setUrlJobId(jobId: string | null) {
 describe('JobDetailsPage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    document.documentElement.lang = 'en-US';
   });
 
   afterEach(() => {
     window.history.replaceState({}, '', '/');
+    document.documentElement.lang = '';
   });
 
 
