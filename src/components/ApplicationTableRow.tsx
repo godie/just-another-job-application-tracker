@@ -1,4 +1,3 @@
-// src/components/ApplicationTableRow.tsx
 import React, { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { type JobApplication, type ApplicationWithMetadata } from '../types/applications';
@@ -7,6 +6,7 @@ import type { TableColumn } from '../types/table';
 import { sanitizeUrl } from '../utils/url';
 import { TableRow, TableCell } from './ui/Table';
 import { Badge } from './ui/Badge';
+import { Button } from './ui/Button';
 import { getBadgeVariantForStatus } from '../utils/status';
 
 interface ApplicationTableRowProps {
@@ -20,9 +20,6 @@ interface ApplicationTableRowProps {
 const NOTES_TRUNCATE_LENGTH = 100;
 const NOTES_WORD_WRAP_LENGTH = 50;
 
-// This is a memoized component. It will only re-render if its props change.
-// This prevents the entire table from re-rendering when, for example, a single
-// row is hovered, which was causing performance issues with large lists.
 const ApplicationTableRow: React.FC<ApplicationTableRowProps> = ({
   item,
   columns,
@@ -47,7 +44,7 @@ const ApplicationTableRow: React.FC<ApplicationTableRowProps> = ({
           return (
             <TableCell
               key={column.id}
-              className="px-4 sm:px-6 py-3 text-earth-900 dark:text-earth-100 border-r border-earth-100 dark:border-earth-700 group-hover:bg-sage-50 dark:group-hover:bg-sage-900/20 whitespace-nowrap"
+              className="px-4 sm:px-6 py-3 text-foreground border-r border-border group-hover:bg-muted whitespace-nowrap"
             >
               <Badge variant={getBadgeVariantForStatus(item.status)}>
                 {cellContent}
@@ -70,7 +67,7 @@ const ApplicationTableRow: React.FC<ApplicationTableRowProps> = ({
           return (
             <TableCell
               key={column.id}
-              className={`px-4 sm:px-6 py-3 text-earth-900 dark:text-earth-100 border-r border-earth-100 dark:border-earth-700 group-hover:bg-sage-50 dark:group-hover:bg-sage-900/20 ${
+              className={`px-4 sm:px-6 py-3 text-foreground border-r border-border group-hover:bg-muted ${
                 shouldWrap ? 'whitespace-pre-line' : 'whitespace-nowrap'
               } ${isNotes ? 'max-w-xs' : ''}`}
             >
@@ -87,14 +84,14 @@ const ApplicationTableRow: React.FC<ApplicationTableRowProps> = ({
         return (
           <TableCell
             key={column.id}
-            className="px-4 sm:px-6 py-3 whitespace-nowrap text-earth-900 dark:text-earth-100 border-r border-earth-100 dark:border-earth-700 group-hover:bg-sage-50 dark:group-hover:bg-sage-900/20"
+            className="px-4 sm:px-6 py-3 whitespace-nowrap text-foreground border-r border-border group-hover:bg-muted"
           >
             {isLink ? (
               <a
                 href={sanitizeUrl(cellContent)}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-sage-600 dark:text-sage-400 hover:underline"
+                className="text-primary hover:underline"
                 onClick={(e) => e.stopPropagation()}
               >
                 {cellContent}
@@ -114,18 +111,18 @@ const ApplicationTableRow: React.FC<ApplicationTableRowProps> = ({
             for the entire table during mouse movements, significantly improving
             performance for large lists. */}
         <div className="opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-opacity duration-200">
-          <button
-            type='button'
+          <Button
+            variant='danger'
+            size='sm'
             onClick={(e) => {
               e.stopPropagation();
               onDeleteRequest(item);
             }}
-            className="px-3 py-1.5 rounded text-xs font-semibold bg-red-600 hover:bg-red-700 text-white transition-colors inline-flex items-center gap-1"
             aria-label={t('home.deleteConfirm.titleFor', { position: item.position, company: item.company })}
             data-testid={`delete-btn-${item.id}`}
           >
-            <span>{t('common.delete')}</span>
-          </button>
+            {t('common.delete')}
+          </Button>
         </div>
       </TableCell>
     </TableRow>

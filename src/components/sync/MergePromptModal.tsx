@@ -1,4 +1,3 @@
-// src/components/sync/MergePromptModal.tsx
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useMergeStore } from '../../stores/mergeStore';
@@ -51,7 +50,6 @@ const MergePromptModal: React.FC<MergePromptModalProps> = ({ onClose }) => {
   };
 
   const handleCancel = () => {
-    // Keep sync paused, just close the modal
     if (onClose) onClose();
   };
 
@@ -78,16 +76,16 @@ const MergePromptModal: React.FC<MergePromptModalProps> = ({ onClose }) => {
 
   return (
     <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm'>
-      <div className='bg-white dark:bg-earth-800 border border-earth-200 dark:border-earth-700 rounded-xl shadow-2xl max-w-lg w-full mx-4 overflow-hidden'>
+      <div className='bg-card border border-border rounded-xl shadow-2xl max-w-lg w-full mx-4 overflow-hidden'>
         {/* Header */}
-        <div className='bg-terracotta-50 dark:bg-terracotta-900/20 border-b border-terracotta-200 dark:border-terracotta-700 px-6 py-4'>
+        <div className='bg-destructive/5 dark:bg-destructive/10 border-b border-destructive/30 px-6 py-4'>
           <div className='flex items-center gap-3'>
             <span className='text-2xl'>⚠️</span>
             <div>
-              <h2 className='font-serif text-xl font-semibold text-terracotta-700 dark:text-terracotta-300'>
+              <h2 className='font-serif text-xl font-semibold text-destructive'>
                 {t('backupSync.merge.title')}
               </h2>
-              <p className='text-sm text-terracotta-600 dark:text-terracotta-400 mt-1'>
+              <p className='text-sm text-destructive mt-1'>
                 {t('backupSync.merge.description')}
               </p>
             </div>
@@ -95,27 +93,27 @@ const MergePromptModal: React.FC<MergePromptModalProps> = ({ onClose }) => {
         </div>
 
         {/* Data summary */}
-        <div className='px-6 py-4 border-b border-earth-200 dark:border-earth-700'>
+        <div className='px-6 py-4 border-b border-border'>
           <div className='grid grid-cols-2 gap-4 text-sm'>
-            <div className='bg-earth-50 dark:bg-earth-700 rounded-lg p-3 text-center'>
-              <p className='text-xs font-semibold text-earth-500 dark:text-earth-400 uppercase tracking-wider'>
+            <div className='bg-muted rounded-lg p-3 text-center'>
+              <p className='text-xs font-semibold text-muted-foreground uppercase tracking-wider'>
                 {t('backupSync.merge.localLabel')}
               </p>
-              <p className='font-bold text-earth-900 dark:text-earth-100 mt-1'>
+              <p className='font-bold text-foreground mt-1'>
                 {localAppCount} {localAppCount === 1 ? t('backupSync.loggedIn.applications_one') : t('backupSync.loggedIn.applications_other', { count: localAppCount })}
               </p>
-              <p className='font-bold text-earth-900 dark:text-earth-100'>
+              <p className='font-bold text-foreground'>
                 {localOppCount} {localOppCount === 1 ? t('backupSync.loggedIn.opportunities_one') : t('backupSync.loggedIn.opportunities_other', { count: localOppCount })}
               </p>
             </div>
-            <div className='bg-sage-50 dark:bg-sage-900/20 rounded-lg p-3 text-center'>
-              <p className='text-xs font-semibold text-sage-500 dark:text-sage-400 uppercase tracking-wider'>
+            <div className='bg-primary/5 dark:bg-primary/10 rounded-lg p-3 text-center'>
+              <p className='text-xs font-semibold text-primary uppercase tracking-wider'>
                 {t('backupSync.merge.cloudLabel')}
               </p>
-              <p className='font-bold text-earth-900 dark:text-earth-100 mt-1'>
+              <p className='font-bold text-foreground mt-1'>
                 {cloudAppCount} {cloudAppCount === 1 ? t('backupSync.loggedIn.applications_one') : t('backupSync.loggedIn.applications_other', { count: cloudAppCount })}
               </p>
-              <p className='font-bold text-earth-900 dark:text-earth-100'>
+              <p className='font-bold text-foreground'>
                 {cloudOppCount} {cloudOppCount === 1 ? t('backupSync.loggedIn.opportunities_one') : t('backupSync.loggedIn.opportunities_other', { count: cloudOppCount })}
               </p>
             </div>
@@ -131,23 +129,23 @@ const MergePromptModal: React.FC<MergePromptModalProps> = ({ onClose }) => {
               disabled={isResolving}
               className={`w-full text-left px-4 py-3 rounded-lg border transition-colors ${
                 selectedStrategy === strategy.id
-                  ? 'border-sage-500 bg-sage-50 dark:bg-sage-900/20'
-                  : 'border-earth-200 dark:border-earth-700 hover:border-sage-400 dark:hover:border-sage-600 hover:bg-earth-50 dark:hover:bg-earth-700'
+                  ? 'border-primary bg-primary/5 dark:bg-primary/10'
+                  : 'border-border hover:border-primary/50 hover:bg-muted'
               } ${isResolving ? 'opacity-50 cursor-not-allowed' : ''}`}
               type='button'
             >
               <div className='flex items-center gap-3'>
                 <span className='text-xl'>{strategy.icon}</span>
                 <div className='flex-1'>
-                  <p className='font-semibold text-earth-900 dark:text-earth-100 text-sm'>
+                  <p className='font-semibold text-foreground text-sm'>
                     {strategy.label}
                   </p>
-                  <p className='text-xs text-earth-600 dark:text-earth-400 mt-0.5'>
+                  <p className='text-xs text-muted-foreground mt-0.5'>
                     {strategy.desc}
                   </p>
                 </div>
                 {selectedStrategy === strategy.id && (
-                  <span className='text-sage-600 dark:text-sage-400 text-sm'>
+                  <span className='text-primary text-sm'>
                     {isResolving ? '...' : '✓'}
                   </span>
                 )}
@@ -157,11 +155,11 @@ const MergePromptModal: React.FC<MergePromptModalProps> = ({ onClose }) => {
         </div>
 
         {/* Footer */}
-        <div className='px-6 py-4 border-t border-earth-200 dark:border-earth-700 flex justify-end'>
+        <div className='px-6 py-4 border-t border-border flex justify-end'>
           <button
             onClick={handleCancel}
             disabled={isResolving}
-            className='px-4 py-2 text-sm font-medium text-earth-600 dark:text-earth-400 hover:text-earth-800 dark:hover:text-earth-200 transition-colors'
+            className='px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors'
             type='button'
           >
             {t('backupSync.merge.cancel')}

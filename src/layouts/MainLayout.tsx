@@ -1,4 +1,3 @@
-// src/layouts/MainLayout.tsx
 import React, { useState, useEffect } from 'react';
 import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
@@ -21,7 +20,6 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, currentPage, onNaviga
     return isMobile ? false : true;
   });
 
-  // Save sidebar preference
   useEffect(() => {
     localStorage.setItem('sidebarOpen', String(isSidebarOpen));
   }, [isSidebarOpen]);
@@ -31,11 +29,11 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, currentPage, onNaviga
   };
 
   return (
-    <div className="flex flex-col h-screen bg-earth-100 dark:bg-earth-900">
+    <div className="flex flex-col h-screen bg-secondary">
       {/* Skip navigation link for keyboard users */}
       <a
         href="#main-content"
-        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] bg-sage-600 text-white px-4 py-2 rounded shadow-lg transition-all"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] bg-primary text-primary-foreground px-4 py-2 rounded shadow-lg transition-all"
       >
         Skip to main content
       </a>
@@ -55,7 +53,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, currentPage, onNaviga
         {/* Since sidebar is currently hidden on mobile (md:block), we don't need the overlay */}
         {isSidebarOpen && (
           <div
-            className="fixed inset-0 bg-gray-950 bg-opacity-50 z-30 hidden mt-16"
+            className="fixed inset-0 bg-black/50 z-30 hidden mt-16"
             onClick={toggleSidebar}
             aria-hidden="true"
           />
@@ -65,7 +63,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, currentPage, onNaviga
             isSidebarOpen ? 'md:ml-64' : 'ml-0'
           }`}
         >
-          <main id="main-content" className="h-full overflow-y-auto p-4 md:p-8 pb-16 md:pb-8" tabIndex={-1}>
+          <main id="main-content" className="h-full overflow-y-auto bg-secondary p-4 md:p-8 pb-16 md:pb-8" tabIndex={-1}>
             {children}
           </main>
         </div>

@@ -55,7 +55,7 @@ describe('useEmailScan', () => {
       try {
         await result.current.scan(mockProvider as never);
       } catch {
-        // expected
+        /* error captured by hook state */
       }
     });
 

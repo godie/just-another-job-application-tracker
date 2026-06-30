@@ -16,7 +16,6 @@ describe('Storage Migration', () => {
       company: 'Acme',
       status: 'Applied',
       applicationDate: '2023-01-01',
-      // No timeline property
     };
 
     const modernApp = {
@@ -68,7 +67,6 @@ describe('Storage Migration', () => {
 
     localStorage.setItem(STORAGE_KEY, JSON.stringify(legacyApps));
 
-    // Spy on setTimeout to ensure it's NOT called for migration anymore
     const setTimeoutSpy = vi.spyOn(window, 'setTimeout');
 
     const apps = getApplications();
@@ -77,8 +75,6 @@ describe('Storage Migration', () => {
     expect(apps[0].timeline).toBeDefined();
     expect(apps[0].timeline.length).toBeGreaterThan(0);
 
-    // Verify NO setTimeout was called for migration
-    // (Note: getApplications might be called by other things if we weren't in a clean test)
     expect(setTimeoutSpy).not.toHaveBeenCalled();
 
     setTimeoutSpy.mockRestore();

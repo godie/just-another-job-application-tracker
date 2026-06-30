@@ -57,7 +57,6 @@ export class GmailEmailClient implements EmailProvider {
       headers[h.name.toLowerCase()] = h.value;
     }
 
-    // Try to get text/plain first, fall back to text/html if plain text is empty/short
     const plainPart = payload?.parts?.find((p) => p.mimeType === 'text/plain');
     const htmlPart = payload?.parts?.find((p) => p.mimeType === 'text/html');
     
@@ -66,7 +65,6 @@ export class GmailEmailClient implements EmailProvider {
       ? atob(bodyData.replace(/-/g, '+').replace(/_/g, '/'))
       : '';
 
-    // If plain text is empty or too short, parse HTML body
     if (decodedBody.trim().length < 50 && htmlPart?.body?.data) {
       const htmlBodyData = htmlPart.body.data;
       const htmlData = atob(htmlBodyData.replace(/-/g, '+').replace(/_/g, '/'));
@@ -104,10 +102,7 @@ export class GmailEmailClient implements EmailProvider {
     };
   }
 
-  /** Parses HTML body and extracts clean text from meaningful elements. */
   private parseHtmlBody(html: string): string {
-    // Simple regex-based HTML to text conversion
-    // Remove script, style, head elements
     let text = html
       .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
       .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
@@ -117,10 +112,8 @@ export class GmailEmailClient implements EmailProvider {
       .replace(/<\/p>/gi, '\n\n')   // Paragraphs
       .replace(/<li[^>]*>/gi, '\n• '); // List items
 
-    // Remove all remaining HTML tags
     text = text.replace(/<[^>]+>/g, ' ');
 
-    // Decode common HTML entities
     text = text
       .replace(/&nbsp;/gi, ' ')
       .replace(/&amp;/gi, '&')
@@ -130,8 +123,6 @@ export class GmailEmailClient implements EmailProvider {
       .replace(/&#39;/gi, "'")
       .replace(/&apos;/gi, "'");
 
-    // Decode quoted-printable sequences (e.g., =E2=80=99 -> ')
-    // Handle consecutive hex pairs (multi-byte UTF-8 sequences)
     text = text.replace(/=([0-9A-Fa-f]{2}(?:=[0-9A-Fa-f]{2})*)/g, (_, hexPairs) => {
       const pairs = hexPairs.split('=');
       const chars: number[] = [];
@@ -143,10 +134,8 @@ export class GmailEmailClient implements EmailProvider {
       return String.fromCharCode(...chars);
     });
 
-    // Normalize whitespace
     text = text.replace(/[ \t]+/g, ' ').replace(/\n{3,}/g, '\n\n').trim();
 
-    // Truncate to first 5000 chars to avoid performance issues
     return text.slice(0, 5000);
   }
 }

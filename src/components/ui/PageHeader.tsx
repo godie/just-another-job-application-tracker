@@ -18,26 +18,26 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
   actionLabel,
   onAction,
   actionTestId,
-  className = 'mb-10',
+  className = 'mb-12',
   children,
 }) => {
   return (
     <header className={className}>
-      <div className='flex flex-col sm:flex-row sm:items-start sm:justify-between gap-6'>
+      <div className='flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between'>
         <div className='flex-1'>
           {category && (
-            <div className='flex items-center gap-3 mb-4'>
-              <div className='w-10 h-0.5 bg-sage-500'></div>
-              <span className='text-sage-600 dark:text-sage-400 text-sm font-medium tracking-wider uppercase'>
+            <div className='mb-5 flex items-center gap-4'>
+              <span className='h-px w-14 bg-primary/70' aria-hidden='true' />
+              <span className='inline-block text-xs font-semibold tracking-[0.18em] uppercase text-primary'>
                 {category}
               </span>
             </div>
           )}
-          <h1 className='font-serif text-4xl md:text-5xl font-semibold text-earth-900 dark:text-earth-50'>
+          <h1 className='font-serif text-4xl md:text-5xl lg:text-6xl font-bold text-foreground tracking-tight leading-[0.95]'>
             {title}
           </h1>
           {description && (
-            <p className='mt-3 text-base text-earth-600 dark:text-earth-300'>
+            <p className='mt-4 max-w-4xl text-base md:text-lg text-muted-foreground leading-relaxed'>
               {description}
             </p>
           )}
@@ -45,12 +45,15 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
         {onAction && actionLabel && (
           <button
             type="button"
-            className='self-start sm:self-auto bg-terracotta-600 hover:bg-terracotta-700 active:bg-terracotta-800 text-white font-bold py-4 px-8 rounded transition-colors border border-terracotta-700 hover:border-terracotta-800 text-base shadow-sm hover:shadow-md'
+            className='group inline-flex self-start items-center gap-2 rounded-md border border-destructive/80 bg-destructive px-6 py-4 text-base font-semibold text-destructive-foreground shadow-sm transition-colors duration-200 hover:bg-destructive/90 lg:mt-4'
             onClick={onAction}
             aria-label={actionLabel}
             data-testid={actionTestId}
           >
-            {actionLabel}
+            <svg className='size-4 transition-transform duration-200 group-hover:scale-110' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
+              <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 4v16m8-8H4' />
+            </svg>
+            {actionLabel.replace(/^(?:\+\s*)+/, '')}
           </button>
         )}
         {children}

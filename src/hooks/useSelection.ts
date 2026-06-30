@@ -1,9 +1,5 @@
 import { useState, useCallback } from 'react';
 
-/**
- * A generic hook to manage a selection of items using a Set.
- * Useful for checkboxes, multi-select lists, and expanded states.
- */
 export function useSelection<T>(initialSelection: T[] = []) {
   const [selected, setSelected] = useState<Set<T>>(new Set(initialSelection));
 

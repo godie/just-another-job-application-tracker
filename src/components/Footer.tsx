@@ -6,30 +6,29 @@ interface FooterProps {
   version: string;
 }
 
-// Compute year once at module level
 const currentYear = String(getCurrentYear());
 
 const Footer: React.FC<FooterProps> = ({ version }) => {
   const { t } = useTranslation();
 
   return (
-    <footer className='bg-earth-50 dark:bg-earth-900 border-t border-earth-200 dark:border-earth-700 py-4 mt-8'>
+    <footer className='bg-background dark:bg-muted border-t border-border py-4 mt-8'>
       <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
-        <p className='text-center text-sm text-earth-600 dark:text-earth-400'>
+        <p className='text-center text-sm text-muted-foreground'>
             <Trans
               i18nKey='common.footer.vibecoded'
               values={{ version, year: currentYear }}
               components={{
-                link: <a className='text-sage-600 dark:text-sage-400 hover:text-sage-700 dark:hover:text-sage-300 font-medium' href='https://github.com/godie' target='_blank' rel='noopener noreferrer' aria-label='Github godie' />
+                link: <a className='text-primary hover:text-primary dark:hover:text-primary font-medium' href='https://github.com/godie' target='_blank' rel='noopener noreferrer' aria-label='Github godie' />
               }}
             />
         </p>
-        <p className='text-center text-xs text-earth-500 dark:text-earth-500 mt-2'>
-          <a className='text-earth-600 dark:text-earth-400 hover:text-earth-800 dark:hover:text-earth-200' href='/terms.html' target='_blank' rel='noopener noreferrer'>{t('common.footer.termsOfUse')}</a>
+        <p className='text-center text-xs text-muted-foreground dark:text-muted-foreground mt-2'>
+          <a className='text-muted-foreground hover:text-foreground' href='/terms.html' target='_blank' rel='noopener noreferrer'>{t('common.footer.termsOfUse')}</a>
           {' | '}
-          <a className='text-earth-600 dark:text-earth-400 hover:text-earth-800 dark:hover:text-earth-200' href='/privacy.html' target='_blank' rel='noopener noreferrer'>{t('common.footer.privacyPolicy')}</a>
+          <a className='text-muted-foreground hover:text-foreground' href='/privacy.html' target='_blank' rel='noopener noreferrer'>{t('common.footer.privacyPolicy')}</a>
           {' | '}
-          <a className='text-earth-600 dark:text-earth-400 hover:text-earth-800 dark:hover:text-earth-200' href='/?page=landing'>{t('nav.about')}</a>
+          <a className='text-muted-foreground hover:text-foreground' href='/?page=landing'>{t('nav.about')}</a>
         </p>
       </div>
     </footer>

@@ -22,8 +22,6 @@ interface JsonUpdate {
 }
 
 /**
- * Processes a JSON string containing job application additions and updates.
- *
  * @param jsonString - The raw JSON string from chatbot extraction
  * @param applications - Current list of applications to find existing ones for updates
  * @returns An object with proposed additions and updates

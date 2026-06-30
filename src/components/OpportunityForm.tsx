@@ -1,4 +1,3 @@
-// src/components/OpportunityForm.tsx
 import React, { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { type JobOpportunity } from '../types/opportunities';
@@ -28,7 +27,6 @@ const OpportunityForm: React.FC<OpportunityFormProps> = ({ isOpen, onClose, onSa
 
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
-  // Focus trap for modal accessibility - hooks before early return
   const modalRef = useRef<HTMLDivElement>(null);
   useFocusTrap(modalRef, isOpen);
 
@@ -36,7 +34,6 @@ const OpportunityForm: React.FC<OpportunityFormProps> = ({ isOpen, onClose, onSa
 
   const handleInputChange = (field: keyof typeof formData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
-    // Clear error when user starts typing
     if (errors[field]) {
       setErrors(prev => {
         const newErrors = { ...prev };
@@ -58,7 +55,6 @@ const OpportunityForm: React.FC<OpportunityFormProps> = ({ isOpen, onClose, onSa
     if (!formData.link.trim()) {
       newErrors.link = t('form.validation.linkRequired');
     } else {
-      // Basic URL validation
       try {
         new URL(formData.link);
       } catch {
@@ -79,7 +75,6 @@ const OpportunityForm: React.FC<OpportunityFormProps> = ({ isOpen, onClose, onSa
 
     onSave(formData);
     
-    // Reset form
     setFormData({
       position: '',
       company: '',
@@ -112,7 +107,7 @@ const OpportunityForm: React.FC<OpportunityFormProps> = ({ isOpen, onClose, onSa
   return (
     <dialog 
       open
-      className="fixed inset-0 bg-earth-900/80 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+      className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-50 p-4"
       aria-modal="true"
       aria-labelledby="opportunity-form-title"
     >
@@ -120,15 +115,17 @@ const OpportunityForm: React.FC<OpportunityFormProps> = ({ isOpen, onClose, onSa
         <Card className="max-w-2xl w-full max-h-[90vh] overflow-y-auto p-0">
         <div className="p-6">
           <div className="flex justify-between items-center mb-4">
-            <h3 id="opportunity-form-title" className="text-xl font-semibold text-earth-800 dark:text-earth-100">{t('form.addOpportunityTitle')}</h3>
-            <button
+            <h3 id="opportunity-form-title" className="text-xl font-semibold text-foreground">{t('form.addOpportunityTitle')}</h3>
+            <Button
               type="button"
+              variant="ghost"
+              size="sm"
               onClick={handleCancel}
-              className="text-earth-400 hover:text-earth-600 dark:hover:text-earth-200 text-2xl leading-none p-1 rounded hover:bg-earth-100 dark:hover:bg-earth-700 transition-colors"
+              className="text-muted-foreground hover:text-foreground text-2xl leading-none p-1"
               aria-label="Close dialog"
             >
               <span aria-hidden="true">×</span>
-            </button>
+            </Button>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -198,7 +195,7 @@ const OpportunityForm: React.FC<OpportunityFormProps> = ({ isOpen, onClose, onSa
             />
 
             <div>
-              <label htmlFor="opportunity-description" className="block text-xs font-semibold text-earth-600 dark:text-earth-400 mb-1">
+              <label htmlFor="opportunity-description" className="block text-xs font-semibold text-muted-foreground mb-1">
                 {t('form.description')}
               </label>
               <textarea
@@ -208,10 +205,10 @@ const OpportunityForm: React.FC<OpportunityFormProps> = ({ isOpen, onClose, onSa
                 rows={4}
                 maxLength={2000}
                 aria-label={t('form.description')}
-                className='w-full rounded border border-earth-300 dark:border-earth-600 px-3 py-2 text-sm bg-white dark:bg-earth-800 text-earth-900 dark:text-earth-100 placeholder-earth-400 dark:placeholder-earth-500 focus:border-sage-500 focus:ring-sage-500 resize-none'
+                className='w-full rounded border border-border px-3 py-2 text-sm bg-background text-foreground placeholder-muted-foreground focus:border-ring focus:ring-ring resize-none'
                 placeholder="Job description or notes..."
               />
-              <p className='text-xs text-earth-400 dark:text-earth-500 mt-1'>
+              <p className='text-xs text-muted-foreground mt-1'>
                 {(formData.description || '').length}/2000
               </p>
             </div>
@@ -249,4 +246,3 @@ const OpportunityForm: React.FC<OpportunityFormProps> = ({ isOpen, onClose, onSa
 };
 
 export default OpportunityForm;
-

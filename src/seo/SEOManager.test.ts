@@ -1,17 +1,9 @@
-/**
- * Tests for the SEO module:
- *  - resolveSEOConfig (pure function)
- *  - SEOManager DOM methods (upsertMeta, upsertCanonical, upsertJsonLd, upsertHreflang, apply)
- */
 import { describe, it, expect, beforeEach } from 'vitest';
 import { resolveSEOConfig } from './resolve';
 import { SEOManager } from './SEOManager';
 import { SEO_DEFAULTS } from './constants';
 import type { SEOConfig } from './types';
 
-// ---------------------------------------------------------------------------
-// resolveSEOConfig
-// ---------------------------------------------------------------------------
 
 describe('resolveSEOConfig', () => {
   const baseConfig: SEOConfig = {
@@ -144,13 +136,9 @@ describe('resolveSEOConfig', () => {
   });
 });
 
-// ---------------------------------------------------------------------------
-// SEOManager.upsertMeta
-// ---------------------------------------------------------------------------
 
 describe('SEOManager.upsertMeta', () => {
   beforeEach(() => {
-    // Clear all meta tags before each test
     document.head.innerHTML = '';
   });
 
@@ -200,9 +188,6 @@ describe('SEOManager.upsertMeta', () => {
   });
 });
 
-// ---------------------------------------------------------------------------
-// SEOManager.upsertCanonical
-// ---------------------------------------------------------------------------
 
 describe('SEOManager.upsertCanonical', () => {
   beforeEach(() => {
@@ -233,9 +218,6 @@ describe('SEOManager.upsertCanonical', () => {
   });
 });
 
-// ---------------------------------------------------------------------------
-// SEOManager.upsertJsonLd
-// ---------------------------------------------------------------------------
 
 describe('SEOManager.upsertJsonLd', () => {
   beforeEach(() => {
@@ -287,9 +269,6 @@ describe('SEOManager.upsertJsonLd', () => {
   });
 });
 
-// ---------------------------------------------------------------------------
-// SEOManager.upsertHreflang
-// ---------------------------------------------------------------------------
 
 describe('SEOManager.upsertHreflang', () => {
   beforeEach(() => {
@@ -340,9 +319,6 @@ describe('SEOManager.upsertHreflang', () => {
   });
 });
 
-// ---------------------------------------------------------------------------
-// SEOManager.apply
-// ---------------------------------------------------------------------------
 
 describe('SEOManager.apply', () => {
   beforeEach(() => {

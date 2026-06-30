@@ -1,12 +1,6 @@
-// src/tests/DarkModeIntegration.test.tsx
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
-/**
- * Integration tests for dark mode functionality
- * Tests the coordination between localStorage, document classes, and component state
- */
 describe('Dark Mode Integration', () => {
-  // Mock localStorage
   const localStorageMock = (() => {
     let store: Record<string, string> = {};
     return {
@@ -31,7 +25,6 @@ describe('Dark Mode Integration', () => {
 
   describe('Theme Initialization Flow', () => {
     it('should initialize dark mode from localStorage on page load', () => {
-      // Simulate what the inline script in index.html does
       localStorageMock.getItem.mockReturnValue('dark');
       const theme = localStorageMock.getItem('theme') || 'light';
       
@@ -74,11 +67,9 @@ describe('Dark Mode Integration', () => {
 
   describe('Theme Toggle Flow', () => {
     it('should update both localStorage and document class when toggling to dark', () => {
-      // Start with light
       document.documentElement.classList.remove('dark');
       localStorageMock.getItem.mockReturnValue('light');
       
-      // Toggle to dark
       const newTheme = 'dark';
       localStorageMock.setItem('theme', newTheme);
       document.documentElement.classList.add('dark');
@@ -88,11 +79,9 @@ describe('Dark Mode Integration', () => {
     });
 
     it('should update both localStorage and document class when toggling to light', () => {
-      // Start with dark
       document.documentElement.classList.add('dark');
       localStorageMock.getItem.mockReturnValue('dark');
       
-      // Toggle to light
       const newTheme = 'light';
       localStorageMock.setItem('theme', newTheme);
       document.documentElement.classList.remove('dark');
@@ -104,24 +93,19 @@ describe('Dark Mode Integration', () => {
 
   describe('Theme Persistence Across Sessions', () => {
     it('should persist theme preference across page reloads', () => {
-      // First session: set to dark
       localStorageMock.setItem('theme', 'dark');
       expect(localStorageMock.getStore()['theme']).toBe('dark');
       
-      // Simulate page reload - get from localStorage
       const persistedTheme = localStorageMock.getItem('theme');
       expect(persistedTheme).toBe('dark');
     });
 
     it('should maintain theme state when localStorage is preserved', () => {
-      // Set theme
       localStorageMock.setItem('theme', 'dark');
       
-      // Verify it persists
       const theme = localStorageMock.getItem('theme');
       expect(theme).toBe('dark');
       
-      // Apply to document
       if (theme === 'dark') {
         document.documentElement.classList.add('dark');
       }
@@ -143,11 +127,8 @@ describe('Dark Mode Integration', () => {
     });
 
     it('should work with Tailwind CSS dark: variant selector', () => {
-      // This test verifies the class structure needed for Tailwind dark mode
       document.documentElement.classList.add('dark');
       
-      // When dark class is on html, Tailwind's dark: variants should apply
-      // This is verified by checking the class exists
       expect(document.documentElement.classList.contains('dark')).toBe(true);
     });
   });

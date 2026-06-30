@@ -20,8 +20,8 @@ const SupportPage: React.FC<SupportPageProps> = ({ onNavigate }) => {
   return (
     <div className="max-w-4xl mx-auto p-4 sm:p-6 pb-24">
       <header className='mb-8'>
-        <h1 className='text-3xl font-semibold text-earth-800 dark:text-earth-100 mb-2'>{t('support.title')}</h1>
-        <p className='text-earth-600 dark:text-earth-400'>{t('support.subtitle')}</p>
+        <h1 className='text-3xl font-semibold text-foreground mb-2'>{t('support.title')}</h1>
+        <p className='text-muted-foreground'>{t('support.subtitle')}</p>
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -29,9 +29,9 @@ const SupportPage: React.FC<SupportPageProps> = ({ onNavigate }) => {
         <SuggestionForm onNavigate={onNavigate} />
       </div>
 
-      <section className='mt-12 bg-sage-50 dark:bg-sage-900/20 rounded p-6 border border-sage-100 dark:border-sage-900/30'>
-        <h3 className='text-lg font-semibold text-sage-800 dark:text-sage-300 mb-2'>{t('support.howItWorks')}</h3>
-        <p className='text-sage-700 dark:text-sage-400 text-sm'>
+      <section className='mt-12 bg-primary/5 dark:bg-primary/10 rounded p-6 border border-primary/10 dark:border-primary/10'>
+        <h3 className='text-lg font-semibold text-primary dark:text-primary mb-2'>{t('support.howItWorks')}</h3>
+        <p className='text-primary dark:text-primary text-sm'>
           <Trans i18nKey="support.howItWorksDesc">
             Las sugerencias se envían a una pequeña cola.
           </Trans>

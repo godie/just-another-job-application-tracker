@@ -1,4 +1,3 @@
-// src/stores/matchingStore.ts
 
 import { create } from 'zustand';
 import type { JobApplication } from '../types/applications';
@@ -35,14 +34,12 @@ interface MatchingState {
   matchResults: Record<string, JobMatchResult>;
   preferences: MatchingPreferences;
 
-  // UI State
   isComputingProfile: boolean;
   isComputingScores: boolean;
   computeError: string | null;
   lastProfileCompute: string | null;
   lastScoresCompute: string | null;
 
-  // Actions
   loadMatchingState: () => void;
   loadPreferences: () => void;
   updatePreferences: (updates: Partial<MatchingPreferences>) => void;
@@ -61,11 +58,9 @@ interface MatchingState {
 async function getGeminiApiKey(): Promise<string | null> {
   if (!hasKeyStored()) return null;
 
-  // Try memory first
   const memoryKey = useGeminiKeyStore.getState().geminiKeyInMemory;
   if (memoryKey) return memoryKey;
 
-  // Key is stored but not decrypted — can't auto-use it
   return null;
 }
 
@@ -153,7 +148,6 @@ export const useMatchingStore = create<MatchingState>()((set, get) => ({
     if (!preferences.enabled) return;
     if (opportunities.length === 0) return;
 
-    // Auto-build profile if missing
     let currentProfile = profile;
     if (!currentProfile) {
       await get().buildProfile(applications);

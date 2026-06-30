@@ -40,7 +40,6 @@ describe('SuggestionsViewerPage', () => {
     );
 
     expect(await screen.findByText('Test suggestion 1')).toBeInTheDocument();
-    // In English locale, bug -> Bug, ui-ux -> UI/UX
     expect(screen.getByText('Bug')).toBeInTheDocument();
     expect(screen.getByText('UI/UX')).toBeInTheDocument();
   });

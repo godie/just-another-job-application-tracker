@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { type FieldDefinition } from '../../types/preferences';
+import { Button } from '../ui/Button';
 
 interface FieldsSettingsProps {
   orderedFields: FieldDefinition[];
@@ -26,14 +27,14 @@ const FieldsSettings: React.FC<FieldsSettingsProps> = ({
 
   return (
     <div className="space-y-6">
-      <div className="border border-earth-200 dark:border-earth-700 rounded overflow-hidden divide-y divide-earth-200 dark:divide-earth-700">
+      <div className="border border-border rounded overflow-hidden divide-y divide-border">
         {orderedFields.map((field, index) => {
           const isEnabled = enabledFields.includes(field.id);
           const isCustom = !defaultFields.find((f) => f.id === field.id);
           return (
             <div
               key={field.id}
-              className="flex items-center justify-between p-4 bg-white dark:bg-earth-800 hover:bg-earth-50 dark:hover:bg-earth-700/50 transition-colors"
+              className="flex items-center justify-between p-4 bg-card hover:bg-muted/50 transition-colors"
             >
               <div className="flex items-center gap-4">
                 <div className="relative flex items-center">
@@ -44,59 +45,51 @@ const FieldsSettings: React.FC<FieldsSettingsProps> = ({
                     checked={isEnabled}
                     onChange={() => onToggleField(field.id)}
                     aria-label={!isCustom ? t(`fields.${field.id}`, field.label) : field.label}
-                    className='size-5 text-sage-600 border-earth-300 dark:border-earth-600 rounded focus:ring-sage-500 transition cursor-pointer'
+                    className='size-5 text-primary border-border rounded focus:ring-ring transition cursor-pointer'
                   />
                 </div>
                 <div>
                   <label
                     htmlFor={`field-${field.id}`}
-                    className='text-sm font-bold text-earth-900 dark:text-earth-100 cursor-pointer'
+                    className='text-sm font-bold text-foreground cursor-pointer'
                   >
                     {!isCustom ? t(`fields.${field.id}`, field.label) : field.label}
                     {isCustom && (
-                      <span className='ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-sage-100 text-sage-800 dark:bg-sage-900/40 dark:text-sage-300'>
+                      <span className='ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-primary/10 text-primary dark:bg-primary/10 dark:text-primary'>
                         {t('settings.custom.title')}
                       </span>
                     )}
                   </label>
-                  <p className="text-xs text-earth-500 dark:text-earth-400 mt-0.5">
+                  <p className="text-xs text-muted-foreground mt-0.5">
                     {field.required ? t('settings.fields.required') : t('settings.fields.optional')}
                   </p>
                 </div>
               </div>
               <div className="flex items-center gap-1">
-                <button
-                  type="button"
+                <Button
+                  variant="ghost"
+                  size="icon"
                   onClick={() => handleMove(index, 'up')}
                   disabled={index === 0}
                   aria-label="Move Up"
-                  className={`p-2 rounded transition ${
-                    index === 0
-                      ? 'text-earth-300 dark:text-earth-600 cursor-not-allowed'
-                      : 'text-earth-500 dark:text-earth-400 hover:bg-earth-100 dark:hover:bg-earth-700 hover:text-earth-700 dark:hover:text-earth-200'
-                  }`}
                   title="Move Up"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" className="size-5" viewBox="0 0 20 20" fill="currentColor">
                     <path fillRule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clipRule="evenodd" />
                   </svg>
-                </button>
-                <button
-                  type="button"
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
                   onClick={() => handleMove(index, 'down')}
                   disabled={index === orderedFields.length - 1}
                   aria-label="Move Down"
-                  className={`p-2 rounded transition ${
-                    index === orderedFields.length - 1
-                      ? 'text-earth-300 dark:text-earth-600 cursor-not-allowed'
-                      : 'text-earth-500 dark:text-earth-400 hover:bg-earth-100 dark:hover:bg-earth-700 hover:text-earth-700 dark:hover:text-earth-200'
-                  }`}
                   title="Move Down"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" className="size-5" viewBox="0 0 20 20" fill="currentColor">
                     <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
                   </svg>
-                </button>
+                </Button>
               </div>
             </div>
           );

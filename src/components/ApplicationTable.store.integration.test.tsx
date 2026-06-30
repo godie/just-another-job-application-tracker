@@ -1,7 +1,3 @@
-// src/components/ApplicationTable.store.integration.test.tsx
-// Integration test: ApplicationTable + Zustand store.
-// Verifies that when data comes from the applications store (as in HomePage),
-// the table renders correctly.
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
@@ -88,7 +84,6 @@ describe('ApplicationTable + Zustand store integration', () => {
       />
     );
 
-    // Data appears in both mobile cards and desktop table
     expect(screen.getAllByText('Frontend Dev').length).toBeGreaterThan(0);
     expect(screen.getAllByText('Store Corp').length).toBeGreaterThan(0);
     expect(screen.getAllByText('Backend Dev').length).toBeGreaterThan(0);
@@ -128,7 +123,6 @@ describe('ApplicationTable + Zustand store integration', () => {
       />
     );
 
-    // Mobile card always shows delete; desktop shows on hover. Use first delete button.
     const deleteButtons = screen.getAllByTestId('delete-btn-store-1');
     expect(deleteButtons.length).toBeGreaterThan(0);
     fireEvent.click(deleteButtons[0]);

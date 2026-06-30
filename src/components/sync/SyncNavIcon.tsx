@@ -1,4 +1,3 @@
-// src/components/sync/SyncNavIcon.tsx
 import React, { memo } from 'react';
 import { FaCloud, FaCloudUploadAlt } from 'react-icons/fa';
 

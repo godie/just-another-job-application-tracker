@@ -5,8 +5,6 @@ import { type TableColumn } from '../types/table';
 import { DEFAULT_FIELDS } from '../utils/constants';
 
 /**
- * Custom hook to generate table column configurations based on user preferences.
- *
  * It combines default fields with custom fields, filters by enabled fields,
  * and applies the preferred column order. All labels are translated.
  *

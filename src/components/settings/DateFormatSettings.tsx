@@ -7,22 +7,22 @@ interface DateFormatSettingsProps {
   onDateFormatChange: (format: DateFormat) => void;
 }
 
+const DATE_FORMATS: DateFormat[] = ['DD/MM/YYYY', 'MM/DD/YYYY', 'YYYY-MM-DD'];
+
+const DATE_FORMAT_EXAMPLES: Record<DateFormat, string> = {
+  'DD/MM/YYYY': '15/01/2025',
+  'MM/DD/YYYY': '01/15/2025',
+  'YYYY-MM-DD': '2025-01-15',
+};
+
 const DateFormatSettings: React.FC<DateFormatSettingsProps> = ({ currentFormat, onDateFormatChange }) => {
   const { t } = useTranslation();
-
-  const formats: DateFormat[] = ['DD/MM/YYYY', 'MM/DD/YYYY', 'YYYY-MM-DD'];
-
-  const formatExamples: Record<DateFormat, string> = {
-    'DD/MM/YYYY': '15/01/2025',
-    'MM/DD/YYYY': '01/15/2025',
-    'YYYY-MM-DD': '2025-01-15',
-  };
 
   return (
     <div className='space-y-4'>
       <div className='grid grid-cols-1 gap-4'>
-        {formats.map((format) => {
-          const example = formatExamples[format];
+        {DATE_FORMATS.map((format) => {
+          const example = DATE_FORMAT_EXAMPLES[format];
           const isActive = currentFormat === format;
 
           return (
@@ -32,23 +32,23 @@ const DateFormatSettings: React.FC<DateFormatSettingsProps> = ({ currentFormat, 
               onClick={() => onDateFormatChange(format)}
               className={`flex items-center justify-between p-5 rounded border-2 transition-all text-left ${
                 isActive
-                  ? 'border-sage-600 bg-sage-50/50 dark:bg-sage-900/20'
-                  : 'border-earth-200 dark:border-earth-700 hover:border-earth-300 dark:hover:border-earth-600 bg-white dark:bg-earth-800'
+                  ? 'border-primary bg-primary/5 dark:bg-primary/10'
+                  : 'border-border hover:border-border bg-card'
               }`}
             >
               <div className='flex items-center gap-4'>
-                <div className={`size-5 rounded-full border-2 flex items-center justify-center ${isActive ? 'border-sage-600' : 'border-earth-300 dark:border-earth-600'}`}>
-                  {isActive && <div className='size-2.5 rounded-full bg-sage-600' />}
+                <div className={`size-5 rounded-full border-2 flex items-center justify-center ${isActive ? 'border-primary' : 'border-border'}`}>
+                  {isActive && <div className='size-2.5 rounded-full bg-primary' />}
                 </div>
                 <div>
-                  <div className='font-bold text-earth-900 dark:text-earth-100'>{format}</div>
-                  <div className='text-sm text-earth-500 dark:text-earth-400 mt-1'>
-                    {t('common.example')}: <span className='font-mono text-sage-600 dark:text-sage-400'>{example}</span>
+                  <div className='font-bold text-foreground'>{format}</div>
+                  <div className='text-sm text-muted-foreground mt-1'>
+                    {t('common.example')}: <span className='font-mono text-primary'>{example}</span>
                   </div>
                 </div>
               </div>
               {isActive && (
-                <span className='text-sage-600'>
+                <span className='text-primary'>
                   <svg xmlns='http://www.w3.org/2000/svg' className='size-6' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
                     <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M5 13l4 4L19 7' />
                   </svg>

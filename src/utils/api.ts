@@ -1,17 +1,8 @@
-// src/utils/api.ts
 
-/**
- * API utility functions for backend communication (Laravel API).
- * Handles secure cookie operations: set, get, clear.
- * Use VITE_API_BASE_URL (e.g. http://localhost:8080/api) when backend is on another origin.
- */
+
+import { defaultFetchOptions } from './fetchDefaults';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
-
-const defaultFetchOptions: RequestInit = {
-  credentials: 'include',
-  headers: { 'Content-Type': 'application/json' },
-};
 
 export interface AuthUser {
   id: number;

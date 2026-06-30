@@ -1,4 +1,3 @@
-// src/mails/providers/fake/fakeData.ts
 export const FAKE_MESSAGES = [
     {
       id: 'm1',

@@ -5,9 +5,6 @@ import { GoogleOAuthProvider } from '@react-oauth/google';
 import { AlertProvider } from '../components/AlertProvider';
 import { DEFAULT_PREFERENCES } from '../utils/constants';
 
-// =========================================================================
-// 1. MOCK: Configuración del Mock para localStorage
-// =========================================================================
 const localStorageMock = (() => {
   let store: Record<string, string> = {};
   return {
@@ -20,7 +17,6 @@ const localStorageMock = (() => {
 })();
 Object.defineProperty(global, 'localStorage', { value: localStorageMock });
 
-// Helper function to render with GoogleOAuthProvider and AlertProvider
 const renderWithGoogleProvider = (ui: React.ReactElement) => {
   return render(
     <GoogleOAuthProvider clientId='test-client-id'>
@@ -31,12 +27,8 @@ const renderWithGoogleProvider = (ui: React.ReactElement) => {
   );
 };
 
-// =========================================================================
-// 2. SETUP: Limpiar localStorage antes de cada test
-// =========================================================================
 beforeEach(() => {
   localStorageMock.clear();
-  // Set default preferences
   localStorageMock.setItem('jobTrackerPreferences', JSON.stringify(DEFAULT_PREFERENCES));
 });
 
@@ -53,18 +45,15 @@ describe('SettingsPage', () => {
 
     test('sets the document title via useSEO hook', async () => {
       renderWithGoogleProvider(<SettingsPage />);
-      // resolveSEOConfig appends " | JAJAT" suffix
       expect(document.title).toBe('Settings | JAJAT');
     });
 
     test('switches sections when sidebar buttons are clicked', async () => {
       renderWithGoogleProvider(<SettingsPage />);
 
-      // Initially showing Default View (under General)
       const defaultViewElements = screen.getAllByText(/Default View/i);
       expect(defaultViewElements.length).toBeGreaterThan(0);
 
-      // Click on Custom Fields
       const customFieldsBtn = screen.getByText(/Custom Fields/i);
       fireEvent.click(customFieldsBtn);
 
@@ -79,7 +68,6 @@ describe('SettingsPage', () => {
     test('saves changes and shows success message', async () => {
       renderWithGoogleProvider(<SettingsPage />);
 
-      // Change something to trigger 'unsaved changes'
       const kanbanView = screen.getByText(/Kanban/i);
       fireEvent.click(kanbanView);
 

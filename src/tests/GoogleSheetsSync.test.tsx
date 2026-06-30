@@ -1,4 +1,3 @@
-// src/tests/GoogleSheetsSync.test.tsx
 
 import React from 'react';
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
@@ -8,18 +7,14 @@ import { AlertProvider } from '../components/AlertProvider';
 import * as googleSheetsUtils from '../utils/googleSheets';
 import type { JobApplication } from '../types/applications';
 
-// Mock localStorage
 const localStorageStore: Record<string, string> = {};
 
-// Mock window.open
 const mockWindowOpen = vi.fn();
 window.open = mockWindowOpen;
 
-// Auth state control for useAuthStore mock
 let mockIsAuthenticated = false;
 let mockHasGoogleLinked = false;
 
-// Mock auth store — component now reads isAuthenticated from here instead of localStorage
 vi.mock('../stores/authStore', () => ({
   useAuthStore: vi.fn((selector?: (state: Record<string, unknown>) => unknown) => {
     const state = {
@@ -41,18 +36,15 @@ vi.mock('../stores/authStore', () => ({
   }),
 }));
 
-// Mock the localStorage utilities (still needed for type re-export)
 vi.mock('../storage/applications', () => ({
   getApplications: vi.fn(() => []),
   saveApplications: vi.fn(),
 }));
 
-// Mock getAuthCookie for token validation on mount
 vi.mock('../utils/api', () => ({
   getAuthCookie: vi.fn(() => Promise.resolve({ success: true, access_token: 'test-token' })),
 }));
 
-// Mock the googleSheets utilities
 vi.mock('../utils/googleSheets', () => ({
   createSpreadsheet: vi.fn(),
   syncToGoogleSheets: vi.fn(),
@@ -69,7 +61,6 @@ vi.mock('../utils/googleSheets', () => ({
   }),
 }));
 
-// Helper function to render with AlertProvider
 const renderWithProviders = (ui: React.ReactElement) => {
   return render(<AlertProvider>{ui}</AlertProvider>);
 };

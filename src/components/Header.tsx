@@ -1,10 +1,18 @@
-// src/components/Header.tsx
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuthModals } from './AuthModals';
 import { clearAuthCookie } from '../utils/api';
 import { useAlert } from './AlertProvider';
 import { Button } from './ui/Button';
+import { Switch } from './ui/Switch';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from './ui/DropdownMenu';
 import { useIsLoggedIn } from '../hooks/useIsLoggedIn';
 import { useAuthStore } from '../stores/authStore';
 import { type PageType } from '../App';
@@ -28,7 +36,6 @@ const [theme, setTheme] = useState<'light' | 'dark'>(() => {
     }
     return 'light';
   });
-  // Apply theme when it changes
   useEffect(() => {
     const root = document.documentElement;
     if (theme === 'dark') {
@@ -38,20 +45,6 @@ const [theme, setTheme] = useState<'light' | 'dark'>(() => {
     }
     localStorage.setItem('theme', theme);
   }, [theme]);
-
-  const toggleTheme = () => {
-    const newTheme = theme === 'light' ? 'dark' : 'light';
-    setTheme(newTheme);
-    
-    // Force immediate update
-    const root = document.documentElement;
-    if (newTheme === 'dark') {
-      root.classList.add('dark');
-    } else {
-      root.classList.remove('dark');
-    }
-    localStorage.setItem('theme', newTheme);
-  };
 
   const handleAuth = async () => {
     if (isLoggedIn) {
@@ -72,7 +65,7 @@ const [theme, setTheme] = useState<'light' | 'dark'>(() => {
   };
 
   return (
-    <header className='flex items-center justify-between p-4 border-b border-earth-200 dark:border-earth-700 bg-white dark:bg-earth-800 fixed top-0 left-0 right-0 z-50 h-16'>
+    <header className='flex items-center justify-between p-4 border-b border-border bg-card fixed top-0 left-0 right-0 z-50 h-16'>
       <div className='flex items-center gap-4'>
         {/* Hamburger menu button - Hidden on mobile, visible on desktop */}
         <Button
@@ -84,7 +77,7 @@ const [theme, setTheme] = useState<'light' | 'dark'>(() => {
           data-testid='sidebar-toggle'
         >
           <svg
-            className='size-6 text-earth-700 dark:text-earth-300'
+            className='size-6 text-foreground'
             fill='none'
             stroke='currentColor'
             viewBox='0 0 24 24'
@@ -102,15 +95,21 @@ const [theme, setTheme] = useState<'light' | 'dark'>(() => {
         <img
           src='/jajat-logo.png'
           alt='Just Another Job Application Tracker - Home'
+          // Intrinsic dims match the source file (1024x1024).
+          // Defense-in-depth CLS prevention: declared aspect ratio informs
+          // layout before image arrives, even if Tailwind classes change.
+          width={1024}
+          height={1024}
+          decoding='async'
           className='size-10 md:hidden'
           data-testid='app-logo-mobile'
         />
         {/* Title: JAJAT for tablets (768px - 1023px) */}
-        <div className='hidden md:block lg:hidden font-serif text-2xl font-bold text-sage-700 dark:text-sage-400' data-testid='app-title-tablet'>
+        <div className='hidden md:block lg:hidden font-serif text-2xl font-bold text-primary' data-testid='app-title-tablet'>
           JAJAT
         </div>
         {/* Title: Full text for desktop (>= 1024px) */}
-        <div className='hidden lg:block font-serif text-2xl sm:text-3xl font-bold text-sage-700 dark:text-sage-400' data-testid='app-title'>
+        <div className='hidden lg:block font-serif text-2xl sm:text-3xl font-bold text-primary' data-testid='app-title'>
           Just Another Job Application Tracker
         </div>
       </div>
@@ -139,7 +138,7 @@ const [theme, setTheme] = useState<'light' | 'dark'>(() => {
           {/* Sun Icon (Light Mode) */}
           <svg
             className={`size-5 transition-colors ${
-              theme === 'light' ? 'text-yellow-500' : 'text-earth-400'
+              theme === 'light' ? 'text-yellow-500' : 'text-muted-foreground'
             }`}
             fill='currentColor'
             viewBox='0 0 20 20'
@@ -152,30 +151,16 @@ const [theme, setTheme] = useState<'light' | 'dark'>(() => {
             />
           </svg>
 
-          {/* Toggle Switch */}
-          <button
-            onClick={toggleTheme}
-            type='button'
-            className={`relative inline-flex h-6 w-11 items-center rounded transition-colors focus:outline-none focus:ring-2 focus:ring-sage-500 focus:ring-offset-2 ${
-              theme === 'dark' ? 'bg-sage-600' : 'bg-earth-300'
-            }`}
-            role='switch'
-            aria-checked={theme === 'dark'}
+          <Switch
+            checked={theme === 'dark'}
+            onCheckedChange={(checked) => setTheme(checked ? 'dark' : 'light')}
             aria-label='Toggle theme'
             data-testid='theme-toggle'
-            suppressHydrationWarning
-          >
-            <span
-              className={`inline-block size-4 transform rounded-full bg-white transition-transform ${
-                theme === 'dark' ? 'translate-x-6' : 'translate-x-1'
-              }`}
-            />
-          </button>
+          />
 
-          {/* Moon Icon (Dark Mode) */}
           <svg
             className={`size-5 transition-colors ${
-              theme === 'dark' ? 'text-sage-400' : 'text-earth-400'
+              theme === 'dark' ? 'text-primary' : 'text-muted-foreground'
             }`}
             fill='currentColor'
             viewBox='0 0 20 20'
@@ -186,20 +171,33 @@ const [theme, setTheme] = useState<'light' | 'dark'>(() => {
         </div>
         {/* Login/Account Button */}
         {isLoggedIn ? (
-          <button
-            type='button'
-            onClick={() => onNavigate?.('backup-sync')}
-            className='flex items-center gap-2 px-2 md:px-3 py-1.5 rounded-full border border-sage-200 dark:border-sage-700 bg-sage-50 dark:bg-sage-900/20 hover:bg-sage-100 dark:hover:bg-sage-900/40 transition-colors'
-            data-testid='user-avatar-button'
-            aria-label={t('nav.backupSync')}
-          >
-            <span className='size-7 bg-sage-600 rounded-full flex items-center justify-center text-white text-sm font-bold'>
-              {currentUser?.email?.charAt(0).toUpperCase() ?? '?'}
-            </span>
-            <span className='hidden md:inline text-sm font-medium text-sage-700 dark:text-sage-300 max-w-[140px] truncate'>
-              {currentUser?.email}
-            </span>
-          </button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
+                type='button'
+                className='flex items-center gap-2 px-2 md:px-3 py-1.5 rounded-full border border-border bg-accent hover:bg-accent/80 transition-colors'
+                data-testid='user-avatar-button'
+                aria-label={t('nav.backupSync')}
+              >
+                <span className='size-7 bg-primary rounded-full flex items-center justify-center text-primary-foreground text-sm font-bold'>
+                  {currentUser?.email?.charAt(0).toUpperCase() ?? '?'}
+                </span>
+                <span className='hidden md:inline text-sm font-medium text-foreground max-w-[140px] truncate'>
+                  {currentUser?.email}
+                </span>
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align='end'>
+              <DropdownMenuLabel>{t('nav.backupSync')}</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => onNavigate?.('backup-sync')}>
+                {t('nav.backupSync')}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleAuth}>
+                {t('common.signOut')}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         ) : (
           <Button
             variant='primary'

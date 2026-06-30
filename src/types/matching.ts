@@ -1,4 +1,3 @@
-// src/types/matching.ts
 
 export type MatchConfidence = 'low' | 'medium' | 'high';
 export type MatchVerdict = 'excellent_fit' | 'good_fit' | 'partial_fit' | 'low_fit';

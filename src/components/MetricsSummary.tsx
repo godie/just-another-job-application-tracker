@@ -1,17 +1,11 @@
 import React, { useMemo, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { type JobApplication } from '../types/applications';
-import { StatCard } from './ui';
 
 interface MetricsSummaryProps {
   applications: JobApplication[];
 }
 
-/**
- * MetricsSummary component displays a summary of job application metrics.
- * Asymmetric layout: Applications is the dominant metric (2-col span),
- * Interviews and Offers are compact secondary metrics.
- */
 const MetricsSummary: React.FC<MetricsSummaryProps> = ({ applications }) => {
   const { t } = useTranslation();
 
@@ -34,25 +28,33 @@ const MetricsSummary: React.FC<MetricsSummaryProps> = ({ applications }) => {
   const offers = stats.offers;
 
   return (
-    <section className='grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-10' data-testid='metrics-summary'>
-      <StatCard
-        title={t('home.metrics.applications')}
-        value={applications.length}
-        variant="earth"
-        isLarge
-      />
+    <section className='mb-14 grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)]' data-testid='metrics-summary'>
+      <div className='bg-card border-l-2 border-earth-300 px-8 py-7'>
+        <p className='text-sm font-semibold uppercase tracking-[0.12em] text-earth-500'>
+          {t('home.metrics.applications')}
+        </p>
+        <p className='mt-4 font-serif text-7xl font-bold leading-none text-foreground sm:text-8xl'>
+          {applications.length}
+        </p>
+      </div>
 
-      <StatCard
-        title={t('home.metrics.interviews')}
-        value={interviews}
-        variant="sage"
-      />
+      <div className='bg-sage-50 border-l-2 border-primary/50 px-7 py-7'>
+        <p className='text-sm font-semibold uppercase tracking-[0.12em] text-primary'>
+          {t('home.metrics.interviews')}
+        </p>
+        <p className='mt-4 font-serif text-5xl font-bold leading-none text-primary sm:text-6xl'>
+          {interviews}
+        </p>
+      </div>
 
-      <StatCard
-        title={t('home.metrics.offers')}
-        value={offers}
-        variant="earth-muted"
-      />
+      <div className='bg-card border-l-2 border-earth-300 px-7 py-7'>
+        <p className='text-sm font-semibold uppercase tracking-[0.12em] text-earth-500'>
+          {t('home.metrics.offers')}
+        </p>
+        <p className='mt-4 font-serif text-5xl font-bold leading-none text-foreground sm:text-6xl'>
+          {offers}
+        </p>
+      </div>
     </section>
   );
 };

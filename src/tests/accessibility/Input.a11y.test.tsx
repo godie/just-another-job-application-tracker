@@ -2,10 +2,6 @@ import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { Input } from '../../components/ui/Input';
 
-/**
- * Accessibility tests for Input component
- * These tests verify WCAG compliance
- */
 describe('Input Accessibility', () => {
   it('renders with proper label association', () => {
     render(<Input id="test-input" label="Test Label" />);
@@ -38,9 +34,8 @@ describe('Input Accessibility', () => {
     render(<Input id="test-input" label="Test Label" />);
 
     const input = screen.getByLabelText('Test Label');
-    // Check that the input has focus-visible classes
-    expect(input.className).toContain('focus-visible:ring-2');
-    expect(input.className).toContain('focus-visible:ring-sage-500');
+    expect(input.className).toContain('focus-visible:ring-1');
+    expect(input.className).toContain('focus-visible:ring-ring');
   });
 
   it('does not have aria-invalid when there is no error', () => {

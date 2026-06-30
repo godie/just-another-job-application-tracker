@@ -5,7 +5,7 @@ import { Separator } from './Separator';
 describe('Separator', () => {
   it('renders correctly', () => {
     const { container } = render(<Separator />);
-    expect(container.firstChild).toHaveClass('bg-gray-200');
+    expect(container.firstChild).toHaveClass('bg-border');
   });
 
   it('applies horizontal classes by default', () => {

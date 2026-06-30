@@ -1,5 +1,4 @@
-// src/components/JobSearchForm.tsx
-import React, { useState, useCallback } from 'react';
+import React, { useReducer, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { TagInput } from './ui/TagInput';
@@ -17,11 +16,38 @@ interface JobSearchFormProps {
 
 const EMPTY_TAGS: string[] = [];
 
-/**
- * Compact inline search bar for finding jobs via the API proxy.
- * Supports Jooble, TheirStack, or both sources.
- * Replaces the ATSSearch collapse section with a permanent, always-visible form.
- */
+interface JobSearchFormState {
+  keywords: string[];
+  location: string;
+  remoteOnly: boolean;
+  source: JobSearchSource;
+  techStack: string[];
+}
+
+type JobSearchFormAction =
+  | { type: 'SET_KEYWORDS'; value: string[] }
+  | { type: 'SET_LOCATION'; value: string }
+  | { type: 'SET_REMOTE_ONLY'; value: boolean }
+  | { type: 'SET_SOURCE'; value: JobSearchSource }
+  | { type: 'SET_TECH_STACK'; value: string[] };
+
+function jobSearchFormReducer(state: JobSearchFormState, action: JobSearchFormAction): JobSearchFormState {
+  switch (action.type) {
+    case 'SET_KEYWORDS':
+      return { ...state, keywords: action.value };
+    case 'SET_LOCATION':
+      return { ...state, location: action.value };
+    case 'SET_REMOTE_ONLY':
+      return { ...state, remoteOnly: action.value };
+    case 'SET_SOURCE':
+      return { ...state, source: action.value };
+    case 'SET_TECH_STACK':
+      return { ...state, techStack: action.value };
+    default:
+      return state;
+  }
+}
+
 export const JobSearchForm: React.FC<JobSearchFormProps> = ({
   onSearch,
   isSearching,
@@ -31,11 +57,15 @@ export const JobSearchForm: React.FC<JobSearchFormProps> = ({
 }) => {
   const { t } = useTranslation();
 
-  const [keywords, setKeywords] = useState<string[]>(defaultKeywords);
-  const [location, setLocation] = useState(defaultLocation);
-  const [remoteOnly, setRemoteOnly] = useState(false);
-  const [source, setSource] = useState<JobSearchSource>(defaultSource);
-  const [techStack, setTechStack] = useState<string[]>([]);
+  const [state, dispatch] = useReducer(jobSearchFormReducer, {
+    keywords: defaultKeywords,
+    location: defaultLocation,
+    remoteOnly: false,
+    source: defaultSource,
+    techStack: [],
+  });
+
+  const { keywords, location, remoteOnly, source, techStack } = state;
 
   const handleSubmit = useCallback(
     (e: React.FormEvent) => {
@@ -58,7 +88,7 @@ export const JobSearchForm: React.FC<JobSearchFormProps> = ({
   return (
     <form
       onSubmit={handleSubmit}
-      className="bg-earth-50 dark:bg-earth-800 rounded-lg p-4 mb-6 border border-earth-200 dark:border-earth-700"
+      className="bg-muted rounded-lg p-4 mb-6 border border-border"
     >
       {/* Row 1: Keywords + Location + Remote + Search button */}
       <div className="flex flex-col lg:flex-row gap-4 items-end">
@@ -67,29 +97,29 @@ export const JobSearchForm: React.FC<JobSearchFormProps> = ({
           <TagInput
             label={t('opportunities.jobSearch.keywords', 'Keywords')}
             tags={keywords}
-            onChange={setKeywords}
+            onChange={(tags) => dispatch({ type: 'SET_KEYWORDS', value: tags })}
             placeholder="customer success engineer, react developer"
           />
-          <p className="text-xs text-earth-400 dark:text-earth-500 mt-1">
+          <p className="text-xs text-muted-foreground mt-1">
             {t('opportunities.jobSearch.keywordsHint', 'Try job titles, skills, or companies')}
           </p>
         </div>
 
         {/* Location input */}
         <div className="w-full lg:w-48 flex-shrink-0">
-          <label htmlFor="job-search-location" className="block text-sm font-bold text-earth-700 dark:text-earth-300 mb-2">
+          <label htmlFor="job-search-location" className="block text-sm font-bold text-foreground mb-2">
             {t('opportunities.jobSearch.location', 'Location')}
           </label>
           <input
             id="job-search-location"
             type="text"
             value={location}
-            onChange={(e) => setLocation(e.target.value)}
+            onChange={(e) => dispatch({ type: 'SET_LOCATION', value: e.target.value })}
             placeholder="remote, London, SF"
             aria-label={t('opportunities.jobSearch.location', 'Location')}
-            className="w-full px-4 py-3 border border-earth-300 dark:border-earth-600 rounded focus:ring-2 focus:ring-sage-500 focus:border-sage-500 bg-white dark:bg-earth-800 text-earth-900 dark:text-earth-100 transition-all"
+            className="w-full px-4 py-3 border border-border rounded focus:ring-2 focus:ring-ring focus:border-ring bg-background text-foreground transition-all"
           />
-          <p className="text-xs text-earth-400 dark:text-earth-500 mt-1">
+          <p className="text-xs text-muted-foreground mt-1">
             {t('opportunities.jobSearch.locationHint', 'City, country, or remote')}
           </p>
         </div>
@@ -101,11 +131,11 @@ export const JobSearchForm: React.FC<JobSearchFormProps> = ({
               id="job-search-remote"
               type="checkbox"
               checked={remoteOnly}
-              onChange={(e) => setRemoteOnly(e.target.checked)}
+              onChange={(e) => dispatch({ type: 'SET_REMOTE_ONLY', value: e.target.checked })}
               aria-label={t('opportunities.jobSearch.remoteOnly', 'Remote only')}
-              className="size-4 rounded border-earth-300 dark:border-earth-600 text-sage-600 focus:ring-sage-500"
+              className="size-4 rounded border-border text-primary focus:ring-ring"
             />
-            <span className="text-sm font-medium text-earth-700 dark:text-earth-300 whitespace-nowrap">
+            <span className="text-sm font-medium text-foreground whitespace-nowrap">
               {t('opportunities.jobSearch.remoteOnly', 'Remote only')}
             </span>
           </label>
@@ -117,7 +147,7 @@ export const JobSearchForm: React.FC<JobSearchFormProps> = ({
             type="submit"
             variant="primary"
             disabled={isSearching || keywords.length === 0}
-            className="w-full lg:w-auto px-6 py-3 bg-sage-600 hover:bg-sage-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium rounded transition-colors flex items-center justify-center gap-2"
+            className="w-full lg:w-auto px-6 py-3 disabled:opacity-50 disabled:cursor-not-allowed font-medium flex items-center justify-center gap-2"
           >
             {isSearching ? (
               <>
@@ -145,20 +175,20 @@ export const JobSearchForm: React.FC<JobSearchFormProps> = ({
 
       {/* Row 2: Source picker + Tech stack (collapsible advanced) */}
       <details className="mt-4 group">
-        <summary className="text-xs text-earth-400 dark:text-earth-500 cursor-pointer hover:text-earth-600 dark:hover:text-earth-300 transition-colors select-none">
+        <summary className="text-xs text-muted-foreground cursor-pointer hover:text-muted-foreground transition-colors select-none">
           {t('opportunities.jobSearch.advancedFilters', 'Advanced filters')}
         </summary>
         <div className="mt-3 flex flex-col lg:flex-row gap-4 items-end">
           {/* Source selector */}
           <div className="w-full lg:w-48 flex-shrink-0">
-            <label className="block text-sm font-bold text-earth-700 dark:text-earth-300 mb-2">
+            <label className="block text-sm font-bold text-foreground mb-2">
               {t('opportunities.jobSearch.source', 'Source')}
             </label>
             <select
               value={source}
-              onChange={(e) => setSource(e.target.value as JobSearchSource)}
+              onChange={(e) => dispatch({ type: 'SET_SOURCE', value: e.target.value as JobSearchSource })}
               aria-label={t('opportunities.jobSearch.source', 'Source')}
-              className="w-full p-3 border border-earth-300 dark:border-earth-600 rounded focus:ring-2 focus:ring-sage-500 focus:border-sage-500 bg-white dark:bg-earth-800 text-earth-900 dark:text-earth-100 transition-all text-sm"
+              className="w-full p-3 border border-border rounded focus:ring-2 focus:ring-ring focus:border-ring bg-background text-foreground transition-all text-sm"
             >
               <option value="all">{t('opportunities.jobSearch.sourceAll', 'All (Jooble + TheirStack + Adzuna + Careerjet)')}</option>
               <option value="both">{t('opportunities.jobSearch.sourceBoth', 'Both (Jooble + TheirStack)')}</option>
@@ -175,10 +205,10 @@ export const JobSearchForm: React.FC<JobSearchFormProps> = ({
               <TagInput
                 label={t('opportunities.jobSearch.techStack', 'Tech Stack')}
                 tags={techStack}
-                onChange={setTechStack}
+                onChange={(tags) => dispatch({ type: 'SET_TECH_STACK', value: tags })}
                 placeholder="react, typescript, python, aws"
               />
-              <p className="text-xs text-earth-400 dark:text-earth-500 mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 {t('opportunities.jobSearch.techStackHint', 'Filter by technologies — uses TheirStack data')}
               </p>
             </div>

@@ -2,9 +2,6 @@ import type { JobApplication } from '../types/applications';
 import { generateId } from './id';
 import { toWorkType } from './applications';
 
-/**
- * Exports an array of JobApplication to a CSV string.
- */
 export const exportToCSV = (applications: JobApplication[]): string => {
   if (applications.length === 0) return '';
 
@@ -32,7 +29,6 @@ export const exportToCSV = (applications: JobApplication[]): string => {
         stringValue = String(val);
       }
 
-      // Escape double quotes and wrap in double quotes
       const escaped = stringValue.replace(/"/g, '""');
       return `"${escaped}"`;
     });
@@ -42,9 +38,6 @@ export const exportToCSV = (applications: JobApplication[]): string => {
   return csvRows.join('\n');
 };
 
-/**
- * Parses a CSV string into an array of JobApplication.
- */
 export const parseCSV = (csvText: string): JobApplication[] => {
   const lines = csvText.split(/\r?\n/);
   if (lines.length < 2) return [];
@@ -95,12 +88,10 @@ export const parseCSV = (csvText: string): JobApplication[] => {
       }
     });
 
-    // Ensure it has an ID
     if (!app.id) {
       app.id = generateId();
     }
 
-    // Validate required fields at least exist
     if (app.position && app.company) {
       const typedApp: JobApplication = {
         id: app.id as string,

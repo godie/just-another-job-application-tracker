@@ -1,4 +1,3 @@
-// src/components/sync/MergePromptHandler.test.tsx
 import { describe, it, expect, beforeEach } from 'vitest';
 import { render } from '@testing-library/react';
 import MergePromptHandler from './MergePromptHandler';
@@ -23,7 +22,6 @@ describe('MergePromptHandler', () => {
   it('renders modal when conflict is detected', () => {
     useMergeStore.getState().setConflict(mockMergeData, { applications: [], opportunities: [] });
     const { container } = render(<MergePromptHandler />);
-    // Modal should appear with conflict title
     expect(container.querySelector('.fixed.inset-0')).toBeTruthy();
   });
 });

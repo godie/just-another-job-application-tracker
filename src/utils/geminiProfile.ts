@@ -1,4 +1,3 @@
-// src/utils/geminiProfile.ts
 
 import type { JobApplication } from '../types/applications';
 import type { UserMatchProfile, SeniorityLevel } from '../types/matching';
@@ -19,9 +18,6 @@ interface GeminiProfileResponse {
   confidence: 'low' | 'medium' | 'high';
 }
 
-/**
- * Redact company names to protect privacy before sending to Gemini.
- */
 function redactApplicationsForGemini(apps: JobApplication[]): Array<{
   position: string;
   company: string;
@@ -92,10 +88,6 @@ JSON Schema:
   "confidence": "low|medium|high"
 }`;
 
-/**
- * Synthesize a UserMatchProfile from application history using Gemini AI.
- * Sends redacted application data to protect privacy.
- */
 async function synthesizeUserProfileWithGemini(
   apiKey: string,
   applications: JobApplication[],
@@ -112,7 +104,6 @@ async function synthesizeUserProfileWithGemini(
 
   const redactedApps = redactApplicationsForGemini(applications);
 
-  // If user opts out of notes/timeline, strip them
   const appsToSend = redactedApps.map((app) => {
     const a = { ...app };
     if (!options?.includeNotes) {
@@ -179,9 +170,6 @@ async function synthesizeUserProfileWithGemini(
   }
 }
 
-/**
- * Build a hybrid profile: deterministic base + AI enrichment if available.
- */
 export async function buildHybridProfile(
   apiKey: string | null,
   applications: JobApplication[],
@@ -210,7 +198,6 @@ export async function buildHybridProfile(
       return deterministic;
     }
 
-    // Merge: AI enriches what deterministic missed
     return {
       ...deterministic,
       targetRoles: aiProfile.targetRoles.length > 0 ? aiProfile.targetRoles : deterministic.targetRoles,

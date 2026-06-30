@@ -1,4 +1,3 @@
-// src/components/SyncStatusInfo.test.tsx
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import SyncStatusInfo from './SyncStatusInfo';
@@ -13,7 +12,6 @@ vi.mock('react-i18next', () => ({
   }),
 }));
 
-// Mock formatLastSyncTime to return a predictable value
 vi.mock('../utils/googleSheets', () => ({
   formatLastSyncTime: () => '15/1/2024',
 }));

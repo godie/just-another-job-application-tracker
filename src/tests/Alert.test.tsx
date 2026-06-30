@@ -40,7 +40,6 @@ describe('Alert Component', () => {
     
     expect(screen.getByText('No auto close')).toBeInTheDocument();
     
-    // Wait to ensure it doesn't auto-close
     await new Promise(resolve => setTimeout(resolve, 200));
     
     expect(onClose).not.toHaveBeenCalled();
@@ -53,7 +52,6 @@ describe('Alert Component', () => {
     const closeButton = screen.getByLabelText('Close alert');
     closeButton.click();
     
-    // onClose should be called after animation
     setTimeout(() => {
       expect(onClose).toHaveBeenCalledTimes(1);
     }, 400);

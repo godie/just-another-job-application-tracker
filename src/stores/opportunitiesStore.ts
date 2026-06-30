@@ -1,4 +1,3 @@
-// src/stores/opportunitiesStore.ts
 import { create } from 'zustand';
 import type { JobOpportunity } from '../types/opportunities';
 import { generateId } from '../utils/id';
@@ -8,7 +7,6 @@ interface OpportunitiesState {
   opportunities: JobOpportunity[];
   isLoading: boolean;
   
-  // Actions
   loadOpportunities: () => void;
   addOpportunity: (opportunity: Omit<JobOpportunity, 'id' | 'capturedDate'>) => JobOpportunity;
   deleteOpportunity: (id: string) => void;
@@ -16,10 +14,6 @@ interface OpportunitiesState {
   refreshOpportunities: () => void;
 }
 
-/**
- * Zustand store for managing job opportunities.
- * Persistence is handled by the storage layer (src/storage/opportunities.ts)
- */
 export const useOpportunitiesStore = create<OpportunitiesState>()((set) => ({
   opportunities: [],
   isLoading: false,

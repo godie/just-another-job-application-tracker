@@ -6,7 +6,6 @@ import { describe, it, expect, vi } from 'vitest';
 
 const stableT = (key: string, fallback: string) => fallback || key;
 
-// Mock react-i18next specifically for this test to ensure stable t function
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: stableT,
@@ -77,12 +76,10 @@ describe('useTableColumns', () => {
 
     const firstResult = result.current;
 
-    // Test 1: New reference triggers recalculation
     rerender({ prefs: { ...mockPreferences } });
     const secondResult = result.current;
     expect(secondResult).not.toBe(firstResult);
 
-    // Test 2: Same reference maintains identity
     const samePrefs = { ...mockPreferences };
     rerender({ prefs: samePrefs });
     const thirdResult = result.current;

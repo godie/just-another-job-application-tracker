@@ -1,4 +1,3 @@
-// src/components/BottomNav.tsx
 import React, { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FaTable, FaLightbulb, FaCog, FaChartBar, FaHeart } from 'react-icons/fa';
@@ -27,7 +26,7 @@ const BottomNav: React.FC<BottomNavProps> = ({ currentPage, onNavigate }) => {
   return (
     <nav
       aria-label='Bottom navigation'
-      className='fixed bottom-0 left-0 right-0 bg-earth-50 dark:bg-earth-800 border-t border-earth-200 dark:border-earth-700 md:hidden z-50'
+      className='fixed bottom-0 left-0 right-0 bg-card border-t border-border md:hidden z-50'
     >
       <div className='flex justify-around items-center h-16'>
         {navItems.map((item) => (
@@ -37,8 +36,8 @@ const BottomNav: React.FC<BottomNavProps> = ({ currentPage, onNavigate }) => {
             onClick={() => onNavigate(item.page  as PageType)}
             className={`flex flex-col items-center justify-center w-full h-full transition-colors group relative ${
               currentPage === item.page
-                ? 'text-sage-600 dark:text-sage-400'
-                : 'text-earth-500 dark:text-earth-400 hover:text-sage-600 dark:hover:text-sage-400'
+                ? 'text-primary'
+                : 'text-muted-foreground hover:text-primary'
             }`}
             aria-label={item.label}
             aria-current={currentPage === item.page ? 'page' : undefined}

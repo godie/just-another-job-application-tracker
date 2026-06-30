@@ -1,4 +1,3 @@
-// src/pages/InsightsPage.test.tsx
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, afterEach } from 'vitest';
@@ -94,20 +93,16 @@ describe('InsightsPage', () => {
   it('displays correct stats in asymmetric layout', () => {
     render(<InsightsPage onNavigate={mockNavigate} />);
 
-    // Total Applications — dominant metric
     expect(screen.getByText('Total Applications')).toBeInTheDocument();
     const allThrees = screen.getAllByText('3');
     expect(allThrees.length).toBeGreaterThanOrEqual(1);
 
-    // Total Interviews — compact metric
     expect(screen.getByText('Total Interviews')).toBeInTheDocument();
     const allOnes = screen.getAllByText('1');
     expect(allOnes.length).toBeGreaterThanOrEqual(1);
 
-    // Rejected Applications — compact metric with percentage inline
     expect(screen.getByText('Rejected Applications')).toBeInTheDocument();
 
-    // Rejection percentage shown inline under rejected count
     expect(screen.getByText(/33.33%/)).toBeInTheDocument();
   });
 
@@ -121,7 +116,6 @@ describe('InsightsPage', () => {
 
   it('renders interviews by type chart when interview events exist', async () => {
     render(<InsightsPage />);
-    // The "Interviews by Type" chart should appear when there are interview events
     await waitFor(() => {
       expect(screen.getByText('Interviews by Type')).toBeInTheDocument();
     });
@@ -129,17 +123,16 @@ describe('InsightsPage', () => {
 
   it('renders Add Entry CTA when onNavigate is provided', () => {
     render(<InsightsPage onNavigate={mockNavigate} />);
-    expect(screen.getByText('+ Add Entry')).toBeInTheDocument();
+    expect(screen.getByText('Add Entry')).toBeInTheDocument();
   });
 
   it('does not render CTA when onNavigate is not provided', () => {
     render(<InsightsPage />);
-    expect(screen.queryByText('+ Add Entry')).not.toBeInTheDocument();
+    expect(screen.queryByText('Add Entry')).not.toBeInTheDocument();
   });
 
   it('sets the document title via useSEO hook', () => {
     render(<InsightsPage />);
-    // resolveSEOConfig appends " | JAJAT" suffix
     expect(document.title).toBe('Insights & Analytics | JAJAT');
   });
 });

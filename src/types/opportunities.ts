@@ -1,8 +1,4 @@
-// src/types/opportunities.ts
 
-/**
- * Job Opportunity - Vacantes interesantes capturadas desde LinkedIn
- */
 export interface JobOpportunity {
   id: string;
   position: string;

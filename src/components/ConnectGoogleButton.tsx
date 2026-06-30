@@ -7,13 +7,9 @@ import { useAlert } from './AlertProvider';
 import { linkGoogleAccount } from '../utils/api';
 
 interface ConnectGoogleButtonProps {
-  /** Custom label for the button. Defaults to "Link Google account" */
   label?: string;
-  /** Custom CSS classes for the button */
   className?: string;
-  /** Called after successful Google account linking */
   onSuccess?: () => void;
-  /** Called when linking fails */
   onError?: (error: string) => void;
 }
 
@@ -67,11 +63,11 @@ export const ConnectGoogleButton: React.FC<ConnectGoogleButtonProps> = ({
       aria-label={t('settings.cloud.linkGoogleAriaLabel')}
       className={
         className ||
-        'flex items-center gap-2 px-4 py-2 text-sm font-medium border border-sage-300 dark:border-sage-600 text-sage-700 dark:text-sage-300 hover:bg-sage-50 dark:hover:bg-sage-800 transition-colors rounded disabled:opacity-50 disabled:cursor-not-allowed'
+        'flex items-center gap-2 px-4 py-2 text-sm font-medium border border-primary/20 dark:border-primary text-primary hover:bg-primary/5 dark:hover:bg-primary/90 transition-colors rounded disabled:opacity-50 disabled:cursor-not-allowed'
       }
     >
       {isLinking ? (
-        <span className="size-5 border-2 border-sage-400 border-t-transparent rounded-full animate-spin" />
+        <span className="size-5 border-2 border-primary/30 border-t-transparent rounded-full animate-spin" />
       ) : (
         <svg className="size-5" viewBox="0 0 24 24">
           <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" />

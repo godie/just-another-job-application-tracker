@@ -1,4 +1,3 @@
-// src/components/settings/MatchingSettings.test.tsx
 
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
@@ -90,7 +89,6 @@ describe('MatchingSettings', () => {
         onClearData={vi.fn()}
       />
     );
-    // Click the master toggle (first switch)
     const toggle = screen.getAllByRole('switch')[0];
     fireEvent.click(toggle);
     expect(handleUpdate).toHaveBeenCalledWith({ enabled: true });
@@ -111,7 +109,6 @@ describe('MatchingSettings', () => {
         onClearData={vi.fn()}
       />
     );
-    // Gemini toggle is the second switch (after master toggle)
     const toggles = screen.getAllByRole('switch');
     fireEvent.click(toggles[1]);
     expect(handleUpdate).toHaveBeenCalledWith({ useGemini: true });

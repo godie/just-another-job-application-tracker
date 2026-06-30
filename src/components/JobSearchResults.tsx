@@ -1,9 +1,10 @@
-// src/components/JobSearchResults.tsx
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Card } from './ui/Card';
 import { Button } from './ui/Button';
+import { Badge } from './ui/Badge';
+import { sanitizeUrl } from '../utils/url';
 
 import type { UnifiedJobResult } from '../types/jobSearch';
 
@@ -19,27 +20,20 @@ interface JobSearchResultsProps {
   errors?: Array<{ source: string; message: string }>;
 }
 
-/** Source badge color mapping */
 const SOURCE_COLORS: Record<string, string> = {
-  jooble: 'bg-violet-100 dark:bg-violet-900/40 text-violet-700 dark:text-violet-300',
-  theirstack: 'bg-cyan-100 dark:bg-cyan-900/40 text-cyan-700 dark:text-cyan-300',
-  adzuna: 'bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300',
-  careerjet: 'bg-rose-100 dark:bg-rose-900/40 text-rose-700 dark:text-rose-300',
+  jooble: 'bg-violet-100 dark:bg-violet-900/40 text-violet-700 dark:text-violet-200',
+  theirstack: 'bg-cyan-100 dark:bg-cyan-900/40 text-cyan-700 dark:text-cyan-200',
+  adzuna: 'bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-200',
+  careerjet: 'bg-rose-100 dark:bg-rose-900/40 text-rose-700 dark:text-rose-200',
 };
 
-/** Tech stack chip colors (cycling) */
 const TECH_COLORS = [
-  'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300',
-  'bg-sky-100 dark:bg-sky-900/40 text-sky-700 dark:text-sky-300',
-  'bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300',
-  'bg-rose-100 dark:bg-rose-900/40 text-rose-700 dark:text-rose-300',
+  'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-200',
+  'bg-sky-100 dark:bg-sky-900/40 text-sky-700 dark:text-sky-200',
+  'bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-200',
+  'bg-rose-100 dark:bg-rose-900/40 text-rose-700 dark:text-rose-200',
 ];
 
-/**
- * Displays job search results as an inline card list.
- * Each card shows position, company, location, salary, description preview,
- * source badge, tech stack chips, and action buttons.
- */
 export const JobSearchResults: React.FC<JobSearchResultsProps> = ({
   results,
   isLoading,
@@ -54,22 +48,20 @@ export const JobSearchResults: React.FC<JobSearchResultsProps> = ({
   const { t } = useTranslation();
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
-  // ── Loading state ──
   if (isLoading && results.length === 0) {
     return (
       <div className="mb-8 space-y-4" data-testid="job-search-loading">
         {[1, 2, 3].map((i) => (
           <Card key={`skeleton-${i}`} className="p-5 animate-pulse">
-            <div className="h-5 bg-earth-200 dark:bg-earth-700 rounded w-3/4 mb-3" />
-            <div className="h-4 bg-earth-100 dark:bg-earth-700/50 rounded w-1/2 mb-2" />
-            <div className="h-4 bg-earth-100 dark:bg-earth-700/50 rounded w-2/3" />
+            <div className="h-5 bg-muted rounded w-3/4 mb-3" />
+            <div className="h-4 bg-muted/50 rounded w-1/2 mb-2" />
+            <div className="h-4 bg-muted/50 rounded w-2/3" />
           </Card>
         ))}
       </div>
     );
   }
 
-  // ── Error state ──
   if (error && results.length === 0) {
     return (
       <div className="mb-8" data-testid="job-search-error">
@@ -80,7 +72,7 @@ export const JobSearchResults: React.FC<JobSearchResultsProps> = ({
             </svg>
             <div>
               <p className="text-sm font-semibold text-red-800 dark:text-red-200">{error}</p>
-              <p className="text-sm text-red-600 dark:text-red-300 mt-1">
+              <p className="text-sm text-red-600 dark:text-red-200 mt-1">
                 {t('opportunities.jobSearch.noResults', 'No jobs found. Try broader keywords or remove location filter.')}
               </p>
             </div>
@@ -90,46 +82,44 @@ export const JobSearchResults: React.FC<JobSearchResultsProps> = ({
     );
   }
 
-  // ── Empty state ──
   if (results.length === 0) {
     return null; // Don't show anything before the first search
   }
 
-  // ── Results ──
   return (
     <div className="mb-8" data-testid="job-search-results">
       {/* Header with count and source mix */}
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-semibold text-earth-800 dark:text-earth-100">
+        <h2 className="text-lg font-semibold text-foreground">
           {t('opportunities.jobSearch.resultsCount', '{{count}} results', { count: totalCount })}
         </h2>
         <div className="flex items-center gap-2">
           {hasJooble(results) && (
-            <span className={SOURCE_COLORS.jooble + ' inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium'}>
+            <Badge className={SOURCE_COLORS.jooble}>
               Jooble
-            </span>
+            </Badge>
           )}
           {hasTheirstack(results) && (
-            <span className={SOURCE_COLORS.theirstack + ' inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium'}>
+            <Badge className={SOURCE_COLORS.theirstack}>
               TheirStack
-            </span>
+            </Badge>
           )}
           {hasAdzuna(results) && (
-            <span className={SOURCE_COLORS.adzuna + ' inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium'}>
+            <Badge className={SOURCE_COLORS.adzuna}>
               Adzuna
-            </span>
+            </Badge>
           )}
           {hasCareerjet(results) && (
-            <span className={SOURCE_COLORS.careerjet + ' inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium'}>
+            <Badge className={SOURCE_COLORS.careerjet}>
               Careerjet
-            </span>
+            </Badge>
           )}
         </div>
       </div>
 
       {/* Partial source errors */}
       {errors && errors.length > 0 && (
-        <div className="mb-4 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded text-sm text-amber-700 dark:text-amber-300">
+        <div className="mb-4 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded text-sm text-amber-700 dark:text-amber-200">
           {errors.map((e, i) => (
             <span key={e.source}>
               {i > 0 && ' · '}
@@ -148,25 +138,28 @@ export const JobSearchResults: React.FC<JobSearchResultsProps> = ({
           return (
             <Card
               key={job.id}
-              className={`p-4 transition-all hover:shadow-md ${isSaved ? 'border-l-2 border-l-sage-500 opacity-70' : ''}`}
+              className={`p-4 transition-all hover:shadow-md ${isSaved ? 'border-l-2 border-l-primary opacity-70' : ''}`}
             >
               <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
                 {/* Left: job details */}
                 <div className="flex-1 min-w-0">
-                  {/* Position — clickable */}
-                  <h3 className="text-base font-semibold text-earth-900 dark:text-earth-50 mb-1">
+                  {/* Position — clickable. `sanitizeUrl` runs at the API
+                      boundary too (jobSearchApi.ts) but re-applying here is
+                      defence in depth: an attacker-controlled third-party
+                      provider cannot inject `javascript:` via href. */}
+                  <h3 className="text-base font-semibold text-foreground mb-1">
                     <a
-                      href={job.url}
+                      href={sanitizeUrl(job.url)}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="hover:text-sage-600 dark:hover:text-sage-400 transition-colors"
+                      className="hover:text-primary transition-colors"
                     >
                       {job.position}
                     </a>
                   </h3>
 
                   {/* Company · Location · Source badge · Remote badge */}
-                  <div className="flex flex-wrap items-center gap-2 text-sm text-earth-600 dark:text-earth-400 mb-2">
+                  <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground mb-2">
                     <span className="font-medium">{job.company}</span>
                     {job.location && (
                       <>
@@ -174,19 +167,20 @@ export const JobSearchResults: React.FC<JobSearchResultsProps> = ({
                         <span>{job.location}</span>
                       </>
                     )}
-                    {/* Source badge */}                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${SOURCE_COLORS[job.source] ?? ''}`}>
+                    {/* Source badge */}
+                    <Badge className={SOURCE_COLORS[job.source] ?? ''}>
                       {job.source === 'theirstack' ? 'TheirStack' : job.source === 'adzuna' ? 'Adzuna' : job.source === 'careerjet' ? 'Careerjet' : 'Jooble'}
-                    </span>
+                    </Badge>
                     {job.remote && (
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-sage-100 dark:bg-sage-900/40 text-sage-700 dark:text-sage-300">
+                      <Badge variant="outline" className="text-xs">
                         Remote
-                      </span>
+                      </Badge>
                     )}
                   </div>
 
                   {/* Salary */}
                   {job.salary && (
-                    <p className="text-sm font-medium text-earth-700 dark:text-earth-300 mb-2">
+                    <p className="text-sm font-medium text-foreground mb-2">
                       {job.salary}
                     </p>
                   )}
@@ -203,7 +197,7 @@ export const JobSearchResults: React.FC<JobSearchResultsProps> = ({
                         </span>
                       ))}
                       {job.techStack.length > 6 && (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-earth-100 dark:bg-earth-700 text-earth-500 dark:text-earth-400">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-muted text-muted-foreground">
                           +{job.techStack.length - 6}
                         </span>
                       )}
@@ -214,7 +208,7 @@ export const JobSearchResults: React.FC<JobSearchResultsProps> = ({
                   {job.description && (
                     <div className="mt-2">
                       <p
-                        className={`text-sm text-earth-500 dark:text-earth-400 ${isExpanded ? '' : 'line-clamp-2'}`}
+                        className={`text-sm text-muted-foreground ${isExpanded ? '' : 'line-clamp-2'}`}
                       >
                         {job.description}
                       </p>
@@ -222,7 +216,7 @@ export const JobSearchResults: React.FC<JobSearchResultsProps> = ({
                         <button
                           type="button"
                           onClick={() => setExpandedId(isExpanded ? null : job.id)}
-                          className="text-xs text-sage-600 dark:text-sage-400 hover:underline mt-1"
+                          className="text-xs text-primary hover:underline mt-1"
                         >
                           {isExpanded ? 'Show less' : 'Show more'}
                         </button>
@@ -232,7 +226,7 @@ export const JobSearchResults: React.FC<JobSearchResultsProps> = ({
 
                   {/* Posted date */}
                   {job.postedDate && (
-                    <p className="text-xs text-earth-400 dark:text-earth-500 mt-2">
+                    <p className="text-xs text-muted-foreground mt-2">
                       Posted: {job.postedDate}
                     </p>
                   )}
@@ -241,7 +235,7 @@ export const JobSearchResults: React.FC<JobSearchResultsProps> = ({
                 {/* Right: action buttons */}
                 <div className="flex sm:flex-col gap-2 flex-shrink-0">
                   {isSaved ? (
-                    <span className="inline-flex items-center gap-1 px-3 py-2 text-sm font-medium text-sage-600 dark:text-sage-400 bg-sage-50 dark:bg-sage-900/20 rounded">
+                    <span className="inline-flex items-center gap-1 px-3 py-2 text-sm font-medium text-primary bg-primary/10 rounded">
                       <svg xmlns="http://www.w3.org/2000/svg" className="size-4" viewBox="0 0 20 20" fill="currentColor">
                         <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                       </svg>
@@ -261,7 +255,11 @@ export const JobSearchResults: React.FC<JobSearchResultsProps> = ({
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => window.open(job.url, '_blank', 'noopener,noreferrer')}
+                    onClick={() => {
+                      const safe = sanitizeUrl(job.url);
+                      if (safe === '#') return;
+                      window.open(safe, '_blank', 'noopener,noreferrer');
+                    }}
                     className="text-sm whitespace-nowrap"
                     title={t('opportunities.jobSearch.openLink', 'Open in new tab')}
                   >
@@ -302,7 +300,7 @@ export const JobSearchResults: React.FC<JobSearchResultsProps> = ({
 
       {/* Error banner for subsequent page errors */}
       {error && results.length > 0 && (
-        <div className="mt-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded text-sm text-red-700 dark:text-red-300">
+        <div className="mt-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded text-sm text-red-700 dark:text-red-200">
           {error}
         </div>
       )}
@@ -310,7 +308,6 @@ export const JobSearchResults: React.FC<JobSearchResultsProps> = ({
   );
 };
 
-// ── Helpers ──
 
 function hasJooble(results: UnifiedJobResult[]): boolean {
   return results.some((r) => r.source === 'jooble');

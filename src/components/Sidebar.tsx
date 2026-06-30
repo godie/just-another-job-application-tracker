@@ -1,4 +1,3 @@
-// src/components/Sidebar.tsx
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { type PageType } from '../App';
@@ -26,7 +25,6 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPage = 'applications', onNavig
   useEffect(() => {
     loadOpportunities();
     
-    // Listen for storage changes
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === 'jobOpportunities' || e.key === null) {
         refreshOpportunities();
@@ -35,7 +33,6 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPage = 'applications', onNavig
     
     window.addEventListener('storage', handleStorageChange);
     
-    // Poll for changes (in case extension uses chrome.storage.local)
     const interval = setInterval(refreshOpportunities, 2000);
     
     return () => {
@@ -64,7 +61,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPage = 'applications', onNavig
   return (
     <nav
       aria-label='Main navigation'
-      className={`fixed left-0 top-16 h-[calc(100vh-4rem)] bg-earth-50 dark:bg-earth-800 border-r border-earth-200 dark:border-earth-700 p-4 flex flex-col transition-transform duration-300 ease-in-out z-40 ${
+      className={`fixed left-0 top-16 h-[calc(100vh-4rem)] bg-card border-r border-border p-4 flex flex-col transition-transform duration-300 ease-in-out z-40 ${
         isOpen ? 'translate-x-0' : '-translate-x-full'
       } w-64`}
     >
@@ -78,7 +75,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPage = 'applications', onNavig
               aria-current={currentPage === item.page ? 'page' : undefined}
               className={`w-full justify-start text-lg relative ${
                 currentPage === item.page
-                  ? 'bg-earth-200 dark:bg-earth-700 text-earth-900 dark:text-earth-100'
+                  ? 'border border-border bg-muted bg-secondary text-foreground shadow-sm hover:bg-secondary'
                   : ''
               }`}
             >

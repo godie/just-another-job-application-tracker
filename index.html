@@ -2,6 +2,15 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+
+    <!-- Preconnect to external origins: starts DNS+TLS handshake early, saves ~100-300ms on first paint -->
+    <link rel="preconnect" href="https://godieboy.com" />
+    <link rel="preconnect" href="https://accounts.google.com" />
+
+    <!-- Preload the LCP hero image: starts the fetch in parallel with JS bundle download,
+         so the screenshot is ready to paint the moment React mounts. -->
+    <link rel="preload" as="image" href="/screenshots/table_view.png" fetchpriority="high" />
+
     <link rel="icon" type="image/svg+xml" href="https://godieboy.com/favicon.ico" />
     <link rel="apple-touch-icon" href="/jajat-logo.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />

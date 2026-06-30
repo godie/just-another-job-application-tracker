@@ -1,8 +1,6 @@
 import { type BadgeProps } from '../components/ui/Badge';
 
 /**
- * Maps an application status to a corresponding Badge variant color.
- *
  * @param status - The application status string (e.g., 'Applied', 'Rejected', 'Offer', 'Hold')
  * @returns The appropriate Badge variant name
  */

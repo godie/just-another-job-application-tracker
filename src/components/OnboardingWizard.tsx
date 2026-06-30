@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import useKeyboardEscape from '../hooks/useKeyboardEscape';
 import useFocusTrap from '../hooks/useFocusTrap';
+import { Button } from './ui/Button';
 import { markOnboardingComplete } from './OnboardingWizard.utils';
 
 interface WizardStep {
@@ -40,7 +41,6 @@ const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onClose, onNavigate
     return () => clearTimeout(timer);
   }, []);
 
-  // Trap focus within the modal while visible
   useFocusTrap(modalRef, isVisible);
 
   const handleClose = useCallback(() => {
@@ -52,10 +52,10 @@ const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onClose, onNavigate
     }, 300);
   }, [onClose]);
 
-  // Clean up pending timeout on unmount
   useEffect(() => {
+    const timeout = closeTimeoutRef.current;
     return () => {
-      if (closeTimeoutRef.current) clearTimeout(closeTimeoutRef.current);
+      if (timeout) clearTimeout(timeout);
     };
   }, []);
 
@@ -115,40 +115,42 @@ const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onClose, onNavigate
         ref={modalRef}
         aria-modal="true"
         aria-labelledby="onboarding-title"
-        className={`relative m-0 w-full max-w-lg mx-4 bg-white dark:bg-earth-800 rounded-2xl shadow-2xl border border-earth-200 dark:border-earth-700 overflow-hidden transition-all duration-300 ${
+        className={`relative m-0 w-full max-w-lg mx-4 bg-card rounded-2xl shadow-2xl border border-border overflow-hidden transition-all duration-300 ${
           isVisible ? 'scale-100 translate-y-0' : 'scale-95 translate-y-4'
         }`}
       >
         {/* Progress bar */}
-        <div className="absolute top-0 left-0 right-0 h-1 bg-earth-100 dark:bg-earth-700">
+        <div className="absolute top-0 left-0 right-0 h-1 bg-muted">
           <div
-            className="h-full bg-sage-500 transition-all duration-500 ease-out"
+            className="h-full bg-primary transition-all duration-500 ease-out"
             style={{ width: `${((step + 1) / STEPS.length) * 100}%` }}
           />
         </div>
 
         {/* Close button */}
-        <button
+        <Button
           type="button"
+          variant="ghost"
+          size="icon"
           onClick={handleClose}
-          className="absolute top-3 right-3 p-2 rounded-lg text-earth-400 hover:text-earth-600 dark:hover:text-earth-300 hover:bg-earth-100 dark:hover:bg-earth-700 transition z-10"
+          className="absolute top-3 right-3 z-10 rounded-lg"
           aria-label={t('common.close')}
         >
           <svg className="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
           </svg>
-        </button>
+        </Button>
 
         {/* Step content */}
         <div className={`px-8 pt-10 pb-6 text-center ${slideClass}`} key={current.id}>
           <div className="text-6xl mb-4 select-none">{current.icon}</div>
           <h2
             id="onboarding-title"
-            className="text-2xl font-semibold text-earth-900 dark:text-earth-100 mb-3"
+            className="text-2xl font-semibold text-foreground mb-3"
           >
             {t(current.titleKey)}
           </h2>
-          <p className="text-earth-600 dark:text-earth-400 leading-relaxed">
+          <p className="text-muted-foreground leading-relaxed">
             {t(current.descriptionKey)}
           </p>
         </div>
@@ -161,10 +163,10 @@ const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onClose, onNavigate
               onClick={() => goToStep(i)}
               className={`size-2.5 rounded-full transition-all duration-300 ${
                 i === step
-                  ? 'bg-sage-500 w-6'
+                  ? 'bg-primary w-6'
                   : i < step
-                    ? 'bg-sage-300 dark:bg-sage-700'
-                    : 'bg-earth-200 dark:bg-earth-600 hover:bg-earth-300 dark:hover:bg-earth-500'
+                    ? 'bg-primary/50'
+                    : 'bg-muted hover:bg-accent'
               }`}
               aria-label={t('onboarding.step', { number: i + 1 })}
               type="button"
@@ -173,10 +175,10 @@ const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onClose, onNavigate
         </div>
 
         {/* Footer buttons */}
-        <div className="flex items-center justify-between px-6 py-4 border-t border-earth-200 dark:border-earth-700 bg-earth-50/50 dark:bg-earth-900/30">
+        <div className="flex items-center justify-between px-6 py-4 border-t border-border bg-muted/50">
           <button
             onClick={handleClose}
-            className="text-sm text-earth-500 hover:text-earth-700 dark:text-earth-400 dark:hover:text-earth-200 transition-colors"
+            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
             type="button"
           >
             {t('onboarding.skip')}
@@ -184,21 +186,25 @@ const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onClose, onNavigate
 
           <div className="flex gap-3">
             {!isFirst && (
-              <button
-                onClick={goPrev}
-                className="px-4 py-2 rounded-lg text-sm font-medium border border-earth-300 dark:border-earth-600 text-earth-700 dark:text-earth-300 hover:bg-earth-100 dark:hover:bg-earth-700 transition"
+              <Button
                 type="button"
+                variant="outline"
+                size="md"
+                onClick={goPrev}
+                className="rounded-lg"
               >
                 {t('common.previous')}
-              </button>
+              </Button>
             )}
-            <button
-              onClick={goNext}
-              className="px-5 py-2 rounded-lg text-sm font-medium bg-sage-600 text-white hover:bg-sage-700 transition shadow-sm"
+            <Button
               type="button"
+              variant="primary"
+              size="md"
+              onClick={goNext}
+              className="rounded-lg"
             >
               {isLast ? t('onboarding.startTracking') : t('common.next')}
-            </button>
+            </Button>
           </div>
         </div>
       </dialog>

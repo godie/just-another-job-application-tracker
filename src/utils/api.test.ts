@@ -20,7 +20,6 @@ describe('linkGoogleAccount', () => {
     expect(mockFetch).toHaveBeenCalledTimes(1);
     const [url, options] = mockFetch.mock.calls[0] as [string, RequestInit];
 
-    // URL must end with /auth/google (base URL may vary by env)
     expect(url).toMatch(/\/api\/auth\/google$/);
     expect(options.method).toBe('POST');
     expect(options.credentials).toBe('include');

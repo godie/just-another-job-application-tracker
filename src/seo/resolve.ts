@@ -2,9 +2,6 @@ import type { SEOConfig, ResolvedSEOConfig } from './types';
 import type { SEODefaults } from './constants';
 
 /**
- * Pure function that resolves a partial SEOConfig into a fully-defined
- * ResolvedSEOConfig by applying defaults and the title suffix rule.
- *
  * - Appends " | JAJAT" to the title unless `config.suppressSuffix` is `true`
  * - Falls back to `defaults.description` for `description` when omitted
  * - Falls back to `defaults.baseUrl` for `canonicalUrl` when omitted

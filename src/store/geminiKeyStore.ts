@@ -5,10 +5,8 @@ interface GeminiKeyState {
   isLoading: boolean;
   error: string | null;
 
-  // Derived
   hasKeyInMemory: boolean;
 
-  // Actions
   setDecryptedKey: (key: string) => void;
   clearKeyFromMemory: () => void;
   setError: (error: string | null) => void;

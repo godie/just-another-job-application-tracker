@@ -9,12 +9,12 @@ const DonationSection: React.FC = () => {
   return (
     <Card className='p-6'>
       <div className='flex items-center gap-3 mb-4'>
-        <div className='p-2 bg-terracotta-100 dark:bg-terracotta-900/40 rounded text-terracotta-600 dark:text-terracotta-400'>
+        <div className='p-2 bg-destructive/10 dark:bg-destructive/10 rounded text-destructive'>
           <FaHeart size={24} />
         </div>
-        <h2 className='text-xl font-semibold text-earth-800 dark:text-earth-100'>{t('support.donations')}</h2>
+        <h2 className='text-xl font-semibold text-foreground'>{t('support.donations')}</h2>
       </div>
-      <p className='text-earth-600 dark:text-earth-400 mb-6'>{t('support.donationsDesc')}</p>
+      <p className='text-muted-foreground mb-6'>{t('support.donationsDesc')}</p>
       <a
         href={t('support.buyMeACoffeeLink')}
         target='_blank'
@@ -24,7 +24,7 @@ const DonationSection: React.FC = () => {
         <FaCoffee size={24} />
         <span>{t('support.buyMeACoffee')}</span>
       </a>
-      <p className='text-xs text-center text-earth-500 dark:text-earth-400 mt-4'>
+      <p className='text-xs text-center text-muted-foreground mt-4'>
         {t('common.anyAport')}
       </p>
     </Card>

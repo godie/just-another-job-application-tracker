@@ -6,7 +6,6 @@ import type { JobApplication } from '../../types/applications';
 describe('EmailAdapter', () => {
   const adapter = new EmailAdapter();
 
-  // ─── Helper ───────────────────────────────────────────────────────────────
   const makeEmail = (overrides: Partial<Email> & Pick<Email, 'id'>): Email => ({
     subject: '',
     from: '',
@@ -15,9 +14,6 @@ describe('EmailAdapter', () => {
     ...overrides,
   });
 
-  // ═══════════════════════════════════════════════════════════════════════════
-  // classify — basic 4 types (existing coverage preserved)
-  // ═══════════════════════════════════════════════════════════════════════════
   describe('classify', () => {
     describe('application_submitted', () => {
       it('classifies from subject "applied"', () => {
@@ -431,9 +427,6 @@ describe('EmailAdapter', () => {
     });
   });
 
-  // ═══════════════════════════════════════════════════════════════════════════
-  // Company extraction (tested via classify result)
-  // ═══════════════════════════════════════════════════════════════════════════
   describe('extractCompany', () => {
     describe('structured subject: "Company - Position"', () => {
       it('extracts company from "ClearGov - Sr. Software Engineer (Budgeting)"', () => {
@@ -507,7 +500,6 @@ describe('EmailAdapter', () => {
         });
         const event = adapter.classify(email);
         expect(event).not.toBeNull();
-        // Should NOT extract "Software Engineer" as company — should get "Acme Corp" from pattern 5
         expect(event!.company).not.toBe('Software Engineer');
         expect(event!.company).toBe('Acme Corp');
       });
@@ -569,7 +561,6 @@ describe('EmailAdapter', () => {
         });
         const event = adapter.classify(email);
         expect(event).not.toBeNull();
-        // Pattern 5 extracts company after "role at"
         expect(event!.company).toBe('Acme');
       });
     });
@@ -620,7 +611,6 @@ describe('EmailAdapter', () => {
         });
         const event = adapter.classify(email);
         expect(event).not.toBeNull();
-        // Should extract "Wygo" from either from header or body
         expect(event!.company).toBe('Wygo');
       });
 
@@ -633,7 +623,6 @@ describe('EmailAdapter', () => {
         });
         const event = adapter.classify(email);
         expect(event).not.toBeNull();
-        // "ClearGov" is in the from display name, and applytojob.com is excluded from domain fallback
         expect(event!.company).toBe('ClearGov');
       });
     });
@@ -648,7 +637,6 @@ describe('EmailAdapter', () => {
         });
         const event = adapter.classify(email);
         expect(event).not.toBeNull();
-        // Should fall back to domain "acmecorp" and capitalize
         expect(event!.company).toBe('Acmecorp');
       });
 
@@ -661,7 +649,6 @@ describe('EmailAdapter', () => {
         });
         const event = adapter.classify(email);
         expect(event).not.toBeNull();
-        // Should NOT return "Greenhouse" as company
         expect(event!.company?.toLowerCase()).not.toBe('greenhouse');
       });
     });
@@ -676,7 +663,6 @@ describe('EmailAdapter', () => {
         });
         const event = adapter.classify(email);
         expect(event).not.toBeNull();
-        // "Acme Recruiting" → "Acme" after cleanCompanyName strips Recruiting suffix
         expect(event!.company).toBe('Acme');
       });
 
@@ -689,15 +675,11 @@ describe('EmailAdapter', () => {
         });
         const event = adapter.classify(email);
         expect(event).not.toBeNull();
-        // Domain "techstartup" should be capitalized to "Techstartup"
         expect(event!.company).toBe('Techstartup');
       });
     });
   });
 
-  // ═══════════════════════════════════════════════════════════════════════════
-  // Position extraction (tested via classify result)
-  // ═══════════════════════════════════════════════════════════════════════════
   describe('extractPosition', () => {
     describe('structured subject: "Company - Position"', () => {
       it('extracts position from "ClearGov - Sr. Software Engineer (Budgeting)"', () => {
@@ -745,7 +727,6 @@ describe('EmailAdapter', () => {
         });
         const event = adapter.classify(email);
         expect(event).not.toBeNull();
-        // Should extract position and strip location suffix
         expect(event!.position).toBe('Ruby/Rails Developer');
       });
     });
@@ -796,7 +777,6 @@ describe('EmailAdapter', () => {
         });
         const event = adapter.classify(email);
         expect(event).not.toBeNull();
-        // Pattern 5 captures position before "position" keyword
         expect(event!.position).toBe('Senior Developer');
       });
 
@@ -809,7 +789,6 @@ describe('EmailAdapter', () => {
         });
         const event = adapter.classify(email);
         expect(event).not.toBeNull();
-        // Pattern 6 matches title-ending words like "Engineer" after "as"
         expect(event!.position).toContain('Software Engineer');
       });
 
@@ -975,9 +954,6 @@ describe('EmailAdapter', () => {
     });
   });
 
-  // ═══════════════════════════════════════════════════════════════════════════
-  // Real email test cases from spec
-  // ═══════════════════════════════════════════════════════════════════════════
   describe('real email test cases', () => {
     it('TC-001: Wygo rejection — structured subject + ATS branding', () => {
       const email = makeEmail({
@@ -1043,9 +1019,6 @@ IT Headhunting & Recruiting | Chasseur de Tête en TI
     });
   });
 
-  // ═══════════════════════════════════════════════════════════════════════════
-  // Bilingual / Spanish classification
-  // ═══════════════════════════════════════════════════════════════════════════
   describe('bilingual and Spanish classification', () => {
     it('classifies bilingual EN/FR rejection (Kovasys pattern)', () => {
       const email = makeEmail({
@@ -1083,7 +1056,6 @@ IT Headhunting & Recruiting | Chasseur de Tête en TI
       expect(event!.type).toBe('application_submitted');
     });
 
-    // Spanish-only classification tests
     describe('Spanish rejection', () => {
       it('classifies from subject "lamentamos"', () => {
         const email = makeEmail({
@@ -1301,15 +1273,11 @@ IT Headhunting & Recruiting | Chasseur de Tête en TI
         const event = adapter.classify(email);
         expect(event).not.toBeNull();
         expect(event!.type).toBe('rejected');
-        // Company from from header domain fallback
         expect(event!.company).toBe('Empresa');
       });
     });
   });
 
-  // ═══════════════════════════════════════════════════════════════════════════
-  // Salary extraction from offer emails
-  // ═══════════════════════════════════════════════════════════════════════════
   describe('extractSalary', () => {
     describe('explicit annual salary keyword', () => {
       it('extracts from "annual salary: $120,000"', () => {
@@ -1642,7 +1610,6 @@ IT Headhunting & Recruiting | Chasseur de Tête en TI
         const event = adapter.classify(email);
         expect(event).not.toBeNull();
         expect(event!.type).toBe('offer');
-        // salary may be undefined or empty string
         expect(event!.salary).toBeFalsy();
       });
     });
@@ -1699,9 +1666,6 @@ IT Headhunting & Recruiting | Chasseur de Tête en TI
     });
   });
 
-  // ═══════════════════════════════════════════════════════════════════════════
-  // HTML body parsing — tested indirectly through classify with HTML-like content
-  // ═══════════════════════════════════════════════════════════════════════════
   describe('HTML-like body content', () => {
     it('classifies email with HTML entities in body', () => {
       const email = makeEmail({
@@ -1735,14 +1699,10 @@ Thank you again for applying to this role.
       expect(event).not.toBeNull();
       expect(event!.type).toBe('rejected');
       expect(event!.company).toBe('Wygo');
-      // Position extracted from structured subject "Application update - Software Engineer"
       expect(event!.position).toBe('Software Engineer');
     });
   });
 
-  // ═══════════════════════════════════════════════════════════════════════════
-  // applicationFromEvent (preserved existing tests)
-  // ═══════════════════════════════════════════════════════════════════════════
   describe('applicationFromEvent', () => {
     it('builds application payload from application_submitted event', () => {
       const event: Event = {
@@ -1775,9 +1735,6 @@ Thank you again for applying to this role.
     });
   });
 
-  // ═══════════════════════════════════════════════════════════════════════════
-  // eventToInterviewEvent (preserved existing tests)
-  // ═══════════════════════════════════════════════════════════════════════════
   describe('eventToInterviewEvent', () => {
     it('maps next_steps to first_contact', () => {
       const event: Event = {
@@ -1798,9 +1755,6 @@ Thank you again for applying to this role.
     });
   });
 
-  // ═══════════════════════════════════════════════════════════════════════════
-  // applyEventToApplication (preserved existing tests)
-  // ═══════════════════════════════════════════════════════════════════════════
   describe('applyEventToApplication', () => {
     it('adds event to matching application by company', () => {
       const applications: JobApplication[] = [

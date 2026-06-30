@@ -1,6 +1,3 @@
-/**
- * @vitest-environment node
- */
 import { describe, expect, test } from 'vitest';
 import { parseLocalDate, formatDate } from '../utils/date';
 
@@ -9,18 +6,15 @@ describe('parseLocalDate', () => {
     const dateString = '2025-12-11';
     const date = parseLocalDate(dateString);
     
-    // Should be the same day regardless of timezone
     expect(date.getFullYear()).toBe(2025);
     expect(date.getMonth()).toBe(11); // December is month 11 (0-indexed)
     expect(date.getDate()).toBe(11);
   });
 
   test('should handle dates correctly to avoid timezone shift', () => {
-    // This is the specific case from the bug report
     const dateString = '2025-12-11';
     const date = parseLocalDate(dateString);
     
-    // The date should be exactly December 11, 2025 at midnight local time
     const expectedDate = new Date(2025, 11, 11); // December 11, 2025 (local)
     
     expect(date.getFullYear()).toBe(expectedDate.getFullYear());
@@ -46,7 +40,6 @@ describe('parseLocalDate', () => {
     const dateString = '12/11/2025';
     const date = parseLocalDate(dateString);
     
-    // Should still return a valid date
     expect(date).toBeInstanceOf(Date);
     expect(isNaN(date.getTime())).toBe(false);
   });
@@ -76,16 +69,10 @@ describe('parseLocalDate', () => {
   });
 
   test('should not shift dates due to timezone when comparing', () => {
-    // Create a date using parseLocalDate
     const date1 = parseLocalDate('2025-12-11');
     
-    // The dates should have the same day when using getDate()
-    // But date2 might be shifted due to timezone
-    // parseLocalDate should preserve the day correctly
     expect(date1.getDate()).toBe(11);
     
-    // date2 might be 10 or 11 depending on timezone, but date1 should always be 11
-    // This is the key fix for the timezone bug
     expect(date1.getFullYear()).toBe(2025);
     expect(date1.getMonth()).toBe(11);
   });
@@ -118,11 +105,9 @@ describe('formatDate', () => {
   });
 
   test('should use parseLocalDate internally to avoid timezone issues', () => {
-    // This test ensures formatDate uses parseLocalDate, so it won't have timezone issues
     const dateString = '2025-12-11';
     const formatted = formatDate(dateString, 'DD/MM/YYYY');
     
-    // Should format correctly without timezone shift
     expect(formatted).toBe('11/12/2025');
   });
 

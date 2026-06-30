@@ -1,7 +1,3 @@
-/**
- * Error thrown when Gmail API returns 429 Too Many Requests or 503.
- * Allows the UI to show a specific "try again later" message.
- */
 export class GmailRateLimitError extends Error {
   readonly isRateLimit = true;
   readonly status: number;

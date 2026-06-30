@@ -1,4 +1,3 @@
-// src/components/settings/ToolsSettings.tsx
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useApplicationsStore } from '../../stores/applicationsStore';
@@ -6,6 +5,24 @@ import { useOpportunitiesStore } from '../../stores/opportunitiesStore';
 import { useAlert } from '../AlertProvider';
 import CSVActions from '../CSVActions';
 import { getCurrentISOString, getCurrentDateKey } from '../../utils/dateHelpers';
+
+function handleDebugInfo(): void {
+  const apps = useApplicationsStore.getState().applications;
+  const opps = useOpportunitiesStore.getState().opportunities;
+  const info = {
+    applicationsCount: apps.length,
+    opportunitiesCount: opps.length,
+    localStorage: {
+      jobApplications: localStorage.getItem('jobApplications')?.length ?? 0,
+      jobOpportunities: localStorage.getItem('jobOpportunities')?.length ?? 0,
+      preferences: localStorage.getItem('userPreferences')?.length ?? 0,
+    },
+    userAgent: navigator.userAgent,
+    timestamp: getCurrentISOString(),
+  };
+  console.log('Debug Info:', info);
+  alert(JSON.stringify(info, null, 2));
+}
 
 const ToolsSettings: React.FC = () => {
   const { t } = useTranslation();
@@ -55,7 +72,6 @@ const ToolsSettings: React.FC = () => {
       }
     };
     reader.readAsText(file);
-    // Reset input so same file can be re-imported
     e.target.value = '';
   };
 
@@ -67,29 +83,11 @@ const ToolsSettings: React.FC = () => {
     }
   };
 
-  const handleDebugInfo = () => {
-    const apps = useApplicationsStore.getState().applications;
-    const opps = useOpportunitiesStore.getState().opportunities;
-    const info = {
-      applicationsCount: apps.length,
-      opportunitiesCount: opps.length,
-      localStorage: {
-        jobApplications: localStorage.getItem('jobApplications')?.length ?? 0,
-        jobOpportunities: localStorage.getItem('jobOpportunities')?.length ?? 0,
-        preferences: localStorage.getItem('userPreferences')?.length ?? 0,
-      },
-      userAgent: navigator.userAgent,
-      timestamp: getCurrentISOString(),
-    };
-    console.log('Debug Info:', info);
-    alert(JSON.stringify(info, null, 2));
-  };
-
   return (
     <div className='space-y-8'>
       {/* CSV Actions */}
       <div>
-        <h3 className='font-serif text-lg font-semibold text-earth-900 dark:text-earth-100 mb-4'>
+        <h3 className='font-serif text-lg font-semibold text-foreground mb-4'>
           {t('tools.csv.heading')}
         </h3>
         <CSVActions />
@@ -97,13 +95,13 @@ const ToolsSettings: React.FC = () => {
 
       {/* Backup & Restore */}
       <div>
-        <h3 className='font-serif text-lg font-semibold text-earth-900 dark:text-earth-100 mb-4'>
+        <h3 className='font-serif text-lg font-semibold text-foreground mb-4'>
           {t('tools.backup.title')}
         </h3>
         <div className='flex flex-col sm:flex-row gap-4'>
           <button
             onClick={handleExportData}
-            className='px-6 py-3 bg-sage-600 hover:bg-sage-700 text-white text-sm font-semibold transition-colors rounded'
+            className='px-6 py-3 bg-primary hover:bg-primary text-white text-sm font-semibold transition-colors rounded'
             type='button'
           >
             {t('tools.backup.exportJson')}
@@ -111,8 +109,8 @@ const ToolsSettings: React.FC = () => {
           <label
             className={`px-6 py-3 text-sm font-semibold transition-colors rounded cursor-pointer inline-flex items-center justify-center ${
               isRestoring
-                ? 'bg-earth-200 text-earth-400 dark:bg-earth-700 dark:text-earth-500 cursor-not-allowed'
-                : 'bg-white dark:bg-earth-800 hover:bg-earth-50 dark:hover:bg-earth-700 text-earth-700 dark:text-earth-300 border border-earth-300 dark:border-earth-600'
+                ? 'bg-muted text-muted-foreground dark:bg-muted dark:text-muted-foreground cursor-not-allowed'
+                : 'bg-card hover:bg-muted text-muted-foreground border border-border'
             }`}
           >
             {isRestoring ? t('tools.backup.importing') : t('tools.backup.importJson')}
@@ -130,24 +128,24 @@ const ToolsSettings: React.FC = () => {
 
       {/* Danger Zone */}
       <div>
-        <h3 className='font-serif text-lg font-semibold text-terracotta-700 dark:text-terracotta-300 mb-4'>
+        <h3 className='font-serif text-lg font-semibold text-destructive mb-4'>
           {t('tools.danger.title')}
         </h3>
-        <div className='bg-terracotta-50 dark:bg-terracotta-900/20 border border-terracotta-200 dark:border-terracotta-700 rounded-lg p-6'>
-          <p className='text-sm text-terracotta-600 dark:text-terracotta-400 mb-4'>
+        <div className='bg-destructive/5 dark:bg-destructive/10 border border-destructive/30 rounded-lg p-6'>
+          <p className='text-sm text-destructive mb-4'>
             {t('tools.danger.warning')}
           </p>
           <div className='flex flex-col sm:flex-row gap-4'>
             <button
               onClick={handleClearData}
-              className='px-6 py-3 bg-terracotta-600 hover:bg-terracotta-700 text-white text-sm font-semibold transition-colors rounded'
+              className='px-6 py-3 bg-destructive text-destructive-foreground hover:bg-destructive/90 text-sm font-semibold transition-colors rounded'
               type='button'
             >
               {t('tools.danger.clear')}
             </button>
             <button
               onClick={handleDebugInfo}
-              className='px-6 py-3 text-sm font-semibold text-earth-600 dark:text-earth-400 border border-earth-300 dark:border-earth-600 hover:bg-earth-50 dark:hover:bg-earth-700 transition-colors rounded'
+              className='px-6 py-3 text-sm font-semibold text-muted-foreground border border-border hover:bg-muted transition-colors rounded'
               type='button'
             >
               {t('tools.debug.showInfo')}

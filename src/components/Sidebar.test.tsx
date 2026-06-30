@@ -1,10 +1,8 @@
-// src/components/Sidebar.test.tsx
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { vi, beforeEach, describe, it, expect } from 'vitest';
 import React from 'react';
 import Sidebar from './Sidebar';
 
-// Mock localStorage
 const localStorageMock = (() => {
   let store: Record<string, string> = {};
   return {
@@ -17,7 +15,6 @@ const localStorageMock = (() => {
 
 Object.defineProperty(window, 'localStorage', { value: localStorageMock });
 
-// Mock getOpportunities
 const mockGetOpportunities = vi.fn(() => []);
 vi.mock('../storage/applications', () => ({
   getOpportunities: () => mockGetOpportunities(),
@@ -27,7 +24,6 @@ describe('Sidebar', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     localStorageMock.clear();
-    // Reset document.documentElement classes
     document.documentElement.classList.remove('dark');
     mockGetOpportunities.mockReturnValue([]);
   });
@@ -47,11 +43,13 @@ describe('Sidebar', () => {
       const { rerender } = render(<Sidebar currentPage="applications" onNavigate={mockNavigate} />);
       
       const applicationsButton = screen.getByText('Applications').closest('button');
-      expect(applicationsButton?.className).toContain('bg-earth-200');
-      
+      expect(applicationsButton).toHaveAttribute('aria-current', 'page');
+      expect(applicationsButton?.className).toContain('border-border');
+
       rerender(<Sidebar currentPage="opportunities" onNavigate={mockNavigate} />);
       const opportunitiesButton = screen.getByText('Opportunities').closest('button');
-      expect(opportunitiesButton?.className).toContain('bg-earth-200');
+      expect(opportunitiesButton).toHaveAttribute('aria-current', 'page');
+      expect(opportunitiesButton?.className).toContain('border-border');
     });
 
     it('calls onNavigate when navigation button is clicked', () => {
@@ -69,7 +67,6 @@ describe('Sidebar', () => {
       const opportunitiesButton = screen.getByText('Opportunities').closest('button');
       if (opportunitiesButton) {
         fireEvent.click(opportunitiesButton);
-        // Should not throw error
         expect(opportunitiesButton).toBeInTheDocument();
       }
     });
@@ -84,7 +81,6 @@ describe('Sidebar', () => {
       
       render(<Sidebar />);
       
-      // Wait for the count to update
       waitFor(() => {
         const badge = screen.getByText('2');
         expect(badge).toBeInTheDocument();
@@ -113,7 +109,6 @@ describe('Sidebar', () => {
       render(<Sidebar />);
       
       const opportunitiesButton = screen.getByText('Opportunities').closest('button');
-      // Badge should not be present (no span with number)
       const badge = opportunitiesButton?.querySelector('.bg-red-500');
       expect(badge).not.toBeInTheDocument();
     });

@@ -5,18 +5,15 @@ import React from 'react';
 import { ConnectGoogleButton } from '../components/ConnectGoogleButton';
 import { useGoogleLogin } from '@react-oauth/google';
 
-// Mock linkGoogleAccount
 vi.mock('../utils/api', () => ({
   linkGoogleAccount: vi.fn(),
 }));
 
-// Mock authStore
 const mockFetchMe = vi.fn();
 vi.mock('../stores/authStore', () => ({
   useAuthStore: vi.fn(),
 }));
 
-// Mock AlertProvider
 const mockShowSuccess = vi.fn();
 const mockShowError = vi.fn();
 vi.mock('../components/AlertProvider', () => ({
@@ -90,7 +87,6 @@ describe('ConnectGoogleButton', () => {
   });
 
   it('shows spinner and disables button while linking', async () => {
-    // Never resolve — keeps isLinking=true
     mockedLinkGoogleAccount.mockImplementation(
       () => new Promise(() => {})
     );
@@ -137,7 +133,6 @@ describe('ConnectGoogleButton', () => {
       );
     });
 
-    // Button should be re-enabled after success
     await waitFor(() => {
       expect(screen.getByRole('button')).not.toBeDisabled();
       expect(screen.getByRole('button')).toHaveAttribute('aria-busy', 'false');
@@ -161,7 +156,6 @@ describe('ConnectGoogleButton', () => {
       expect(mockShowError).toHaveBeenCalledWith('Custom backend error');
     });
 
-    // Button re-enabled after error
     await waitFor(() => {
       expect(screen.getByRole('button')).not.toBeDisabled();
       expect(screen.getByRole('button')).toHaveAttribute('aria-busy', 'false');

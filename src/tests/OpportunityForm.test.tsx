@@ -1,4 +1,3 @@
-// src/tests/OpportunityForm.test.tsx
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import OpportunityForm from '../components/OpportunityForm';
@@ -68,7 +67,6 @@ describe('OpportunityForm', () => {
     const submitButton = screen.getByText('Save Opportunity');
     fireEvent.click(submitButton);
 
-    // URL validation might not catch all cases, but onSave should not be called for invalid URLs
     await waitFor(() => {
       const errorMessage = screen.queryByText('Please enter a valid URL');
       if (errorMessage) {
@@ -180,7 +178,6 @@ describe('OpportunityForm', () => {
       expect(mockOnSave).toHaveBeenCalled();
     });
 
-    // Close and re-open form to check if it's reset
     rerender(<OpportunityForm isOpen={false} onClose={mockOnClose} onSave={mockOnSave} />);
     rerender(<OpportunityForm isOpen={true} onClose={mockOnClose} onSave={mockOnSave} />);
     

@@ -5,17 +5,14 @@ import React from 'react';
 import { ConnectGoogleButton } from '../components/ConnectGoogleButton';
 import { useGoogleLogin } from '@react-oauth/google';
 
-// Mock linkGoogleAccount
 vi.mock('../utils/api', () => ({
   linkGoogleAccount: vi.fn(),
 }));
 
-// Mock authStore
 vi.mock('../stores/authStore', () => ({
   useAuthStore: vi.fn(),
 }));
 
-// Mock AlertProvider
 const mockShowError = vi.fn();
 vi.mock('../components/AlertProvider', () => ({
   useAlert: () => ({
@@ -40,7 +37,6 @@ const getOAuthConfig = () => {
     | undefined;
 };
 
-// Helper: conditionally renders ConnectGoogleButton based on googleId
 const ConditionalGoogleButton: React.FC<{ googleId?: string | null }> = ({
   googleId,
 }) => {
@@ -96,10 +92,8 @@ describe('ConnectGoogleButton — property tests', () => {
             const { container } = render(
               <ConditionalGoogleButton googleId={googleId} />
             );
-            // When googleId is a string, button should be absent
             const button = container.querySelector('button');
             expect(button).toBeNull();
-            // And "Google connected" text should be present
             expect(container.querySelector('p')).toHaveTextContent('Google connected');
             cleanup();
           }

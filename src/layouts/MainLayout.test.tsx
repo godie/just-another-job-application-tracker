@@ -1,10 +1,8 @@
-// src/layouts/MainLayout.test.tsx
 import { render, screen } from '@testing-library/react';
 import { vi, describe, it, expect } from 'vitest';
 import MainLayout from './MainLayout';
 import { type PageType } from '../App';
 
-// Mock Sidebar and Header
 vi.mock('../components/Sidebar', () => ({
   default: ({ currentPage, onNavigate, isOpen }: { currentPage?: PageType; onNavigate?: (page: PageType) => void; isOpen?: boolean }) => (
     <div data-testid="sidebar" data-open={isOpen}>
@@ -81,7 +79,6 @@ describe('MainLayout', () => {
       </MainLayout>
     );
     
-    // Check that main element is rendered
     const mainElement = container.querySelector('main');
     expect(mainElement).toBeInTheDocument();
   });

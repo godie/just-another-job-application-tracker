@@ -1,23 +1,35 @@
-// src/utils/timelineDisplay.ts
-// Shared display helpers for interview timeline events.
-// Used by TimelineView, JobDetailsPage, and other components.
+const formatterCache = new Map<string, Intl.DateTimeFormat>();
 
-/**
- * Format a date string (YYYY-MM-DD) into a locale-friendly display.
- */
-export function formatDate(dateStr: string): string {
+function getDateFormatter(locale?: string): Intl.DateTimeFormat {
+  const resolvedLocale =
+    locale ||
+    document.documentElement.lang ||
+    navigator.language ||
+    'en-US';
+
+  let formatter = formatterCache.get(resolvedLocale);
+  if (!formatter) {
+    formatter = new Intl.DateTimeFormat(resolvedLocale, {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    });
+    formatterCache.set(resolvedLocale, formatter);
+  }
+
+  return formatter;
+}
+
+export function formatDate(dateStr: string, locale?: string): string {
   try {
     const d = new Date(dateStr + 'T00:00:00');
     if (isNaN(d.getTime())) return dateStr;
-    return d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+    return getDateFormatter(locale).format(d);
   } catch {
     return dateStr;
   }
 }
 
-/**
- * Get a human-readable display name for an interview stage type.
- */
 export function getStageDisplayName(
   t: (key: string, defaultValue?: string) => string,
   type: string,
@@ -27,9 +39,6 @@ export function getStageDisplayName(
   return t(`insights.interviewTypes.${type}`, type.replace(/_/g, ' '));
 }
 
-/**
- * Return a Tailwind background color class for an event status.
- */
 export function getEventStatusColor(status: string): string {
   const colors: Record<string, string> = {
     completed: 'bg-green-500',

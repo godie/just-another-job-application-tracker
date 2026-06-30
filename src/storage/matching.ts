@@ -1,4 +1,3 @@
-// src/storage/matching.ts
 
 import type {
   UserMatchProfile,
@@ -23,7 +22,6 @@ export const DEFAULT_MATCHING_PREFERENCES: MatchingPreferences = {
   autoComputeOnOpportunityAdd: true,
 };
 
-// --- Profile Storage ---
 
 export function getMatchProfile(): UserMatchProfile | null {
   try {
@@ -51,7 +49,6 @@ export function clearMatchProfile(): void {
   }
 }
 
-// --- Match Results Storage ---
 
 export function getMatchResults(): Record<string, JobMatchResult> {
   try {
@@ -79,7 +76,6 @@ export function clearMatchResults(): void {
   }
 }
 
-// --- Matching Preferences Storage ---
 
 export function getMatchingPreferences(): MatchingPreferences {
   try {
@@ -101,7 +97,6 @@ export function saveMatchingPreferences(prefs: MatchingPreferences): void {
   }
 }
 
-// --- Match Feedback Storage ---
 
 export function getMatchFeedback(): UserFeedbackOnMatch[] {
   try {

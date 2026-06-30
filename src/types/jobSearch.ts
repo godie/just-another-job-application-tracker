@@ -1,8 +1,4 @@
-// src/types/jobSearch.ts
 
-/**
- * Parameters sent to the job search API.
- */
 export interface JobSearchParams {
   keywords: string;
   location?: string;
@@ -13,10 +9,6 @@ export interface JobSearchParams {
   pageSize: number;
 }
 
-/**
- * Unified job result returned by the PHP proxy,
- * normalized from Jooble, TheirStack, Adzuna, and Careerjet responses.
- */
 export interface UnifiedJobResult {
   id: string;                // "{source}_" + sha256(normalizeUrl(url)).slice(0,12)
   position: string;
@@ -31,9 +23,6 @@ export interface UnifiedJobResult {
   techStack: string[];          // tech stack slugs (TheirStack), empty for Jooble
 }
 
-/**
- * Response from the PHP proxy endpoint.
- */
 export interface JobSearchResponse {
   results: UnifiedJobResult[];
   total: number;
@@ -43,9 +32,6 @@ export interface JobSearchResponse {
   errors: Array<{ source: string; message: string }>;
 }
 
-/**
- * Possible error types from the job search proxy.
- */
 export type JobSearchError =
   | { error: 'keywords_required'; message: string }
   | { error: 'keywords_too_long'; message: string }
@@ -56,5 +42,4 @@ export type JobSearchError =
   | { error: 'network_error'; message: string }
   | { error: 'auth_required'; message: string };
 
-/** Source filter type for job search */
 export type JobSearchSource = 'jooble' | 'theirstack' | 'adzuna' | 'careerjet' | 'both' | 'all';

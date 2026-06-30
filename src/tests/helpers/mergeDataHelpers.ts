@@ -1,4 +1,3 @@
-// src/tests/helpers/mergeDataHelpers.ts
 import type { JobApplication } from '../../types/applications';
 import type { JobOpportunity } from '../../types/opportunities';
 import type { MergeData } from '../../utils/mergeData';

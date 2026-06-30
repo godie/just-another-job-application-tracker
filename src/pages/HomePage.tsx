@@ -1,5 +1,4 @@
-// src/pages/HomePage.tsx
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useReducer, useEffect, useCallback, useEffectEvent } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import { useSEO } from '../seo/useSEO';
 import Footer from '../components/Footer';
@@ -23,7 +22,6 @@ import { PageHeader } from '../components/ui/PageHeader';
 const VIEW_STORAGE_KEY = 'preferredView';
 const FILTERS_STORAGE_KEY = 'applicationFilters';
 
-// Initialize from localStorage synchronously
 function loadInitialFilters(): Filters {
   if (typeof window === 'undefined') return defaultFilters;
   const storedFilters = window.localStorage.getItem(FILTERS_STORAGE_KEY);
@@ -54,6 +52,38 @@ interface HomePageContentProps {
   onNavigate?: (page: PageType) => void;
 }
 
+interface HomePageState {
+  currentApplication: JobApplication | null;
+  selectedJobId: string | null;
+  currentView: ViewType;
+  filters: Filters;
+  isDataToolsOpen: boolean;
+}
+
+type HomePageAction =
+  | { type: 'SET_CURRENT_APPLICATION'; value: JobApplication | null }
+  | { type: 'SET_SELECTED_JOB_ID'; value: string | null }
+  | { type: 'SET_CURRENT_VIEW'; value: ViewType }
+  | { type: 'SET_FILTERS'; value: Filters }
+  | { type: 'TOGGLE_DATA_TOOLS' };
+
+function homePageReducer(state: HomePageState, action: HomePageAction): HomePageState {
+  switch (action.type) {
+    case 'SET_CURRENT_APPLICATION':
+      return { ...state, currentApplication: action.value };
+    case 'SET_SELECTED_JOB_ID':
+      return { ...state, selectedJobId: action.value };
+    case 'SET_CURRENT_VIEW':
+      return { ...state, currentView: action.value };
+    case 'SET_FILTERS':
+      return { ...state, filters: action.value };
+    case 'TOGGLE_DATA_TOOLS':
+      return { ...state, isDataToolsOpen: !state.isDataToolsOpen };
+    default:
+      return state;
+  }
+}
+
 const HomePageContent: React.FC<HomePageContentProps> = ({ onNavigate }) => {
   const { t } = useTranslation();
   const { showSuccess } = useAlert();
@@ -63,7 +93,6 @@ const HomePageContent: React.FC<HomePageContentProps> = ({ onNavigate }) => {
     description: t('seo.applications.description'),
   });
   
-  // Use Zustand stores
   const applications = useApplicationsStore((state) => state.applications);
   const addApplication = useApplicationsStore((state) => state.addApplication);
   const updateApplication = useApplicationsStore((state) => state.updateApplication);
@@ -74,88 +103,81 @@ const HomePageContent: React.FC<HomePageContentProps> = ({ onNavigate }) => {
   const preferences = usePreferencesStore((state) => state.preferences);
   const loadPreferences = usePreferencesStore((state) => state.loadPreferences);
   
-  const [currentApplication, setCurrentApplication] = useState<JobApplication | null>(null);
-  const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
-  const [currentView, setCurrentView] = useState<ViewType>('table');
-  const [filters, setFilters] = useState<Filters>(loadInitialFilters);
-  const [isDataToolsOpen, setIsDataToolsOpen] = useState(false);
+  const [state, dispatch] = useReducer(homePageReducer, {
+    currentApplication: null,
+    selectedJobId: null,
+    currentView: 'table',
+    filters: loadInitialFilters(),
+    isDataToolsOpen: false,
+  });
+
+  const { currentApplication, selectedJobId, currentView, filters, isDataToolsOpen } = state;
   const isFormOpen = currentApplication !== null;
   const isPreviewOpen = selectedJobId !== null;
 
-  // Load data on mount
-  useEffect(() => {
+  const onMessage = useEffectEvent((event: MessageEvent) => {
+    if (event.data && event.data.type === 'JOB_OPPORTUNITY_SYNC') {
+      showSuccess(t('home.success.captured'));
+    }
+  });
+
+  const onTriggerEdit = useEffectEvent((e: Event) => {
+    const customEvent = e as CustomEvent<{ jobId: string }>;
+    if (customEvent.detail?.jobId) {
+      const apps = useApplicationsStore.getState().applications;
+      const app = apps.find((a) => a.id === customEvent.detail.jobId);
+      if (app) {
+        dispatch({ type: 'SET_CURRENT_APPLICATION', value: app });
+      }
+    }
+  });
+
+  const onMount = useEffectEvent(() => {
     loadApplications();
     loadPreferences();
-    
-    // Listen for new opportunities from Chrome extension
-    const handleMessage = (event: MessageEvent) => {
-      if (event.data && event.data.type === 'JOB_OPPORTUNITY_SYNC') {
-        // New opportunity added from extension
-        showSuccess(t('home.success.captured'));
-      }
-    };
-    
-    window.addEventListener('message', handleMessage);
+  });
 
-    // Listen for edit requests from JobDetailsPage.
-    // Use getState() to read latest applications without subscribing to the store,
-    // avoiding an infinite render loop (loadApplications updates applications → effect
-    // re-runs → calls loadApplications again).
-    const handleTriggerEdit = (e: Event) => {
-      const customEvent = e as CustomEvent<{ jobId: string }>;
-      if (customEvent.detail?.jobId) {
-        const apps = useApplicationsStore.getState().applications;
-        const app = apps.find((a) => a.id === customEvent.detail.jobId);
-        if (app) {
-          setCurrentApplication(app);
-        }
-      }
-    };
-    window.addEventListener('triggerEditJob', handleTriggerEdit);
-    
+  useEffect(() => {
+    onMount();
+    window.addEventListener('message', onMessage);
+    window.addEventListener('triggerEditJob', onTriggerEdit);
     return () => {
-      window.removeEventListener('message', handleMessage);
-      window.removeEventListener('triggerEditJob', handleTriggerEdit);
+      window.removeEventListener('message', onMessage);
+      window.removeEventListener('triggerEditJob', onTriggerEdit);
     };
-  // loadApplications/loadPreferences are Zustand actions — NOT referentially
-  // stable (they're recreated on store updates). Using them as deps creates
-  // an infinite loop: effect runs → loadApplications() updates store → actions
-  // get new references → effect re-runs → ...
-  // Empty [] ensures mount-only execution; stable callbacks in handlers, getState() for applications.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Sync view preference
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
     if (preferences?.defaultView) {
-      setCurrentView(preferences.defaultView);
+      dispatch({ type: 'SET_CURRENT_VIEW', value: preferences.defaultView });
       window.localStorage.setItem(VIEW_STORAGE_KEY, preferences.defaultView);
     } else {
       const storedView = window.localStorage.getItem(VIEW_STORAGE_KEY) as ViewType | null;
       if (storedView) {
-        setCurrentView(storedView);
+        dispatch({ type: 'SET_CURRENT_VIEW', value: storedView });
       }
     }
   }, [preferences?.defaultView]);
   
   const handleViewChange = useCallback((view: ViewType) => {
-    setCurrentView(view);
+    dispatch({ type: 'SET_CURRENT_VIEW', value: view });
     if (typeof window !== 'undefined') {
       window.localStorage.setItem(VIEW_STORAGE_KEY, view);
     }
   }, []);
 
   const handleFiltersChange = useCallback((nextFilters: Filters) => {
-    setFilters(nextFilters);
+    dispatch({ type: 'SET_FILTERS', value: nextFilters });
     if (typeof window !== 'undefined') {
       window.localStorage.setItem(FILTERS_STORAGE_KEY, JSON.stringify(nextFilters));
     }
   }, []);
 
   const handleClearFilters = useCallback(() => {
-    setFilters(defaultFilters);
+    dispatch({ type: 'SET_FILTERS', value: defaultFilters });
     if (typeof window !== 'undefined') {
       window.localStorage.removeItem(FILTERS_STORAGE_KEY);
     }
@@ -163,40 +185,36 @@ const HomePageContent: React.FC<HomePageContentProps> = ({ onNavigate }) => {
 
   const handleSaveEntry = useCallback((entryData: Omit<JobApplication, 'id'> | JobApplication) => {
     if ('id' in entryData) {
-      // Update existing application
       updateApplication(entryData.id, entryData);
     } else {
-      // Add new application
       addApplication(entryData);
     }
-    setCurrentApplication(null);
+    dispatch({ type: 'SET_CURRENT_APPLICATION', value: null });
   }, [addApplication, updateApplication]);
 
   const handleDeleteEntry = useCallback((appToDelete: JobApplication) => {
-    // Delete using store action
     deleteApplication(appToDelete.id);
     
-    // Show success message
     showSuccess(t('home.success.deleted', { position: appToDelete.position, company: appToDelete.company }));
   }, [deleteApplication, showSuccess, t]);
 
   const handleEdit = useCallback((appToEdit: JobApplication | null) => {
-    setCurrentApplication(appToEdit);
+    dispatch({ type: 'SET_CURRENT_APPLICATION', value: appToEdit });
   }, []);
 
   const handleSelectJob = useCallback((app: JobApplication) => {
-    setSelectedJobId(app.id);
+    dispatch({ type: 'SET_SELECTED_JOB_ID', value: app.id });
   }, []);
 
   const handleClosePreview = useCallback(() => {
-    setSelectedJobId(null);
+    dispatch({ type: 'SET_SELECTED_JOB_ID', value: null });
   }, []);
 
   const handleCreateNew = () => {
-    setCurrentApplication({} as JobApplication);
+    dispatch({ type: 'SET_CURRENT_APPLICATION', value: {} as JobApplication });
   }
   const handleCancel = () => {
-    setCurrentApplication(null);
+    dispatch({ type: 'SET_CURRENT_APPLICATION', value: null });
   }
 
   const {
@@ -223,15 +241,15 @@ const HomePageContent: React.FC<HomePageContentProps> = ({ onNavigate }) => {
       <MetricsSummary applications={filteredApplications} />
 
       {/* ── DATA TOOLS ── Collapsible utilities zone ── */}
-      <div className='mb-8'>
+      <div className='mb-10'>
         <button
           type='button'
-          onClick={() => setIsDataToolsOpen(!isDataToolsOpen)}
-          className='flex items-center gap-2 text-sm font-medium text-earth-500 dark:text-earth-400 hover:text-sage-600 dark:hover:text-sage-400 transition-colors mb-3'
+          onClick={() => dispatch({ type: 'TOGGLE_DATA_TOOLS' })}
+          className='flex items-center gap-2 text-xs font-medium tracking-wider uppercase text-muted-foreground hover:text-foreground transition-colors mb-3'
           aria-expanded={isDataToolsOpen}
         >
           <svg
-            className={`size-4 transform transition-transform ${isDataToolsOpen ? 'rotate-90' : ''}`}
+            className={`size-3.5 transform transition-transform duration-200 ${isDataToolsOpen ? 'rotate-90' : ''}`}
             fill='none' viewBox='0 0 24 24' stroke='currentColor'
           >
             <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M9 5l7 7-7 7' />
@@ -240,13 +258,13 @@ const HomePageContent: React.FC<HomePageContentProps> = ({ onNavigate }) => {
         </button>
 
         {isDataToolsOpen && (
-          <div className='space-y-4 pl-6 border-l-2 border-earth-200 dark:border-earth-700'>
-            <div className='flex flex-col sm:flex-row sm:items-center gap-4 bg-earth-50 dark:bg-earth-800 p-4 rounded border border-earth-200 dark:border-earth-700'>
+          <div className='space-y-4 pl-4 border-l border-border dark:border-border'>
+            <div className='flex flex-col sm:flex-row sm:items-center gap-4 bg-muted/50 p-4 rounded-lg border border-border dark:border-border'>
               <CSVActions />
               <button
                 type='button'
                 onClick={() => onNavigate?.('gmail-scan')}
-                className='flex items-center gap-2 px-4 py-2 text-sm font-medium text-sage-700 dark:text-sage-300 bg-sage-50 dark:bg-sage-900/30 rounded hover:bg-sage-100 dark:hover:bg-sage-900/50 transition-colors border border-sage-200 dark:border-sage-700'
+                className='flex items-center gap-2 px-4 py-2 text-sm font-medium text-primary bg-primary/5 dark:bg-primary/10 rounded-lg hover:bg-primary/10 dark:hover:bg-primary/10 transition-colors border border-primary/20 dark:border-primary'
               >
                 <svg className='size-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                   <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z' />
@@ -265,7 +283,7 @@ const HomePageContent: React.FC<HomePageContentProps> = ({ onNavigate }) => {
       </div>
 
       {/* ── WORK ZONE ── Filters + View Switcher + Table ── */}
-      <div className='space-y-4 mb-6'>
+      <div className='space-y-3 mb-8'>
         <FiltersBar
           filters={filters}
           onFiltersChange={handleFiltersChange}
@@ -273,12 +291,12 @@ const HomePageContent: React.FC<HomePageContentProps> = ({ onNavigate }) => {
           availablePlatforms={availablePlatforms}
           onClear={handleClearFilters}
         />
-        <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4'>
-          <p className='text-sm text-earth-600 dark:text-earth-400'>
+        <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3'>
+          <p className='text-sm text-muted-foreground'>
             <Trans
               i18nKey='home.showing'
               values={{ count: filteredApplications.length, total: applications.length }}
-              components={{ bold: <span className='font-semibold text-earth-700 dark:text-earth-300' /> }}
+              components={{ bold: <span className='font-semibold text-foreground' /> }}
             />
           </p>
           <ViewSwitcher currentView={currentView} onViewChange={handleViewChange} />

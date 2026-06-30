@@ -1,4 +1,3 @@
-// src/stores/mergeStore.test.ts
 import { describe, it, expect, beforeEach } from 'vitest';
 import { useMergeStore } from './mergeStore';
 import type { MergeData } from '../utils/mergeData';

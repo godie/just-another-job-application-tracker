@@ -5,6 +5,7 @@ import { exportToCSV, parseCSV } from '../utils/csv';
 import { getCurrentDateKey } from '../utils/dateHelpers';
 import { useAlert } from './AlertProvider';
 import { HiDownload, HiUpload } from 'react-icons/hi';
+import { Button } from './ui/Button';
 
 const CSVActions: React.FC = () => {
   const { t } = useTranslation();
@@ -47,7 +48,6 @@ const CSVActions: React.FC = () => {
         const importedApps = parseCSV(text);
 
         if (importedApps.length > 0) {
-          // Merge with existing apps, checking for duplicates by ID
           const existingIds = new Set(applications.map(app => app.id));
           const uniqueNewApps = importedApps.filter(app => !existingIds.has(app.id));
 
@@ -62,7 +62,6 @@ const CSVActions: React.FC = () => {
         console.error('Error importing CSV:', error);
         showError(t('csv.importError'));
       }
-      // Reset input
       if (fileInputRef.current) fileInputRef.current.value = '';
     };
     reader.readAsText(file);
@@ -70,25 +69,27 @@ const CSVActions: React.FC = () => {
 
   return (
     <div className="flex flex-wrap gap-2 items-center">
-      <button
+      <Button
         type="button"
+        variant="outline"
+        size="md"
         onClick={handleExport}
-        className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-earth-700 dark:text-earth-200 bg-white dark:bg-earth-800 border border-earth-300 dark:border-earth-600 rounded hover:bg-earth-100 dark:hover:bg-earth-700 transition-colors"
         title={t('csv.export')}
       >
         <HiDownload className="size-4" />
         <span className="hidden sm:inline">{t('csv.export')}</span>
-      </button>
+      </Button>
 
-      <button
+      <Button
         type="button"
+        variant="outline"
+        size="md"
         onClick={handleImportClick}
-        className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-earth-700 dark:text-earth-200 bg-white dark:bg-earth-800 border border-earth-300 dark:border-earth-600 rounded hover:bg-earth-100 dark:hover:bg-earth-700 transition-colors"
         title={t('csv.import')}
       >
         <HiUpload className="size-4" />
         <span className="hidden sm:inline">{t('csv.import')}</span>
-      </button>
+      </Button>
 
       <input
         type="file"

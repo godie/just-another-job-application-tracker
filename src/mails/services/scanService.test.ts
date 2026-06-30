@@ -48,7 +48,6 @@ describe('scanService', () => {
     });
 
     it('deduplicates emails with same subject/from/date found by multiple queries', async () => {
-      // Two seed messages that normalize to same subject/from/date (different IDs, same content)
       const duplicateMessages = [
         {
           id: 'dup-1',
@@ -67,8 +66,6 @@ describe('scanService', () => {
       ];
       const provider = new FakeEmailProvider(duplicateMessages);
       const preview = await scanEmails(provider);
-      // Both emails classify as application_submitted for same company
-      // Dedup should reduce to 1, so only 1 proposed addition
       const acmeAdditions = preview.proposedAdditions.filter(
         (a) => a.data.company?.toLowerCase() === 'acme'
       );
@@ -165,7 +162,6 @@ describe('scanService', () => {
     });
 
     it('does NOT deduplicate when from has display name vs bare email', () => {
-      // "Acme Corp <hr@acme.com>" vs "hr@acme.com" are different keys
       const emails = [
         makeEmail({ id: '1', subject: 'Interview', from: 'Acme Corp <hr@acme.com>', date: '2025-01-15T10:00:00Z' }),
         makeEmail({ id: '2', subject: 'Interview', from: 'hr@acme.com', date: '2025-01-15T10:00:00Z' }),

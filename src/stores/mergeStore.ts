@@ -1,4 +1,3 @@
-// src/stores/mergeStore.ts
 import { create } from 'zustand';
 import type { MergeData } from '../utils/mergeData';
 
@@ -8,7 +7,6 @@ interface MergeState {
   localData: MergeData | null;
   cloudData: MergeData | null;
 
-  // Actions
   setConflict: (localData: MergeData, cloudData: MergeData) => void;
   clearConflict: () => void;
   pauseSync: () => void;

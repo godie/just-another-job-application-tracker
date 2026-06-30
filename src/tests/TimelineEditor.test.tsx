@@ -3,7 +3,6 @@ import { expect, test, describe, beforeEach, vi } from 'vitest';
 import TimelineEditor from '../components/TimelineEditor';
 import type { InterviewEvent } from '../types/applications';
 
-// Mock localStorage utilities
 vi.mock('../storage/preferences', () => ({
   generateId: vi.fn(() => `test-id-${Math.random().toString(36).substr(2, 9)}`),
   getPreferences: vi.fn(() => ({
@@ -16,7 +15,6 @@ vi.mock('../storage/preferences', () => ({
   })),
 }));
 
-// Mock window.confirm
 const confirmMock = vi.fn(() => true);
 window.confirm = confirmMock;
 
@@ -64,7 +62,6 @@ describe('TimelineEditor Component', () => {
     const addButton = screen.getByText('+ Add Event');
     fireEvent.click(addButton);
     
-    // Check if form is visible
     expect(screen.getByLabelText(/Stage Type/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/Date/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/Status/i)).toBeInTheDocument();
@@ -126,7 +123,6 @@ describe('TimelineEditor Component', () => {
     const deleteButton = screen.getByRole('button', { name: /Delete/i });
     fireEvent.click(deleteButton);
     
-    // Confirm dialog should appear
     expect(confirmMock).toHaveBeenCalled();
   });
 
@@ -149,7 +145,6 @@ describe('TimelineEditor Component', () => {
     render(<TimelineEditor events={events} onChange={mockOnChange} />);
     
     const renderedEvents = screen.getAllByText(/Application Submitted|Technical Interview/i);
-    // First one should be Application Submitted (earlier date)
     expect(renderedEvents[0]).toHaveTextContent('Application Submitted');
   });
 
@@ -166,10 +161,8 @@ describe('TimelineEditor Component', () => {
 
     render(<TimelineEditor events={events} onChange={mockOnChange} />);
     
-    // Should display interviewer name
     expect(screen.getByText('👤 John Doe')).toBeInTheDocument();
     
-    // Should include interviewer name when editing
     const editButton = screen.getByRole('button', { name: /Edit/i });
     fireEvent.click(editButton);
     

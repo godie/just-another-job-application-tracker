@@ -1,4 +1,3 @@
-// src/components/ViewSwitcher.tsx
 import React, { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -55,7 +54,7 @@ const ViewSwitcher: React.FC<ViewSwitcherProps> = ({ currentView, onViewChange }
   ];
 
   return (
-    <div className='flex items-center flex-wrap gap-2 bg-white dark:bg-earth-800 rounded border border-earth-200 dark:border-earth-700 p-2'>
+    <div className='flex items-center gap-1' role='tablist' aria-label='View switcher'>
       {views.map((view) => {
         const isActive = currentView === view.id;
 
@@ -63,18 +62,23 @@ const ViewSwitcher: React.FC<ViewSwitcherProps> = ({ currentView, onViewChange }
           <button
             key={view.id}
             type="button"
+            role="tab"
+            aria-selected={isActive}
             onClick={() => onViewChange(view.id)}
             className={`
-              flex items-center gap-2 px-3 py-2 rounded transition-all duration-150 text-sm
+              relative flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-md
+              transition-colors duration-150
               ${isActive
-                ? 'bg-sage-100 dark:bg-sage-900 text-sage-700 dark:text-sage-300 font-semibold'
-                : 'text-earth-600 dark:text-earth-300 hover:bg-earth-100 dark:hover:bg-earth-700 hover:text-earth-900 dark:hover:text-earth-100'}
+                ? 'text-foreground'
+                : 'text-muted-foreground hover:text-foreground'}
             `}
-            aria-pressed={isActive}
             aria-label={view.description}
           >
             {view.icon}
-            <span className="text-xs sm:text-sm">{view.label}</span>
+            <span className="hidden sm:inline">{view.label}</span>
+            {isActive && (
+              <span className='absolute bottom-0 left-2 right-2 h-0.5 bg-destructive/80 dark:bg-destructive/50 rounded-full' />
+            )}
           </button>
         );
       })}
