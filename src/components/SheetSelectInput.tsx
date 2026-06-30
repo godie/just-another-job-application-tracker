@@ -72,5 +72,3 @@ export const SheetSelectInput: React.FC<SheetSelectInputProps> = ({
     </div>
   );
 };
-
-export default SheetSelectInput;

@@ -307,5 +307,3 @@ export const ManualProcessingPanel: React.FC<ManualProcessingPanelProps> = ({
     </div>
   );
 };
-
-export default ManualProcessingPanel;

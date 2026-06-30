@@ -135,5 +135,3 @@ export const ScanResults: React.FC<ScanResultsProps> = ({
     </div>
   );
 };
-
-export default ScanResults;

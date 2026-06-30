@@ -6,7 +6,6 @@ export * from './Badge';
 export * from './Table';
 export * from './Separator';
 export * from './PageHeader';
-export * from './StatCard';
 export * from './TagInput';
 export * from './Textarea';
 export * from './Dialog';

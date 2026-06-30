@@ -83,5 +83,3 @@ export const SettingsSectionHeader: React.FC<SettingsSectionHeaderProps> = ({
     </Card>
   );
 };
-
-export default SettingsSectionHeader;

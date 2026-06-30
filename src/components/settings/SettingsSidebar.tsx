@@ -73,5 +73,3 @@ export const SettingsSidebar: React.FC<SettingsSidebarProps> = ({
     </aside>
   );
 };
-
-export default SettingsSidebar;

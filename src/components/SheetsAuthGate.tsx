@@ -61,5 +61,3 @@ export const SheetsAuthGate: React.FC<SheetsAuthGateProps> = ({
       return <>{children}</>;
   }
 };
-
-export default SheetsAuthGate;

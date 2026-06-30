@@ -77,5 +77,3 @@ export const TrackingFields: React.FC<TrackingFieldsProps> = ({ formData, onChan
     </>
   );
 };
-
-export default TrackingFields;

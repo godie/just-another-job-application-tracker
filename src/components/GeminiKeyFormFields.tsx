@@ -148,5 +148,3 @@ export const GeminiKeyFormFields: React.FC<GeminiKeyFormFieldsProps> = ({
     </div>
   );
 };
-
-export default GeminiKeyFormFields;

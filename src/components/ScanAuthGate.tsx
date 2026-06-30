@@ -47,5 +47,3 @@ export const ScanAuthGate: React.FC<ScanAuthGateProps> = ({
       return <>{children}</>;
   }
 };
-
-export default ScanAuthGate;

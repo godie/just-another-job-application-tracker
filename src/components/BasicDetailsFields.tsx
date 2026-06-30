@@ -90,5 +90,3 @@ export const BasicDetailsFields: React.FC<BasicDetailsFieldsProps> = ({ formData
     </>
   );
 };
-
-export default BasicDetailsFields;

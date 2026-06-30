@@ -190,5 +190,3 @@ export const ManualInputTab: React.FC<ManualInputTabProps> = ({
     </div>
   );
 };
-
-export default ManualInputTab;

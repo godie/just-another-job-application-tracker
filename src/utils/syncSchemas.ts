@@ -150,7 +150,7 @@ export const jobOpportunitySchema = z.object({
 /*  Response-shape helpers.                                                  */
 /* -------------------------------------------------------------------------- */
 
-export interface ParsedListResult<T> {
+interface ParsedListResult<T> {
   items: T[];
   /** Per-row validation failures (bad shape, bad enum, oversized text, etc.) */
   dropped: number;

@@ -79,5 +79,3 @@ export const CloudAccountSection: React.FC<CloudAccountSectionProps> = ({ onNavi
     </div>
   );
 };
-
-export default CloudAccountSection;

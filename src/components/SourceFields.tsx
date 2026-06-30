@@ -61,5 +61,3 @@ export const SourceFields: React.FC<SourceFieldsProps> = ({ formData, onChange }
     </>
   );
 };
-
-export default SourceFields;
