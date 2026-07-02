@@ -66,16 +66,21 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode, onNavigate, onSuccess }) => {
         {/* Header */}
         <div className='mb-8'>
           <div className='flex justify-center'>
-            <img
-              src='/jajat-logo.png'
-              alt='JAJAT Logo'
-              // Intrinsic dims match the source file (1024x1024).
-              // Defense-in-depth CLS prevention.
-              width={1024}
-              height={1024}
-              decoding='async'
-              className='h-12 w-auto'
-            />
+            {/* Auth screen logo: prefers AVIF (smallest), falls back to WebP.
+                 Intrinsic dims 512×512 → 2× of typical h-12 (48px) CSS display
+                 for retina sharpness. The 512 source is the largest format
+                 available in the asset set; downscaling stays sharp. */}
+            <picture>
+              <source srcSet='/icon-512.avif' type='image/avif' />
+              <img
+                src='/icon-512.webp'
+                alt='JAJAT Logo'
+                width={512}
+                height={512}
+                decoding='async'
+                className='h-12 w-auto'
+              />
+            </picture>
           </div>
           <div className='flex items-center gap-3 mt-6 mb-4'>
             <div className='w-8 h-0.5 bg-primary/80'></div>

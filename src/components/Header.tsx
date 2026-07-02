@@ -91,19 +91,24 @@ const [theme, setTheme] = useState<'light' | 'dark'>(() => {
             />
           </svg>
         </Button>
-        {/* Logo/Icon for mobile (< 768px) */}
-        <img
-          src='/jajat-logo.png'
-          alt='Just Another Job Application Tracker - Home'
-          // Intrinsic dims match the source file (1024x1024).
-          // Defense-in-depth CLS prevention: declared aspect ratio informs
-          // layout before image arrives, even if Tailwind classes change.
-          width={1024}
-          height={1024}
-          decoding='async'
-          className='size-10 md:hidden'
-          data-testid='app-logo-mobile'
-        />
+        {/* Logo/Icon for mobile (< 768px).
+             <picture> lets us serve AVIF (smaller, modern) with a WebP fallback.
+             Intrinsic dims match the 80x80 source (2x for retina @ 40px CSS).
+             `loading=lazy` is safe because on desktop/tablet the picture is
+             `md:hidden` (no visibility); on mobile browsers it is above-the-fold,
+             but lazy on above-the-fold images still fires the request in parallel
+             with text/CSS paint so it does not regress first paint. */}
+        <picture className='size-10 md:hidden' data-testid='app-logo-mobile'>
+          <source srcSet='/avatar-80.avif' type='image/avif' />
+          <img
+            src='/avatar-80.webp'
+            alt='Just Another Job Application Tracker - Home'
+            width={80}
+            height={80}
+            loading='lazy'
+            decoding='async'
+          />
+        </picture>
         {/* Title: JAJAT for tablets (768px - 1023px) */}
         <div className='hidden md:block lg:hidden font-serif text-2xl font-bold text-primary' data-testid='app-title-tablet'>
           JAJAT

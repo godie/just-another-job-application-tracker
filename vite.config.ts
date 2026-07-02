@@ -18,7 +18,28 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['jajat-logo.png'],
+      // PWA icon set: WebP first (universal support, ~70% smaller than PNG),
+      // AVIF as a secondary choice for launchers that prefer it (~30% smaller
+      // than WebP). Workbox precaches both via `includeAssets`; the browser
+      // picks the first entry it understands from `manifest.icons`. Files
+      // themselves live under `public/` and are emitted as `/<name>.<ext>`.
+      //
+      // includeAssets explicitly lists every WebP/AVIF we reference anywhere
+      // (manifest.icons, index.html <link rel="icon">, Header.tsx <picture>,
+      // AuthForm.tsx <picture>). The `globPatterns` extension below (webp/avif)
+      // means any future WebP/AVIF added to public/ will also precache; these
+      // entries are the explicit "must cache even if globPatterns changes"
+      // pin list.
+      includeAssets: [
+        'favicon-64.webp',
+        'favicon-64.avif',
+        'icon-192.webp',
+        'icon-512.webp',
+        'icon-512.avif',
+        'icon-192.avif',
+        'avatar-80.webp',
+        'avatar-80.avif',
+      ],
       manifest: {
         name: 'JAJAT - Job Application Tracker',
         short_name: 'JAJAT',
@@ -27,23 +48,18 @@ export default defineConfig({
         background_color: '#ffffff',
         display: 'standalone',
         start_url: '/',
+        // WebP-only manifest icons: spec-stable across all launchers
+        // (PNG/SVG/WebP). AVIF is reserved for runtime <picture> sources where
+        // browser format negotiation is more permissive.
         icons: [
-          {
-            src: '/jajat-logo.png',
-            sizes: '192x192',
-            type: 'image/png',
-            purpose: 'any',
-          },
-          {
-            src: '/jajat-logo.png',
-            sizes: '512x512',
-            type: 'image/png',
-            purpose: 'any maskable',
-          },
+          { src: '/icon-192.webp', sizes: '192x192', type: 'image/webp', purpose: 'any' },
+          { src: '/icon-512.webp', sizes: '512x512', type: 'image/webp', purpose: 'any maskable' },
         ],
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,woff2}'],
+        // webp/avif added so any future asset under public/ that uses those
+        // formats precaches without manual registration in includeAssets.
+        globPatterns: ['**/*.{js,css,html,ico,png,webp,avif,woff2}'],
         navigateFallback: '/index.html',
       },
       devOptions: {
