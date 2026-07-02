@@ -167,9 +167,14 @@ describe('LandingPage', () => {
       expect(ctaGradient).not.toBeNull();
     });
 
-    it('bottom CTA button uses white background with foreground text', () => {
+    it('bottom CTA button uses white background with foreground text and stays legible in dark mode', () => {
       const whiteButton = container.querySelector('.bg-white.text-foreground');
       expect(whiteButton).not.toBeNull();
+      // Regression guard for dark-mode invisibility: text-foreground flips to a light
+      // color (~92% L) in dark mode, so without dark:bg-card the button would render
+      // light on white (~1:1 contrast). Both classnames must be present.
+      expect(whiteButton?.className).toMatch(/\bdark:bg-card\b/);
+      expect(whiteButton?.className).toMatch(/\bdark:hover:bg-secondary\b/);
     });
 
     it('features section label uses destructive accent text', () => {

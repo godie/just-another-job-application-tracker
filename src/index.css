@@ -102,7 +102,8 @@
 
   /* Text */
   --foreground: 30 15% 92%;
-  --muted-foreground: 30 10% 65%;
+  /* muted-foreground L=72% keeps AA on bg (L=6%): ~9:1; was 65% (~8:1) which felt dim. */
+  --muted-foreground: 30 12% 72%;
 
   /* Primary - vibrant sage (S=35% vs old 18%) */
   --primary: 120 35% 60%;
