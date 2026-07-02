@@ -95,6 +95,17 @@ function App() {
     fetchMe();
   }, [fetchMe]);
 
+  // Production-only Web Vitals instrument. Dynamic import inside the PROD
+  // gate so Vite chunk-splits `web-vitals` into a code-split that ships
+  // zero bytes in dev/test bundles, AND vitest never executes the
+  // `src/lib/perf.ts` module (which would otherwise pull in `web-vitals`
+  // during module-graph resolution).
+  useEffect(() => {
+    if (import.meta.env.PROD) {
+      import('./lib/perf').then((m) => m.startProductionVitalsLogging());
+    }
+  }, []);
+
   const navigateToPage = useCallback((nextPage: PageType, historyMode: 'push' | 'replace' | 'skip' = 'push') => {
     // Bookkeeping first — synchronous, decoupled from React's commit
     // boundary. Side effects don't belong inside flushSync's callback.
