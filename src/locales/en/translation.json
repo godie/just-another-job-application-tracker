@@ -262,7 +262,6 @@
       "date": "Date Format",
       "tools": "Tools",
       "toolsDesc": "Data management tools: CSV, backup, restore, and debug utilities.",
-      "dateDesc": "Choose how dates should be displayed throughout the application.",
       "custom": "Custom Fields",
       "interviewing": "Interview Events"
     },
