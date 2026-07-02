@@ -38,7 +38,6 @@ import { useApplicationsStore } from '../stores/applicationsStore';
 
 const onClose = vi.fn();
 const onNavigate = vi.fn();
-const onEdit = vi.fn();
 const onDelete = vi.fn();
 
 function renderPanel(jobId: string, overrides?: Partial<ReturnType<typeof makeApp>>) {
@@ -54,7 +53,6 @@ function renderPanel(jobId: string, overrides?: Partial<ReturnType<typeof makeAp
       jobId={jobId}
       onClose={onClose}
       onNavigate={onNavigate}
-      onEdit={onEdit}
       onDelete={onDelete}
     />
   );
@@ -79,12 +77,12 @@ describe('JobPreviewPanel', () => {
     expect(screen.getByText('Applied')).toBeInTheDocument();
   });
 
-  it('renders Job ID as a clickable button', () => {
+  it('renders title as a clickable button that opens the full details page', () => {
     renderPanel('app-1');
-    const jobIdBtn = screen.getByTestId('preview-job-id');
-    expect(jobIdBtn).toBeInTheDocument();
-    expect(jobIdBtn).toHaveTextContent('app-1');
-    expect(jobIdBtn.getAttribute('aria-label')).toBe('Open full job details');
+    const titleBtn = screen.getByTestId('preview-title-button');
+    expect(titleBtn).toBeInTheDocument();
+    expect(titleBtn).toHaveTextContent('Frontend Developer');
+    expect(titleBtn.getAttribute('aria-label')).toBe('Open full job details');
   });
 
   it('renders location, workType, salary, platform when present', () => {
@@ -206,27 +204,19 @@ describe('JobPreviewPanel', () => {
     expect(onClose).toHaveBeenCalledTimes(1);
   });
 
-  it('calls onNavigate with job-details when Job ID is clicked', () => {
+  it('clicking the title navigates to the full details page', () => {
     renderPanel('app-1');
-    fireEvent.click(screen.getByTestId('preview-job-id'));
+    fireEvent.click(screen.getByTestId('preview-title-button'));
     expect(onNavigate).toHaveBeenCalledWith('job-details');
+    // The URL is kept in sync by App.tsx's URL-sync effect once currentPage changes;
+    // JobPreviewPanel's unit contract is just to call onNavigate.
   });
 
-  it('updates URL when Job ID is clicked (pushState)', () => {
-    const pushState = vi.spyOn(window.history, 'pushState');
-    renderPanel('app-1');
-    fireEvent.click(screen.getByTestId('preview-job-id'));
-    expect(pushState).toHaveBeenCalled();
-    const url = (pushState.mock.calls[0] as [unknown, string, string])[2];
-    expect(url).toContain('page=job-details');
-    expect(url).toContain('jobId=app-1');
-    pushState.mockRestore();
-  });
-
-  it('calls onEdit when Edit button is clicked', () => {
+  it('clicking Edit navigates to full details and closes the preview', () => {
     renderPanel('app-1');
     fireEvent.click(screen.getByTestId('preview-edit'));
-    expect(onEdit).toHaveBeenCalledWith(expect.objectContaining({ id: 'app-1' }));
+    expect(onNavigate).toHaveBeenCalledWith('job-details');
+    expect(onClose).toHaveBeenCalledTimes(1);
   });
 
   it('calls onDelete when Delete button is clicked', () => {
@@ -245,7 +235,6 @@ describe('JobPreviewPanel', () => {
         jobId="nonexistent"
         onClose={onClose}
         onNavigate={onNavigate}
-        onEdit={onEdit}
         onDelete={onDelete}
       />
     );
@@ -261,7 +250,6 @@ describe('JobPreviewPanel', () => {
         jobId="nonexistent"
         onClose={onClose}
         onNavigate={onNavigate}
-        onEdit={onEdit}
         onDelete={onDelete}
       />
     );
@@ -292,22 +280,19 @@ describe('JobPreviewPanel', () => {
         <JobPreviewPanel
           jobId="app-1"
           onClose={onClose}
-          onEdit={onEdit}
           onDelete={onDelete}
         />
       )
     ).not.toThrow();
   });
 
-  it('does not throw when onEdit and onDelete are undefined', () => {
+  it('does not throw when onDelete is undefined', () => {
     (useApplicationsStore as ReturnType<typeof vi.fn>).mockImplementation(
       (selector: (state: { applications: JobApplication[] }) => unknown) => selector({ applications: [makeApp()] })
     );
-    render(
-      <JobPreviewPanel jobId="app-1" onClose={onClose} />
-    );
-    fireEvent.click(screen.getByTestId('preview-edit'));
+    expect(() =>
+      render(<JobPreviewPanel jobId="app-1" onClose={onClose} />)
+    ).not.toThrow();
     fireEvent.click(screen.getByTestId('preview-delete'));
-    expect(true).toBe(true);
   });
 });

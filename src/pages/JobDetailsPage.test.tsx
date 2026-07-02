@@ -32,6 +32,7 @@ function makeApp(overrides: Partial<JobApplication> = {}): JobApplication {
 }
 
 const deleteApplication = vi.fn();
+const updateApplication = vi.fn();
 const onNavigate = vi.fn();
 
 vi.mock('../stores/applicationsStore', () => ({
@@ -40,10 +41,22 @@ vi.mock('../stores/applicationsStore', () => ({
 
 import { useApplicationsStore } from '../stores/applicationsStore';
 
+vi.mock('../components/AlertProvider', () => ({
+  useAlert: () => ({
+    showSuccess: vi.fn(),
+    showError: vi.fn(),
+    showInfo: vi.fn(),
+  }),
+}));
+
 function setupStore(apps: JobApplication[]) {
   (useApplicationsStore as ReturnType<typeof vi.fn>).mockImplementation(
-    (selector: (state: { applications: JobApplication[]; deleteApplication: typeof deleteApplication }) => unknown) =>
-      selector({ applications: apps, deleteApplication })
+    (selector: (state: {
+      applications: JobApplication[];
+      deleteApplication: typeof deleteApplication;
+      updateApplication: typeof updateApplication;
+    }) => unknown) =>
+      selector({ applications: apps, deleteApplication, updateApplication })
   );
 }
 
@@ -242,24 +255,83 @@ describe('JobDetailsPage', () => {
     expect(deleteButtons.length).toBeGreaterThanOrEqual(1);
   });
 
-  it('clicking edit dispatches triggerEditJob event and navigates', () => {
+  it('clicking Edit enters inline edit mode (does not redirect)', () => {
     setUrlJobId('app-1');
     setupStore([makeApp()]);
-
-    const dispatchEvent = vi.spyOn(window, 'dispatchEvent');
-
     renderPage();
+    fireEvent.click(screen.getAllByText('Edit')[0]);
+    expect(screen.getByTestId('details-edit-form')).toBeInTheDocument();
+    expect(onNavigate).not.toHaveBeenCalled();
+  });
 
-    const editButtons = screen.getAllByText('Edit');
-    fireEvent.click(editButtons[0]);
+  it('inline edit mode shows inputs with current values', () => {
+    setUrlJobId('app-1');
+    setupStore([makeApp()]);
+    renderPage();
+    fireEvent.click(screen.getAllByText('Edit')[0]);
+    expect(screen.getByTestId('form-position')).toHaveValue('Senior Backend Engineer');
+    expect(screen.getByTestId('form-company')).toHaveValue('Widgets Inc');
+    expect(screen.getByTestId('form-notes')).toHaveValue('Great team, interesting tech stack.');
+  });
 
-    expect(dispatchEvent).toHaveBeenCalled();
-    const event = dispatchEvent.mock.calls[0][0] as CustomEvent;
-    expect(event.type).toBe('triggerEditJob');
-    expect(event.detail).toEqual({ jobId: 'app-1' });
-    expect(onNavigate).toHaveBeenCalledWith('applications');
+  it('notes textarea is associated with its label (label/control pairing)', () => {
+    setUrlJobId('app-1');
+    setupStore([makeApp()]);
+    renderPage();
+    fireEvent.click(screen.getAllByText('Edit')[0]);
 
-    dispatchEvent.mockRestore();
+    // getByLabelText resolves nested <label><span>Notes</span><textarea/></label>
+    // OR <label htmlFor={id}> with matching textarea id. Both are valid associations.
+    const textarea = screen.getByTestId('form-notes');
+    expect(screen.getByLabelText(/Notes/)).toBe(textarea);
+    // Visual label is rendered as the wrapping <span>, screen readers announce it.
+    const labeledBy = textarea.closest('label');
+    expect(labeledBy).not.toBeNull();
+    expect(labeledBy).toHaveTextContent(/Notes/i);
+  });
+
+  it('Save persists via updateApplication and exits edit mode', () => {
+    setUrlJobId('app-1');
+    setupStore([makeApp()]);
+    renderPage();
+    fireEvent.click(screen.getAllByText('Edit')[0]);
+    fireEvent.change(screen.getByTestId('form-position'), { target: { value: 'Staff Engineer' } });
+    fireEvent.click(screen.getByTestId('details-save'));
+    expect(updateApplication).toHaveBeenCalledWith(
+      'app-1',
+      expect.objectContaining({ position: 'Staff Engineer' }),
+    );
+    expect(screen.queryByTestId('details-edit-form')).toBeNull();
+    expect(onNavigate).not.toHaveBeenCalled();
+  });
+
+  it('Cancel exits edit mode without calling updateApplication', () => {
+    setUrlJobId('app-1');
+    setupStore([makeApp()]);
+    renderPage();
+    fireEvent.click(screen.getAllByText('Edit')[0]);
+    fireEvent.change(screen.getByTestId('form-position'), { target: { value: 'Should not save' } });
+    fireEvent.click(screen.getByTestId('details-cancel'));
+    expect(updateApplication).not.toHaveBeenCalled();
+    expect(screen.queryByTestId('details-edit-form')).toBeNull();
+  });
+
+  it('double-clicking the header card enters edit mode', () => {
+    setUrlJobId('app-1');
+    setupStore([makeApp()]);
+    renderPage();
+    fireEvent.doubleClick(screen.getByTestId('details-header-card'));
+    expect(screen.getByTestId('details-edit-form')).toBeInTheDocument();
+  });
+
+  it('does not enter edit mode when status is Deleted', () => {
+    setUrlJobId('app-1');
+    setupStore([makeApp({ status: 'Deleted' } as Partial<JobApplication>)]);
+    renderPage();
+    fireEvent.click(screen.getAllByText('Edit')[0]);
+    expect(screen.queryByTestId('details-edit-form')).toBeNull();
+    fireEvent.doubleClick(screen.getByTestId('details-header-card'));
+    expect(screen.queryByTestId('details-edit-form')).toBeNull();
   });
 
   it('clicking delete calls deleteApplication and navigates', () => {

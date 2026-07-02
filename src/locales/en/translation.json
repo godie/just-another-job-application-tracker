@@ -806,7 +806,9 @@
     "jobLink": "Job Link",
     "notes": "Notes",
     "timeline": "Timeline",
-    "customFields": "Custom Fields"
+    "customFields": "Custom Fields",
+    "editDetails": "Edit Job Details",
+    "saved": "Changes saved"
   },
   "jobPreview": {
     "notFound": "Application not found.",
@@ -828,6 +830,7 @@
     "timelineEvents_one": "{{count}} timeline event",
     "timelineEvents_other": "{{count}} timeline events",
     "customFieldsCount_one": "{{count}} custom field",
-    "customFieldsCount_other": "{{count}} custom fields"
+    "customFieldsCount_other": "{{count}} custom fields",
+    "viewPosting": "View posting →"
   }
 }
