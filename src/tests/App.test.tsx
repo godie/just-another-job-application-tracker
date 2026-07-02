@@ -154,4 +154,39 @@ describe('App Navigation and History', () => {
 
     expect(await screen.findByRole('heading', { level: 1, name: /Settings/i })).toBeInTheDocument();
   });
+
+  it('wraps route swaps in document.startViewTransition when the API is supported', async () => {
+    // Per-call feature detection in App.tsx means we can mock the API
+    // AFTER the module is already loaded — no resetModules gymnastics.
+    const startViewTransition = vi.fn((cb: () => void) => cb());
+    Object.defineProperty(document, 'startViewTransition', {
+      configurable: true,
+      writable: true,
+      value: startViewTransition,
+    });
+
+    try {
+      render(<App />);
+
+      const url = new URL(window.location.href);
+      url.searchParams.set('page', 'settings');
+      window.history.pushState({ page: 'settings' }, '', url.toString());
+
+      await act(async () => {
+        window.dispatchEvent(
+          new PopStateEvent('popstate', { state: { page: 'settings' } }),
+        );
+      });
+
+      // The popstate handler routes through startViewTransition exactly
+      // once. The synchronous fake fires the callback immediately, so by
+      // the time this assert runs React has already committed the new page.
+      expect(startViewTransition).toHaveBeenCalledTimes(1);
+      expect(
+        await screen.findByRole('heading', { level: 1, name: /Settings/i }),
+      ).toBeInTheDocument();
+    } finally {
+      Reflect.deleteProperty(document, 'startViewTransition');
+    }
+  });
 });
