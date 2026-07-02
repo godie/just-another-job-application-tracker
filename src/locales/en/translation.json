@@ -106,7 +106,8 @@
     "footer": {
       "vibecoded": "Vibecoded with love ❤️ by <link>godie</link> with cursor v{{version}} ({{year}})",
       "privacyPolicy": "Privacy Policy",
-      "termsOfUse": "Terms of Use"
+      "termsOfUse": "Terms of Use",
+      "about": "About"
     },
     "loading": "Loading...",
     "loginSuccess": "Successful Login with Google!",
@@ -172,7 +173,7 @@
     "settings": "Settings",
     "insights": "Insights",
     "support": "Support",
-    "about": "About",
+    "home": "Home",
     "backupSync": "Backup & Sync"
   },
   "home": {
@@ -806,7 +807,9 @@
     "jobLink": "Job Link",
     "notes": "Notes",
     "timeline": "Timeline",
-    "customFields": "Custom Fields"
+    "customFields": "Custom Fields",
+    "editDetails": "Edit Job Details",
+    "saved": "Changes saved"
   },
   "jobPreview": {
     "notFound": "Application not found.",
@@ -828,6 +831,7 @@
     "timelineEvents_one": "{{count}} timeline event",
     "timelineEvents_other": "{{count}} timeline events",
     "customFieldsCount_one": "{{count}} custom field",
-    "customFieldsCount_other": "{{count}} custom fields"
+    "customFieldsCount_other": "{{count}} custom fields",
+    "viewPosting": "View posting →"
   }
 }

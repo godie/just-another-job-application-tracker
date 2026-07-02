@@ -64,47 +64,55 @@
 
 :root {
   --background: 0 0% 100%;
-  --foreground: 30 8% 12%;
+  --foreground: 30 15% 10%;
   --card: 0 0% 100%;
-  --card-foreground: 30 8% 12%;
+  --card-foreground: 30 15% 10%;
   --popover: 0 0% 100%;
-  --popover-foreground: 30 8% 12%;
+  --popover-foreground: 30 15% 10%;
   --primary: 120 18% 33%;
   --primary-foreground: 0 0% 100%;
   --secondary: 40 20% 96%;
-  --secondary-foreground: 30 8% 12%;
+  --secondary-foreground: 30 15% 10%;
   --muted: 40 20% 96%;
-  --muted-foreground: 30 4% 40%;
+  --muted-foreground: 30 6% 40%;
   --accent: 40 20% 96%;
-  --accent-foreground: 30 8% 12%;
+  --accent-foreground: 30 15% 10%;
   --destructive: 12 65% 48%;
   --destructive-foreground: 0 0% 100%;
-  --border: 30 12% 88%;
-  --input: 30 12% 88%;
+  --border: 30 12% 84%;
+  --input: 30 12% 84%;
   --ring: 120 18% 33%;
   --radius: 0.5rem;
 }
 
 .dark {
-  --background: 30 8% 6%;
+  /* Surface elevation ramp (lighter than bg => higher elevation) */
+  --background: 30 6% 6%;
+  --card: 30 6% 9%;
+  --popover: 30 6% 12%;
+
+  /* Component backgrounds */
+  --secondary: 30 6% 15%;
+  --muted: 30 6% 18%;
+  --accent: 30 6% 22%;
+
+  /* Borders & inputs (L=28% => ~3.5:1 on bg, WCAG 1.4.11) */
+  --border: 30 10% 28%;
+  --input: 30 10% 28%;
+
+  /* Text */
   --foreground: 30 15% 92%;
-  --card: 30 8% 10%;
-  --card-foreground: 30 15% 92%;
-  --popover: 30 8% 10%;
-  --popover-foreground: 30 15% 92%;
-  --primary: 120 18% 55%;
-  --primary-foreground: 120 30% 6%;
-  --secondary: 30 8% 18%;
-  --secondary-foreground: 30 15% 92%;
-  --muted: 30 8% 18%;
-  --muted-foreground: 30 15% 72%;
-  --accent: 30 8% 18%;
-  --accent-foreground: 30 15% 92%;
-  --destructive: 12 62% 35%;
+  /* muted-foreground L=72% keeps AA on bg (L=6%): ~9:1; was 65% (~8:1) which felt dim. */
+  --muted-foreground: 30 12% 72%;
+
+  /* Primary - vibrant sage (S=35% vs old 18%) */
+  --primary: 120 35% 60%;
+  --primary-foreground: 120 40% 10%;
+  --ring: 120 35% 60%;
+
+  /* Destructive - clear red (L=46% => ~4.8:1 with white fg, AA normal pass) */
+  --destructive: 12 78% 46%;
   --destructive-foreground: 0 0% 100%;
-  --border: 30 8% 20%;
-  --input: 30 8% 20%;
-  --ring: 120 18% 55%;
 }
 
 @keyframes slideInRight {

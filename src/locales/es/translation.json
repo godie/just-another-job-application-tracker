@@ -106,7 +106,8 @@
     "footer": {
       "vibecoded": "Vibecoded con amor ❤️ por <link>godie</link> con cursor v{{version}} ({{year}})",
       "privacyPolicy": "Política de Privacidad",
-      "termsOfUse": "Términos de Uso"
+      "termsOfUse": "Términos de Uso",
+      "about": "Acerca de"
     },
     "loading": "Cargando...",
     "loginSuccess": "¡Inicio de sesión exitoso con Google!",
@@ -172,7 +173,7 @@
     "settings": "Ajustes",
     "insights": "Análisis",
     "support": "Soporte",
-    "about": "Acerca de",
+    "home": "Inicio",
     "backupSync": "Respaldo y Sync"
   },
   "home": {
@@ -806,7 +807,9 @@
     "jobLink": "Enlace del empleo",
     "notes": "Notas",
     "timeline": "Cronograma",
-    "customFields": "Campos personalizados"
+    "customFields": "Campos personalizados",
+    "editDetails": "Editar detalles del empleo",
+    "saved": "Cambios guardados"
   },
   "jobPreview": {
     "notFound": "Solicitud no encontrada.",
@@ -828,6 +831,7 @@
     "timelineEvents_one": "{{count}} evento del cronograma",
     "timelineEvents_other": "{{count}} eventos del cronograma",
     "customFieldsCount_one": "{{count}} campo personalizado",
-    "customFieldsCount_other": "{{count}} campos personalizados"
+    "customFieldsCount_other": "{{count}} campos personalizados",
+    "viewPosting": "Ver publicación →"
   }
 }

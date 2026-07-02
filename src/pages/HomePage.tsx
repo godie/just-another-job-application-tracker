@@ -121,17 +121,6 @@ const HomePageContent: React.FC<HomePageContentProps> = ({ onNavigate }) => {
     }
   });
 
-  const onTriggerEdit = useEffectEvent((e: Event) => {
-    const customEvent = e as CustomEvent<{ jobId: string }>;
-    if (customEvent.detail?.jobId) {
-      const apps = useApplicationsStore.getState().applications;
-      const app = apps.find((a) => a.id === customEvent.detail.jobId);
-      if (app) {
-        dispatch({ type: 'SET_CURRENT_APPLICATION', value: app });
-      }
-    }
-  });
-
   const onMount = useEffectEvent(() => {
     loadApplications();
     loadPreferences();
@@ -140,10 +129,8 @@ const HomePageContent: React.FC<HomePageContentProps> = ({ onNavigate }) => {
   useEffect(() => {
     onMount();
     window.addEventListener('message', onMessage);
-    window.addEventListener('triggerEditJob', onTriggerEdit);
     return () => {
       window.removeEventListener('message', onMessage);
-      window.removeEventListener('triggerEditJob', onTriggerEdit);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -227,7 +214,7 @@ const HomePageContent: React.FC<HomePageContentProps> = ({ onNavigate }) => {
   const tableColumns = useTableColumns(preferences);
 
   return (
-    <div className='max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-8'>
+    <div className='max-w-[1600px] mx-auto px-4 md:px-6 lg:px-8 py-8'>
       {/* ── HERO ZONE ── Header + Add Job CTA + Metrics ── */}
       <PageHeader
         category="Dashboard"
@@ -325,7 +312,6 @@ const HomePageContent: React.FC<HomePageContentProps> = ({ onNavigate }) => {
           jobId={selectedJobId}
           onClose={handleClosePreview}
           onNavigate={onNavigate}
-          onEdit={handleEdit}
           onDelete={handleDeleteEntry}
         />
       )}

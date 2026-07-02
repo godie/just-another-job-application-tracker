@@ -467,7 +467,7 @@ const LandingCTA: React.FC<{ onNavigate: (page: PageType) => void }> = ({ onNavi
         <Button
           variant='secondary'
           size='lg'
-          className='gap-3 text-lg py-4 px-10 h-auto bg-white text-foreground hover:bg-background border-border shadow-md hover:shadow-lg'
+          className='gap-3 text-lg py-4 px-10 h-auto bg-white dark:bg-card text-foreground hover:bg-muted dark:hover:bg-secondary border-border shadow-md hover:shadow-lg'
           onClick={handleEnterApp}
         >
           {t('landing.enterApp')}

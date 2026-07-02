@@ -36,6 +36,59 @@ describe('Sidebar', () => {
       expect(screen.getByText('Opportunities')).toBeInTheDocument();
       expect(screen.getByText('Settings')).toBeInTheDocument();
       expect(screen.getByText('Insights')).toBeInTheDocument();
+      expect(screen.getByText('Home')).toBeInTheDocument();
+    });
+
+    it('renders exactly one lucide-react SVG icon per nav item (icon normalization contract)', () => {
+      // Locks the contract that every sidebar Button carries a single
+      // icon — prevents future regressions where someone adds a new
+      // nav item without an icon (the original inconsistency) or
+      // accidentally adds a second SVG (e.g. a duplicated icon span).
+      const mockNavigate = vi.fn();
+      const { container } = render(<Sidebar currentPage="applications" onNavigate={mockNavigate} />);
+      const navButtons = container.querySelectorAll('nav button');
+      // 7 nav items defined in the component.
+      expect(navButtons.length).toBe(7);
+      navButtons.forEach((btn) => {
+        const svgs = btn.querySelectorAll('svg');
+        expect(svgs.length).toBe(1);
+        // classList.contains is robust to class-string formatting
+        // changes in lucide-react (only checks for the class token).
+        expect(svgs[0].classList.contains('lucide')).toBe(true);
+        // Icons are decorative — the Button text label is the
+        // accessible name, so the SVG must be hidden from AT.
+        expect(svgs[0]).toHaveAttribute('aria-hidden', 'true');
+      });
+    });
+
+    it('renders the Opportunities icon alongside the count badge (icon + badge coexistence)', () => {
+      // Locks the layout contract that the icon and the Badge both
+      // render inside the Opportunities Button when count > 0. The
+      // Badge is `absolute` positioned so it does not interact with
+      // the Button's `gap-2` flex layout — this test guards against
+      // a future refactor that accidentally removes the absolute
+      // positioning and breaks the visual layout.
+      mockGetOpportunities.mockReturnValue([
+        { id: '1', position: 'Engineer', company: 'Test' },
+      ]);
+      const mockNavigate = vi.fn();
+      render(<Sidebar currentPage="applications" onNavigate={mockNavigate} />);
+      // Icon is present immediately (synchronous render).
+      const opportunitiesButton = screen.getByText('Opportunities').closest('button');
+      expect(opportunitiesButton).not.toBeNull();
+      const svgs = opportunitiesButton!.querySelectorAll('svg');
+      expect(svgs.length).toBe(1);
+      expect(svgs[0].classList.contains('lucide')).toBe(true);
+      // Badge is async (depends on useEffect → loadOpportunities →
+      // state update), so the existence + className checks must be
+      // wrapped in waitFor or they race the first render. Find the
+      // badge by its content (the count "1") rather than by a
+      // substring class selector — more semantic and robust to
+      // className changes.
+      waitFor(() => {
+        const badge = screen.getByText('1');
+        expect(badge.classList.contains('absolute')).toBe(true);
+      });
     });
 
     it('highlights the current page', () => {

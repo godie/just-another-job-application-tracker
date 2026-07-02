@@ -93,9 +93,23 @@ describe('Header Component', () => {
   test('should render mobile logo image', () => {
     renderWithProviders(<Header onToggleSidebar={mockToggleSidebar} />);
     const mobileLogo = screen.getByTestId('app-logo-mobile');
+    // After the asset replacement, the mobile logo is a <picture> wrapper that
+    // emits AVIF + WebP sources and a WebP <img> fallback. Verify the picture
+    // exists, the AVIF source is declared first (best-compression first), and
+    // the WebP <img> fallback carries the readable alt + 80x80 intrinsic dims.
     expect(mobileLogo).toBeInTheDocument();
-    expect(mobileLogo).toHaveAttribute('src', '/jajat-logo.png');
-    expect(mobileLogo).toHaveAttribute('alt', 'Just Another Job Application Tracker - Home');
+    expect(mobileLogo.tagName).toBe('PICTURE');
+    const avifSource = mobileLogo.querySelector('source[type="image/avif"]');
+    expect(avifSource).not.toBeNull();
+    expect(avifSource!.getAttribute('srcset')).toBe('/avatar-80.avif');
+    const fallbackImg = mobileLogo.querySelector('img');
+    expect(fallbackImg).not.toBeNull();
+    expect(fallbackImg!.getAttribute('src')).toBe('/avatar-80.webp');
+    expect(fallbackImg!.getAttribute('alt')).toBe(
+      'Just Another Job Application Tracker - Home',
+    );
+    expect(fallbackImg!.getAttribute('width')).toBe('80');
+    expect(fallbackImg!.getAttribute('height')).toBe('80');
   });
 
   test('should render tablet title "JAJAT"', () => {

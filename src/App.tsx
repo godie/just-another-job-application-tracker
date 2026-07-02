@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef, lazy, Suspense } from 'react';
+import { flushSync } from 'react-dom';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { AlertProvider } from './components/AlertProvider';
 import LandingPage from './pages/LandingPage';
@@ -37,6 +38,32 @@ export type PageType = 'landing' | 'applications' | 'opportunities' | 'settings'
 const VALID_PAGES: PageType[] = ['landing', 'applications', 'opportunities', 'settings', 'insights', 'support', 'suggestions', 'login', 'register', 'gmail-scan', 'backup-sync', 'job-details'];
 const PUBLIC_PAGES = new Set<PageType>(['landing', 'login', 'register']);
 
+/**
+ * Wrap a React state change in `document.startViewTransition` so the browser
+ * cross-fades the old and new DOM states. `flushSync` forces React to commit
+ * the state change synchronously inside the view-transition callback, which
+ * guarantees the DOM snapshot AFTER the callback reflects the new value
+ * rather than the previous one.
+ *
+ * Feature-detected per call (cheap property lookup). This makes the API
+ * testable without module-cache reset tricks and correctly handles a
+ * polyfill that may arrive mid-session.
+ *
+ * Without the API, fall through to the original async state update.
+ */
+function swapWithTransition(swap: () => void): void {
+  if (
+    typeof document !== 'undefined' &&
+    typeof document.startViewTransition === 'function'
+  ) {
+    document.startViewTransition(() => {
+      flushSync(swap);
+    });
+    return;
+  }
+  swap();
+}
+
 const getPageFromUrl = (): PageType | null => {
   if (typeof window === 'undefined') return 'landing';
   const urlParams = new URLSearchParams(window.location.search);
@@ -68,9 +95,20 @@ function App() {
     fetchMe();
   }, [fetchMe]);
 
-  const navigateToPage = useCallback((nextPage: PageType, historyMode: 'push' | 'replace' | 'skip' = 'push') => {
-    setCurrentPage(nextPage);
+  // Production-only Web Vitals instrument. Dynamic import inside the PROD
+  // gate so Vite chunk-splits `web-vitals` into a code-split that ships
+  // zero bytes in dev/test bundles, AND vitest never executes the
+  // `src/lib/perf.ts` module (which would otherwise pull in `web-vitals`
+  // during module-graph resolution).
+  useEffect(() => {
+    if (import.meta.env.PROD) {
+      import('./lib/perf').then((m) => m.startProductionVitalsLogging());
+    }
+  }, []);
 
+  const navigateToPage = useCallback((nextPage: PageType, historyMode: 'push' | 'replace' | 'skip' = 'push') => {
+    // Bookkeeping first — synchronous, decoupled from React's commit
+    // boundary. Side effects don't belong inside flushSync's callback.
     if (historyMode !== 'skip') {
       const url = new URL(window.location.href);
       if (url.searchParams.get('page') !== nextPage) {
@@ -83,6 +121,11 @@ function App() {
     if (!PUBLIC_PAGES.has(nextPage)) {
       localStorage.setItem('currentPage', nextPage);
     }
+
+    // React commit last, animated by the View Transitions API when available.
+    swapWithTransition(() => {
+      setCurrentPage(nextPage);
+    });
   }, []);
 
   const currentPageRef = useRef(currentPage);
@@ -92,10 +135,13 @@ function App() {
     const handlePopState = () => {
       const pageFromUrl = getPageFromUrl();
       if (pageFromUrl && pageFromUrl !== currentPageRef.current) {
-        setCurrentPage(pageFromUrl);
+        // Bookkeeping first, then commit. Side effect outside flushSync.
         if (!PUBLIC_PAGES.has(pageFromUrl)) {
           localStorage.setItem('currentPage', pageFromUrl);
         }
+        swapWithTransition(() => {
+          setCurrentPage(pageFromUrl);
+        });
       }
     };
 

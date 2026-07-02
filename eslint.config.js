@@ -6,7 +6,24 @@ import tseslint from 'typescript-eslint'
 import { defineConfig, globalIgnores } from 'eslint/config'
 
 export default defineConfig([
-  globalIgnores(['dist']),
+  // Non-code file types that ESLint can't lint — without these,
+  // each non-{ts,tsx} file in the tree triggers a "File ignored
+  // because no matching configuration was supplied" warning, and
+  // `--max-warnings 0` (enforced in package.json) then fails the
+  // lint with exit 1 even though there's nothing wrong.
+  globalIgnores([
+    'dist',
+    '**/*.json',
+    '**/*.md',
+    '**/*.html',
+    '**/*.css',
+    '**/*.yml',
+    '**/*.yaml',
+    '**/*.cjs',
+    '**/*.mjs',
+    '**/*.sh',
+    '**/*.php',
+  ]),
   {
     files: ['**/*.{ts,tsx}'],
     extends: [

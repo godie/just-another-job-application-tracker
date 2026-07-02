@@ -11,8 +11,34 @@
          so the screenshot is ready to paint the moment React mounts. -->
     <link rel="preload" as="image" href="/screenshots/table_view.png" fetchpriority="high" />
 
+    <!-- Speculation Rules: tell Chromium 105+ browsers to prerender the three
+         most likely next SPA routes from the landing page. `moderate` eagerness
+         fires on ~200ms hover/focus, intent-correlated without wasting CPU on
+         idle users. Other browsers ignore this script silently (and prerender
+         will be unsupported in unsupported browsers). Spec syntax: `href_matches`
+         accepts an array of URL pattern strings (NOT a pipe-separated literal,
+         which would be a single pattern that matches nothing). -->
+    <script type="speculationrules">
+    {
+      "prerender": [{
+        "where": {
+          "href_matches": [
+            "/?page=applications",
+            "/?page=opportunities",
+            "/?page=insights"
+          ]
+        },
+        "eagerness": "moderate"
+      }]
+    }
+    </script>
+
+    <!-- Favicon: WebP (~1.7 KB) for modern browsers, AVIF (~1.2 KB) preferred where supported.
+         The remote godieboy.com SVG fallback remains for browsers that bypass /favicon-64. -->
+    <link rel="icon" type="image/webp" href="/favicon-64.webp" sizes="64x64" />
+    <link rel="icon" type="image/avif" href="/favicon-64.avif" sizes="64x64" />
     <link rel="icon" type="image/svg+xml" href="https://godieboy.com/favicon.ico" />
-    <link rel="apple-touch-icon" href="/jajat-logo.png" />
+    <link rel="apple-touch-icon" href="/icon-192.webp" sizes="192x192" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#4f46e5" />
     <meta name="description" content="Job Application Tracker (JAJAT) - Track and manage your job applications with timeline views, calendar integration, and Google Sheets sync. Stay organized throughout your job search journey." />

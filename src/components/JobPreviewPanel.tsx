@@ -15,7 +15,6 @@ interface JobPreviewPanelProps {
   jobId: string;
   onClose: () => void;
   onNavigate?: (page: PageType) => void;
-  onEdit?: (application: JobApplication) => void;
   onDelete?: (application: JobApplication) => void;
 }
 
@@ -139,29 +138,37 @@ const PreviewBody: React.FC<{
 
   return (
     <div className="flex-1 overflow-y-auto px-6 py-5 space-y-5">
-      {/* Job ID — clickable link to full details */}
+      {/* Title & Company — clicking opens the full JobDetailsPage */}
       <button
         type="button"
         onClick={onOpenFullDetails}
-        className="group inline-flex items-center gap-1.5 text-xs font-mono text-primary hover:text-primary/80 hover:underline transition-colors"
+        className="group block w-full text-left -mx-1 px-1 py-0.5 rounded transition-colors hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
         aria-label={t('jobPreview.openFullDetails', 'Open full job details')}
-        data-testid="preview-job-id"
+        data-testid="preview-title-button"
       >
-        <span className="bg-secondary px-2 py-0.5 rounded group-hover:bg-primary/10 transition-colors">
-          {application.id}
-        </span>
-        <svg className="size-3.5 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-        </svg>
-      </button>
-
-      {/* Title & Company */}
-      <div>
-        <h3 className="text-xl font-bold text-foreground leading-tight break-words">
+        <h3 className="text-xl font-bold text-foreground leading-tight break-words group-hover:text-primary transition-colors">
           {application.position}
         </h3>
-        <p className="text-base text-muted-foreground mt-1">{application.company}</p>
-      </div>
+        <p className="text-base text-muted-foreground mt-1 group-hover:text-primary/80 transition-colors">
+          {application.company}
+        </p>
+      </button>
+
+      {/* External job-posting link (lifted up next to the title) */}
+      {application.link && (
+        <a
+          href={sanitizeUrl(application.link)}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1.5 text-xs text-primary hover:underline"
+          data-testid="preview-job-link"
+        >
+          <svg className="size-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+          </svg>
+          <span className="truncate max-w-[320px]">{application.link}</span>
+        </a>
+      )}
 
       {/* Status Badge */}
       <div>
@@ -183,23 +190,6 @@ const PreviewBody: React.FC<{
             {t('jobPreview.contact', 'Contact')}
           </h4>
           <p className="text-sm text-foreground">{application.contactName}</p>
-        </div>
-      )}
-
-      {/* Link */}
-      {application.link && (
-        <div>
-          <h4 className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground mb-1">
-            {t('jobPreview.jobLink', 'Job Link')}
-          </h4>
-          <a
-            href={sanitizeUrl(application.link)}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-sm text-primary hover:underline break-all"
-          >
-            {application.link}
-          </a>
         </div>
       )}
 
@@ -297,7 +287,6 @@ const JobPreviewPanel: React.FC<JobPreviewPanelProps> = ({
   jobId,
   onClose,
   onNavigate,
-  onEdit,
   onDelete,
 }) => {
   const { t } = useTranslation();
@@ -342,7 +331,11 @@ const JobPreviewPanel: React.FC<JobPreviewPanelProps> = ({
   }
 
   const handleEdit = () => {
-    onEdit?.(application);
+    if (!application) return;
+    // Inline editing lives on JobDetailsPage now — navigate there (App.tsx syncs URL
+    // from currentPage via its own useEffect, so we don't pushState here).
+    onClose();
+    onNavigate?.('job-details');
   };
 
   const handleDelete = () => {
