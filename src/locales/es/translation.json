@@ -106,7 +106,8 @@
     "footer": {
       "vibecoded": "Vibecoded con amor ❤️ por <link>godie</link> con cursor v{{version}} ({{year}})",
       "privacyPolicy": "Política de Privacidad",
-      "termsOfUse": "Términos de Uso"
+      "termsOfUse": "Términos de Uso",
+      "about": "Acerca de"
     },
     "loading": "Cargando...",
     "loginSuccess": "¡Inicio de sesión exitoso con Google!",

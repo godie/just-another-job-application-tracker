@@ -28,7 +28,7 @@ const Footer: React.FC<FooterProps> = ({ version }) => {
           {' | '}
           <a className='text-muted-foreground hover:text-foreground' href='/privacy.html' target='_blank' rel='noopener noreferrer'>{t('common.footer.privacyPolicy')}</a>
           {' | '}
-          <a className='text-muted-foreground hover:text-foreground' href='/?page=landing'>{t('nav.about')}</a>
+          <a className='text-muted-foreground hover:text-foreground' href='/?page=landing'>{t('common.footer.about')}</a>
         </p>
       </div>
     </footer>
