@@ -2,9 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
+Each release is a dated `## [<version>] - YYYY-MM-DD` heading followed by `### Added`, `### Changed`, `### Fixed`, `### Removed`, `### Security` subsections (Keep a Changelog's structure, without the `[Unreleased]` block this repo does not use).
 
-## [Unreleased]
+## [2.6.0] - 2026-07-03
+
+### Added
+- **`scripts/check-orphans.sh`** — reusable helper that runs `rg -F -n` for any quoted version literal in the repo, excluding the AGENTS.md Versioning allow-list (`CHANGELOG.md`, `package-lock.json`, `api/composer.lock`, `api/vendor/**`, `node_modules`, `.git`, `.jules`). Outputs a Markdown table ready for a GitHub Issue body. Hard rg errors (exit 2+) propagate so a permission-borked file fails the workflow instead of silently going green. Cron-friendly: idempotent, deterministic output, no side effects.
+- **`.github/workflows/orphan-sweep.yml`** — cron-friendly audit workflow. Triggers on `release: { types: [published] }`, daily at 06:00 UTC (`schedule: '0 6 * * *'`), and `workflow_dispatch`. Reads the current `package.json` version via `jq`, hands it to the script, and idempotently upserts a single sticky tracking issue labeled `orphan-sweep` — opens on first orphan detection (or reopens an existing one), edits in place on subsequent runs, and closes-with-comment when the sweep returns clean. Permissions: `contents: read` + `issues: write`. Concurrency-cancellable so a burst of release events doesn't pile up redundant runs.
+
+### Fixed
+- **Deploy workflow Composer production install** — `deploy.yml` now provisions PHP/Composer in GitHub Actions, runs `composer install --no-dev --optimize-autoloader --prefer-dist` inside `dist/api`, and verifies `dist/api/vendor/autoload.php` before packaging and before deploy. This ensures the generated artifact always includes a production-ready `vendor/` tree instead of relying on a git-tracked `api/vendor/` directory, which is ignored in this repo.
+- **`scripts/check-orphans.sh` rg `--` separator placement** — `--` previously sat BEFORE the `-g` exclude globs, so rg parsed `-g '!node_modules'` as a pair of positional path arguments. Both paths didn't exist, so rg exited with code 2 on every run, including the first cron sweep. Moved `--` to immediately before the PATTERN positional arg so the `-g` flags are correctly recognized as flags. Documented the footgun in the script's implementation note so future refactors don't reintroduce it.
+- **`.github/workflows/orphan-sweep.yml` issue-body composition** — replaced `cat <<EOF ... EOF` heredoc (which inherited the YAML `run: |` block's 14-space indent and rendered in GitHub Issues with leading whitespace on every line) with a single `printf '## ...\n\n**%s** ...\n' "$VERSION" ...` so the body markdown has zero leading indent. Positional args: `VERSION`, `ORPHAN_COUNT`, `body`, `VERSION` (footer echo). No literal `%` in the body to double.
 
 ## [2.5.1] - 2026-07-03
 
@@ -138,5 +147,4 @@ Hotfix patch released the same day as v2.3.0. Both fixes are producer-side-only 
 - Fixes high CVE-2026-53571 and CVE-2026-53632 in vite (`server.fs.deny` bypass, NTLMv2 hash disclosure)
 - Fixes medium CVE-2026-49458, CVE-2026-49459, and CVE-2026-49978 in dompurify (XSS bypasses via IN_PLACE mode and shadow DOM)
 - Fixes low CVE-2026-49356 in `@babel/core` (arbitrary file read via sourceMappingURL)
-
 

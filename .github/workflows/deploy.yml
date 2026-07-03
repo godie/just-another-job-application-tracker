@@ -25,6 +25,12 @@ jobs:
           node-version: "22"
           cache: "npm"
 
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2.37.2
+        with:
+          php-version: "8.2"
+          tools: composer:v2
+
       - name: Install dependencies
         run: npm ci --ignore-scripts
 
@@ -35,14 +41,16 @@ jobs:
         run: npm run build
 
       - name: Copy api/ into dist/ (include dotfiles e.g. .htaccess)
-        run: |
-          cp -r api dist/
-          rm -rf api
+        run: cp -r api dist/
+
+      - name: Install Composer dependencies for production
+        working-directory: dist/api
+        run: composer install --no-dev --optimize-autoloader --prefer-dist --no-interaction --no-progress
 
       - name: Create config.php from example for deploy
         run: cp dist/api/config.example.php dist/api/config.php
 
-      - name: Verify .htaccess exists before upload
+      - name: Verify deployable PHP files exist before upload
         run: |
           echo "Files in dist/api/:"
           ls -la dist/api/
@@ -50,6 +58,12 @@ jobs:
             echo "✓ .htaccess found"
           else
             echo "✗ .htaccess NOT found"
+            exit 1
+          fi
+          if [ -f dist/api/vendor/autoload.php ]; then
+            echo "✓ vendor/autoload.php found"
+          else
+            echo "✗ vendor/autoload.php NOT found"
             exit 1
           fi
 
@@ -80,7 +94,7 @@ jobs:
           tar -xzf dist.tar.gz -C dist
           rm -f dist.tar.gz
 
-      - name: Verify .htaccess exists after extraction
+      - name: Verify deployable PHP files exist after extraction
         run: |
           echo "Files in dist/api/:"
           ls -la dist/api/
@@ -88,6 +102,12 @@ jobs:
             echo "✓ .htaccess found"
           else
             echo "✗ .htaccess NOT found"
+            exit 1
+          fi
+          if [ -f dist/api/vendor/autoload.php ]; then
+            echo "✓ vendor/autoload.php found"
+          else
+            echo "✗ vendor/autoload.php NOT found"
             exit 1
           fi
 

@@ -4,15 +4,41 @@ This document provides comprehensive guidelines for agentic coding assistants wo
 
 ## Versioning
 
-**Every change MUST bump `package.json` version.** Use SemVer:
+**Every PR MUST bump `package.json` version exactly once, at PR-open time. Follow-up commits within the same branch MUST NOT re-bump** — they ship under the same version as the PR-opening bump. One branch, one version.
 
-- **PATCH** (`x.y.Z` → `x.y.Z+1`): bug fixes, internal refactors, docs, dependency churn with no API change.
-- **MINOR** (`x.Y.z` → `x.Y+1.z`): new features, new components or API surface, user-visible UX additions.
+Use SemVer to pick the bump size for the whole branch:
+
+- **PATCH** (`x.y.Z` → `x.y.Z+1`): bug fixes, internal refactors, docs, dependency churn with no API change. Pick PATCH if the branch's headline change is described as a "fix" in the request.
+- **MINOR** (`x.Y.z` → `x.Y+1.z`): new features, new components or API surface, user-visible UX additions. Pick MINOR if the branch introduces something a user can see or do that they could not before.
 - **MAJOR** (`X.y.z` → `X+1.y.z`): breaking changes to public API, removed features, schema migrations.
 
-The version bump **ships in the same commit as the change.** Add the matching entry to `CHANGELOG.md` under `## [Unreleased]` immediately so it gets promoted to a dated heading at release time.
+The single bump **lives at the tip of the branch and is set when the branch is cut or the first commit lands.** Add the matching entry to `CHANGELOG.md` in that same first commit. This repo's convention is to use a dated `## [<version>]` heading directly (e.g. `## [2.6.0] - 2026-07-03`); `## [Unreleased]` is also acceptable per Keep-a-Changelog, but the existing entries in this file all use the dated form so prefer that for consistency. Subsequent commits in the branch amend the same version's bullet list (added files, follow-up fixes, new tests) but never the version number — at release time the version heading is already the date stamp, no further promotion is needed.
 
 If you're unsure between PATCH and MINOR, ask the user. A feature with no breaking surface is MINOR unless explicitly described as a "fix" in the request.
+
+### Why per-PR, not per-commit
+
+Avoids the 2.6.0 → 2.6.1 micro-bumps that fire on every follow-up fix in the same branch. One logical unit of work = one version. Without this rule, follow-up fixes in the same branch (rubber-duck tests, refactors, post-review cleanups) fire 2.6.0 → 2.6.1 → 2.6.2 micro-bumps that the orphan-sweep workflow has to flag every time. The micro-bumps are not a correctness problem but they erode the signal in `CHANGELOG.md` and break the per-PR audit invariant the workflow is designed to enforce.
+
+### Allow-listed files (legitimate non-current version references)
+
+The per-PR bump rule applies prospectively to **first-party sources**. The following files may legitimately reference a non-current version and are excluded from any orphan sweep:
+
+- **`CHANGELOG.md`** — historical release headings (`## [2.4.2] - 2026-06-24`, etc.) are the immutable record of what actually shipped at that version. The current work-in-progress lives at `## [Unreleased]` and gets promoted to a dated heading at release time. **Do not retroactively edit past entries.**
+- **`package-lock.json` and `api/composer.lock`** — third-party packages whose own versions happen to coincide numerically with our project version (e.g. `ramsey/uuid` upstream at `"4.2.0"` is unrelated to our `2.5.x`). These are dependency versions, **not** project version references. Match literal `2.4.2` in a lockfile is expected and should not trigger a sweep failure.
+- **`api/vendor/**`** — generated composer vendor tree. Mirrors `composer.lock`; never hand-edit. Excluded for the same reason as lockfiles.
+
+When adding a new allow-list entry, document the rationale inline so future maintainers don't second-guess the sweep result. Anything outside this list that contains an outdated version literal is a real orphan and should be synced to the current `package.json` version.
+
+### GitHub Actions pin renewal
+
+GitHub Actions references (e.g. `actions/checkout@v4`, `shivammathur/setup-php@v2.37.2`) MUST be pinned to a specific tag, never to a floating major. Pin renewal is automated by Dependabot — see `.github/dependabot.yml` for the schedule, grouping, and merge policy. Do not duplicate that schedule in prose here; that file is the single source of truth and this subsection is the entry point for a future maintainer who needs to know *why* the pins are pinned and *where* the renewal lives.
+
+### CHANGELOG heading format
+
+Every release heading is `## [<version>] - YYYY-MM-DD` (e.g. `## [2.6.0] - 2026-07-03`). The four-digit year, two-digit month, two-digit day, and the literal ` - ` (space-dash-space) separator are non-negotiable. Future maintainers must not drift to `## [2.6.0] (July 3, 2026)`, `## [2.6.0] / 2026-07-03`, or any other date separator. An optional trailing annotation in parentheses is allowed for context (e.g. `## [2.3.1] - 2026-06-22 (later)` documents that the patch shipped the same day as 2.3.0, after the minor); the canonical example still has no annotation, so prefer that.
+
+Empirical baseline (post 2.6.0 sweep): `rg '2\.6\.0'` against the repo excluding `node_modules`, `api/vendor`, lockfiles, `audit/`, `package.json`, `.git`, and `## [2.6.0]` in `CHANGELOG.md` returns zero matches — so the rule has zero orphans as of this writing. Prefer the live `scripts/check-orphans.sh` (it has the full allow-list and rc-aware error handling) over hand-rolled `rg`; this baseline is just for documentation.
 
 ## Specialized Agents
 

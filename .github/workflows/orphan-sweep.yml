@@ -1,0 +1,132 @@
+name: orphan-sweep
+
+# Daily + per-release audit for stale quoted version literals in the repo.
+# Authority for the rule lives in AGENTS.md Versioning -> "Allow-listed files
+# (legitimate non-current version references)". This workflow automates the
+# rule so it has teeth without requiring a human to run rg by hand after every
+# bump.
+#
+# Trigger matrix:
+#   - release.published — fires once per release tag (audit trail of what
+#     actually shipped). Gives green-circle if clean.
+#   - schedule           — fires daily at 06:00 UTC. Catches silent rot if
+#     anyone force-pushes to main or bypasses PR checks.
+#   - workflow_dispatch  — manual trigger for ad-hoc audits (e.g. immediately
+#     before cutting a release candidate).
+#
+# Output:
+#   Single sticky tracking issue labeled `orphan-sweep`. The Action either
+#   opens a new one (when orphans appear) or edits/closes an existing one
+#   (when the sweep returns clean). This avoids comment-spam on every PR
+#   and keeps the audit history in one browsable place.
+#
+# Required permissions:
+#   - contents: read  — checkout
+#   - issues:   write — open / edit / close the tracking issue via gh CLI
+on:
+  release:
+    types: [published]
+  schedule:
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+# Cancel in-progress runs of the same workflow on the same ref so a rapid
+# series of release events doesn't pile up redundant work.
+concurrency:
+  group: orphan-sweep
+  cancel-in-progress: true
+
+jobs:
+  sweep:
+    name: orphan version sweep
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Read current version
+        id: version
+        run: |
+          VERSION="$(jq -r .version package.json)"
+          if [ -z "$VERSION" ] || [ "$VERSION" = "null" ]; then
+            echo "::error::package.json missing 'version' field" >&2
+            exit 1
+          fi
+          {
+            echo 'version<<EOF'
+            echo "$VERSION"
+            echo 'EOF'
+          } >> "$GITHUB_OUTPUT"
+          echo "Sweeping for quoted \"$VERSION\" references…"
+
+      - name: Install ripgrep
+        # ubuntu-latest runners do not ship ripgrep in the default image
+        # as of 2026-07-03; install it before the sweep step so the
+        # script's rg call resolves. Idempotent: if a future runner
+        # image re-adds rg, apt-get install is a no-op.
+        run: sudo apt-get update && sudo apt-get install -y ripgrep
+
+      - name: Run orphan sweep
+        id: sweep
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          set -uo pipefail
+          scripts/check-orphans.sh "$VERSION" > /tmp/orphans.md
+          # Count actual orphan rows: skip the script's table header
+          # (`| File | Line | Content |`) and divider (`|---|---|---|`)
+          # by tailing past the first two lines. Clean-state output
+          # ("_No orphans found._") is a single line, so the tail
+          # yields zero data rows and the count correctly reports 0.
+          orphan_count="$(tail -n +3 /tmp/orphans.md | grep -cE '^\| ' || echo 0)"
+          {
+            echo 'orphan_count<<EOF'
+            echo "$orphan_count"
+            echo 'EOF'
+          } >> "$GITHUB_OUTPUT"
+          cat /tmp/orphans.md
+
+      - name: Upsert tracking issue
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{ steps.version.outputs.version }}
+          ORPHAN_COUNT: ${{ steps.sweep.outputs.orphan_count }}
+        run: |
+          set -euo pipefail
+          # Heredoc-format GITHUB_OUTPUT writes include a trailing newline in
+          # the value. Strip CR/LF so downstream `[ -eq 0 ]` and `gh issue
+          # create --title` see clean integers / strings.
+          ORPHAN_COUNT="${ORPHAN_COUNT//[$'\r\n']/}"
+          VERSION="${VERSION//[$'\r\n']/}"
+          body="$(cat /tmp/orphans.md)"
+
+          if [ "$ORPHAN_COUNT" -eq 0 ]; then
+            summary="✅ Orphan sweep clean for v${VERSION}."
+            existing="$(gh issue list -l orphan-sweep --state open --json number --jq '.[0].number // empty')"
+            if [ -n "$existing" ]; then
+              gh issue close "$existing" --comment "$summary"
+              echo "Closed tracking issue #$existing (orphan-free)."
+            fi
+            echo "$summary"
+            exit 0
+          fi
+
+          issue_body="$(printf '## Orphan sweep findings for v%s\n\n**%s** stale quoted literal(s) found outside the allow-listed paths (CHANGELOG.md, package-lock.json, api/composer.lock, api/vendor/**, audit/, package.json, node_modules, .git, .jules).\n\nThey should be synced to the current `package.json` version, or added to the AGENTS.md allow-list with rationale if they are legitimately permanent (e.g. a third-party dep whose own version coincidentally matches).\n\n## Findings\n\n%s\n\n---\n<sub>Reconstructed by `scripts/check-orphans.sh %s`. Next sweep: tomorrow 06:00 UTC, or on next release tag push.</sub>\n' "$VERSION" "$ORPHAN_COUNT" "$body" "$VERSION")"
+
+          existing="$(gh issue list -l orphan-sweep --state all --json number --jq '.[0].number // empty')"
+          if [ -n "$existing" ]; then
+            gh issue edit "$existing" --body "$issue_body"
+            gh issue reopen "$existing" 2>/dev/null || true
+            echo "Updated tracking issue #$existing."
+          else
+            gh issue create \
+              --title "orphan-sweep: ${ORPHAN_COUNT} stale literal(s) for v${VERSION}" \
+              --body "$issue_body" \
+              --label "orphan-sweep"
+            echo "Created new tracking issue."
+          fi

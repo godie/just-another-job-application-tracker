@@ -40,5 +40,11 @@
   "scripts": {
     "test": "phpunit --configuration phpunit.xml",
     "phinx": "vendor/bin/phinx -c ../phinx.php"
+  },
+  "config": {
+    "allow-plugins": {
+      "php-http/discovery": true,
+      "tbachert/spi": true
+    }
   }
 }
