@@ -1,0 +1,28 @@
+# Dependabot — weekly PRs to renew GitHub Actions pin versions so we never
+# accumulate stale `uses: owner/repo@vX.Y.Z` references in any workflow.
+# Without this, the `shivammathur/setup-php@v2.37.2` pin added in the
+# orphan-sweep PR would silently go stale and miss upstream security
+# patches. See AGENTS.md Versioning -> "GitHub Actions pin renewal".
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "UTC"
+    # Open a small number of PRs per run; one per workflow is plenty.
+    open-pull-requests-limit: 5
+    # Group patch + minor updates into a single PR per workflow to reduce
+    # notification noise; major bumps always land separately for review.
+    groups:
+      github-actions-patches:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
+    # Skip draft PRs — dependabot PRs are reviewable as-is.
+    pull-request-batch-size: 5
+    commit-message:
+      prefix: "ci"
+      prefix-development: "ci(dev)"
+      include: "scope"

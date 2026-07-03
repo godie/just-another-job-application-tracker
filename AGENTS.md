@@ -30,6 +30,10 @@ The bump-every-time rule applies prospectively to **first-party sources**. The f
 
 When adding a new allow-list entry, document the rationale inline so future maintainers don't second-guess the sweep result. Anything outside this list that contains an outdated version literal is a real orphan and should be synced to the current `package.json` version.
 
+### GitHub Actions pin renewal
+
+GitHub Actions references (e.g. `actions/checkout@v4`, `shivammathur/setup-php@v2.37.2`) MUST be pinned to a specific tag, never to a floating major. To prevent the pins from going stale, `.github/dependabot.yml` opens a weekly PR that bumps each workflow's `uses:` references. The PR is auto-mergeable when CI passes; majors require human review because they may carry breaking changes.
+
 Empirical baseline (post 2.5.1 sweep): `rg '2\.4\.2'` against the repo excluding `node_modules`, `api/vendor`, lockfiles, `.git`, and `## [2.4.2]` in `CHANGELOG.md` returns zero matches — so the rule has zero orphans as of this writing. Use the same incantation (`rg -n '2\.4\.2' -g '!node_modules' -g '!api/vendor' -g '!package-lock.json' -g '!api/composer.lock' -g '!.git'`) to re-verify after any bump.
 
 ## Specialized Agents
