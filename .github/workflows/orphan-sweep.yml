@@ -24,16 +24,6 @@ name: orphan-sweep
 #   - contents: read  — checkout
 #   - issues:   write — open / edit / close the tracking issue via gh CLI
 on:
-  # TEMP dry-run trigger: GitHub Actions does not honor `workflow_dispatch`
-  # for a workflow file that has never been on the default branch (main),
-  # which is our state (this file is brand-new in this PR). The temp push
-  # trigger below is scoped to changes to this file itself, so the actual
-  # dry-run fires on the next commit+push that touches this file, and a
-  # follow-up commit that removes this block cleanly stops any further
-  # runs. Remove the push block before merge.
-  push:
-    paths:
-      - '.github/workflows/orphan-sweep.yml'
   release:
     types: [published]
   schedule:
@@ -112,6 +102,7 @@ jobs:
           # the value. Strip CR/LF so downstream `[ -eq 0 ]` and `gh issue
           # create --title` see clean integers / strings.
           ORPHAN_COUNT="${ORPHAN_COUNT//[$'\r\n']/}"
+          VERSION="${VERSION//[$'\r\n']/}"
           body="$(cat /tmp/orphans.md)"
 
           if [ "$ORPHAN_COUNT" -eq 0 ]; then
