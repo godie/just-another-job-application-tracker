@@ -25,9 +25,9 @@ use OpenTelemetry\SemConv\ResourceAttributes;
  */
 final class LogfireTelemetry
 {
-    private const SERVICE_VERSION = '2.5.0';
+    private const SERVICE_VERSION = '2.5.1';
     private const INSTRUMENTATION_NAME = 'overphp';
-    private const INSTRUMENTATION_VERSION = '2.5.0';
+    private const INSTRUMENTATION_VERSION = '2.5.1';
 
     private static ?TracerProviderInterface $tracerProvider = null;
     private static ?TracerInterface $tracer = null;
@@ -62,12 +62,27 @@ final class LogfireTelemetry
             // telemetry.sdk.*) still register, then `.merge(...)` our custom
             // resource on top. Plain `ResourceInfo::create($attributes)`
             // loses the SDK-conventional merging.
-            $attributes = Attributes::create([
-                ResourceAttributes::SERVICE_NAME => $serviceName,
-                ResourceAttributes::SERVICE_VERSION => self::SERVICE_VERSION,
-                ResourceAttributes::DEPLOYMENT_ENVIRONMENT_NAME => getenv('APP_ENV') ?: 'production',
-            ]);
-            $resource = ResourceInfoFactory::defaultResource()->merge(ResourceInfo::create($attributes));
+            //
+            // We additionally classify by class_exists() before touching
+            // Attributes::create(): some prod deploys ship with a stale
+            // vendor (composer install ran before the SDK package was
+            // bumped) where the Attributes factory class is absent at
+            // runtime. Forcing the autoloader there throws
+            // "Class ... not found" and the whole init fails. With the
+            // guard, we degrade gracefully to defaultResource() alone,
+            // keeping OTel's built-in SDK service detectors intact while
+            // deferring the custom SERVICE_NAME / SERVICE_VERSION /
+            // DEPLOYMENT_ENVIRONMENT_NAME merge until the next deploy
+            // where the SDK is up-to-date.
+            $resource = ResourceInfoFactory::defaultResource();
+            if (class_exists(Attributes::class)) {
+                $attributes = Attributes::create([
+                    ResourceAttributes::SERVICE_NAME => $serviceName,
+                    ResourceAttributes::SERVICE_VERSION => self::SERVICE_VERSION,
+                    ResourceAttributes::DEPLOYMENT_ENVIRONMENT_NAME => getenv('APP_ENV') ?: 'production',
+                ]);
+                $resource = $resource->merge(ResourceInfo::create($attributes));
+            }
 
             $transport = (new OtlpHttpTransportFactory())->create(
                 $baseUrl . '/v1/traces',

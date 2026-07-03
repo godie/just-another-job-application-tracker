@@ -21,7 +21,17 @@ const logfireReporter: Reporter = (metric) => {
       rating: (metric as unknown as Record<string, unknown>).rating,
       timestamp: Date.now(),
     });
-    navigator.sendBeacon(`${API_BASE}/perf/vitals`, payload);
+    // Wrap in a Blob so the browser sends Content-Type:
+    // `application/json` instead of `text/plain;charset=UTF-8`.
+    // sendBeacon(url, string) always forces text/plain on all browsers,
+    // which ModSecurity CRS rule 920420 (REQUEST-920-PROTOCOL-ENFORCEMENT)
+    // rejects on /api/perf/vitals with
+    // `[msg "Request content type is not allowed by policy"]`. The Blob's
+    // MIME type is honored by sendBeacon on every modern browser, so the
+    // backend's `PerfController::vitals()` (which `json_decode`s raw input)
+    // sees the same JSON it always has, while the WAF stops kvetching.
+    const blob = new Blob([payload], { type: 'application/json' });
+    navigator.sendBeacon(`${API_BASE}/perf/vitals`, blob);
   } catch {
     // Swallow beacon errors — telemetry must never break the app.
   }

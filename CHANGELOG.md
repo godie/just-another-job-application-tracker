@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [2.5.1] - 2026-07-03
+
+### Fixed
+- **`LogfireTelemetry` bootstrap graceful degradation** — `attributes()` step now gated by `class_exists(Attributes::class)`. If a prod deploy ships with a stale `vendor/` (composer install lagged behind the SDK bump and `OpenTelemetry\SDK\Common\Attribute\Attributes` is missing), telemetry no longer crashes with `"Class ... not found"`; it falls back to `ResourceInfoFactory::defaultResource()` alone, keeping OTel's built-in service detectors alive until the next deploy picks up the SDK package.
+- **`POST /api/perf/vitals` ModSecurity 920420 rejection** — `src/lib/perf.ts` `logfireReporter` now wraps the JSON payload in a `Blob` typed `application/json` before `navigator.sendBeacon`. Browsers force `text/plain;charset=UTF-8` for `sendBeacon(url, string)`, which OWASP CRS rule `920420 (REQUEST-920-PROTOCOL-ENFORCEMENT)` was rejecting with `[msg "Request content type is not allowed by policy"]` on every vitals beacon from `jajat.godieboy.com`. `sendBeacon(url, blob)` honors the Blob MIME, so backend `PerfController::vitals()` keeps reading the same JSON it always did. Regression test pinned in `src/lib/perf.test.ts` so a future refactor cannot silently flip it back to a plain string.
+
 ## [2.5.0] - 2026-07-03
 
 ### Added
