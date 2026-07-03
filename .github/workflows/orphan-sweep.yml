@@ -67,7 +67,11 @@ jobs:
             echo "::error::package.json missing 'version' field" >&2
             exit 1
           fi
-          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          {
+            echo 'version<<EOF'
+            echo "$VERSION"
+            echo 'EOF'
+          } >> "$GITHUB_OUTPUT"
           echo "Sweeping for quoted \"$VERSION\" references…"
 
       - name: Install ripgrep
@@ -90,7 +94,11 @@ jobs:
           # ("_No orphans found._") is a single line, so the tail
           # yields zero data rows and the count correctly reports 0.
           orphan_count="$(tail -n +3 /tmp/orphans.md | grep -cE '^\| ' || echo 0)"
-          echo "orphan_count=$orphan_count" >> "$GITHUB_OUTPUT"
+          {
+            echo 'orphan_count<<EOF'
+            echo "$orphan_count"
+            echo 'EOF'
+          } >> "$GITHUB_OUTPUT"
           cat /tmp/orphans.md
 
       - name: Upsert tracking issue
