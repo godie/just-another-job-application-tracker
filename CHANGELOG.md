@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 Each release is a dated `## [<version>] - YYYY-MM-DD` heading followed by `### Added`, `### Changed`, `### Fixed`, `### Removed`, `### Security` subsections (Keep a Changelog's structure, without the `[Unreleased]` block this repo does not use).
 
+## [2.6.1] - 2026-07-03
+
+### Added
+
+- New `## Contribution Workflow` section in `AGENTS.md` codifying the "never push to main, always create a PR" rule. The rule is self-applying (this change was made on a feature branch and opened as a PR). Includes rationale (CI gate, audit trail, branch protection) and explicit edge cases (Dependabot, orphan-sweep workflow, tag pushes, pre-authorized Actions tokens) so future contributors — including AI agents — have a clear, mechanical path.
+
 ## [2.6.0] - 2026-07-03
 
 ### Added
