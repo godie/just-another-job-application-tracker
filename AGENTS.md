@@ -36,7 +36,7 @@ GitHub Actions references (e.g. `actions/checkout@v4`, `shivammathur/setup-php@v
 
 ### CHANGELOG heading format
 
-Every release heading is `## [<version>] - YYYY-MM-DD` (e.g. `## [2.6.0] - 2026-07-03`). The four-digit year, two-digit month, two-digit day, and the literal ` - ` (space-dash-space) separator are non-negotiable. Future maintainers must not drift to `## [2.6.0] (July 3, 2026)`, `## [2.6.0] / 2026-07-03`, or any other variant — the orphan-sweep workflow (see "Allow-listed files" above) is allowed to assume this exact format when parsing the file.
+Every release heading is `## [<version>] - YYYY-MM-DD` (e.g. `## [2.6.0] - 2026-07-03`). The four-digit year, two-digit month, two-digit day, and the literal ` - ` (space-dash-space) separator are non-negotiable. Future maintainers must not drift to `## [2.6.0] (July 3, 2026)`, `## [2.6.0] / 2026-07-03`, or any other date separator. An optional trailing annotation in parentheses is allowed for context (e.g. `## [2.3.1] - 2026-06-22 (later)` documents that the patch shipped the same day as 2.3.0, after the minor); the canonical example still has no annotation, so prefer that.
 
 Empirical baseline (post 2.5.1 sweep): `rg '2\.4\.2'` against the repo excluding `node_modules`, `api/vendor`, lockfiles, `.git`, and `## [2.4.2]` in `CHANGELOG.md` returns zero matches — so the rule has zero orphans as of this writing. Use the same incantation (`rg -n '2\.4\.2' -g '!node_modules' -g '!api/vendor' -g '!package-lock.json' -g '!api/composer.lock' -g '!.git'`) to re-verify after any bump.
 
