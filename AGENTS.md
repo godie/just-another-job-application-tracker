@@ -18,11 +18,11 @@ If you're unsure between PATCH and MINOR, ask the user. A feature with no breaki
 
 ### Why per-PR, not per-commit
 
-Avoids the 2.6.0 → 2.6.1 micro-bumps that fire on every follow-up fix in the same branch. One logical unit of work = one version. The orphan-sweep workflow that enforces this rule was the first victim of the previous per-commit policy.
+Avoids the 2.6.0 → 2.6.1 micro-bumps that fire on every follow-up fix in the same branch. One logical unit of work = one version. Without this rule, follow-up fixes in the same branch (rubber-duck tests, refactors, post-review cleanups) fire 2.6.0 → 2.6.1 → 2.6.2 micro-bumps that the orphan-sweep workflow has to flag every time. The micro-bumps are not a correctness problem but they erode the signal in `CHANGELOG.md` and break the per-PR audit invariant the workflow is designed to enforce.
 
 ### Allow-listed files (legitimate non-current version references)
 
-The bump-every-time rule applies prospectively to **first-party sources**. The following files may legitimately reference a non-current version and are excluded from any orphan sweep:
+The per-PR bump rule applies prospectively to **first-party sources**. The following files may legitimately reference a non-current version and are excluded from any orphan sweep:
 
 - **`CHANGELOG.md`** — historical release headings (`## [2.4.2] - 2026-06-24`, etc.) are the immutable record of what actually shipped at that version. The current work-in-progress lives at `## [Unreleased]` and gets promoted to a dated heading at release time. **Do not retroactively edit past entries.**
 - **`package-lock.json` and `api/composer.lock`** — third-party packages whose own versions happen to coincide numerically with our project version (e.g. `ramsey/uuid` upstream at `"4.2.0"` is unrelated to our `2.5.x`). These are dependency versions, **not** project version references. Match literal `2.4.2` in a lockfile is expected and should not trigger a sweep failure.
@@ -38,7 +38,7 @@ GitHub Actions references (e.g. `actions/checkout@v4`, `shivammathur/setup-php@v
 
 Every release heading is `## [<version>] - YYYY-MM-DD` (e.g. `## [2.6.0] - 2026-07-03`). The four-digit year, two-digit month, two-digit day, and the literal ` - ` (space-dash-space) separator are non-negotiable. Future maintainers must not drift to `## [2.6.0] (July 3, 2026)`, `## [2.6.0] / 2026-07-03`, or any other date separator. An optional trailing annotation in parentheses is allowed for context (e.g. `## [2.3.1] - 2026-06-22 (later)` documents that the patch shipped the same day as 2.3.0, after the minor); the canonical example still has no annotation, so prefer that.
 
-Empirical baseline (post 2.5.1 sweep): `rg '2\.4\.2'` against the repo excluding `node_modules`, `api/vendor`, lockfiles, `.git`, and `## [2.4.2]` in `CHANGELOG.md` returns zero matches — so the rule has zero orphans as of this writing. Use the same incantation (`rg -n '2\.4\.2' -g '!node_modules' -g '!api/vendor' -g '!package-lock.json' -g '!api/composer.lock' -g '!.git'`) to re-verify after any bump.
+Empirical baseline (post 2.6.0 sweep): `rg '2\.6\.0'` against the repo excluding `node_modules`, `api/vendor`, lockfiles, `audit/`, `package.json`, `.git`, and `## [2.6.0]` in `CHANGELOG.md` returns zero matches — so the rule has zero orphans as of this writing. Prefer the live `scripts/check-orphans.sh` (it has the full allow-list and rc-aware error handling) over hand-rolled `rg`; this baseline is just for documentation.
 
 ## Specialized Agents
 
