@@ -1,6 +1,6 @@
 # AI-Powered Job Matching - Tareas Atómicas Independientes
 
-## Estado Actual (Mayo 2025)
+## Estado Actual (Julio 2026)
 
 | Fase | Tarea | Estado |
 |------|-------|--------|

@@ -1,6 +1,7 @@
 
 
 import { defaultFetchOptions } from './fetchDefaults';
+import { buildTraceparent } from '../lib/traceparent';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
 
@@ -34,12 +35,23 @@ interface MeResponse {
   isAuthenticated: boolean;
 }
 
+function fetchWithTrace(url: string, init: RequestInit = {}): Promise<Response> {
+  return fetch(url, {
+    ...init,
+    headers: {
+      ...defaultFetchOptions.headers,
+      ...(init.headers || {}),
+      traceparent: buildTraceparent(),
+    },
+  });
+}
+
 export async function register(
   email: string,
   password: string,
   displayName?: string
 ): Promise<AuthResponse> {
-  const response = await fetch(`${API_BASE_URL}/auth/register`, {
+  const response = await fetchWithTrace(`${API_BASE_URL}/auth/register`, {
     ...defaultFetchOptions,
     method: 'POST',
     body: JSON.stringify({ email, password, displayName }),
@@ -51,7 +63,7 @@ export async function login(
   email: string,
   password: string
 ): Promise<AuthResponse> {
-  const response = await fetch(`${API_BASE_URL}/auth/login`, {
+  const response = await fetchWithTrace(`${API_BASE_URL}/auth/login`, {
     ...defaultFetchOptions,
     method: 'POST',
     body: JSON.stringify({ email, password }),
@@ -63,7 +75,7 @@ export async function loginWithGoogle(
   googleToken: string,
   redirectUri: string
 ): Promise<AuthResponse> {
-  const response = await fetch(`${API_BASE_URL}/auth/google`, {
+  const response = await fetchWithTrace(`${API_BASE_URL}/auth/google`, {
     ...defaultFetchOptions,
     method: 'POST',
     body: JSON.stringify({ googleToken, redirectUri }),
@@ -75,7 +87,7 @@ export async function linkGoogleAccount(
   googleToken: string,
   redirectUri: string
 ): Promise<AuthResponse> {
-  const response = await fetch(`${API_BASE_URL}/auth/google`, {
+  const response = await fetchWithTrace(`${API_BASE_URL}/auth/google`, {
     ...defaultFetchOptions,
     method: 'POST',
     body: JSON.stringify({ googleToken, redirectUri }),
@@ -87,7 +99,7 @@ export async function loginWithLinkedIn(
   code: string,
   redirectUri: string
 ): Promise<AuthResponse> {
-  const response = await fetch(`${API_BASE_URL}/auth/linkedin`, {
+  const response = await fetchWithTrace(`${API_BASE_URL}/auth/linkedin`, {
     ...defaultFetchOptions,
     method: 'POST',
     body: JSON.stringify({ code, redirectUri }),
@@ -96,7 +108,7 @@ export async function loginWithLinkedIn(
 }
 
 export async function logout(): Promise<{ success: boolean; message?: string }> {
-  const response = await fetch(`${API_BASE_URL}/auth/logout`, {
+  const response = await fetchWithTrace(`${API_BASE_URL}/auth/logout`, {
     ...defaultFetchOptions,
     method: 'DELETE',
   });
@@ -104,7 +116,7 @@ export async function logout(): Promise<{ success: boolean; message?: string }> 
 }
 
 export async function fetchMe(): Promise<MeResponse> {
-  const response = await fetch(`${API_BASE_URL}/auth/me`, {
+  const response = await fetchWithTrace(`${API_BASE_URL}/auth/me`, {
     ...defaultFetchOptions,
     method: 'GET',
   });
@@ -115,7 +127,7 @@ export async function setAuthCookieWithCode(
   code: string,
   redirectUri: string
 ): Promise<{ success: boolean; message?: string; error?: string }> {
-  const response = await fetch(`${API_BASE_URL}/auth/cookie`, {
+  const response = await fetchWithTrace(`${API_BASE_URL}/auth/cookie`, {
     ...defaultFetchOptions,
     method: 'POST',
     body: JSON.stringify({ code, redirect_uri: redirectUri }),
@@ -124,7 +136,7 @@ export async function setAuthCookieWithCode(
 }
 
 export async function clearAuthCookie(): Promise<{ success: boolean; message?: string }> {
-  const response = await fetch(`${API_BASE_URL}/auth/cookie`, {
+  const response = await fetchWithTrace(`${API_BASE_URL}/auth/cookie`, {
     ...defaultFetchOptions,
     method: 'DELETE',
   });
@@ -132,7 +144,7 @@ export async function clearAuthCookie(): Promise<{ success: boolean; message?: s
 }
 
 export async function getAuthCookie(): Promise<{ success: boolean; access_token?: string }> {
-  const response = await fetch(`${API_BASE_URL}/auth/cookie`, {
+  const response = await fetchWithTrace(`${API_BASE_URL}/auth/cookie`, {
     ...defaultFetchOptions,
     method: 'GET',
   });

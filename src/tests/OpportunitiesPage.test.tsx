@@ -15,6 +15,7 @@ const mockOpportunitiesState = vi.hoisted(() => ({
 
 const mockApplicationsState = vi.hoisted(() => ({
   addApplication: vi.fn(),
+  applications: [],
 }));
 
 const mockConvertOpportunityToApplication = vi.hoisted(() =>
@@ -41,8 +42,25 @@ vi.mock('../stores/opportunitiesStore', () => ({
 }));
 
 vi.mock('../stores/applicationsStore', () => ({
-  useApplicationsStore: (selector: (state: typeof mockApplicationsState) => unknown) =>
-    selector(mockApplicationsState),
+  useApplicationsStore: Object.assign(
+    (selector: (state: typeof mockApplicationsState) => unknown) => selector(mockApplicationsState),
+    { getState: () => mockApplicationsState }
+  ),
+}));
+
+const mockMatchingState = vi.hoisted(() => ({
+  matchResults: {} as Record<string, unknown>,
+  preferences: { enabled: false, minMatchThreshold: 40 },
+  profile: null,
+  loadMatchingState: vi.fn(),
+  computeScores: vi.fn().mockResolvedValue(undefined),
+  isComputingScores: false,
+  computeError: null,
+}));
+
+vi.mock('../stores/matchingStore', () => ({
+  useMatchingStore: (selector: (state: typeof mockMatchingState) => unknown) =>
+    selector(mockMatchingState),
 }));
 
 vi.mock('../storage/opportunities', () => ({
@@ -59,6 +77,10 @@ vi.mock('../components/Footer', () => ({
   ),
 }));
 
+vi.mock('../components/RecommendationPanel', () => ({
+  RecommendationPanel: () => <div data-testid="recommendation-panel">RecommendationPanel</div>,
+}));
+
 const renderWithProviders = (ui: React.ReactElement) => {
   return render(<AlertProvider>{ui}</AlertProvider>);
 };
@@ -66,12 +88,16 @@ const renderWithProviders = (ui: React.ReactElement) => {
 describe('OpportunitiesPage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    localStorage.clear();
     mockOpportunitiesState.opportunities = [];
     mockOpportunitiesState.addOpportunity.mockImplementation((opp: Omit<JobOpportunity, 'id' | 'capturedDate'>) => ({
       ...opp,
       id: 'test-id-1',
       capturedDate: new Date().toISOString(),
     }));
+    mockMatchingState.matchResults = {};
+    mockMatchingState.preferences = { enabled: false, minMatchThreshold: 40 };
+    mockMatchingState.profile = null;
   });
 
   it('should render empty state when no opportunities', () => {
@@ -278,5 +304,333 @@ describe('OpportunitiesPage', () => {
 
     expect(screen.getByText('Software Engineer')).toBeInTheDocument();
     expect(screen.queryByText('Frontend Developer')).not.toBeInTheDocument();
+  });
+
+  it('should show match threshold slider when matching is enabled', () => {
+    mockMatchingState.preferences = { enabled: true, minMatchThreshold: 0 };
+    mockOpportunitiesState.opportunities = [
+      {
+        id: '1',
+        position: 'Software Engineer',
+        company: 'Google',
+        link: 'https://linkedin.com/jobs/view/123',
+        capturedDate: new Date().toISOString(),
+      },
+    ];
+
+    renderWithProviders(<OpportunitiesPage />);
+
+    expect(screen.getByRole('slider')).toBeInTheDocument();
+    expect(screen.getByText(/Min match score/i)).toBeInTheDocument();
+  });
+
+  it('should not show match threshold slider when matching is disabled', () => {
+    mockMatchingState.preferences = { enabled: false, minMatchThreshold: 40 };
+    mockOpportunitiesState.opportunities = [
+      {
+        id: '1',
+        position: 'Software Engineer',
+        company: 'Google',
+        link: 'https://linkedin.com/jobs/view/123',
+        capturedDate: new Date().toISOString(),
+      },
+    ];
+
+    renderWithProviders(<OpportunitiesPage />);
+
+    expect(screen.queryByRole('slider')).not.toBeInTheDocument();
+  });
+
+  it('should filter opportunities by match threshold', () => {
+    mockMatchingState.preferences = { enabled: true, minMatchThreshold: 0 };
+    mockMatchingState.matchResults = {
+      '1': { opportunityId: '1', overallScore: 80 },
+      '2': { opportunityId: '2', overallScore: 30 },
+    };
+    mockOpportunitiesState.opportunities = [
+      {
+        id: '1',
+        position: 'Software Engineer',
+        company: 'Google',
+        link: 'https://linkedin.com/jobs/view/123',
+        capturedDate: new Date().toISOString(),
+      },
+      {
+        id: '2',
+        position: 'Frontend Developer',
+        company: 'Meta',
+        link: 'https://linkedin.com/jobs/view/456',
+        capturedDate: new Date().toISOString(),
+      },
+    ];
+
+    renderWithProviders(<OpportunitiesPage />);
+
+    expect(screen.getByText('Software Engineer')).toBeInTheDocument();
+    expect(screen.getByText('Frontend Developer')).toBeInTheDocument();
+
+    const slider = screen.getByRole('slider');
+    fireEvent.change(slider, { target: { value: '50' } });
+
+    expect(screen.getByText('Software Engineer')).toBeInTheDocument();
+    expect(screen.queryByText('Frontend Developer')).not.toBeInTheDocument();
+  });
+
+  it('should show empty state when no opportunities match the threshold', () => {
+    mockMatchingState.preferences = { enabled: true, minMatchThreshold: 0 };
+    mockMatchingState.matchResults = {
+      '1': { opportunityId: '1', overallScore: 30 },
+    };
+    mockOpportunitiesState.opportunities = [
+      {
+        id: '1',
+        position: 'Software Engineer',
+        company: 'Google',
+        link: 'https://linkedin.com/jobs/view/123',
+        capturedDate: new Date().toISOString(),
+      },
+    ];
+
+    renderWithProviders(<OpportunitiesPage />);
+
+    const slider = screen.getByRole('slider');
+    fireEvent.change(slider, { target: { value: '50' } });
+
+    expect(screen.getByText(/No opportunities match the current threshold/i)).toBeInTheDocument();
+    expect(screen.queryByRole('table')).not.toBeInTheDocument();
+  });
+
+  it('should display count of opportunities above threshold', () => {
+    mockMatchingState.preferences = { enabled: true, minMatchThreshold: 0 };
+    mockMatchingState.matchResults = {
+      '1': { opportunityId: '1', overallScore: 80 },
+      '2': { opportunityId: '2', overallScore: 30 },
+    };
+    mockOpportunitiesState.opportunities = [
+      {
+        id: '1',
+        position: 'Software Engineer',
+        company: 'Google',
+        link: 'https://linkedin.com/jobs/view/123',
+        capturedDate: new Date().toISOString(),
+      },
+      {
+        id: '2',
+        position: 'Frontend Developer',
+        company: 'Meta',
+        link: 'https://linkedin.com/jobs/view/456',
+        capturedDate: new Date().toISOString(),
+      },
+    ];
+
+    renderWithProviders(<OpportunitiesPage />);
+
+    const slider = screen.getByRole('slider');
+    fireEvent.change(slider, { target: { value: '50' } });
+
+    expect(screen.getByText(/Showing 1 above 50% match/i)).toBeInTheDocument();
+  });
+
+  it('should initialize threshold from preferences minMatchThreshold', () => {
+    mockMatchingState.preferences = { enabled: true, minMatchThreshold: 60 };
+    mockMatchingState.matchResults = {
+      '1': { opportunityId: '1', overallScore: 80 },
+      '2': { opportunityId: '2', overallScore: 30 },
+    };
+    mockOpportunitiesState.opportunities = [
+      {
+        id: '1',
+        position: 'Software Engineer',
+        company: 'Google',
+        link: 'https://linkedin.com/jobs/view/123',
+        capturedDate: new Date().toISOString(),
+      },
+      {
+        id: '2',
+        position: 'Frontend Developer',
+        company: 'Meta',
+        link: 'https://linkedin.com/jobs/view/456',
+        capturedDate: new Date().toISOString(),
+      },
+    ];
+
+    renderWithProviders(<OpportunitiesPage />);
+
+    const slider = screen.getByRole('slider') as HTMLInputElement;
+    expect(slider.value).toBe('60');
+
+    expect(screen.getByText('Software Engineer')).toBeInTheDocument();
+    expect(screen.queryByText('Frontend Developer')).not.toBeInTheDocument();
+  });
+
+  it('should read match threshold from localStorage on mount', () => {
+    localStorage.setItem('jat_match_threshold_override_v1', '75');
+    mockMatchingState.preferences = { enabled: true, minMatchThreshold: 40 };
+    mockOpportunitiesState.opportunities = [
+      {
+        id: '1',
+        position: 'Software Engineer',
+        company: 'Google',
+        link: 'https://linkedin.com/jobs/view/123',
+        capturedDate: new Date().toISOString(),
+      },
+    ];
+
+    renderWithProviders(<OpportunitiesPage />);
+
+    const slider = screen.getByRole('slider') as HTMLInputElement;
+    expect(slider.value).toBe('75');
+  });
+
+  it('should sync threshold from preferences when they load after mount (no override)', async () => {
+    mockMatchingState.preferences = { enabled: true, minMatchThreshold: 40 };
+    mockMatchingState.matchResults = {
+      '1': { opportunityId: '1', overallScore: 80 },
+    };
+    mockOpportunitiesState.opportunities = [
+      {
+        id: '1',
+        position: 'Software Engineer',
+        company: 'Google',
+        link: 'https://linkedin.com/jobs/view/123',
+        capturedDate: new Date().toISOString(),
+      },
+    ];
+
+    const { rerender } = renderWithProviders(<OpportunitiesPage />);
+
+    const slider = screen.getByRole('slider') as HTMLInputElement;
+    expect(slider.value).toBe('40');
+
+    // Simulate preferences loading from storage after mount
+    mockMatchingState.preferences = { enabled: true, minMatchThreshold: 60 };
+    rerender(<AlertProvider><OpportunitiesPage /></AlertProvider>);
+
+    await waitFor(() => {
+      expect(slider.value).toBe('60');
+    });
+  });
+
+  it('should not sync threshold when localStorage override exists', async () => {
+    localStorage.setItem('jat_match_threshold_override_v1', '75');
+    mockMatchingState.preferences = { enabled: true, minMatchThreshold: 40 };
+    mockMatchingState.matchResults = {
+      '1': { opportunityId: '1', overallScore: 80 },
+    };
+    mockOpportunitiesState.opportunities = [
+      {
+        id: '1',
+        position: 'Software Engineer',
+        company: 'Google',
+        link: 'https://linkedin.com/jobs/view/123',
+        capturedDate: new Date().toISOString(),
+      },
+    ];
+
+    const { rerender } = renderWithProviders(<OpportunitiesPage />);
+
+    const slider = screen.getByRole('slider') as HTMLInputElement;
+    expect(slider.value).toBe('75');
+
+    // Preferences load but override should win
+    mockMatchingState.preferences = { enabled: true, minMatchThreshold: 60 };
+    rerender(<AlertProvider><OpportunitiesPage /></AlertProvider>);
+
+    await waitFor(() => {
+      expect(slider.value).toBe('75');
+    });
+  });
+
+  it('should show Reset to Default button when localStorage override exists', () => {
+    localStorage.setItem('jat_match_threshold_override_v1', '75');
+    mockMatchingState.preferences = { enabled: true, minMatchThreshold: 40 };
+    mockMatchingState.matchResults = {
+      '1': { opportunityId: '1', overallScore: 80 },
+    };
+    mockOpportunitiesState.opportunities = [
+      {
+        id: '1',
+        position: 'Software Engineer',
+        company: 'Google',
+        link: 'https://linkedin.com/jobs/view/123',
+        capturedDate: new Date().toISOString(),
+      },
+    ];
+
+    renderWithProviders(<OpportunitiesPage />);
+
+    expect(screen.getByRole('button', { name: /Reset to Default/i })).toBeInTheDocument();
+  });
+
+  it('should not show Reset to Default button when no localStorage override exists', () => {
+    mockMatchingState.preferences = { enabled: true, minMatchThreshold: 40 };
+    mockMatchingState.matchResults = {
+      '1': { opportunityId: '1', overallScore: 80 },
+    };
+    mockOpportunitiesState.opportunities = [
+      {
+        id: '1',
+        position: 'Software Engineer',
+        company: 'Google',
+        link: 'https://linkedin.com/jobs/view/123',
+        capturedDate: new Date().toISOString(),
+      },
+    ];
+
+    renderWithProviders(<OpportunitiesPage />);
+
+    expect(screen.queryByRole('button', { name: /Reset to Default/i })).not.toBeInTheDocument();
+  });
+
+  it('should reset threshold to preference default when Reset to Default is clicked', () => {
+    localStorage.setItem('jat_match_threshold_override_v1', '75');
+    mockMatchingState.preferences = { enabled: true, minMatchThreshold: 40 };
+    mockMatchingState.matchResults = {
+      '1': { opportunityId: '1', overallScore: 80 },
+    };
+    mockOpportunitiesState.opportunities = [
+      {
+        id: '1',
+        position: 'Software Engineer',
+        company: 'Google',
+        link: 'https://linkedin.com/jobs/view/123',
+        capturedDate: new Date().toISOString(),
+      },
+    ];
+
+    renderWithProviders(<OpportunitiesPage />);
+
+    const slider = screen.getByRole('slider') as HTMLInputElement;
+    expect(slider.value).toBe('75');
+
+    const resetButton = screen.getByRole('button', { name: /Reset to Default/i });
+    fireEvent.click(resetButton);
+
+    expect(slider.value).toBe('40');
+    expect(localStorage.getItem('jat_match_threshold_override_v1')).toBeNull();
+  });
+
+  it('should save match threshold to localStorage only when user changes it', () => {
+    mockMatchingState.preferences = { enabled: true, minMatchThreshold: 0 };
+    mockOpportunitiesState.opportunities = [
+      {
+        id: '1',
+        position: 'Software Engineer',
+        company: 'Google',
+        link: 'https://linkedin.com/jobs/view/123',
+        capturedDate: new Date().toISOString(),
+      },
+    ];
+
+    renderWithProviders(<OpportunitiesPage />);
+
+    // Initial mount should NOT save to localStorage
+    expect(localStorage.getItem('jat_match_threshold_override_v1')).toBeNull();
+
+    const slider = screen.getByRole('slider');
+    fireEvent.change(slider, { target: { value: '60' } });
+
+    // Only user changes should persist
+    expect(localStorage.getItem('jat_match_threshold_override_v1')).toBe('60');
   });
 });

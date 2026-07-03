@@ -12,19 +12,58 @@ Esta carpeta ahora usa el core actual de `OverPHP` dentro de `api/src`, mantenie
 
 ## Rutas registradas
 
+### Autenticación de aplicación (app auth)
+
+| Método | Ruta | Controlador |
+| --- | --- | --- |
+| GET | `/auth/me` | `AppAuthController@me` |
+| POST | `/auth/register` | `AppAuthController@register` |
+| POST | `/auth/login` | `AppAuthController@login` |
+| DELETE | `/auth/logout` | `AppAuthController@logout` |
+| POST | `/auth/google` | `AppAuthController@google` |
+| POST | `/auth/linkedin` | `AppAuthController@linkedin` |
+| POST | `/auth/forgot` | `AppAuthController@forgot` |
+| POST | `/auth/reset` | `AppAuthController@reset` |
+
+### Autenticación de servicios Google
+
 | Método | Ruta | Controlador |
 | --- | --- | --- |
 | GET | `/auth/cookie` | `AuthController@show` |
 | POST | `/auth/cookie` | `AuthController@store` |
 | DELETE | `/auth/cookie` | `AuthController@destroy` |
+
+### API pública
+
+| Método | Ruta | Controlador |
+| --- | --- | --- |
 | GET | `/captcha` | `CaptchaController@index` |
 | GET | `/suggestions` | `SuggestionsController@index` |
 | POST | `/suggestions` | `SuggestionsController@store` |
 | POST | `/google-sheets` | `GoogleSheetsController@index` |
-| GET | `/sync/applications` | `SyncController@getApplications` |
-| POST | `/sync/applications` | `SyncController@saveApplications` |
-| GET | `/sync/opportunities` | `SyncController@getOpportunities` |
-| POST | `/sync/opportunities` | `SyncController@saveOpportunities` |
+
+> **Note:** `JobSearchController` exists at `api/src/Controllers/JobSearchController.php` but the `POST /job-search` route is not currently registered in `api/index.php`. The frontend implementation is complete and ready to connect once the route is wired.
+
+### Sync (requiere app auth via `RequireAuth` middleware)
+
+| Método | Ruta | Handler |
+| --- | --- | --- |
+| GET | `/sync/applications` | Closure → `SyncController@getApplications` |
+| POST | `/sync/applications` | Closure → `SyncController@saveApplications` |
+| GET | `/sync/opportunities` | Closure → `SyncController@getOpportunities` |
+| POST | `/sync/opportunities` | Closure → `SyncController@saveOpportunities` |
+
+### Agent API (requiere app auth via `RequireAuth` middleware)
+
+| Método | Ruta | Handler |
+| --- | --- | --- |
+| POST | `/agent/job-applications` | Closure → `AgentJobApplicationController@store` |
+| GET | `/agent/job-applications` | Closure → `AgentJobApplicationController@index` |
+
+### Misc
+
+| Método | Ruta | Controlador |
+| --- | --- | --- |
 | GET | `/user/profile` | `UserController@profile` |
 | GET | `/hello` | `HelloController@index` |
 

@@ -102,7 +102,10 @@ function App() {
   // during module-graph resolution).
   useEffect(() => {
     if (import.meta.env.PROD) {
-      import('./lib/perf').then((m) => m.startProductionVitalsLogging());
+      import('./lib/perf').then((m) => {
+        m.startProductionVitalsLogging();
+        m.enableLogfireReporter();
+      });
     }
   }, []);
 

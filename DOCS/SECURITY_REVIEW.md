@@ -1,3 +1,5 @@
+> **Note:** This document is a historical security review from an early branch (`docs-security-documentation`). The architecture has evolved significantly since then — the PHP backend is now a framework (`api/index.php` with `OverPHP\Core\Router`) rather than individual script files, and state management uses Zustand instead of direct localStorage. For current security practices, see `DOCS/SECURITY.md`.
+
 # Revisión de Seguridad - Branch docs-security-documentation
 
 ## Fecha: $(date)

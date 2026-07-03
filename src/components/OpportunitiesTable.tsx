@@ -1,10 +1,12 @@
 import React from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import { type JobOpportunity } from '../types/opportunities';
+import type { JobMatchResult } from '../types/matching';
 import { sanitizeUrl } from '../utils/url';
 import { Input } from './ui/Input';
 import { Button } from './ui/Button';
 import { Badge } from './ui/Badge';
+import { MatchScoreBadge } from './MatchScoreBadge';
 
 interface OpportunitiesTableProps {
   opportunities: JobOpportunity[];
@@ -14,6 +16,8 @@ interface OpportunitiesTableProps {
   onApply: (opportunity: JobOpportunity) => void;
   onDelete: (opportunity: JobOpportunity) => void;
   formatDate: (dateString?: string) => string;
+  matchResults?: Record<string, JobMatchResult>;
+  onMatchBadgeClick?: (result: JobMatchResult) => void;
 }
 
 const OpportunitiesTable: React.FC<OpportunitiesTableProps> = ({
@@ -24,6 +28,8 @@ const OpportunitiesTable: React.FC<OpportunitiesTableProps> = ({
   onApply,
   onDelete,
   formatDate,
+  matchResults,
+  onMatchBadgeClick,
 }) => {
   const { t } = useTranslation();
 
@@ -52,6 +58,9 @@ const OpportunitiesTable: React.FC<OpportunitiesTableProps> = ({
           <table className='min-w-full divide-y divide-border'>
             <thead className='bg-muted'>
               <tr>
+                <th className='px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider w-24'>
+                  {t('opportunities.table.match', 'Match')}
+                </th>
                 <th className='px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider'>
                   {t('opportunities.table.position')}
                 </th>
@@ -76,8 +85,18 @@ const OpportunitiesTable: React.FC<OpportunitiesTableProps> = ({
               </tr>
             </thead>
             <tbody className='bg-card divide-y divide-border'>
-              {filteredOpportunities.map((opp) => (
+              {filteredOpportunities.map((opp) => {
+                const matchResult = matchResults?.[opp.id] ?? null;
+                return (
                 <tr key={opp.id} className='hover:bg-accent/50'>
+                  <td className='px-6 py-4 whitespace-nowrap'>
+                    <MatchScoreBadge
+                      result={matchResult}
+                      size="sm"
+                      showLabel={false}
+                      onClick={matchResult && onMatchBadgeClick ? () => onMatchBadgeClick(matchResult) : undefined}
+                    />
+                  </td>
                   <td className='px-6 py-4 whitespace-nowrap'>
                     <div className='text-sm font-medium text-foreground'>{opp.position}</div>
                     {opp.salary && (
@@ -133,7 +152,8 @@ const OpportunitiesTable: React.FC<OpportunitiesTableProps> = ({
                     </div>
                   </td>
                 </tr>
-              ))}
+              );
+              })}
             </tbody>
           </table>
         </div>

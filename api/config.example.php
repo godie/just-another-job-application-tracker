@@ -64,6 +64,11 @@ return [
     'linkedin_client_id' => getenv('LINKEDIN_CLIENT_ID') ?: '__LINKEDIN_CLIENT_ID__',
     'linkedin_client_secret' => getenv('LINKEDIN_CLIENT_SECRET') ?: '__LINKEDIN_CLIENT_SECRET__',
 
+    'logfire' => [
+        'token' => getenv('LOGFIRE_TOKEN') ?: '',
+        'service_name' => getenv('OTEL_SERVICE_NAME') ?: 'overphp-api',
+        'base_url' => getenv('LOGFIRE_BASE_URL') ?: 'https://logfire-us.pydantic.dev',
+    ],
     'job_search' => [
         'jooble_api_key' => getenv('JOOBLE_API_KEY') ?: '__JOOBLE_API_KEY__',
         'theirstack_api_key' => getenv('THEIRSTACK_API_KEY') ?: '__THEIRSTACK_API_KEY__',

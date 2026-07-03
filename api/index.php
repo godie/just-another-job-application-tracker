@@ -8,6 +8,7 @@ use OverPHP\Core\Router;
 use OverPHP\Core\Security;
 use OverPHP\Libs\Database;
 use OverPHP\Middleware\RequireAuth;
+use OverPHP\Telemetry\LogfireTelemetry;
 use function OverPHP\Helpers\corsSendHeaders;
 
 error_reporting(~E_ALL);
@@ -88,6 +89,13 @@ if (corsSendHeaders($config['allowed_origins'] ?? [])) {
 
 Security::startSecureSession();
 
+// ── Logfire telemetry bootstrap ──
+LogfireTelemetry::init([
+    'logfire_token' => $config['logfire']['token'] ?? null,
+    'service_name' => $config['logfire']['service_name'] ?? null,
+    'base_url' => $config['logfire']['base_url'] ?? null,
+]);
+
 $routePrefix = (string) ($config['route_prefix'] ?? '/api');
 $clientConfig = (array) ($config['client'] ?? []);
 
@@ -112,6 +120,8 @@ $router->add('GET', '/suggestions', 'SuggestionsController@index');
 $router->add('POST', '/suggestions', 'SuggestionsController@store');
 
 $router->add('POST', '/google-sheets', 'GoogleSheetsController@index');
+
+$router->add('POST', '/job-search', 'JobSearchController@search');
 
 $router->add('GET', '/sync/applications', function() {
     $result = RequireAuth::handle();
@@ -148,6 +158,7 @@ $router->add('POST', '/sync/opportunities', function() {
 
 $router->add('GET', '/user/profile', 'UserController@profile');
 $router->add('GET', '/hello', 'HelloController@index');
+$router->add('POST', '/perf/vitals', 'PerfController@vitals');
 
 $router->add('POST', '/agent/job-applications', function () {
     $result = RequireAuth::handle();
@@ -167,3 +178,6 @@ $router->add('GET', '/agent/job-applications', function () {
 });
 
 $router->run();
+
+// ── Flush telemetry at end of request ──
+LogfireTelemetry::shutdown();

@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace OverPHP\Core;
 
+use OverPHP\Telemetry\LogfireTelemetry;
+use OpenTelemetry\Context\Context;
+use OpenTelemetry\API\Trace\SpanKind;
+
 final class Router
 {
     private const MIME_TYPES = [
@@ -103,53 +107,86 @@ final class Router
         $uri = strtok($_SERVER['REQUEST_URI'] ?? '/', '?') ?: '/';
         $method = strtoupper($_SERVER['REQUEST_METHOD'] ?? 'GET');
 
-        $hasPrefix = $this->prefix !== '' && (
-            $uri === $this->prefix || str_starts_with($uri, $this->prefix . '/')
-        );
+        $tracer = LogfireTelemetry::tracer();
+        $span = $tracer->spanBuilder("$method $uri")
+            ->setSpanKind(SpanKind::KIND_SERVER)
+            ->setAttribute('http.method', $method)
+            ->setAttribute('http.route', $uri)
+            ->setAttribute('http.target', $_SERVER['REQUEST_URI'] ?? '/')
+            ->setAttribute('http.scheme', $_SERVER['HTTPS'] ?? 'off' === 'on' ? 'https' : 'http')
+            ->startSpan();
+        $scope = $span->activate();
 
-        if ($this->clientConfig['enabled'] && !$hasPrefix) {
-            if ($this->serveClient($uri)) {
+        // Extract W3C traceparent from incoming request if present
+        $traceparent = $_SERVER['HTTP_TRACEPARENT'] ?? '';
+        if ($traceparent !== '') {
+            $span->setAttribute('w3c.traceparent', $traceparent);
+        }
+
+        try {
+            $hasPrefix = $this->prefix !== '' && (
+                $uri === $this->prefix || str_starts_with($uri, $this->prefix . '/')
+            );
+
+            if ($this->clientConfig['enabled'] && !$hasPrefix) {
+                if ($this->serveClient($uri)) {
+                    $span->setAttribute('http.status_code', http_response_code() ?: 200);
+                    return;
+                }
+            }
+
+            if ($hasPrefix) {
+                $uri = substr($uri, strlen($this->prefix));
+                if ($uri === '') {
+                    $uri = '/';
+                }
+            }
+
+            if (!isset($this->routes[$method])) {
+                $span->setStatus(\OpenTelemetry\API\Trace\StatusCode::STATUS_ERROR, 'Route not found');
+                $span->setAttribute('http.status_code', 404);
+                $this->sendError(404, 'Not Found');
                 return;
             }
-        }
 
-        if ($hasPrefix) {
-            $uri = substr($uri, strlen($this->prefix));
-            if ($uri === '') {
-                $uri = '/';
-            }
-        }
-
-        if (!isset($this->routes[$method])) {
-            $this->sendError(404, 'Not Found');
-            return;
-        }
-
-        // 1. Check static routes (O(1))
-        if (isset($this->routes[$method]['static'][$uri])) {
-            $route = $this->routes[$method]['static'][$uri];
-            if ($this->validateCsrf($method, $route['options'])) {
-                $this->handleRoute($route['handler']);
-            }
-            return;
-        }
-
-        // 2. Check dynamic routes (Combined Regex for high performance)
-        $compiled = $this->getCompiledRegex($method);
-        if ($compiled && preg_match($compiled, $uri, $matches)) {
-            $index = (int) $matches['MARK'];
-            $route = $this->routes[$method]['dynamic'][$index];
-            if ($this->validateCsrf($method, $route['options'])) {
-                $params = [];
-                foreach ($route['params'] as $i => $name) {
-                    $params[$name] = $matches[$i + 1] ?? '';
+            // 1. Check static routes (O(1))
+            if (isset($this->routes[$method]['static'][$uri])) {
+                $route = $this->routes[$method]['static'][$uri];
+                if ($this->validateCsrf($method, $route['options'])) {
+                    $this->handleRoute($route['handler']);
                 }
-                $this->handleRoute($route['handler'], $params);
+                $span->setAttribute('http.status_code', http_response_code() ?: 200);
+                return;
             }
-            return;
-        }
 
-        $this->sendError(404, 'Not Found');
+            // 2. Check dynamic routes (Combined Regex for high performance)
+            $compiled = $this->getCompiledRegex($method);
+            if ($compiled && preg_match($compiled, $uri, $matches)) {
+                $index = (int) $matches['MARK'];
+                $route = $this->routes[$method]['dynamic'][$index];
+                if ($this->validateCsrf($method, $route['options'])) {
+                    $params = [];
+                    foreach ($route['params'] as $i => $name) {
+                        $params[$name] = $matches[$i + 1] ?? '';
+                    }
+                    $this->handleRoute($route['handler'], $params);
+                }
+                $span->setAttribute('http.status_code', http_response_code() ?: 200);
+                return;
+            }
+
+            $span->setStatus(\OpenTelemetry\API\Trace\StatusCode::STATUS_ERROR, 'Route not found');
+            $span->setAttribute('http.status_code', 404);
+            $this->sendError(404, 'Not Found');
+        } catch (\Throwable $e) {
+            $span->recordException($e);
+            $span->setStatus(\OpenTelemetry\API\Trace\StatusCode::STATUS_ERROR, $e->getMessage());
+            $span->setAttribute('http.status_code', 500);
+            throw $e;
+        } finally {
+            $scope->detach();
+            $span->end();
+        }
     }
 
     private function validateCsrf(string $method, array $options): bool

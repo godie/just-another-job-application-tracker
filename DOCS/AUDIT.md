@@ -1,7 +1,7 @@
 # Code Audit Report
 
-**Generated:** 2026-05-08T01:02:21.116Z
-**Branch:** jules-2729539268173427700-672d9bc2
+**Generated:** 2026-07-03T16:26:03.665Z
+**Branch:** main
 
 ## Summary
 
@@ -13,18 +13,16 @@
 | Medium | 0 |
 | Low | 0 |
 | Warnings | 0 |
-| Files Analyzed | 222 |
+| Files Analyzed | 277 |
 
 ## All Issues by Category
 
 ## Files Analyzed
 
-- ./audit/audit.cjs
 - ./eslint.config.js
 - ./knip.config.ts
-- ./playwright.config.ts
+- ./knip.ts
 - ./src/App.tsx
-- ./src/components/ATSSearch.tsx
 - ./src/components/AddJobForm.tsx
 - ./src/components/Alert.tsx
 - ./src/components/AlertProvider.tsx
@@ -36,7 +34,10 @@
 - ./src/components/ApplicationTableRow.test.tsx
 - ./src/components/ApplicationTableRow.tsx
 - ./src/components/ApplicationTimelineCard.tsx
+- ./src/components/AuthForm.tsx
 - ./src/components/AuthModals.tsx
+- ./src/components/BarChartWidget.tsx
+- ./src/components/BasicDetailsFields.tsx
 - ./src/components/BottomNav.tsx
 - ./src/components/CSVActions.tsx
 - ./src/components/CalendarView.tsx
@@ -48,15 +49,30 @@
 - ./src/components/DonationSection.tsx
 - ./src/components/EmailScanReview.tsx
 - ./src/components/FiltersBar.tsx
+- ./src/components/Footer.test.tsx
 - ./src/components/Footer.tsx
 - ./src/components/GDPRCookieBanner.test.tsx
 - ./src/components/GDPRCookieBanner.tsx
 - ./src/components/GDPRCookieBanner.utils.ts
+- ./src/components/GeminiKeyFormFields.tsx
 - ./src/components/GeminiKeyModal.tsx
+- ./src/components/GoogleAuthCard.tsx
 - ./src/components/GoogleSheetsSync.tsx
 - ./src/components/Header.tsx
 - ./src/components/InterviewBarChart.tsx
+- ./src/components/JobDetailFields.tsx
+- ./src/components/JobDetailFooter.tsx
+- ./src/components/JobEditForm.tsx
+- ./src/components/JobHeaderCard.tsx
+- ./src/components/JobPreviewPanel.test.tsx
+- ./src/components/JobPreviewPanel.tsx
+- ./src/components/JobSearchForm.tsx
+- ./src/components/JobSearchResults.tsx
 - ./src/components/KanbanView.tsx
+- ./src/components/KeyboardHelp.tsx
+- ./src/components/LoadingSpinner.tsx
+- ./src/components/ManualInputTab.tsx
+- ./src/components/ManualProcessingPanel.tsx
 - ./src/components/MatchBreakdownModal.test.tsx
 - ./src/components/MatchBreakdownModal.tsx
 - ./src/components/MatchScoreBadge.test.tsx
@@ -75,8 +91,13 @@
 - ./src/components/ProposedUpdateItem.tsx
 - ./src/components/RecommendationPanel.test.tsx
 - ./src/components/RecommendationPanel.tsx
+- ./src/components/ScanAuthGate.tsx
+- ./src/components/ScanResults.tsx
+- ./src/components/SheetSelectInput.tsx
+- ./src/components/SheetsAuthGate.tsx
 - ./src/components/Sidebar.test.tsx
 - ./src/components/Sidebar.tsx
+- ./src/components/SourceFields.tsx
 - ./src/components/StatusBarChart.tsx
 - ./src/components/SuggestionForm.tsx
 - ./src/components/SyncActions.test.tsx
@@ -86,8 +107,12 @@
 - ./src/components/TimelineEditor.tsx
 - ./src/components/TimelineEventList.tsx
 - ./src/components/TimelineView.tsx
+- ./src/components/TrackingFields.tsx
 - ./src/components/ViewSwitcher.tsx
+- ./src/components/emailScanReducer.ts
+- ./src/components/profileSetupReducer.ts
 - ./src/components/settings/ATSSearchSettings.tsx
+- ./src/components/settings/CloudAccountSection.tsx
 - ./src/components/settings/CustomFieldsSettings.tsx
 - ./src/components/settings/DateFormatSettings.tsx
 - ./src/components/settings/EmailScanSettings.tsx
@@ -95,6 +120,8 @@
 - ./src/components/settings/InterviewingSettings.tsx
 - ./src/components/settings/MatchingSettings.test.tsx
 - ./src/components/settings/MatchingSettings.tsx
+- ./src/components/settings/SettingsSectionHeader.tsx
+- ./src/components/settings/SettingsSidebar.tsx
 - ./src/components/settings/ToolsSettings.tsx
 - ./src/components/settings/ViewSettings.tsx
 - ./src/components/sync/MergePromptHandler.test.tsx
@@ -109,15 +136,22 @@
 - ./src/components/ui/Button.tsx
 - ./src/components/ui/Card.test.tsx
 - ./src/components/ui/Card.tsx
+- ./src/components/ui/Dialog.tsx
+- ./src/components/ui/DropdownMenu.tsx
 - ./src/components/ui/Input.test.tsx
 - ./src/components/ui/Input.tsx
+- ./src/components/ui/PageHeader.tsx
 - ./src/components/ui/Select.test.tsx
 - ./src/components/ui/Select.tsx
 - ./src/components/ui/Separator.test.tsx
 - ./src/components/ui/Separator.tsx
+- ./src/components/ui/Switch.tsx
 - ./src/components/ui/Table.test.tsx
 - ./src/components/ui/Table.tsx
 - ./src/components/ui/TagInput.tsx
+- ./src/components/ui/Textarea.tsx
+- ./src/components/ui/badgeVariants.ts
+- ./src/components/ui/buttonVariants.ts
 - ./src/components/ui/index.ts
 - ./src/hooks/useCloudSync.test.ts
 - ./src/hooks/useCloudSync.ts
@@ -126,16 +160,23 @@
 - ./src/hooks/useFilteredApplications.ts
 - ./src/hooks/useFocusTrap.ts
 - ./src/hooks/useFormatDate.ts
+- ./src/hooks/useGoogleToken.ts
 - ./src/hooks/useInsightsData.ts
 - ./src/hooks/useIsLoggedIn.ts
 - ./src/hooks/useKeyboardEscape.ts
 - ./src/hooks/useKeyboardKey.ts
+- ./src/hooks/useKeyboardShortcuts.ts
 - ./src/hooks/useSelection.ts
 - ./src/hooks/useTableColumns.test.ts
 - ./src/hooks/useTableColumns.ts
 - ./src/i18n.ts
 - ./src/layouts/MainLayout.test.tsx
 - ./src/layouts/MainLayout.tsx
+- ./src/lib/perf.test.ts
+- ./src/lib/perf.ts
+- ./src/lib/utils.ts
+- ./src/locales/en/translation.json
+- ./src/locales/es/translation.json
 - ./src/mails/adapter/emailAdapter.test.ts
 - ./src/mails/adapter/emailAdapter.ts
 - ./src/mails/errors.ts
@@ -155,6 +196,9 @@
 - ./src/pages/HomePage.tsx
 - ./src/pages/InsightsPage.test.tsx
 - ./src/pages/InsightsPage.tsx
+- ./src/pages/JobDetailsPage.test.tsx
+- ./src/pages/JobDetailsPage.tsx
+- ./src/pages/LandingPage.test.tsx
 - ./src/pages/LandingPage.tsx
 - ./src/pages/LoginPage.tsx
 - ./src/pages/OpportunitiesPage.tsx
@@ -168,7 +212,6 @@
 - ./src/seo/SEOManager.test.ts
 - ./src/seo/SEOManager.ts
 - ./src/seo/constants.ts
-- ./src/seo/index.ts
 - ./src/seo/resolve.ts
 - ./src/seo/types.ts
 - ./src/seo/useSEO.ts
@@ -176,7 +219,6 @@
 - ./src/storage/applications.test.ts
 - ./src/storage/applications.ts
 - ./src/storage/auth.ts
-- ./src/storage/index.ts
 - ./src/storage/matching.ts
 - ./src/storage/opportunities.ts
 - ./src/storage/preferences.ts
@@ -208,12 +250,16 @@
 - ./src/tests/SupportPage.test.tsx
 - ./src/tests/Theme.test.tsx
 - ./src/tests/TimelineEditor.test.tsx
+- ./src/tests/accessibility/Alert.a11y.test.tsx
+- ./src/tests/accessibility/Input.a11y.test.tsx
+- ./src/tests/accessibility/MainLayout.a11y.test.tsx
 - ./src/tests/date.test.ts
 - ./src/tests/google-oauth-mock.ts
 - ./src/tests/googleSheets.test.ts
 - ./src/tests/helpers/mergeDataHelpers.ts
 - ./src/types/applications.ts
-- ./src/types/index.ts
+- ./src/types/filters.ts
+- ./src/types/jobSearch.ts
 - ./src/types/matching.ts
 - ./src/types/opportunities.ts
 - ./src/types/preferences.ts
@@ -223,21 +269,30 @@
 - ./src/utils/api.ts
 - ./src/utils/applications.ts
 - ./src/utils/constants.ts
+- ./src/utils/credentialsGuard.test.ts
 - ./src/utils/csv.test.ts
 - ./src/utils/csv.ts
 - ./src/utils/date.ts
+- ./src/utils/dateHelpers.ts
+- ./src/utils/fetchDefaults.ts
 - ./src/utils/geminiApi.ts
 - ./src/utils/geminiJobScoring.ts
 - ./src/utils/geminiProfile.ts
 - ./src/utils/googleSheets.ts
 - ./src/utils/id.ts
-- ./src/utils/localStorage.ts
+- ./src/utils/jobSearchApi.test.ts
+- ./src/utils/jobSearchApi.ts
 - ./src/utils/manualScan.ts
 - ./src/utils/matching.test.ts
 - ./src/utils/matching.ts
 - ./src/utils/mergeData.test.ts
 - ./src/utils/mergeData.ts
+- ./src/utils/nonFetchHttpGuard.test.ts
 - ./src/utils/status.ts
+- ./src/utils/syncSchemas.test.ts
+- ./src/utils/syncSchemas.ts
+- ./src/utils/timelineDisplay.test.ts
+- ./src/utils/timelineDisplay.ts
 - ./src/utils/url.ts
 - ./tailwind.config.js
 - ./vite.config.ts

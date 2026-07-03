@@ -6,6 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [2.4.2] - 2026-06-24
+
+### Fixed
+- **`HomePage` mount `useEffect`**: tightened the dependency array to a truly empty `[]` to prevent an infinite render loop that regressed in v2.4.1.
+
+## [2.4.1] - 2026-06-24
+
+### Fixed
+- **npm audit / CVE-Lite vulnerabilities**: patched transitive dependency chain flagged by `cve-lite`.
+- **`HomePage` `useEffect` dependencies**: removed `applications` from the dependency array to break an infinite render cycle introduced after the v2.4.0 release.
+
 ## [2.4.0] - 2026-06-23
 
 ### Added
