@@ -73,7 +73,7 @@ This rule is self-applying: the change that introduced it (v2.6.1) was made on a
 
 - PRs give CI a chance to run lint, build, test, and `knip` **before** the change lands. Failures surface as PR comments, not as a broken `main`.
 - PRs leave an audit trail (review comments, CI logs) tied to a specific change set, which is critical when a regression needs to be bisected weeks later.
-- Direct pushes to `main` bypass branch protection, required reviewers, and the per-PR version rule above. They also break the "one branch, one version" invariant the orphan-sweep workflow is designed to enforce.
+- Direct pushes to `main` bypass branch protection, required reviewers, and the per-PR version rule (see `## Versioning` above). They also break the "one branch, one version" invariant the orphan-sweep workflow is designed to enforce.
 - A clean `main` is a precondition for the `release.published` trigger firing the orphan-sweep workflow reliably.
 
 ### Edge cases (legitimate non-contributor pushers)
