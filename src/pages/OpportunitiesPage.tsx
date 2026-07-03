@@ -22,6 +22,7 @@ import { RecommendationPanel } from '../components/RecommendationPanel';
 import { MatchBreakdownModal } from '../components/MatchBreakdownModal';
 import { useFormatDate } from '../hooks/useFormatDate';
 import { PageHeader } from '../components/ui/PageHeader';
+import packageJson from '../../package.json';
 
 import { type PageType } from '../App';
 import type { JobSearchParams, UnifiedJobResult } from '../types/jobSearch';
@@ -297,7 +298,7 @@ const OpportunitiesPageContent: React.FC<OpportunitiesPageContentProps> = () => 
         onConfirm={manager.confirmDelete}
         onCancel={manager.closeDeleteConfirm}
       />
-      <Footer version="2.1.4" />
+      <Footer version={packageJson.version} />
     </div>
   );
 };

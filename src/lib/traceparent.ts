@@ -58,10 +58,18 @@ export function getTraceContext(): TraceContext {
 
 /**
  * Build the W3C traceparent header value.
+ * Rotates spanId per call so each backend request appears as a sibling
+ * of the parent trace instead of all sharing the same spanId.
  */
 export function buildTraceparent(ctx?: TraceContext): string {
-  const c = ctx ?? getTraceContext();
-  return `00-${c.traceId}-${c.spanId}-${c.flags}`;
+  if (ctx) {
+    return `00-${ctx.traceId}-${ctx.spanId}-${ctx.flags}`;
+  }
+  if (!currentTrace) {
+    currentTrace = startTrace();
+  }
+  currentTrace.spanId = generateSpanId();
+  return `00-${currentTrace.traceId}-${currentTrace.spanId}-${currentTrace.flags}`;
 }
 
 /**

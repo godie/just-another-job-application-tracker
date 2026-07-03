@@ -108,20 +108,25 @@ final class Router
         $method = strtoupper($_SERVER['REQUEST_METHOD'] ?? 'GET');
 
         $tracer = LogfireTelemetry::tracer();
+
+        // Extract parent context from incoming traceparent so frontend spans
+        // become the actual parents of backend spans (not just an attribute).
+        $traceparent = $_SERVER['HTTP_TRACEPARENT'] ?? '';
+        $parentContext = Context::getRoot();
+        if ($traceparent !== '') {
+            $parentContext = \OpenTelemetry\API\Trace\Propagation\TraceContextPropagator::getDefault()
+                ->extract(['traceparent' => $traceparent]);
+        }
+
         $span = $tracer->spanBuilder("$method $uri")
             ->setSpanKind(SpanKind::KIND_SERVER)
+            ->setParent($parentContext)
             ->setAttribute('http.method', $method)
             ->setAttribute('http.route', $uri)
             ->setAttribute('http.target', $_SERVER['REQUEST_URI'] ?? '/')
-            ->setAttribute('http.scheme', $_SERVER['HTTPS'] ?? 'off' === 'on' ? 'https' : 'http')
+            ->setAttribute('http.scheme', (($_SERVER['HTTPS'] ?? 'off') === 'on') ? 'https' : 'http')
             ->startSpan();
         $scope = $span->activate();
-
-        // Extract W3C traceparent from incoming request if present
-        $traceparent = $_SERVER['HTTP_TRACEPARENT'] ?? '';
-        if ($traceparent !== '') {
-            $span->setAttribute('w3c.traceparent', $traceparent);
-        }
 
         try {
             $hasPrefix = $this->prefix !== '' && (

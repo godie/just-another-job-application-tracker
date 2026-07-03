@@ -23,6 +23,10 @@ use OpenTelemetry\SemConv\ResourceAttributes;
  */
 final class LogfireTelemetry
 {
+    private const SERVICE_VERSION = '2.4.2';
+    private const INSTRUMENTATION_NAME = 'overphp';
+    private const INSTRUMENTATION_VERSION = '2.4.2';
+
     private static ?TracerProviderInterface $tracerProvider = null;
     private static ?TracerInterface $tracer = null;
     private static bool $initialized = false;
@@ -51,7 +55,7 @@ final class LogfireTelemetry
         try {
             $resource = ResourceInfoFactory::create([
                 ResourceAttributes::SERVICE_NAME => $serviceName,
-                ResourceAttributes::SERVICE_VERSION => '2.4.2',
+                ResourceAttributes::SERVICE_VERSION => self::SERVICE_VERSION,
                 ResourceAttributes::DEPLOYMENT_ENVIRONMENT => getenv('APP_ENV') ?: 'production',
             ]);
 
@@ -69,7 +73,7 @@ final class LogfireTelemetry
                 ->setResource($resource)
                 ->build();
 
-            self::$tracer = self::$tracerProvider->getTracer('overphp', '2.4.2');
+            self::$tracer = self::$tracerProvider->getTracer(self::INSTRUMENTATION_NAME, self::INSTRUMENTATION_VERSION);
         } catch (\Throwable $e) {
             // Swallow initialization errors so the app never fails because of telemetry.
             error_log('[LogfireTelemetry] Init failed: ' . $e->getMessage());

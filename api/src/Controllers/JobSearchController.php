@@ -116,12 +116,10 @@ class JobSearchController
         $errors = [];
         $totalCount = 0;
 
-        // ── Source='all' or mixed: curl_multi for parallel execution ──
-        if ($source === 'all' || ($queryJooble && $queryTheirstack && ($queryAdzuna || $queryCareerjet)) || ($queryJooble && $queryTheirstack)) {
+        // ── Multi-source: one parallel branch handles all extras sources dynamically ──
+        $sourceCount = (int) $queryJooble + (int) $queryTheirstack + (int) $queryAdzuna + (int) $queryCareerjet;
+        if ($source === 'all' || $sourceCount >= 2) {
             [$allResults, $errors] = $this->fetchAllSources($keywords, $location, $remoteOnly, $techStack, $page, $pageSize);
-            $totalCount = count($allResults);
-        } elseif ($queryJooble && $queryTheirstack) {
-            [$allResults, $errors] = $this->fetchBothSources($keywords, $location, $remoteOnly, $techStack, $page, $pageSize);
             $totalCount = count($allResults);
         } elseif ($queryJooble) {
             [$joobleResults, $joobleErr] = $this->fetchJooble($keywords, $location, $remoteOnly, $page, $pageSize);
