@@ -108,6 +108,10 @@ jobs:
           ORPHAN_COUNT: ${{ steps.sweep.outputs.orphan_count }}
         run: |
           set -euo pipefail
+          # Heredoc-format GITHUB_OUTPUT writes include a trailing newline in
+          # the value. Strip CR/LF so downstream `[ -eq 0 ]` and `gh issue
+          # create --title` see clean integers / strings.
+          ORPHAN_COUNT="${ORPHAN_COUNT//[$'\r\n']/}"
           body="$(cat /tmp/orphans.md)"
 
           if [ "$ORPHAN_COUNT" -eq 0 ]; then
