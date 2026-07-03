@@ -131,3 +131,4 @@ Recommended migration naming style:
 - Complete matching UI integration: add MatchScoreBadge + RecommendationPanel to OpportunitiesPage and HomePage (see [DOCS/MATCHING_IMPLEMENTATION_TASKS.md](./DOCS/MATCHING_IMPLEMENTATION_TASKS.md) T12, T14)
 - Browser notifications for interviews and follow-ups
 - Export to PDF/CSV and enhanced data import
+
