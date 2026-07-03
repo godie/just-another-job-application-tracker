@@ -32,13 +32,31 @@ When adding a new allow-list entry, document the rationale inline so future main
 
 ### GitHub Actions pin renewal
 
-GitHub Actions references (e.g. `actions/checkout@v4`, `shivammathur/setup-php@v2.37.2`) MUST be pinned to a specific tag, never to a floating major. Pin renewal is automated by Dependabot — see `.github/dependabot.yml` for the schedule, grouping, and merge policy. Do not duplicate that schedule in prose here; that file is the single source of truth and this subsection is the entry point for a future maintainer who needs to know *why* the pins are pinned and *where* the renewal lives.
+GitHub Actions references (e.g. `actions/checkout@v4`, `shivammathur/setup-php@2.37.2`) MUST be pinned to a specific tag, never to a floating major. Pin renewal is automated by Dependabot — see `.github/dependabot.yml` for the schedule, grouping, and merge policy. Do not duplicate that schedule in prose here; that file is the single source of truth and this subsection is the entry point for a future maintainer who needs to know *why* the pins are pinned and *where* the renewal lives.
+
+#### Use `tag_name` from `/releases/latest` exactly as-is
+
+A `tag_name` from the GitHub Releases API (`/repos/<owner>/<repo>/releases/latest`) may or may not include a leading `v`. Some upstreams (e.g. `actions/checkout`) use the `v` prefix (`v4`); others (e.g. `shivammathur/setup-php`) do not (`2.37.2`). Prepending a `v` to a tag that does not have one is the most common pin-typo and produces the cryptic `##[error]Unable to resolve action <owner>/<repo>@v<X.Y.Z>, unable to find version v<X.Y.Z>` in CI.
+
+Before pinning, verify the tag actually exists on the upstream — the API can return tags that have been re-pointed or retracted, and a successful `/releases/latest` response does not guarantee the tag ref still exists:
+
+```bash
+git ls-remote --tags https://github.com/<owner>/<repo>.git | rg -F '<exact-tag>'
+```
+
+Use the tag returned by the API character-for-character. Do not normalize, prefix, or "modernize" it. If a Dependabot PR proposes a different format, fix the upstream first, not the pin. This is a real production-discoverable bug — the v2.6.0 release cycle's `shivammathur/setup-php@v2.37.2` typo broke the Deploy workflow until the `v` was dropped to `2.37.2`.
 
 ### CHANGELOG heading format
 
 Every release heading is `## [<version>] - YYYY-MM-DD` (e.g. `## [2.6.0] - 2026-07-03`). The four-digit year, two-digit month, two-digit day, and the literal ` - ` (space-dash-space) separator are non-negotiable. Future maintainers must not drift to `## [2.6.0] (July 3, 2026)`, `## [2.6.0] / 2026-07-03`, or any other date separator. An optional trailing annotation in parentheses is allowed for context (e.g. `## [2.3.1] - 2026-06-22 (later)` documents that the patch shipped the same day as 2.3.0, after the minor); the canonical example still has no annotation, so prefer that.
 
 Empirical baseline (post 2.6.0 sweep): `rg '2\.6\.0'` against the repo excluding `node_modules`, `api/vendor`, lockfiles, `audit/`, `package.json`, `.git`, and `## [2.6.0]` in `CHANGELOG.md` returns zero matches — so the rule has zero orphans as of this writing. Prefer the live `scripts/check-orphans.sh` (it has the full allow-list and rc-aware error handling) over hand-rolled `rg`; this baseline is just for documentation.
+
+### Lessons learned from the 2.6.0 release cycle
+
+The per-PR rule was first exercised end-to-end on the orphan-sweep release (v2.6.0, 2026-07-03). That PR cut seven follow-up commits in a row to repair the workflow and land the release cleanly (rg install, `GITHUB_OUTPUT` heredoc-format migration, `ORPHAN_COUNT` newline strip, `orphan-sweep` label provisioning, `VERSION` trailing-newline strip, temp-trigger removal, leftover-probe cleanup) — and all seven stayed at 2.6.0. The `release.published` event then fired the orphan-sweep workflow for the first time on a real release, and the sweep came back clean (`✅ Orphan sweep clean for v2.6.0.`). The rule is now self-validating: any new PR that introduces a per-commit micro-bump within a branch will be flagged by the workflow the next time it runs, because the workflow is the very mechanism that enforces the rule.
+
+If you find yourself about to bump 2.6.0 → 2.6.1 inside a follow-up commit, **stop**. Either the change belongs in a new PR with a deliberate version (PATCH for docs/fixes/refactors, MINOR for user-visible features), or it does not warrant a version bump at all and should ship under 2.6.0 — the orphan-sweep workflow will not flag it, and `CHANGELOG.md` should still record the commit under the 2.6.0 heading. The same rule applies to 2.7.x, 2.8.x, etc.: one branch, one version, enforced by the sweep.
 
 ## Specialized Agents
 
