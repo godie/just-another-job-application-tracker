@@ -7,11 +7,13 @@ namespace OverPHP\Telemetry;
 use OpenTelemetry\API\Trace\TracerInterface;
 use OpenTelemetry\API\Trace\TracerProviderInterface;
 use OpenTelemetry\Contrib\Otlp\OtlpHttpTransportFactory;
+use OpenTelemetry\Contrib\Otlp\SpanExporter;
 use OpenTelemetry\SDK\Trace\TracerProvider;
-use OpenTelemetry\SDK\Trace\SpanExporter\OtlpHttpExporter;
 use OpenTelemetry\SDK\Trace\SpanProcessor\BatchSpanProcessor;
+use OpenTelemetry\SDK\Common\Time\ClockFactory;
 use OpenTelemetry\SDK\Resource\ResourceInfo;
 use OpenTelemetry\SDK\Resource\ResourceInfoFactory;
+use OpenTelemetry\SDK\Common\Attribute\Attributes;
 use OpenTelemetry\SemConv\ResourceAttributes;
 
 /**
@@ -53,11 +55,19 @@ final class LogfireTelemetry
         $baseUrl = rtrim($config['base_url'] ?? (getenv('LOGFIRE_BASE_URL') ?: 'https://logfire-us.pydantic.dev'), '/');
 
         try {
-            $resource = ResourceInfoFactory::create([
+            // ResourceInfoFactory exists with `defaultResource()`,
+            // `emptyResource()`, and `mandatoryResource()` — not `create()`.
+            // The idiomatic pattern is: start from `defaultResource()` so
+            // OTel service detectors (process.pid, host.name,
+            // telemetry.sdk.*) still register, then `.merge(...)` our custom
+            // resource on top. Plain `ResourceInfo::create($attributes)`
+            // loses the SDK-conventional merging.
+            $attributes = Attributes::create([
                 ResourceAttributes::SERVICE_NAME => $serviceName,
                 ResourceAttributes::SERVICE_VERSION => self::SERVICE_VERSION,
-                ResourceAttributes::DEPLOYMENT_ENVIRONMENT => getenv('APP_ENV') ?: 'production',
+                ResourceAttributes::DEPLOYMENT_ENVIRONMENT_NAME => getenv('APP_ENV') ?: 'production',
             ]);
+            $resource = ResourceInfoFactory::defaultResource()->merge(ResourceInfo::create($attributes));
 
             $transport = (new OtlpHttpTransportFactory())->create(
                 $baseUrl . '/v1/traces',
@@ -65,8 +75,10 @@ final class LogfireTelemetry
                 ['Authorization' => 'Bearer ' . $token]
             );
 
-            $exporter = new OtlpHttpExporter($transport);
-            $spanProcessor = new BatchSpanProcessor($exporter);
+            $exporter = new SpanExporter($transport);
+            // BatchSpanProcessor requires an explicit ClockInterface as the
+            // second constructor arg — the SDK does NOT default it.
+            $spanProcessor = new BatchSpanProcessor($exporter, ClockFactory::getDefault());
 
             self::$tracerProvider = TracerProvider::builder()
                 ->addSpanProcessor($spanProcessor)
