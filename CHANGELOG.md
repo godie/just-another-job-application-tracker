@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 Each release is a dated `## [<version>] - YYYY-MM-DD` heading followed by `### Added`, `### Changed`, `### Fixed`, `### Removed`, `### Security` subsections (Keep a Changelog's structure, without the `[Unreleased]` block this repo does not use).
 
+## [2.6.4] - 2026-07-03 (later)
+
+### Added
+
+- New `## Cross-PR Version Race Playbook` section in `AGENTS.md` documenting how to handle the case when two PRs in parallel would each claim the next PATCH bump. Covers the **skip-ahead pattern** (preferred when the new PR is independent of the open PRs), the **stacked-PR pattern** (when the new PR depends on the unmerged state), and the **CHANGELOG merge resolution** (the Python regex that keeps both entries in version order). Includes a concrete example from the 2.6.x release cycle (PR #197 v2.6.1 docs, PR #198 v2.6.2 composer fix, PR #199 v2.6.3 CI check, this PR v2.6.4 cross-PR race playbook). Version bump skipped from 2.6.1 to 2.6.4 because 2.6.2 (PR #198) and 2.6.3 (PR #199) are claimed by open PRs; this PR targets `main` directly and is the last to merge in the stack (197 → 198 → 199 → 200).
+
 ## [2.6.1] - 2026-07-03 (later)
 
 ### Added

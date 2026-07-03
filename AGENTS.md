@@ -87,6 +87,115 @@ A small number of automation tools and GitHub-native features act on `main` outs
 
 If you are a human or an AI agent making a code or docs change, the rule above applies to you. If you are unsure whether your action counts as a "direct push to main", it probably does — open a PR.
 
+## Cross-PR Version Race Playbook
+
+The [per-PR version rule](#versioning) says "one branch, one version" and the [Contribution Workflow rule](#contribution-workflow) says "all changes via PR". When two PRs are open in parallel, both can only merge after claiming a distinct version. This section documents the playbook for resolving the race without a rebase conflict at merge time.
+
+### The race
+
+When PR A is open at version 2.6.1 (e.g., a docs change claiming 2.6.1 as a PATCH bump from 2.6.0) and PR B is opened (also targeting `main`) that would also naturally claim 2.6.1, both PRs are racing for the same PATCH number. The first to merge wins 2.6.1; the second has to rebase and re-bump to 2.6.2. This is a rebase conflict, not a logic conflict, but it requires manual resolution at merge time (the `package.json` + `LogfireTelemetry.php` version refs change on both branches, so the rebase hits them).
+
+### Resolution: skip-ahead (preferred)
+
+The cleaner approach is for the second PR to **skip-ahead by enough to avoid the race**. If PR A claims 2.6.1, PR B claims 2.6.2 (or 2.6.3 if PR C is also open, etc.). The skip is documented in the CHANGELOG entry body, so a future maintainer reading CHANGELOG understands why the version numbers jump.
+
+**Why skip-ahead beats rebase:**
+
+- **No rebase conflict when both PRs merge.** The version files (`package.json`, `api/src/Telemetry/LogfireTelemetry.php`) are at distinct values on each branch, so merging is trivial — no `<<<<<<<` markers, no manual resolution.
+- **No manual re-bump at merge time.** Both PRs are at their final version on their own branch; the merge is a clean fast-forward (or a trivial merge commit if the branches diverged).
+- **The CHANGELOG tracks all versions in reverse chronological order.** The order of merge determines the final order in the file, but both versions are present, in the right order (highest on top).
+- **The skip is a one-line explanation in each CHANGELOG entry**: e.g. "Version bump skipped from 2.6.0 to 2.6.2 because PR #197 already claims 2.6.1 — the two PATCH bumps can merge in any order without a rebase conflict."
+
+**When to skip-ahead:**
+
+- When you have a clear logical unit of work that warrants its own version (a new PR = a new version, per the per-PR rule).
+- When you'd otherwise have to manually rebase-and-rebump at merge time (which is error-prone, especially if you forget the `package.json` vs `LogfireTelemetry.php` sites need the same bump).
+- When more than 2 PRs are open, the skip pattern generalizes: each PR skips by the number of unmerged PRs ahead of it.
+
+**When NOT to skip-ahead (use a rebase or stack instead):**
+
+- When the new PR's changes depend on the unmerged state of the earlier PR. For example, a new CI check that needs an unmerged `composer.json` fix to pass. In that case, the new PR should be **stacked** on the earlier PR's branch (e.g., base it on `fix/some-branch` instead of `main`). The first PR merges first; the second PR auto-retargets to `main` and merges next. Both can claim any version they want because they target different branches at PR-open time. See the **Stacked PRs** subsection below.
+
+### Stacked PRs
+
+A stacked PR is one that targets another PR's branch instead of `main`. The pattern:
+
+1. PR #198 is open, targeting `main`, claiming version 2.6.2.
+2. PR #199 is opened, but its CI check needs PR #198's `composer.json` fix to pass. So PR #199 is opened with `--base fix/some-branch` (PR #198's branch), and claims version 2.6.3.
+3. PR #198 merges first → `main` is now at 2.6.2. PR #199 is auto-retargeted to `main` by GitHub.
+4. PR #199's CI re-runs against `main` (which now has the fix). Passes. PR #199 merges → `main` is now at 2.6.3.
+
+**When to use stacked PRs:**
+
+- The new PR's CI checks (or its runtime behavior) depend on unmerged changes in the earlier PR.
+- The new PR adds a change that wouldn't make sense without the earlier PR (e.g., a CI check for a fix, or docs for a new feature).
+
+**When NOT to use stacked PRs:**
+
+- The new PR is independent of the earlier PR. Just open it targeting `main` directly, with the skip-ahead version bump.
+
+### CHANGELOG merge resolution
+
+When two PRs both modify `CHANGELOG.md` (each adding an entry above the current `## [<base-version>]` anchor), a rebase will produce a conflict. The resolution:
+
+1. Take both entries (do not drop one).
+2. Order them by version, highest on top: `## [<newer>]` then `## [<older>]` then `## [<base>]`.
+3. Strip the `## [<base>]` anchor from one side (it appears in both conflict halves — both branches kept it as the line they didn't change), then concatenate: `theirs_without_base + ours`. The conflict markers' structure:
+
+```
+<<<<<<< HEAD (origin/main after the earlier PR merged)
+## [<older>] - YYYY-MM-DD
+... (entry body)
+## [<base>] - YYYY-MM-DD
+=======
+## [<newer>] - YYYY-MM-DD
+... (entry body)
+## [<base>] - YYYY-MM-DD
+>>>>>>> <hash> (the later PR's commit)
+```
+
+Resolution: take `theirs_without_base + ours`, where `theirs` is the newer-version entry and `ours` is the older-version entry. The trailing `## [<base>]` from `ours` is preserved. The Python script that does this:
+
+```python
+# Concrete example: base version is 2.6.0 (the version that both PRs branched
+# from). The pattern generalizes to any base version — replace '2.6.0' with
+# your actual base in the three places marked.
+import re
+BASE = '2.6.0'  # the version that was on main when both PRs were cut
+with open('CHANGELOG.md', 'r') as f:
+    content = f.read()
+pattern = re.compile(r'<<<<<<< HEAD\n(.*?)=======\n(.*?)>>>>>>> [0-9a-f]+', re.DOTALL)
+m = pattern.search(content)
+ours, theirs = m.group(1), m.group(2)  # ours = older entry, theirs = newer entry
+def strip_anchor(s, base):
+    return re.sub(rf'\n## \[{re.escape(base)}\].*$', '', s, flags=re.DOTALL).rstrip()
+newer = strip_anchor(theirs, BASE)  # higher version (e.g., 2.6.3)
+older = strip_anchor(ours,   BASE)  # lower version (e.g., 2.6.2)
+merged = f'{newer}\n\n{older}\n\n## [{BASE}] - YYYY-MM-DD\n'
+content = content[:m.start()] + merged + content[m.end():]
+with open('CHANGELOG.md', 'w') as f:
+    f.write(content)
+```
+
+For the simpler case (just version files, no CHANGELOG merge), `git checkout --theirs <file>` is enough — "theirs" in a rebase is the commit being replayed (the later PR), and you want to keep the later PR's higher version. The `package.json` and `LogfireTelemetry.php` files both have this property: keep `theirs` (the higher version).
+
+### Concrete example from the 2.6.x release cycle (2026-07-03)
+
+Three PRs were opened in the same day, each claiming a PATCH bump, plus this docs PR (the fourth):
+
+- **PR #197** (`docs/contribution-workflow-rule`, v2.6.1): added the Contribution Workflow rule to AGENTS.md. Merged first. Single PATCH bump, no race.
+- **PR #198** (`fix/composer-options-resolver-php82-compat`, v2.6.2): fixed the composer.lock PHP-version-mismatch issue. Skipped 2.6.1 because PR #197 was already claiming it. Targeted `main`.
+- **PR #199** (`ci/composer-validate-on-pr-and-deploy`, v2.6.3): added the reusable composer-validate CI check. Skipped 2.6.1 and 2.6.2 because both were claimed. **Stacked on PR #198** because the new CI check needs the `composer.json` `conflict` block to pass (without the fix, the CI fails on the same PHP-version mismatch the check is designed to catch).
+- **This PR** (the section you're reading, v2.6.4): documents the playbook above. Skips 2.6.1, 2.6.2, 2.6.3 (all taken or claimed by other PRs at the time of writing). Targets `main` directly because it's docs-only and independent of the composer stack. Merges last.
+
+The merge order is **197 → 198 → 199 → 200**, each adding a version to the running tally. After all four merge, `CHANGELOG.md` has entries in reverse chronological order: 2.6.4, 2.6.3, 2.6.2, 2.6.1, 2.6.0. Each entry body documents the skip rationale so the version progression is self-explanatory.
+
+### Forward-looking
+
+If more than 4 PRs race for the next PATCH, the skip pattern generalizes: the Nth PR skips N-1 numbers. The CHANGELOG documents each skip. The pattern degrades gracefully (you'll end up with 2.6.0, 2.6.5, 2.6.6, 2.6.7, 2.6.8 if 4 PRs all open on the same day) but the version numbers are still monotonically increasing, the CHANGELOG is the source of truth, and the orphan-sweep workflow's "one branch, one version" invariant still holds.
+
+If the version numbers are getting absurd (e.g., 4 PATCH bumps in a day, all 2.6.x), consider whether the changes should be combined into fewer PRs. The per-PR rule says "one logical unit of work = one version" — combining two closely related changes into one PR is sometimes the right call (the trade-off is fewer PRs but more atomic units of work). The decision is a judgment call: ask whether the two changes would be merged separately if a third change came along that depended on one but not the other. If yes, keep them as separate PRs. If no, combine.
+
 ## Specialized Agents
 
 ### 🕵️ Colector (Collector)
