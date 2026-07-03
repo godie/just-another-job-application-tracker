@@ -262,7 +262,6 @@
       "date": "Formato de Fecha",
       "tools": "Herramientas",
       "toolsDesc": "Herramientas de gestión de datos: CSV, backup, restauración y utilidades de debug.",
-      "dateDesc": "Elige cómo se deben mostrar las fechas en toda la aplicación.",
       "custom": "Campos Personalizados",
       "interviewing": "Eventos de Entrevista"
     },
