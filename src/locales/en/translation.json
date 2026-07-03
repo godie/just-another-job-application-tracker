@@ -191,6 +191,15 @@
       "titleFor": "Delete application for {{position}} at {{company}}",
       "message": "Are you sure you want to delete the application for \"{{position}}\" at {{company}}? This action will mark it as deleted."
     },
+    "topMatches": "Top Opportunities for You",
+    "minMatchThreshold": "Min match score",
+    "showingAboveThreshold": "Showing {{count}} above {{threshold}}% match",
+    "noThresholdMatches": "No opportunities match the current threshold. Try lowering the minimum match score.",
+    "matching": {
+      "title": "AI Job Matching",
+      "desc": "Set up your profile to get personalized recommendations based on your skills and preferences.",
+      "setup": "Set Up Matching"
+    },
     "success": {
       "captured": "New job opportunity captured from LinkedIn!",
       "deleted": "Application \"{{position}}\" at {{company}} has been marked as deleted."
@@ -487,7 +496,11 @@
     "noOpportunitiesDesc": "Find jobs by using the search above (Jooble, TheirStack, Adzuna, Careerjet), install the Chrome extension to capture listings from LinkedIn and other sites, or add one manually.",
     "searchPlaceholder": "Filter saved opportunities by position, company, or location...",
     "showing": "Showing <bold>{{count}}</bold> of {{total}} opportunities",
+    "minMatchThreshold": "Min match score",
+    "showingAboveThreshold": "Showing {{count}} above {{threshold}}% match",
+    "noThresholdMatches": "No opportunities match the current threshold. Try lowering the minimum match score.",
     "table": {
+      "match": "Match",
       "position": "Position",
       "company": "Company",
       "location": "Location",

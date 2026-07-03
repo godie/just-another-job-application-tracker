@@ -143,9 +143,13 @@ jobs:
           echo "DB_NAME=${{ secrets.DB_NAME }}" >> dist/api/.env
           echo "DB_USER=${{ secrets.DB_USER }}" >> dist/api/.env
           echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> dist/api/.env
+          echo "LOGFIRE_TOKEN=${{ secrets.LOGFIRE_TOKEN }}" >> dist/api/.env
+          echo "OTEL_SERVICE_NAME=${{ secrets.OTEL_SERVICE_NAME || 'jajat-backend' }}" >> dist/api/.env
 
-      - name: Set secure file permissions on config.php
-        run: chmod 440 dist/api/config.php
+      - name: Set secure file permissions on secrets
+        run: |
+          chmod 600 dist/api/.env
+          chmod 440 dist/api/config.php
 
       - name: Write SSH key to file
         run: |

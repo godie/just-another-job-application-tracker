@@ -12,20 +12,58 @@ Esta carpeta ahora usa el core actual de `OverPHP` dentro de `api/src`, mantenie
 
 ## Rutas registradas
 
+### Autenticación de aplicación (app auth)
+
+| Método | Ruta | Controlador | Notas |
+| --- | --- | --- | --- |
+| GET | `/auth/me` | `AppAuthController@me` | Devuelve el usuario autenticado de la sesión actual |
+| POST | `/auth/register` | `AppAuthController@register` | Registro con email/password |
+| POST | `/auth/login` | `AppAuthController@login` | Login con email/password |
+| DELETE | `/auth/logout` | `AppAuthController@logout` | Destruye la sesión |
+| POST | `/auth/google` | `AppAuthController@google` | Login/link con Google OAuth |
+| POST | `/auth/linkedin` | `AppAuthController@linkedin` | Login/link con LinkedIn OAuth |
+| POST | `/auth/forgot` | `AppAuthController@forgot` | Solicitud de reset de password |
+| POST | `/auth/reset` | `AppAuthController@reset` | Reset de password con token |
+
+### Autenticación de servicios Google
+
 | Método | Ruta | Controlador |
 | --- | --- | --- |
 | GET | `/auth/cookie` | `AuthController@show` |
 | POST | `/auth/cookie` | `AuthController@store` |
 | DELETE | `/auth/cookie` | `AuthController@destroy` |
+
+### API pública
+
+| Método | Ruta | Controlador |
+| --- | --- | --- |
 | GET | `/captcha` | `CaptchaController@index` |
 | GET | `/suggestions` | `SuggestionsController@index` |
 | POST | `/suggestions` | `SuggestionsController@store` |
 | POST | `/google-sheets` | `GoogleSheetsController@index` |
-| POST | `/job-search` | `JobSearchController@search` |
-| GET | `/sync/applications` | `SyncController@getApplications` |
-| POST | `/sync/applications` | `SyncController@saveApplications` |
-| GET | `/sync/opportunities` | `SyncController@getOpportunities` |
-| POST | `/sync/opportunities` | `SyncController@saveOpportunities` |
+
+> **Note:** `JobSearchController` exists at `api/src/Controllers/JobSearchController.php` but the `POST /job-search` route is not currently registered in `api/index.php`. The frontend implementation (`src/utils/jobSearchApi.ts`, `src/components/JobSearchForm.tsx`, `src/components/JobSearchResults.tsx`) is complete and ready to connect once the route is wired.
+
+### Sync (requiere app auth via `RequireAuth` middleware)
+
+| Método | Ruta | Handler | Notas |
+| --- | --- | --- | --- |
+| GET | `/sync/applications` | Closure → `SyncController@getApplications` | Requiere sesión activa |
+| POST | `/sync/applications` | Closure → `SyncController@saveApplications` | Requiere sesión activa |
+| GET | `/sync/opportunities` | Closure → `SyncController@getOpportunities` | Requiere sesión activa |
+| POST | `/sync/opportunities` | Closure → `SyncController@saveOpportunities` | Requiere sesión activa |
+
+### Agent API (requiere app auth via `RequireAuth` middleware)
+
+| Método | Ruta | Handler | Notas |
+| --- | --- | --- | --- |
+| POST | `/agent/job-applications` | Closure → `AgentJobApplicationController@store` | Requiere sesión activa; idempotente por `(user_id, source_url)` |
+| GET | `/agent/job-applications` | Closure → `AgentJobApplicationController@index` | Requiere sesión activa; filtros por query params |
+
+### Misc
+
+| Método | Ruta | Controlador |
+| --- | --- | --- |
 | GET | `/user/profile` | `UserController@profile` |
 | GET | `/hello` | `HelloController@index` |
 

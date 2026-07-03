@@ -10,6 +10,7 @@ const MATCH_PROFILE_KEY = 'jat_match_profile_v1';
 const MATCH_RESULTS_KEY = 'jat_match_results_v1';
 const MATCHING_PREFS_KEY = 'jat_matching_prefs_v1';
 const MATCH_FEEDBACK_KEY = 'jat_match_feedback_v1';
+const MATCH_THRESHOLD_OVERRIDE_KEY = 'jat_match_threshold_override_v1';
 
 export const DEFAULT_MATCHING_PREFERENCES: MatchingPreferences = {
   enabled: false,
@@ -115,6 +116,34 @@ export function addMatchFeedback(feedback: UserFeedbackOnMatch): void {
     localStorage.setItem(MATCH_FEEDBACK_KEY, JSON.stringify(updated));
   } catch (error) {
     console.error('Error adding match feedback to storage', error);
+  }
+}
+
+export function getMatchThresholdOverride(): number | null {
+  try {
+    const data = localStorage.getItem(MATCH_THRESHOLD_OVERRIDE_KEY);
+    if (!data) return null;
+    const parsed = parseInt(data, 10);
+    return Number.isNaN(parsed) ? null : parsed;
+  } catch (error) {
+    console.error('Error retrieving match threshold override from storage', error);
+    return null;
+  }
+}
+
+export function saveMatchThresholdOverride(threshold: number): void {
+  try {
+    localStorage.setItem(MATCH_THRESHOLD_OVERRIDE_KEY, String(threshold));
+  } catch (error) {
+    console.error('Error saving match threshold override to storage', error);
+  }
+}
+
+export function clearMatchThresholdOverride(): void {
+  try {
+    localStorage.removeItem(MATCH_THRESHOLD_OVERRIDE_KEY);
+  } catch (error) {
+    console.error('Error clearing match threshold override from storage', error);
   }
 }
 

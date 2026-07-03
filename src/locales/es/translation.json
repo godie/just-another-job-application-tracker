@@ -191,6 +191,15 @@
       "titleFor": "Eliminar aplicación para {{position}} en {{company}}",
       "message": "¿Estás seguro de que quieres eliminar la aplicación para \"{{position}}\" en {{company}}? Esta acción la marcará como eliminada."
     },
+    "topMatches": "Mejores Oportunidades para Ti",
+    "minMatchThreshold": "Puntaje mínimo de match",
+    "showingAboveThreshold": "Mostrando {{count}} con más de {{threshold}}% de match",
+    "noThresholdMatches": "Ninguna oportunidad coincide con el umbral actual. Prueba a bajar el puntaje mínimo de match.",
+    "matching": {
+      "title": "Matching de Empleo con IA",
+      "desc": "Configura tu perfil para obtener recomendaciones personalizadas basadas en tus habilidades y preferencias.",
+      "setup": "Configurar Matching"
+    },
     "success": {
       "captured": "¡Nueva oportunidad de trabajo capturada desde LinkedIn!",
       "deleted": "La aplicación \"{{position}}\" en {{company}} ha sido marcada como eliminada."
@@ -487,7 +496,11 @@
     "noOpportunitiesDesc": "Encuentra empleos usando la búsqueda de arriba (Jooble, TheirStack, Adzuna, Careerjet), instala la extensión de Chrome para capturar ofertas de LinkedIn y otros sitios, o añade una manualmente.",
     "searchPlaceholder": "Filtrar oportunidades guardadas por posición, empresa o ubicación...",
     "showing": "Mostrando <bold>{{count}}</bold> de {{total}} oportunidades",
+    "minMatchThreshold": "Puntaje mínimo de match",
+    "showingAboveThreshold": "Mostrando {{count}} con más de {{threshold}}% de match",
+    "noThresholdMatches": "Ninguna oportunidad coincide con el umbral actual. Prueba a bajar el puntaje mínimo de match.",
     "table": {
+      "match": "Match",
       "position": "Posición",
       "company": "Empresa",
       "location": "Ubicación",

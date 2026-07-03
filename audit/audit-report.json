@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-05-05T22:43:20.817Z",
-  "branch": "jules-481363289405085070-e1e29e29",
+  "timestamp": "2026-07-03T16:26:03.665Z",
+  "branch": "main",
   "summary": {
     "total": 0,
     "critical": 0,
@@ -8,7 +8,7 @@
     "medium": 0,
     "low": 0,
     "warning": 0,
-    "filesAnalyzed": 222
+    "filesAnalyzed": 277
   },
   "categories": {
     "critical": [],
@@ -18,230 +18,287 @@
     "warning": []
   },
   "files": [
-    "/app/audit/audit.cjs",
-    "/app/eslint.config.js",
-    "/app/knip.config.ts",
-    "/app/playwright.config.ts",
-    "/app/src/App.tsx",
-    "/app/src/components/ATSSearch.tsx",
-    "/app/src/components/AddJobForm.tsx",
-    "/app/src/components/Alert.tsx",
-    "/app/src/components/AlertProvider.tsx",
-    "/app/src/components/ApplicationCard.test.tsx",
-    "/app/src/components/ApplicationCard.tsx",
-    "/app/src/components/ApplicationTable.store.integration.test.tsx",
-    "/app/src/components/ApplicationTable.test.tsx",
-    "/app/src/components/ApplicationTable.tsx",
-    "/app/src/components/ApplicationTableRow.test.tsx",
-    "/app/src/components/ApplicationTableRow.tsx",
-    "/app/src/components/ApplicationTimelineCard.tsx",
-    "/app/src/components/AuthModals.tsx",
-    "/app/src/components/BottomNav.tsx",
-    "/app/src/components/CSVActions.tsx",
-    "/app/src/components/CalendarView.tsx",
-    "/app/src/components/ChartContainer.tsx",
-    "/app/src/components/ConfirmDialog.tsx",
-    "/app/src/components/ConnectGoogleButton.test.tsx",
-    "/app/src/components/ConnectGoogleButton.tsx",
-    "/app/src/components/CurrentViewRenderer.tsx",
-    "/app/src/components/DonationSection.tsx",
-    "/app/src/components/EmailScanReview.tsx",
-    "/app/src/components/FiltersBar.tsx",
-    "/app/src/components/Footer.tsx",
-    "/app/src/components/GDPRCookieBanner.test.tsx",
-    "/app/src/components/GDPRCookieBanner.tsx",
-    "/app/src/components/GDPRCookieBanner.utils.ts",
-    "/app/src/components/GeminiKeyModal.tsx",
-    "/app/src/components/GoogleSheetsSync.tsx",
-    "/app/src/components/Header.tsx",
-    "/app/src/components/InterviewBarChart.tsx",
-    "/app/src/components/KanbanView.tsx",
-    "/app/src/components/MatchBreakdownModal.test.tsx",
-    "/app/src/components/MatchBreakdownModal.tsx",
-    "/app/src/components/MatchScoreBadge.test.tsx",
-    "/app/src/components/MatchScoreBadge.tsx",
-    "/app/src/components/MetricsSummary.tsx",
-    "/app/src/components/OnboardingWizard.test.tsx",
-    "/app/src/components/OnboardingWizard.tsx",
-    "/app/src/components/OnboardingWizard.utils.ts",
-    "/app/src/components/OpportunitiesEmptyState.tsx",
-    "/app/src/components/OpportunitiesTable.tsx",
-    "/app/src/components/OpportunityForm.tsx",
-    "/app/src/components/PWAReloadPrompt.tsx",
-    "/app/src/components/ProfileSetupModal.test.tsx",
-    "/app/src/components/ProfileSetupModal.tsx",
-    "/app/src/components/ProposedAdditionItem.tsx",
-    "/app/src/components/ProposedUpdateItem.tsx",
-    "/app/src/components/RecommendationPanel.test.tsx",
-    "/app/src/components/RecommendationPanel.tsx",
-    "/app/src/components/Sidebar.test.tsx",
-    "/app/src/components/Sidebar.tsx",
-    "/app/src/components/StatusBarChart.tsx",
-    "/app/src/components/SuggestionForm.tsx",
-    "/app/src/components/SyncActions.test.tsx",
-    "/app/src/components/SyncActions.tsx",
-    "/app/src/components/SyncStatusInfo.test.tsx",
-    "/app/src/components/SyncStatusInfo.tsx",
-    "/app/src/components/TimelineEditor.tsx",
-    "/app/src/components/TimelineEventList.tsx",
-    "/app/src/components/TimelineView.tsx",
-    "/app/src/components/ViewSwitcher.tsx",
-    "/app/src/components/settings/ATSSearchSettings.tsx",
-    "/app/src/components/settings/CustomFieldsSettings.tsx",
-    "/app/src/components/settings/DateFormatSettings.tsx",
-    "/app/src/components/settings/EmailScanSettings.tsx",
-    "/app/src/components/settings/FieldsSettings.tsx",
-    "/app/src/components/settings/InterviewingSettings.tsx",
-    "/app/src/components/settings/MatchingSettings.test.tsx",
-    "/app/src/components/settings/MatchingSettings.tsx",
-    "/app/src/components/settings/ToolsSettings.tsx",
-    "/app/src/components/settings/ViewSettings.tsx",
-    "/app/src/components/sync/MergePromptHandler.test.tsx",
-    "/app/src/components/sync/MergePromptHandler.tsx",
-    "/app/src/components/sync/MergePromptModal.test.tsx",
-    "/app/src/components/sync/MergePromptModal.tsx",
-    "/app/src/components/sync/SyncNavIcon.test.tsx",
-    "/app/src/components/sync/SyncNavIcon.tsx",
-    "/app/src/components/ui/Badge.test.tsx",
-    "/app/src/components/ui/Badge.tsx",
-    "/app/src/components/ui/Button.test.tsx",
-    "/app/src/components/ui/Button.tsx",
-    "/app/src/components/ui/Card.test.tsx",
-    "/app/src/components/ui/Card.tsx",
-    "/app/src/components/ui/Input.test.tsx",
-    "/app/src/components/ui/Input.tsx",
-    "/app/src/components/ui/Select.test.tsx",
-    "/app/src/components/ui/Select.tsx",
-    "/app/src/components/ui/Separator.test.tsx",
-    "/app/src/components/ui/Separator.tsx",
-    "/app/src/components/ui/Table.test.tsx",
-    "/app/src/components/ui/Table.tsx",
-    "/app/src/components/ui/TagInput.tsx",
-    "/app/src/components/ui/index.ts",
-    "/app/src/hooks/useCloudSync.test.ts",
-    "/app/src/hooks/useCloudSync.ts",
-    "/app/src/hooks/useCrypto.ts",
-    "/app/src/hooks/useFilteredApplications.test.ts",
-    "/app/src/hooks/useFilteredApplications.ts",
-    "/app/src/hooks/useFocusTrap.ts",
-    "/app/src/hooks/useFormatDate.ts",
-    "/app/src/hooks/useInsightsData.ts",
-    "/app/src/hooks/useIsLoggedIn.ts",
-    "/app/src/hooks/useKeyboardEscape.ts",
-    "/app/src/hooks/useKeyboardKey.ts",
-    "/app/src/hooks/useSelection.ts",
-    "/app/src/hooks/useTableColumns.test.ts",
-    "/app/src/hooks/useTableColumns.ts",
-    "/app/src/i18n.ts",
-    "/app/src/layouts/MainLayout.test.tsx",
-    "/app/src/layouts/MainLayout.tsx",
-    "/app/src/mails/adapter/emailAdapter.test.ts",
-    "/app/src/mails/adapter/emailAdapter.ts",
-    "/app/src/mails/errors.ts",
-    "/app/src/mails/hooks/useEmailScan.test.ts",
-    "/app/src/mails/hooks/useEmailScan.ts",
-    "/app/src/mails/providers/emailProvider.ts",
-    "/app/src/mails/providers/fake/fakeData.ts",
-    "/app/src/mails/providers/fake/fakeProvider.test.ts",
-    "/app/src/mails/providers/fake/fakeProvider.ts",
-    "/app/src/mails/providers/gmail/gmailClient.ts",
-    "/app/src/mails/services/scanService.test.ts",
-    "/app/src/mails/services/scanService.ts",
-    "/app/src/mails/types.ts",
-    "/app/src/main.tsx",
-    "/app/src/pages/BackupSyncPage.tsx",
-    "/app/src/pages/GmailScanPage.tsx",
-    "/app/src/pages/HomePage.tsx",
-    "/app/src/pages/InsightsPage.test.tsx",
-    "/app/src/pages/InsightsPage.tsx",
-    "/app/src/pages/LandingPage.tsx",
-    "/app/src/pages/LoginPage.tsx",
-    "/app/src/pages/OpportunitiesPage.tsx",
-    "/app/src/pages/RegisterPage.tsx",
-    "/app/src/pages/SettingsPage.property.test.tsx",
-    "/app/src/pages/SettingsPage.test.tsx",
-    "/app/src/pages/SettingsPage.tsx",
-    "/app/src/pages/SuggestionsViewerPage.tsx",
-    "/app/src/pages/SupportPage.tsx",
-    "/app/src/pwa.d.ts",
-    "/app/src/seo/SEOManager.test.ts",
-    "/app/src/seo/SEOManager.ts",
-    "/app/src/seo/constants.ts",
-    "/app/src/seo/index.ts",
-    "/app/src/seo/resolve.ts",
-    "/app/src/seo/types.ts",
-    "/app/src/seo/useSEO.ts",
-    "/app/src/setupTests.ts",
-    "/app/src/storage/applications.test.ts",
-    "/app/src/storage/applications.ts",
-    "/app/src/storage/auth.ts",
-    "/app/src/storage/index.ts",
-    "/app/src/storage/matching.ts",
-    "/app/src/storage/opportunities.ts",
-    "/app/src/storage/preferences.ts",
-    "/app/src/store/geminiKeyStore.ts",
-    "/app/src/stores/applicationsStore.ts",
-    "/app/src/stores/authStore.ts",
-    "/app/src/stores/matchingStore.ts",
-    "/app/src/stores/mergeStore.test.ts",
-    "/app/src/stores/mergeStore.ts",
-    "/app/src/stores/opportunitiesStore.ts",
-    "/app/src/stores/preferencesStore.ts",
-    "/app/src/tests/Alert.test.tsx",
-    "/app/src/tests/AlertProvider.test.tsx",
-    "/app/src/tests/App.test.tsx",
-    "/app/src/tests/BackupSyncPage.merge.test.tsx",
-    "/app/src/tests/BackupSyncPage.test.tsx",
-    "/app/src/tests/CalendarView.test.tsx",
-    "/app/src/tests/DarkModeIntegration.test.tsx",
-    "/app/src/tests/EmailScanReview.test.tsx",
-    "/app/src/tests/FiltersBar.test.tsx",
-    "/app/src/tests/GoogleSheetsSync.test.tsx",
-    "/app/src/tests/Header.test.tsx",
-    "/app/src/tests/HomePage.test.tsx",
-    "/app/src/tests/KanbanView.test.tsx",
-    "/app/src/tests/OpportunitiesPage.test.tsx",
-    "/app/src/tests/OpportunityForm.test.tsx",
-    "/app/src/tests/SettingsPage.test.tsx",
-    "/app/src/tests/SuggestionsViewerPage.test.tsx",
-    "/app/src/tests/SupportPage.test.tsx",
-    "/app/src/tests/Theme.test.tsx",
-    "/app/src/tests/TimelineEditor.test.tsx",
-    "/app/src/tests/date.test.ts",
-    "/app/src/tests/google-oauth-mock.ts",
-    "/app/src/tests/googleSheets.test.ts",
-    "/app/src/tests/helpers/mergeDataHelpers.ts",
-    "/app/src/types/applications.ts",
-    "/app/src/types/index.ts",
-    "/app/src/types/matching.ts",
-    "/app/src/types/opportunities.ts",
-    "/app/src/types/preferences.ts",
-    "/app/src/types/table.ts",
-    "/app/src/utils/api.property.test.ts",
-    "/app/src/utils/api.test.ts",
-    "/app/src/utils/api.ts",
-    "/app/src/utils/applications.ts",
-    "/app/src/utils/constants.ts",
-    "/app/src/utils/csv.test.ts",
-    "/app/src/utils/csv.ts",
-    "/app/src/utils/date.ts",
-    "/app/src/utils/geminiApi.ts",
-    "/app/src/utils/geminiJobScoring.ts",
-    "/app/src/utils/geminiProfile.ts",
-    "/app/src/utils/googleSheets.ts",
-    "/app/src/utils/id.ts",
-    "/app/src/utils/localStorage.ts",
-    "/app/src/utils/manualScan.ts",
-    "/app/src/utils/mergeData.test.ts",
-    "/app/src/utils/mergeData.ts",
-    "/app/src/utils/status.ts",
-    "/app/src/utils/url.ts",
-    "/app/tailwind.config.js",
-    "/app/vite.config.ts"
+    "/Users/diegomendozasalas/repos/job-application-tracker/eslint.config.js",
+    "/Users/diegomendozasalas/repos/job-application-tracker/knip.config.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/knip.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/App.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/AddJobForm.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/Alert.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/AlertProvider.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ApplicationCard.test.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ApplicationCard.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ApplicationTable.store.integration.test.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ApplicationTable.test.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ApplicationTable.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ApplicationTableRow.test.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ApplicationTableRow.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ApplicationTimelineCard.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/AuthForm.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/AuthModals.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/BarChartWidget.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/BasicDetailsFields.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/BottomNav.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/CSVActions.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/CalendarView.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ChartContainer.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ConfirmDialog.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ConnectGoogleButton.test.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ConnectGoogleButton.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/CurrentViewRenderer.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/DonationSection.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/EmailScanReview.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/FiltersBar.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/Footer.test.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/Footer.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/GDPRCookieBanner.test.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/GDPRCookieBanner.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/GDPRCookieBanner.utils.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/GeminiKeyFormFields.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/GeminiKeyModal.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/GoogleAuthCard.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/GoogleSheetsSync.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/Header.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/InterviewBarChart.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/JobDetailFields.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/JobDetailFooter.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/JobEditForm.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/JobHeaderCard.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/JobPreviewPanel.test.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/JobPreviewPanel.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/JobSearchForm.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/JobSearchResults.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/KanbanView.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/KeyboardHelp.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/LoadingSpinner.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ManualInputTab.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ManualProcessingPanel.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/MatchBreakdownModal.test.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/MatchBreakdownModal.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/MatchScoreBadge.test.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/MatchScoreBadge.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/MetricsSummary.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/OnboardingWizard.test.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/OnboardingWizard.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/OnboardingWizard.utils.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/OpportunitiesEmptyState.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/OpportunitiesTable.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/OpportunityForm.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/PWAReloadPrompt.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ProfileSetupModal.test.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ProfileSetupModal.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ProposedAdditionItem.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ProposedUpdateItem.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/RecommendationPanel.test.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/RecommendationPanel.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ScanAuthGate.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ScanResults.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/SheetSelectInput.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/SheetsAuthGate.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/Sidebar.test.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/Sidebar.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/SourceFields.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/StatusBarChart.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/SuggestionForm.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/SyncActions.test.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/SyncActions.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/SyncStatusInfo.test.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/SyncStatusInfo.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/TimelineEditor.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/TimelineEventList.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/TimelineView.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/TrackingFields.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ViewSwitcher.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/emailScanReducer.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/profileSetupReducer.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/settings/ATSSearchSettings.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/settings/CloudAccountSection.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/settings/CustomFieldsSettings.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/settings/DateFormatSettings.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/settings/EmailScanSettings.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/settings/FieldsSettings.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/settings/InterviewingSettings.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/settings/MatchingSettings.test.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/settings/MatchingSettings.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/settings/SettingsSectionHeader.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/settings/SettingsSidebar.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/settings/ToolsSettings.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/settings/ViewSettings.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/sync/MergePromptHandler.test.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/sync/MergePromptHandler.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/sync/MergePromptModal.test.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/sync/MergePromptModal.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/sync/SyncNavIcon.test.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/sync/SyncNavIcon.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ui/Badge.test.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ui/Badge.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ui/Button.test.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ui/Button.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ui/Card.test.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ui/Card.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ui/Dialog.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ui/DropdownMenu.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ui/Input.test.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ui/Input.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ui/PageHeader.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ui/Select.test.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ui/Select.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ui/Separator.test.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ui/Separator.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ui/Switch.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ui/Table.test.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ui/Table.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ui/TagInput.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ui/Textarea.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ui/badgeVariants.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ui/buttonVariants.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ui/index.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/hooks/useCloudSync.test.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/hooks/useCloudSync.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/hooks/useCrypto.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/hooks/useFilteredApplications.test.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/hooks/useFilteredApplications.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/hooks/useFocusTrap.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/hooks/useFormatDate.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/hooks/useGoogleToken.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/hooks/useInsightsData.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/hooks/useIsLoggedIn.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/hooks/useKeyboardEscape.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/hooks/useKeyboardKey.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/hooks/useKeyboardShortcuts.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/hooks/useSelection.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/hooks/useTableColumns.test.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/hooks/useTableColumns.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/i18n.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/layouts/MainLayout.test.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/layouts/MainLayout.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/lib/perf.test.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/lib/perf.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/lib/utils.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/locales/en/translation.json",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/locales/es/translation.json",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/mails/adapter/emailAdapter.test.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/mails/adapter/emailAdapter.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/mails/errors.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/mails/hooks/useEmailScan.test.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/mails/hooks/useEmailScan.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/mails/providers/emailProvider.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/mails/providers/fake/fakeData.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/mails/providers/fake/fakeProvider.test.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/mails/providers/fake/fakeProvider.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/mails/providers/gmail/gmailClient.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/mails/services/scanService.test.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/mails/services/scanService.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/mails/types.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/main.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/pages/BackupSyncPage.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/pages/GmailScanPage.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/pages/HomePage.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/pages/InsightsPage.test.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/pages/InsightsPage.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/pages/JobDetailsPage.test.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/pages/JobDetailsPage.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/pages/LandingPage.test.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/pages/LandingPage.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/pages/LoginPage.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/pages/OpportunitiesPage.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/pages/RegisterPage.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/pages/SettingsPage.property.test.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/pages/SettingsPage.test.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/pages/SettingsPage.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/pages/SuggestionsViewerPage.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/pages/SupportPage.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/pwa.d.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/seo/SEOManager.test.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/seo/SEOManager.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/seo/constants.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/seo/resolve.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/seo/types.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/seo/useSEO.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/setupTests.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/storage/applications.test.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/storage/applications.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/storage/auth.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/storage/matching.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/storage/opportunities.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/storage/preferences.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/store/geminiKeyStore.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/stores/applicationsStore.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/stores/authStore.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/stores/matchingStore.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/stores/mergeStore.test.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/stores/mergeStore.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/stores/opportunitiesStore.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/stores/preferencesStore.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/tests/Alert.test.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/tests/AlertProvider.test.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/tests/App.test.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/tests/BackupSyncPage.merge.test.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/tests/BackupSyncPage.test.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/tests/CalendarView.test.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/tests/DarkModeIntegration.test.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/tests/EmailScanReview.test.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/tests/FiltersBar.test.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/tests/GoogleSheetsSync.test.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/tests/Header.test.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/tests/HomePage.test.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/tests/KanbanView.test.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/tests/OpportunitiesPage.test.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/tests/OpportunityForm.test.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/tests/SettingsPage.test.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/tests/SuggestionsViewerPage.test.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/tests/SupportPage.test.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/tests/Theme.test.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/tests/TimelineEditor.test.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/tests/accessibility/Alert.a11y.test.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/tests/accessibility/Input.a11y.test.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/tests/accessibility/MainLayout.a11y.test.tsx",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/tests/date.test.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/tests/google-oauth-mock.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/tests/googleSheets.test.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/tests/helpers/mergeDataHelpers.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/types/applications.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/types/filters.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/types/jobSearch.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/types/matching.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/types/opportunities.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/types/preferences.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/types/table.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/utils/api.property.test.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/utils/api.test.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/utils/api.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/utils/applications.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/utils/constants.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/utils/credentialsGuard.test.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/utils/csv.test.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/utils/csv.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/utils/date.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/utils/dateHelpers.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/utils/fetchDefaults.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/utils/geminiApi.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/utils/geminiJobScoring.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/utils/geminiProfile.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/utils/googleSheets.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/utils/id.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/utils/jobSearchApi.test.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/utils/jobSearchApi.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/utils/manualScan.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/utils/matching.test.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/utils/matching.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/utils/mergeData.test.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/utils/mergeData.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/utils/nonFetchHttpGuard.test.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/utils/status.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/utils/syncSchemas.test.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/utils/syncSchemas.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/utils/timelineDisplay.test.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/utils/timelineDisplay.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/src/utils/url.ts",
+    "/Users/diegomendozasalas/repos/job-application-tracker/tailwind.config.js",
+    "/Users/diegomendozasalas/repos/job-application-tracker/vite.config.ts"
   ],
   "rawResults": [
     {
-      "filePath": "/app/audit/audit.cjs",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/eslint.config.js",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -252,7 +309,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/eslint.config.js",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/knip.config.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -263,7 +320,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/knip.config.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/knip.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -274,7 +331,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/playwright.config.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/App.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -285,7 +342,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/App.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/AddJobForm.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -296,7 +353,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/components/ATSSearch.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/Alert.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -307,40 +364,18 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/components/AddJobForm.tsx",
-      "messages": [],
-      "suppressedMessages": [],
-      "errorCount": 0,
-      "fatalErrorCount": 0,
-      "warningCount": 0,
-      "fixableErrorCount": 0,
-      "fixableWarningCount": 0,
-      "usedDeprecatedRules": []
-    },
-    {
-      "filePath": "/app/src/components/Alert.tsx",
-      "messages": [],
-      "suppressedMessages": [],
-      "errorCount": 0,
-      "fatalErrorCount": 0,
-      "warningCount": 0,
-      "fixableErrorCount": 0,
-      "fixableWarningCount": 0,
-      "usedDeprecatedRules": []
-    },
-    {
-      "filePath": "/app/src/components/AlertProvider.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/AlertProvider.tsx",
       "messages": [],
       "suppressedMessages": [
         {
           "ruleId": "react-refresh/only-export-components",
           "severity": 2,
           "message": "Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components.",
-          "line": 80,
+          "line": 86,
           "column": 14,
           "nodeType": "Identifier",
           "messageId": "namedExport",
-          "endLine": 80,
+          "endLine": 86,
           "endColumn": 22,
           "suppressions": [
             {
@@ -358,7 +393,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/components/ApplicationCard.test.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ApplicationCard.test.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -369,7 +404,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/components/ApplicationCard.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ApplicationCard.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -380,7 +415,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/components/ApplicationTable.store.integration.test.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ApplicationTable.store.integration.test.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -391,7 +426,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/components/ApplicationTable.test.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ApplicationTable.test.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -402,7 +437,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/components/ApplicationTable.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ApplicationTable.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -413,7 +448,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/components/ApplicationTableRow.test.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ApplicationTableRow.test.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -424,7 +459,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/components/ApplicationTableRow.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ApplicationTableRow.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -435,7 +470,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/components/ApplicationTimelineCard.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ApplicationTimelineCard.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -446,18 +481,29 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/components/AuthModals.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/AuthForm.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/AuthModals.tsx",
       "messages": [],
       "suppressedMessages": [
         {
           "ruleId": "react-refresh/only-export-components",
           "severity": 2,
           "message": "Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components.",
-          "line": 254,
+          "line": 303,
           "column": 14,
           "nodeType": "Identifier",
           "messageId": "namedExport",
-          "endLine": 254,
+          "endLine": 303,
           "endColumn": 27,
           "suppressions": [
             {
@@ -475,224 +521,26 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/components/BottomNav.tsx",
-      "messages": [],
-      "suppressedMessages": [],
-      "errorCount": 0,
-      "fatalErrorCount": 0,
-      "warningCount": 0,
-      "fixableErrorCount": 0,
-      "fixableWarningCount": 0,
-      "usedDeprecatedRules": []
-    },
-    {
-      "filePath": "/app/src/components/CSVActions.tsx",
-      "messages": [],
-      "suppressedMessages": [],
-      "errorCount": 0,
-      "fatalErrorCount": 0,
-      "warningCount": 0,
-      "fixableErrorCount": 0,
-      "fixableWarningCount": 0,
-      "usedDeprecatedRules": []
-    },
-    {
-      "filePath": "/app/src/components/CalendarView.tsx",
-      "messages": [],
-      "suppressedMessages": [],
-      "errorCount": 0,
-      "fatalErrorCount": 0,
-      "warningCount": 0,
-      "fixableErrorCount": 0,
-      "fixableWarningCount": 0,
-      "usedDeprecatedRules": []
-    },
-    {
-      "filePath": "/app/src/components/ChartContainer.tsx",
-      "messages": [],
-      "suppressedMessages": [],
-      "errorCount": 0,
-      "fatalErrorCount": 0,
-      "warningCount": 0,
-      "fixableErrorCount": 0,
-      "fixableWarningCount": 0,
-      "usedDeprecatedRules": []
-    },
-    {
-      "filePath": "/app/src/components/ConfirmDialog.tsx",
-      "messages": [],
-      "suppressedMessages": [],
-      "errorCount": 0,
-      "fatalErrorCount": 0,
-      "warningCount": 0,
-      "fixableErrorCount": 0,
-      "fixableWarningCount": 0,
-      "usedDeprecatedRules": []
-    },
-    {
-      "filePath": "/app/src/components/ConnectGoogleButton.test.tsx",
-      "messages": [],
-      "suppressedMessages": [],
-      "errorCount": 0,
-      "fatalErrorCount": 0,
-      "warningCount": 0,
-      "fixableErrorCount": 0,
-      "fixableWarningCount": 0,
-      "usedDeprecatedRules": []
-    },
-    {
-      "filePath": "/app/src/components/ConnectGoogleButton.tsx",
-      "messages": [],
-      "suppressedMessages": [],
-      "errorCount": 0,
-      "fatalErrorCount": 0,
-      "warningCount": 0,
-      "fixableErrorCount": 0,
-      "fixableWarningCount": 0,
-      "usedDeprecatedRules": []
-    },
-    {
-      "filePath": "/app/src/components/CurrentViewRenderer.tsx",
-      "messages": [],
-      "suppressedMessages": [],
-      "errorCount": 0,
-      "fatalErrorCount": 0,
-      "warningCount": 0,
-      "fixableErrorCount": 0,
-      "fixableWarningCount": 0,
-      "usedDeprecatedRules": []
-    },
-    {
-      "filePath": "/app/src/components/DonationSection.tsx",
-      "messages": [],
-      "suppressedMessages": [],
-      "errorCount": 0,
-      "fatalErrorCount": 0,
-      "warningCount": 0,
-      "fixableErrorCount": 0,
-      "fixableWarningCount": 0,
-      "usedDeprecatedRules": []
-    },
-    {
-      "filePath": "/app/src/components/EmailScanReview.tsx",
-      "messages": [],
-      "suppressedMessages": [],
-      "errorCount": 0,
-      "fatalErrorCount": 0,
-      "warningCount": 0,
-      "fixableErrorCount": 0,
-      "fixableWarningCount": 0,
-      "usedDeprecatedRules": []
-    },
-    {
-      "filePath": "/app/src/components/FiltersBar.tsx",
-      "messages": [],
-      "suppressedMessages": [],
-      "errorCount": 0,
-      "fatalErrorCount": 0,
-      "warningCount": 0,
-      "fixableErrorCount": 0,
-      "fixableWarningCount": 0,
-      "usedDeprecatedRules": []
-    },
-    {
-      "filePath": "/app/src/components/Footer.tsx",
-      "messages": [],
-      "suppressedMessages": [],
-      "errorCount": 0,
-      "fatalErrorCount": 0,
-      "warningCount": 0,
-      "fixableErrorCount": 0,
-      "fixableWarningCount": 0,
-      "usedDeprecatedRules": []
-    },
-    {
-      "filePath": "/app/src/components/GDPRCookieBanner.test.tsx",
-      "messages": [],
-      "suppressedMessages": [],
-      "errorCount": 0,
-      "fatalErrorCount": 0,
-      "warningCount": 0,
-      "fixableErrorCount": 0,
-      "fixableWarningCount": 0,
-      "usedDeprecatedRules": []
-    },
-    {
-      "filePath": "/app/src/components/GDPRCookieBanner.tsx",
-      "messages": [],
-      "suppressedMessages": [],
-      "errorCount": 0,
-      "fatalErrorCount": 0,
-      "warningCount": 0,
-      "fixableErrorCount": 0,
-      "fixableWarningCount": 0,
-      "usedDeprecatedRules": []
-    },
-    {
-      "filePath": "/app/src/components/GDPRCookieBanner.utils.ts",
-      "messages": [],
-      "suppressedMessages": [],
-      "errorCount": 0,
-      "fatalErrorCount": 0,
-      "warningCount": 0,
-      "fixableErrorCount": 0,
-      "fixableWarningCount": 0,
-      "usedDeprecatedRules": []
-    },
-    {
-      "filePath": "/app/src/components/GeminiKeyModal.tsx",
-      "messages": [],
-      "suppressedMessages": [],
-      "errorCount": 0,
-      "fatalErrorCount": 0,
-      "warningCount": 0,
-      "fixableErrorCount": 0,
-      "fixableWarningCount": 0,
-      "usedDeprecatedRules": []
-    },
-    {
-      "filePath": "/app/src/components/GoogleSheetsSync.tsx",
-      "messages": [],
-      "suppressedMessages": [],
-      "errorCount": 0,
-      "fatalErrorCount": 0,
-      "warningCount": 0,
-      "fixableErrorCount": 0,
-      "fixableWarningCount": 0,
-      "usedDeprecatedRules": []
-    },
-    {
-      "filePath": "/app/src/components/Header.tsx",
-      "messages": [],
-      "suppressedMessages": [],
-      "errorCount": 0,
-      "fatalErrorCount": 0,
-      "warningCount": 0,
-      "fixableErrorCount": 0,
-      "fixableWarningCount": 0,
-      "usedDeprecatedRules": []
-    },
-    {
-      "filePath": "/app/src/components/InterviewBarChart.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/BarChartWidget.tsx",
       "messages": [],
       "suppressedMessages": [
         {
           "ruleId": "@typescript-eslint/no-explicit-any",
           "severity": 2,
           "message": "Unexpected any. Specify a different type.",
-          "line": 27,
+          "line": 24,
           "column": 33,
           "nodeType": "TSAnyKeyword",
           "messageId": "unexpectedAny",
-          "endLine": 27,
+          "endLine": 24,
           "endColumn": 36,
           "suggestions": [
             {
               "messageId": "suggestUnknown",
               "fix": {
                 "range": [
-                  1048,
-                  1051
+                  1011,
+                  1014
                 ],
                 "text": "unknown"
               },
@@ -702,8 +550,8 @@
               "messageId": "suggestNever",
               "fix": {
                 "range": [
-                  1048,
-                  1051
+                  1011,
+                  1014
                 ],
                 "text": "never"
               },
@@ -726,7 +574,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/components/KanbanView.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/BasicDetailsFields.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -737,7 +585,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/components/MatchBreakdownModal.test.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/BottomNav.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -748,7 +596,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/components/MatchBreakdownModal.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/CSVActions.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -759,7 +607,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/components/MatchScoreBadge.test.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/CalendarView.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -770,7 +618,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/components/MatchScoreBadge.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ChartContainer.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -781,7 +629,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/components/MetricsSummary.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ConfirmDialog.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -792,7 +640,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/components/OnboardingWizard.test.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ConnectGoogleButton.test.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -803,7 +651,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/components/OnboardingWizard.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ConnectGoogleButton.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -814,7 +662,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/components/OnboardingWizard.utils.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/CurrentViewRenderer.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -825,7 +673,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/components/OpportunitiesEmptyState.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/DonationSection.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -836,7 +684,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/components/OpportunitiesTable.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/EmailScanReview.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -847,7 +695,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/components/OpportunityForm.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/FiltersBar.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -858,7 +706,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/components/PWAReloadPrompt.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/Footer.test.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -869,7 +717,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/components/ProfileSetupModal.test.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/Footer.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -880,7 +728,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/components/ProfileSetupModal.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/GDPRCookieBanner.test.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -891,7 +739,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/components/ProposedAdditionItem.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/GDPRCookieBanner.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -902,7 +750,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/components/ProposedUpdateItem.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/GDPRCookieBanner.utils.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -913,7 +761,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/components/RecommendationPanel.test.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/GeminiKeyFormFields.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -924,7 +772,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/components/RecommendationPanel.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/GeminiKeyModal.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -935,7 +783,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/components/Sidebar.test.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/GoogleAuthCard.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -946,7 +794,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/components/Sidebar.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/GoogleSheetsSync.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -957,51 +805,460 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/components/StatusBarChart.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/Header.tsx",
       "messages": [],
-      "suppressedMessages": [
-        {
-          "ruleId": "@typescript-eslint/no-explicit-any",
-          "severity": 2,
-          "message": "Unexpected any. Specify a different type.",
-          "line": 19,
-          "column": 33,
-          "nodeType": "TSAnyKeyword",
-          "messageId": "unexpectedAny",
-          "endLine": 19,
-          "endColumn": 36,
-          "suggestions": [
-            {
-              "messageId": "suggestUnknown",
-              "fix": {
-                "range": [
-                  700,
-                  703
-                ],
-                "text": "unknown"
-              },
-              "desc": "Use `unknown` instead, this will force you to explicitly, and safely assert the type is correct."
-            },
-            {
-              "messageId": "suggestNever",
-              "fix": {
-                "range": [
-                  700,
-                  703
-                ],
-                "text": "never"
-              },
-              "desc": "Use `never` instead, this is useful when instantiating generic type parameters that you don't need to know the type of."
-            }
-          ],
-          "suppressions": [
-            {
-              "kind": "directive",
-              "justification": ""
-            }
-          ]
-        }
-      ],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/InterviewBarChart.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/JobDetailFields.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/JobDetailFooter.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/JobEditForm.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/JobHeaderCard.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/JobPreviewPanel.test.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/JobPreviewPanel.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/JobSearchForm.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/JobSearchResults.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/KanbanView.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/KeyboardHelp.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/LoadingSpinner.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ManualInputTab.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ManualProcessingPanel.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/MatchBreakdownModal.test.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/MatchBreakdownModal.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/MatchScoreBadge.test.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/MatchScoreBadge.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/MetricsSummary.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/OnboardingWizard.test.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/OnboardingWizard.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/OnboardingWizard.utils.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/OpportunitiesEmptyState.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/OpportunitiesTable.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/OpportunityForm.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/PWAReloadPrompt.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ProfileSetupModal.test.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ProfileSetupModal.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ProposedAdditionItem.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ProposedUpdateItem.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/RecommendationPanel.test.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/RecommendationPanel.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ScanAuthGate.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ScanResults.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/SheetSelectInput.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/SheetsAuthGate.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/Sidebar.test.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/Sidebar.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/SourceFields.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/StatusBarChart.tsx",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/SuggestionForm.tsx",
+      "messages": [],
+      "suppressedMessages": [],
       "errorCount": 0,
       "fatalErrorCount": 0,
       "warningCount": 0,
@@ -1010,7 +1267,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/components/SuggestionForm.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/SyncActions.test.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1021,7 +1278,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/components/SyncActions.test.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/SyncActions.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1032,7 +1289,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/components/SyncActions.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/SyncStatusInfo.test.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1043,7 +1300,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/components/SyncStatusInfo.test.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/SyncStatusInfo.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1054,7 +1311,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/components/SyncStatusInfo.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/TimelineEditor.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1065,7 +1322,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/components/TimelineEditor.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/TimelineEventList.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1076,7 +1333,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/components/TimelineEventList.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/TimelineView.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1087,7 +1344,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/components/TimelineView.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/TrackingFields.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1098,7 +1355,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/components/ViewSwitcher.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ViewSwitcher.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1109,7 +1366,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/components/settings/ATSSearchSettings.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/emailScanReducer.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1120,7 +1377,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/components/settings/CustomFieldsSettings.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/profileSetupReducer.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1131,7 +1388,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/components/settings/DateFormatSettings.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/settings/ATSSearchSettings.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1142,7 +1399,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/components/settings/EmailScanSettings.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/settings/CloudAccountSection.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1153,7 +1410,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/components/settings/FieldsSettings.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/settings/CustomFieldsSettings.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1164,7 +1421,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/components/settings/InterviewingSettings.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/settings/DateFormatSettings.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1175,7 +1432,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/components/settings/MatchingSettings.test.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/settings/EmailScanSettings.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1186,7 +1443,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/components/settings/MatchingSettings.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/settings/FieldsSettings.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1197,7 +1454,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/components/settings/ToolsSettings.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/settings/InterviewingSettings.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1208,7 +1465,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/components/settings/ViewSettings.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/settings/MatchingSettings.test.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1219,7 +1476,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/components/sync/MergePromptHandler.test.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/settings/MatchingSettings.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1230,7 +1487,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/components/sync/MergePromptHandler.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/settings/SettingsSectionHeader.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1241,7 +1498,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/components/sync/MergePromptModal.test.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/settings/SettingsSidebar.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1252,7 +1509,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/components/sync/MergePromptModal.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/settings/ToolsSettings.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1263,7 +1520,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/components/sync/SyncNavIcon.test.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/settings/ViewSettings.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1274,7 +1531,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/components/sync/SyncNavIcon.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/sync/MergePromptHandler.test.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1285,7 +1542,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/components/ui/Badge.test.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/sync/MergePromptHandler.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1296,7 +1553,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/components/ui/Badge.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/sync/MergePromptModal.test.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1307,7 +1564,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/components/ui/Button.test.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/sync/MergePromptModal.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1318,7 +1575,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/components/ui/Button.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/sync/SyncNavIcon.test.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1329,7 +1586,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/components/ui/Card.test.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/sync/SyncNavIcon.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1340,7 +1597,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/components/ui/Card.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ui/Badge.test.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1351,7 +1608,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/components/ui/Input.test.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ui/Badge.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1362,7 +1619,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/components/ui/Input.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ui/Button.test.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1373,7 +1630,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/components/ui/Select.test.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ui/Button.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1384,7 +1641,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/components/ui/Select.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ui/Card.test.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1395,7 +1652,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/components/ui/Separator.test.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ui/Card.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1406,7 +1663,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/components/ui/Separator.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ui/Dialog.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1417,51 +1674,9 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/components/ui/Table.test.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ui/DropdownMenu.tsx",
       "messages": [],
-      "suppressedMessages": [
-        {
-          "ruleId": "@typescript-eslint/no-explicit-any",
-          "severity": 2,
-          "message": "Unexpected any. Specify a different type.",
-          "line": 19,
-          "column": 33,
-          "nodeType": "TSAnyKeyword",
-          "messageId": "unexpectedAny",
-          "endLine": 19,
-          "endColumn": 36,
-          "suggestions": [
-            {
-              "messageId": "suggestUnknown",
-              "fix": {
-                "range": [
-                  700,
-                  703
-                ],
-                "text": "unknown"
-              },
-              "desc": "Use `unknown` instead, this will force you to explicitly, and safely assert the type is correct."
-            },
-            {
-              "messageId": "suggestNever",
-              "fix": {
-                "range": [
-                  700,
-                  703
-                ],
-                "text": "never"
-              },
-              "desc": "Use `never` instead, this is useful when instantiating generic type parameters that you don't need to know the type of."
-            }
-          ],
-          "suppressions": [
-            {
-              "kind": "directive",
-              "justification": ""
-            }
-          ]
-        }
-      ],
+      "suppressedMessages": [],
       "errorCount": 0,
       "fatalErrorCount": 0,
       "warningCount": 0,
@@ -1470,7 +1685,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/components/ui/Table.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ui/Input.test.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1481,7 +1696,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/components/ui/TagInput.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ui/Input.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1492,7 +1707,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/components/ui/index.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ui/PageHeader.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1503,7 +1718,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/hooks/useCloudSync.test.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ui/Select.test.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1514,7 +1729,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/hooks/useCloudSync.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ui/Select.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1525,7 +1740,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/hooks/useCrypto.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ui/Separator.test.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1536,7 +1751,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/hooks/useFilteredApplications.test.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ui/Separator.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1547,7 +1762,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/hooks/useFilteredApplications.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ui/Switch.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1558,7 +1773,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/hooks/useFocusTrap.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ui/Table.test.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1569,7 +1784,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/hooks/useFormatDate.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ui/Table.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1580,7 +1795,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/hooks/useInsightsData.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ui/TagInput.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1591,7 +1806,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/hooks/useIsLoggedIn.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ui/Textarea.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1602,7 +1817,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/hooks/useKeyboardEscape.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ui/badgeVariants.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1613,7 +1828,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/hooks/useKeyboardKey.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ui/buttonVariants.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1624,7 +1839,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/hooks/useSelection.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/components/ui/index.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1635,7 +1850,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/hooks/useTableColumns.test.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/hooks/useCloudSync.test.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1646,7 +1861,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/hooks/useTableColumns.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/hooks/useCloudSync.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1657,7 +1872,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/i18n.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/hooks/useCrypto.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1668,7 +1883,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/layouts/MainLayout.test.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/hooks/useFilteredApplications.test.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1679,7 +1894,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/layouts/MainLayout.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/hooks/useFilteredApplications.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1690,7 +1905,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/mails/adapter/emailAdapter.test.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/hooks/useFocusTrap.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1701,7 +1916,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/mails/adapter/emailAdapter.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/hooks/useFormatDate.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1712,7 +1927,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/mails/errors.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/hooks/useGoogleToken.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1723,7 +1938,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/mails/hooks/useEmailScan.test.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/hooks/useInsightsData.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1734,7 +1949,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/mails/hooks/useEmailScan.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/hooks/useIsLoggedIn.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1745,7 +1960,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/mails/providers/emailProvider.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/hooks/useKeyboardEscape.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1756,7 +1971,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/mails/providers/fake/fakeData.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/hooks/useKeyboardKey.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1767,7 +1982,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/mails/providers/fake/fakeProvider.test.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/hooks/useKeyboardShortcuts.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1778,7 +1993,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/mails/providers/fake/fakeProvider.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/hooks/useSelection.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1789,7 +2004,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/mails/providers/gmail/gmailClient.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/hooks/useTableColumns.test.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1800,7 +2015,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/mails/services/scanService.test.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/hooks/useTableColumns.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1811,7 +2026,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/mails/services/scanService.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/i18n.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1822,7 +2037,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/mails/types.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/layouts/MainLayout.test.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1833,7 +2048,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/main.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/layouts/MainLayout.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1844,7 +2059,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/pages/BackupSyncPage.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/lib/perf.test.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1855,7 +2070,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/pages/GmailScanPage.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/lib/perf.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1866,7 +2081,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/pages/HomePage.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/lib/utils.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1877,7 +2092,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/pages/InsightsPage.test.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/locales/en/translation.json",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1888,7 +2103,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/pages/InsightsPage.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/locales/es/translation.json",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1899,7 +2114,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/pages/LandingPage.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/mails/adapter/emailAdapter.test.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1910,7 +2125,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/pages/LoginPage.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/mails/adapter/emailAdapter.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1921,7 +2136,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/pages/OpportunitiesPage.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/mails/errors.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1932,7 +2147,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/pages/RegisterPage.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/mails/hooks/useEmailScan.test.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1943,7 +2158,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/pages/SettingsPage.property.test.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/mails/hooks/useEmailScan.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1954,7 +2169,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/pages/SettingsPage.test.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/mails/providers/emailProvider.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1965,7 +2180,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/pages/SettingsPage.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/mails/providers/fake/fakeData.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1976,7 +2191,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/pages/SuggestionsViewerPage.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/mails/providers/fake/fakeProvider.test.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1987,7 +2202,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/pages/SupportPage.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/mails/providers/fake/fakeProvider.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -1998,7 +2213,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/pwa.d.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/mails/providers/gmail/gmailClient.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -2009,7 +2224,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/seo/SEOManager.test.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/mails/services/scanService.test.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -2020,7 +2235,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/seo/SEOManager.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/mails/services/scanService.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -2031,7 +2246,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/seo/constants.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/mails/types.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -2042,7 +2257,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/seo/index.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/main.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -2053,7 +2268,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/seo/resolve.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/pages/BackupSyncPage.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -2064,7 +2279,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/seo/types.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/pages/GmailScanPage.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -2075,27 +2290,27 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/seo/useSEO.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/pages/HomePage.tsx",
       "messages": [],
       "suppressedMessages": [
         {
           "ruleId": "react-hooks/exhaustive-deps",
           "severity": 1,
-          "message": "React Hook useEffect has a missing dependency: 'resolved'. Either include it or remove the dependency array.",
-          "line": 28,
+          "message": "React Hook useEffect has missing dependencies: 'onMessage' and 'onMount'. Either include them or remove the dependency array.",
+          "line": 141,
           "column": 6,
           "nodeType": "ArrayExpression",
-          "endLine": 37,
-          "endColumn": 4,
+          "endLine": 141,
+          "endColumn": 8,
           "suggestions": [
             {
-              "desc": "Update the dependencies array to be: [resolved.title, resolved.description, resolved.canonicalUrl, resolved.ogImage, resolved.ogType, resolved.structuredData, resolved.alternates, i18n.language, resolved]",
+              "desc": "Update the dependencies array to be: [onMessage, onMount]",
               "fix": {
                 "range": [
-                  1053,
-                  1247
+                  5196,
+                  5198
                 ],
-                "text": "[resolved.title, resolved.description, resolved.canonicalUrl, resolved.ogImage, resolved.ogType, resolved.structuredData, resolved.alternates, i18n.language, resolved]"
+                "text": "[onMessage, onMount]"
               }
             }
           ],
@@ -2115,7 +2330,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/setupTests.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/pages/InsightsPage.test.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -2126,7 +2341,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/storage/applications.test.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/pages/InsightsPage.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -2137,7 +2352,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/storage/applications.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/pages/JobDetailsPage.test.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -2148,7 +2363,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/storage/auth.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/pages/JobDetailsPage.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -2159,7 +2374,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/storage/index.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/pages/LandingPage.test.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -2170,7 +2385,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/storage/matching.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/pages/LandingPage.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -2181,7 +2396,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/storage/opportunities.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/pages/LoginPage.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -2192,7 +2407,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/storage/preferences.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/pages/OpportunitiesPage.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -2203,7 +2418,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/store/geminiKeyStore.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/pages/RegisterPage.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -2214,7 +2429,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/stores/applicationsStore.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/pages/SettingsPage.property.test.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -2225,7 +2440,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/stores/authStore.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/pages/SettingsPage.test.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -2236,7 +2451,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/stores/matchingStore.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/pages/SettingsPage.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -2247,7 +2462,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/stores/mergeStore.test.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/pages/SuggestionsViewerPage.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -2258,7 +2473,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/stores/mergeStore.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/pages/SupportPage.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -2269,7 +2484,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/stores/opportunitiesStore.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/pwa.d.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -2280,7 +2495,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/stores/preferencesStore.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/seo/SEOManager.test.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -2291,8 +2506,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/tests/Alert.test.tsx",
-      "filePath": "/app/src/setupTests.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/seo/SEOManager.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -2303,8 +2517,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/tests/AlertProvider.test.tsx",
-      "filePath": "/app/src/storage/applications.test.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/seo/constants.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -2315,8 +2528,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/tests/App.test.tsx",
-      "filePath": "/app/src/storage/applications.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/seo/resolve.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -2327,8 +2539,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/tests/BackupSyncPage.merge.test.tsx",
-      "filePath": "/app/src/storage/auth.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/seo/types.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -2339,8 +2550,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/tests/BackupSyncPage.test.tsx",
-      "filePath": "/app/src/storage/index.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/seo/useSEO.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -2351,8 +2561,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/tests/CalendarView.test.tsx",
-      "filePath": "/app/src/storage/opportunities.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/setupTests.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -2363,8 +2572,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/tests/DarkModeIntegration.test.tsx",
-      "filePath": "/app/src/storage/preferences.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/storage/applications.test.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -2375,8 +2583,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/tests/EmailScanReview.test.tsx",
-      "filePath": "/app/src/store/geminiKeyStore.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/storage/applications.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -2387,8 +2594,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/tests/FiltersBar.test.tsx",
-      "filePath": "/app/src/stores/applicationsStore.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/storage/auth.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -2399,8 +2605,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/tests/GoogleSheetsSync.test.tsx",
-      "filePath": "/app/src/stores/authStore.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/storage/matching.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -2411,7 +2616,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/tests/Header.test.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/storage/opportunities.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -2422,7 +2627,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/tests/HomePage.test.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/storage/preferences.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -2433,7 +2638,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/tests/KanbanView.test.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/store/geminiKeyStore.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -2444,7 +2649,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/tests/OpportunitiesPage.test.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/stores/applicationsStore.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -2455,7 +2660,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/tests/OpportunityForm.test.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/stores/authStore.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -2466,7 +2671,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/tests/SettingsPage.test.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/stores/matchingStore.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -2477,7 +2682,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/tests/SuggestionsViewerPage.test.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/stores/mergeStore.test.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -2488,7 +2693,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/tests/SupportPage.test.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/stores/mergeStore.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -2499,7 +2704,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/tests/Theme.test.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/stores/opportunitiesStore.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -2510,7 +2715,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/tests/TimelineEditor.test.tsx",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/stores/preferencesStore.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -2521,7 +2726,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/tests/date.test.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/tests/Alert.test.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -2532,7 +2737,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/tests/google-oauth-mock.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/tests/AlertProvider.test.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -2543,7 +2748,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/tests/googleSheets.test.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/tests/App.test.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -2554,7 +2759,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/tests/helpers/mergeDataHelpers.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/tests/BackupSyncPage.merge.test.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -2565,7 +2770,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/types/applications.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/tests/BackupSyncPage.test.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -2576,7 +2781,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/types/index.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/tests/CalendarView.test.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -2587,7 +2792,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/types/matching.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/tests/DarkModeIntegration.test.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -2598,7 +2803,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/types/opportunities.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/tests/EmailScanReview.test.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -2609,7 +2814,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/types/preferences.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/tests/FiltersBar.test.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -2620,7 +2825,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/types/table.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/tests/GoogleSheetsSync.test.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -2631,7 +2836,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/utils/api.property.test.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/tests/Header.test.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -2642,7 +2847,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/utils/api.test.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/tests/HomePage.test.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -2653,7 +2858,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/utils/api.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/tests/KanbanView.test.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -2664,7 +2869,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/utils/applications.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/tests/OpportunitiesPage.test.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -2675,7 +2880,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/utils/constants.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/tests/OpportunityForm.test.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -2686,7 +2891,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/utils/csv.test.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/tests/SettingsPage.test.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -2697,7 +2902,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/utils/csv.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/tests/SuggestionsViewerPage.test.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -2708,7 +2913,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/utils/date.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/tests/SupportPage.test.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -2719,7 +2924,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/utils/geminiApi.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/tests/Theme.test.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -2730,7 +2935,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/utils/geminiJobScoring.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/tests/TimelineEditor.test.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -2741,7 +2946,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/utils/geminiProfile.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/tests/accessibility/Alert.a11y.test.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -2752,7 +2957,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/utils/googleSheets.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/tests/accessibility/Input.a11y.test.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -2763,7 +2968,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/utils/id.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/tests/accessibility/MainLayout.a11y.test.tsx",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -2774,7 +2979,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/utils/localStorage.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/tests/date.test.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -2785,7 +2990,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/utils/manualScan.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/tests/google-oauth-mock.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -2796,8 +3001,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/utils/matching.test.ts",
-      "filePath": "/app/src/utils/geminiApi.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/tests/googleSheets.test.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -2808,7 +3012,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/utils/googleSheets.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/tests/helpers/mergeDataHelpers.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -2819,7 +3023,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/utils/matching.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/types/applications.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -2830,7 +3034,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/utils/mergeData.test.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/types/filters.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -2841,7 +3045,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/utils/mergeData.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/types/jobSearch.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -2852,7 +3056,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/utils/mergeData.test.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/types/matching.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -2863,7 +3067,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/utils/mergeData.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/types/opportunities.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -2874,7 +3078,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/utils/status.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/types/preferences.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -2885,7 +3089,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/src/utils/url.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/types/table.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -2896,7 +3100,7 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/tailwind.config.js",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/utils/api.property.test.ts",
       "messages": [],
       "suppressedMessages": [],
       "errorCount": 0,
@@ -2907,51 +3111,339 @@
       "usedDeprecatedRules": []
     },
     {
-      "filePath": "/app/vite.config.ts",
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/utils/api.test.ts",
       "messages": [],
-      "suppressedMessages": [
-        {
-          "ruleId": "@typescript-eslint/no-explicit-any",
-          "severity": 2,
-          "message": "Unexpected any. Specify a different type.",
-          "line": 58,
-          "column": 14,
-          "nodeType": "TSAnyKeyword",
-          "messageId": "unexpectedAny",
-          "endLine": 58,
-          "endColumn": 17,
-          "suggestions": [
-            {
-              "messageId": "suggestUnknown",
-              "fix": {
-                "range": [
-                  1664,
-                  1667
-                ],
-                "text": "unknown"
-              },
-              "desc": "Use `unknown` instead, this will force you to explicitly, and safely assert the type is correct."
-            },
-            {
-              "messageId": "suggestNever",
-              "fix": {
-                "range": [
-                  1664,
-                  1667
-                ],
-                "text": "never"
-              },
-              "desc": "Use `never` instead, this is useful when instantiating generic type parameters that you don't need to know the type of."
-            }
-          ],
-          "suppressions": [
-            {
-              "kind": "directive",
-              "justification": ""
-            }
-          ]
-        }
-      ],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/utils/api.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/utils/applications.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/utils/constants.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/utils/credentialsGuard.test.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/utils/csv.test.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/utils/csv.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/utils/date.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/utils/dateHelpers.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/utils/fetchDefaults.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/utils/geminiApi.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/utils/geminiJobScoring.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/utils/geminiProfile.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/utils/googleSheets.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/utils/id.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/utils/jobSearchApi.test.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/utils/jobSearchApi.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/utils/manualScan.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/utils/matching.test.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/utils/matching.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/utils/mergeData.test.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/utils/mergeData.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/utils/nonFetchHttpGuard.test.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/utils/status.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/utils/syncSchemas.test.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/utils/syncSchemas.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/utils/timelineDisplay.test.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/utils/timelineDisplay.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/src/utils/url.ts",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/tailwind.config.js",
+      "messages": [],
+      "suppressedMessages": [],
+      "errorCount": 0,
+      "fatalErrorCount": 0,
+      "warningCount": 0,
+      "fixableErrorCount": 0,
+      "fixableWarningCount": 0,
+      "usedDeprecatedRules": []
+    },
+    {
+      "filePath": "/Users/diegomendozasalas/repos/job-application-tracker/vite.config.ts",
+      "messages": [],
+      "suppressedMessages": [],
       "errorCount": 0,
       "fatalErrorCount": 0,
       "warningCount": 0,

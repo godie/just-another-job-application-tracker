@@ -2,6 +2,31 @@ import { onLCP, onINP, onCLS, onFCP, type Metric } from 'web-vitals';
 
 export type Reporter = (metric: Metric) => void;
 
+const API_BASE = import.meta.env.VITE_API_BASE_URL || '/api';
+
+/**
+ * Send web-vitals metrics to the backend as span events.
+ * The backend attaches them to the current trace so they appear in Logfire.
+ */
+const logfireReporter: Reporter = (metric) => {
+  if (typeof navigator === 'undefined' || !navigator.sendBeacon) {
+    return;
+  }
+  try {
+    const payload = JSON.stringify({
+      name: metric.name,
+      value: metric.value,
+      id: metric.id,
+      navigationType: metric.navigationType,
+      rating: (metric as unknown as Record<string, unknown>).rating,
+      timestamp: Date.now(),
+    });
+    navigator.sendBeacon(`${API_BASE}/perf/vitals`, payload);
+  } catch {
+    // Swallow beacon errors — telemetry must never break the app.
+  }
+};
+
 /**
  * Default human-readable sink. Each metric fires once (per `id`) so duplicate
  * layout-shift cluster frames collapse to a single line. `toFixed(2)` keeps
@@ -24,6 +49,16 @@ const consoleReporter: Reporter = (metric) => {
  * Order is preserved; failures from one reporter do not interrupt the others.
  */
 export const reporters: Reporter[] = [consoleReporter];
+
+/**
+ * Add the Logfire backend reporter when telemetry is enabled.
+ * Call this once at boot if you want web-vitals in Logfire.
+ */
+export function enableLogfireReporter(): void {
+  if (!reporters.includes(logfireReporter)) {
+    reporters.push(logfireReporter);
+  }
+}
 
 /**
  * Dispatch a single metric to every registered reporter. Order matters:

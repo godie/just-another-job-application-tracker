@@ -116,12 +116,10 @@ class JobSearchController
         $errors = [];
         $totalCount = 0;
 
-        // ── Source='all' or mixed: curl_multi for parallel execution ──
-        if ($source === 'all' || ($queryJooble && $queryTheirstack && ($queryAdzuna || $queryCareerjet)) || ($queryJooble && $queryTheirstack)) {
+        // ── Multi-source: one parallel branch handles all extras sources dynamically ──
+        $sourceCount = (int) $queryJooble + (int) $queryTheirstack + (int) $queryAdzuna + (int) $queryCareerjet;
+        if ($source === 'all' || $sourceCount >= 2) {
             [$allResults, $errors] = $this->fetchAllSources($keywords, $location, $remoteOnly, $techStack, $page, $pageSize);
-            $totalCount = count($allResults);
-        } elseif ($queryJooble && $queryTheirstack) {
-            [$allResults, $errors] = $this->fetchBothSources($keywords, $location, $remoteOnly, $techStack, $page, $pageSize);
             $totalCount = count($allResults);
         } elseif ($queryJooble) {
             [$joobleResults, $joobleErr] = $this->fetchJooble($keywords, $location, $remoteOnly, $page, $pageSize);
@@ -257,6 +255,57 @@ class JobSearchController
                 'url' => $url,
                 'postedDate' => is_string($job['date_posted'] ?? null) ? $job['date_posted'] : null,
                 'source' => 'careerjet',
+                'techStack' => [],
+            ];
+        }, $jobs);
+
+        return [$results, null];
+    }
+
+    // ────────────────────────────────────────────
+    //  Jooble fetcher
+    // ────────────────────────────────────────────
+
+    /**
+     * @return array{0: array, 1: array|null}  [results, error]
+     */
+    private function fetchJooble(
+        string $keywords,
+        string $location,
+        bool $remoteOnly,
+        int $page,
+        int $pageSize
+    ): array {
+        $body = ['keywords' => $keywords, 'page' => (string) $page];
+        if ($location !== '') {
+            $body['location'] = $location;
+        }
+        if ($remoteOnly) {
+            $body['location'] = trim(($body['location'] ?? '') . ' remote');
+        }
+
+        $url = 'https://jooble.org/api/' . $this->joobleApiKey;
+        $response = $this->callApi($url, $body);
+
+        if ($response === null) {
+            return [[], ['source' => 'jooble', 'message' => 'Jooble API unavailable']];
+        }
+
+        $jobs = $response['jobs'] ?? [];
+        $results = array_map(function (array $job): array {
+            $url = is_string($job['link'] ?? null) ? $job['link'] : '';
+            $loc = is_string($job['location'] ?? null) ? $job['location'] : null;
+            return [
+                'id' => $this->hashId('jooble', $url),
+                'position' => is_string($job['title'] ?? null) ? $job['title'] : 'Unknown Position',
+                'company' => is_string($job['company'] ?? null) ? $job['company'] : 'Unknown Company',
+                'location' => $loc,
+                'remote' => $this->isRemote($loc ?? ''),
+                'salary' => is_string($job['salary'] ?? null) ? $job['salary'] : null,
+                'description' => $this->truncate(is_string($job['snippet'] ?? null) ? $job['snippet'] : null, 1000),
+                'url' => $url,
+                'postedDate' => is_string($job['updated'] ?? null) ? $job['updated'] : null,
+                'source' => 'jooble',
                 'techStack' => [],
             ];
         }, $jobs);
@@ -605,273 +654,6 @@ class JobSearchController
                 'url' => $url,
                 'postedDate' => is_string($job['date_published'] ?? null) ? $job['date_published'] : null,
                 'source' => 'adzuna',
-                'techStack' => [],
-            ];
-        }, $jobs);
-
-        return [$results, null];
-    }
-
-    // ────────────────────────────────────────────
-    //  All sources fetcher (3-way parallel via curl_multi)
-    // ────────────────────────────────────────────
-
-    /**
-     * Fetch Jooble, TheirStack, and Adzuna in parallel via curl_multi.
-     *
-     * @return array{0: array, 1: array}  [merged results, errors]
-     */
-    private function fetchAllSources(
-        string $keywords,
-        string $location,
-        bool $remoteOnly,
-        array $techStack,
-        int $page,
-        int $pageSize
-    ): array {
-        if (!function_exists('curl_multi_init')) {
-            // Fallback to sequential
-            [$joobleResults, $joobleErr] = $this->fetchJooble($keywords, $location, $remoteOnly, $page, $pageSize);
-            [$tsResults, $tsErr] = $this->fetchTheirstack($keywords, $location, $remoteOnly, $techStack, $page, $pageSize);
-            [$azResults, $azErr] = $this->fetchAdzuna($keywords, $location, $remoteOnly, $page, $pageSize);
-            $errors = [];
-            if ($joobleErr !== null) { $errors[] = $joobleErr; }
-            if ($tsErr !== null) { $errors[] = $tsErr; }
-            if ($azErr !== null) { $errors[] = $azErr; }
-            return [array_merge($joobleResults, $tsResults, $azResults), $errors];
-        }
-
-        $mh = curl_multi_init();
-        $handles = [];
-        $sources = [];
-
-        // ── Jooble ──
-        if ($this->joobleApiKey !== '') {
-            $joobleBody = ['keywords' => $keywords, 'page' => (string) $page];
-            if ($location !== '') { $joobleBody['location'] = $location; }
-            if ($remoteOnly) { $joobleBody['location'] = trim(($joobleBody['location'] ?? '') . ' remote'); }
-            $ch = curl_init('https://jooble.org/api/' . $this->joobleApiKey);
-            curl_setopt_array($ch, [
-                CURLOPT_POST => true,
-                CURLOPT_POSTFIELDS => json_encode($joobleBody),
-                CURLOPT_HTTPHEADER => ['Content-Type: application/json'],
-                CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_TIMEOUT => 5,
-            ]);
-            curl_multi_add_handle($mh, $ch);
-            $handles['jooble'] = $ch;
-            $sources[] = 'jooble';
-        }
-
-        // ── TheirStack ──
-        if ($this->theirstackApiKey !== '') {
-            $tsBody = [
-                'page' => $page - 1,
-                'limit' => $pageSize,
-                'job_title_or' => [$keywords],
-                'order_by' => [['field' => 'date_posted', 'desc' => true]],
-                'posted_at_max_age_days' => 30,
-            ];
-            $countryCode = $this->locationToCountryCode($location);
-            if ($countryCode !== null) { $tsBody['job_country_code_or'] = [$countryCode]; }
-            if ($remoteOnly) { $tsBody['remote'] = true; }
-            if (count($techStack) > 0) { $tsBody['technology_slug_or'] = $techStack; }
-            $ch = curl_init('https://api.theirstack.com/v1/jobs/search');
-            curl_setopt_array($ch, [
-                CURLOPT_POST => true,
-                CURLOPT_POSTFIELDS => json_encode($tsBody),
-                CURLOPT_HTTPHEADER => [
-                    'Content-Type: application/json',
-                    'Authorization: Bearer ' . $this->theirstackApiKey,
-                    'Accept: application/json',
-                ],
-                CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_TIMEOUT => 5,
-            ]);
-            curl_multi_add_handle($mh, $ch);
-            $handles['theirstack'] = $ch;
-            $sources[] = 'theirstack';
-        }
-
-        // ── Adzuna ──
-        if ($this->adzunaAppId !== '' && $this->adzunaApiKey !== '') {
-            $countryCode = $this->locationToCountryCode($location) ?: 'us';
-            $where = $location !== '' ? $location : '';
-            $what = $remoteOnly ? $keywords . ' remote' : $keywords;
-            $queryParams = http_build_query([
-                'app_id' => $this->adzunaAppId,
-                'app_key' => $this->adzunaApiKey,
-                'what' => $what,
-                'where' => $where,
-                'results_per_page' => $pageSize,
-                'page' => $page,
-                'content-type' => 'application/json',
-            ]);
-            $ch = curl_init("https://api.adzuna.com/v1/api/jobs/{$countryCode}/search/{$page}?{$queryParams}");
-            curl_setopt_array($ch, [
-                CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_TIMEOUT => 5,
-            ]);
-            curl_multi_add_handle($mh, $ch);
-            $handles['adzuna'] = $ch;
-            $sources[] = 'adzuna';
-        }
-
-        // Execute all in parallel
-        $running = 0;
-        do {
-            curl_multi_exec($mh, $running);
-            curl_multi_select($mh, 1);
-        } while ($running > 0);
-
-        // Collect results
-        $results = [];
-        $errors = [];
-
-        foreach ($handles as $source => $ch) {
-            $raw = curl_multi_getcontent($ch);
-            curl_multi_remove_handle($mh, $ch);
-            curl_close($ch);
-
-            if ($raw === false) {
-                $errors[] = ['source' => $source, 'message' => ucfirst($source) . ' API unavailable'];
-                continue;
-            }
-
-            $data = json_decode($raw, true);
-
-            if ($source === 'jooble') {
-                if (is_array($data) && isset($data['jobs'])) {
-                    foreach ($data['jobs'] as $job) {
-                        $url = is_string($job['link'] ?? null) ? $job['link'] : '';
-                        $loc = is_string($job['location'] ?? null) ? $job['location'] : null;
-                        $results[] = [
-                            'id' => $this->hashId('jooble', $url),
-                            'position' => is_string($job['title'] ?? null) ? $job['title'] : 'Unknown Position',
-                            'company' => is_string($job['company'] ?? null) ? $job['company'] : 'Unknown Company',
-                            'location' => $loc,
-                            'remote' => $this->isRemote($loc ?? ''),
-                            'salary' => is_string($job['salary'] ?? null) ? $job['salary'] : null,
-                            'description' => $this->truncate(is_string($job['snippet'] ?? null) ? $job['snippet'] : null, 1000),
-                            'url' => $url,
-                            'postedDate' => is_string($job['updated'] ?? null) ? $job['updated'] : null,
-                            'source' => 'jooble',
-                            'techStack' => [],
-                        ];
-                    }
-                } else {
-                    $errors[] = ['source' => 'jooble', 'message' => 'Jooble API unavailable'];
-                }
-            } elseif ($source === 'theirstack') {
-                if (is_array($data) && isset($data['data'])) {
-                    $tsJobs = is_array($data['data']) ? $data['data'] : [];
-                    foreach ($tsJobs as $job) {
-                        $url = is_string($job['url'] ?? null) ? $job['url'] : '';
-                        $loc = is_string($job['location'] ?? null) ? $job['location'] : null;
-                        $tech = is_array($job['technology_slugs'] ?? null) ? $job['technology_slugs'] : [];
-                        $results[] = [
-                            'id' => $this->hashId('theirstack', $url),
-                            'position' => is_string($job['job_title'] ?? $job['title'] ?? null) ? ($job['job_title'] ?? $job['title']) : 'Unknown Position',
-                            'company' => is_string($job['company_name'] ?? $job['company'] ?? null) ? ($job['company_name'] ?? $job['company']) : 'Unknown Company',
-                            'location' => $loc,
-                            'remote' => $this->isRemote($loc ?? '') || ($job['remote'] ?? false) === true,
-                            'salary' => is_string($job['salary'] ?? null) ? $job['salary'] : null,
-                            'description' => $this->truncate(is_string($job['description'] ?? $job['snippet'] ?? null) ? ($job['description'] ?? $job['snippet']) : null, 1000),
-                            'url' => $url,
-                            'postedDate' => is_string($job['date_posted'] ?? null) ? $job['date_posted'] : null,
-                            'source' => 'theirstack',
-                            'techStack' => array_slice($tech, 0, 10),
-                        ];
-                    }
-                } else {
-                    $errors[] = ['source' => 'theirstack', 'message' => 'TheirStack API unavailable'];
-                }
-            } elseif ($source === 'adzuna') {
-                if (is_array($data) && isset($data['results'])) {
-                    foreach ($data['results'] as $job) {
-                        $url = is_string($job['redirect_url'] ?? null) ? $job['redirect_url'] : '';
-                        $loc = is_string($job['location'] ?? null) ? $job['location'] : null;
-                        $salary = '';
-                        if (isset($job['salary_min']) || isset($job['salary_max'])) {
-                            $min = isset($job['salary_min']) ? '$' . number_format((int) $job['salary_min']) : '';
-                            $max = isset($job['salary_max']) ? '$' . number_format((int) $job['salary_max']) : '';
-                            if ($min && $max) { $salary = "{$min} - {$max}"; }
-                            elseif ($min) { $salary = "From {$min}"; }
-                            elseif ($max) { $salary = "Up to {$max}"; }
-                        }
-                        $results[] = [
-                            'id' => $this->hashId('adzuna', $url),
-                            'position' => is_string($job['title'] ?? null) ? $job['title'] : 'Unknown Position',
-                            'company' => is_string($job['company'] ?? null) ? $job['company'] : 'Unknown Company',
-                            'location' => $loc,
-                            'remote' => $this->isRemote($loc ?? ''),
-                            'salary' => $salary ?: null,
-                            'description' => $this->truncate(is_string($job['description'] ?? null) ? $job['description'] : null, 1000),
-                            'url' => $url,
-                            'postedDate' => is_string($job['date_published'] ?? null) ? $job['date_published'] : null,
-                            'source' => 'adzuna',
-                            'techStack' => [],
-                        ];
-                    }
-                } else {
-                    $errors[] = ['source' => 'adzuna', 'message' => 'Adzuna API unavailable'];
-                }
-            }
-        }
-
-        curl_multi_close($mh);
-
-        return [$results, $errors];
-    }
-
-    // ────────────────────────────────────────────
-    //  Parallel fetcher (curl_multi_exec)
-    // ────────────────────────────────────────────
-
-    /**
-     * Fetch both Jooble and TheirStack in parallel using curl_multi.
-     * Falls back to sequential if curl_multi is unavailable.
-     *
-     * @return array{0: array, 1: array}  [merged results, errors]
-     */
-    private function fetchBothSources(
-        string $keywords,
-        string $location,
-        bool $remoteOnly,
-        int $page,
-        int $pageSize
-    ): array {
-        $body = ['keywords' => $keywords, 'page' => (string) $page];
-
-        if ($location !== '') {
-            $body['location'] = $location;
-        }
-        if ($remoteOnly) {
-            $body['location'] = trim(($body['location'] ?? '') . ' remote');
-        }
-
-        $url = 'https://jooble.org/api/' . $this->joobleApiKey;
-        $response = $this->callApi($url, $body);
-
-        if ($response === null) {
-            return [[], ['source' => 'jooble', 'message' => 'Jooble API unavailable']];
-        }
-
-        $jobs = $response['jobs'] ?? [];
-        $results = array_map(function (array $job): array {
-            $url = is_string($job['link'] ?? null) ? $job['link'] : '';
-            $location = is_string($job['location'] ?? null) ? $job['location'] : null;
-            return [
-                'id' => $this->hashId('jooble', $url),
-                'position' => is_string($job['title'] ?? null) ? $job['title'] : 'Unknown Position',
-                'company' => is_string($job['company'] ?? null) ? $job['company'] : 'Unknown Company',
-                'location' => $location,
-                'remote' => $this->isRemote($location ?? ''),
-                'salary' => is_string($job['salary'] ?? null) ? $job['salary'] : null,
-                'description' => $this->truncate(is_string($job['snippet'] ?? null) ? $job['snippet'] : null, 1000),
-                'url' => $url,
-                'postedDate' => is_string($job['updated'] ?? null) ? $job['updated'] : null,
-                'source' => 'jooble',
                 'techStack' => [],
             ];
         }, $jobs);

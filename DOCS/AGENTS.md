@@ -22,7 +22,7 @@ This document provides comprehensive guidelines for agentic coding assistants wo
 **Test Environment**: happy-dom
 **Code Quality**: ESLint with TypeScript ESLint
 **Architecture**: Single Page Application (SPA) with Chrome Extension support
-**State Management**: React Hooks with localStorage persistence
+**State Management**: Zustand with localStorage persistence
 
 ## Build, Lint, and Test Commands
 
@@ -323,17 +323,13 @@ job-application-tracker/
 │   ├── tests/              # Test files
 │   ├── App.tsx             # Main app component
 │   └── main.tsx            # Application entry point
-├── job-application-tracker-extension/
-│   ├── job-extractors/     # Job extraction system
-│   ├── __tests__/          # Extension tests
-│   ├── background.ts       # Service worker
-│   ├── content.ts          # Content script
-│   ├── popup.tsx           # Popup React component
-│   └── manifest.json       # Extension manifest
-├── api/                    # PHP backend endpoints
+├── api/                    # PHP backend endpoints (OverPHP framework)
 ├── public/                 # Static assets
 ├── .env.local              # Environment variables (gitignored)
 └── package.json
+
+# Chrome extension is now an independent project:
+# ../job-application-tracker-extension/
 ```
 
 ## Common Patterns
@@ -403,7 +399,7 @@ import { useTheme } from '../hooks/useTheme'; // If using custom hook
 
 Before committing code:
 
-- ✅ Run tests: `npm test` (all 308 tests should pass)
+- ✅ Run tests: `npm test` (all 868 tests should pass)
 - ✅ Run linter: `npm run lint` (no errors, pre-commit hook will check)
 - ✅ Build succeeds: `npm run build` (no TypeScript or build errors)
 - ✅ Type safety: No `any` types, all functions typed

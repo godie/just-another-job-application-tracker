@@ -1,3 +1,5 @@
+> **Note:** This file is a duplicate of the CVE Lite section in `DOCS/AGENTS.md`. For the canonical version, see `DOCS/AGENTS.md`. This file is kept for backward compatibility only.
+
 ## CVE Lite CLI
 
 Run `cve-lite . --json` in the project root. The results are saved to `cve-lite-scan-<timestamp>.json` in the current directory.

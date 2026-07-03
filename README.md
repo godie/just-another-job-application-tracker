@@ -13,7 +13,7 @@ This is a modern Job Application Tracker built using React, TypeScript, and Tail
 
 **Completion: 98%**
 
-This project is feature-complete for its core functionality. Based on the project [recommendations](./DOCS/RECOMMENDATIONS.md), 48 out of 48 planned features have been implemented and are fully tested. The test suite has 680+ tests (66 test files) with Vitest and React Testing Library.
+This project is feature-complete for its core functionality. Based on the project [recommendations](./DOCS/RECOMMENDATIONS.md), 48 out of 48 planned features have been implemented and are fully tested. The test suite has 868+ tests (79 test files) with Vitest and React Testing Library.
 
 ## Recent Updates
 

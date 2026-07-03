@@ -4,7 +4,7 @@
 
 - **Application Name**: Just Another Job Application Tracker (JAJAT)
 - **Website**: https://jajat.godieboy.com
-- **Contact Email**: [godie.mendoza@gmail.com ]
+- **Contact Email**: godie.mendoza@gmail.com
 - **Project ID**: []
 
 ## OAuth Scopes Requested
@@ -163,7 +163,7 @@ Users can delete their data through:
 2. **Uninstall Extension**: Remove Chrome extension to delete extension data
 3. **Delete Google Sheets**: Remove synced spreadsheets from Google Drive
 4. **Revoke Access**: Visit https://myaccount.google.com/permissions to revoke all permissions
-5. **Contact Us**: Email [YOUR_EMAIL_HERE] for assistance (if applicable)
+5. **Contact Us**: Email godie.mendoza@gmail.com for assistance
 
 Response time: Within 30 days of request.
 
@@ -176,8 +176,8 @@ Response time: Within 30 days of request.
 - **App domain**: jajat.godieboy.com
 - **Privacy Policy**: https://jajat.godieboy.com/privacy.html
 - **Terms of Service**: https://jajat.godieboy.com/terms.html
-- **Support email**: [YOUR_EMAIL_HERE]
-- **Developer contact**: [YOUR_EMAIL_HERE]
+- **Support email**: godie.mendoza@gmail.com
+- **Developer contact**: godie.mendoza@gmail.com
 
 ### Scopes Summary Table
 
@@ -199,7 +199,7 @@ Before submitting for verification:
 - ✅ Terms of Service includes Google API compliance section
 - ✅ OAuth consent screen configured with all scopes
 - ✅ Privacy Policy URL and Terms of Service URL are publicly accessible
-- ✅ Support email and developer contact information are current
+- ✅ Support email and developer contact information are current (godie.mendoza@gmail.com)
 - ✅ Authorized domains and redirect URIs are configured
 - ✅ App logo and branding are uploaded
 - ✅ Test users configured (for testing mode)
@@ -248,11 +248,11 @@ To test our Gmail integration:
 
 For questions about this justification or our use of Google API services:
 
-**Email**: [YOUR_EMAIL_HERE]
+**Email**: godie.mendoza@gmail.com
 **Website**: https://jajat.godieboy.com
 **Privacy Policy**: https://jajat.godieboy.com/privacy.html
 **Terms of Service**: https://jajat.godieboy.com/terms.html
 
 ---
 
-**Last Updated**: December 2025
+**Last Updated**: July 2026

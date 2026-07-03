@@ -23,7 +23,11 @@ describe('linkGoogleAccount', () => {
     expect(url).toMatch(/\/api\/auth\/google$/);
     expect(options.method).toBe('POST');
     expect(options.credentials).toBe('include');
-    expect(options.headers).toEqual({ 'Content-Type': 'application/json' });
+    expect(options.headers).toEqual(
+      expect.objectContaining({ 'Content-Type': 'application/json' })
+    );
+    expect(options.headers).toHaveProperty('traceparent');
+    expect((options.headers as Record<string, string>).traceparent).toMatch(/^00-[a-f0-9]{32}-[a-f0-9]{16}-01$/);
     expect(options.body).toBe(JSON.stringify({ googleToken: 'auth-code-123', redirectUri: 'http://localhost:5173' }));
   });
 

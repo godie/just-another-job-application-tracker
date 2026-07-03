@@ -1,4 +1,4 @@
-import React, { useReducer, useEffect, useMemo, useCallback, useRef } from 'react';
+import React, { useReducer, useEffect, useMemo, useCallback, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSEO } from '../seo/useSEO';
 import Footer from '../components/Footer';
@@ -8,15 +8,21 @@ import { searchJobs } from '../utils/jobSearchApi';
 import { useAlert } from '../components/AlertProvider';
 import { convertOpportunityToApplication } from '../storage/opportunities';
 import type { JobOpportunity } from '../types/opportunities';
+import type { JobMatchResult } from '../types/matching';
 import OpportunityForm from '../components/OpportunityForm';
 import ConfirmDialog from '../components/ConfirmDialog';
 
 import { useOpportunitiesStore } from '../stores/opportunitiesStore';
 import { useApplicationsStore } from '../stores/applicationsStore';
+import { useMatchingStore } from '../stores/matchingStore';
+import { getMatchThresholdOverride, saveMatchThresholdOverride, clearMatchThresholdOverride } from '../storage/matching';
 import OpportunitiesEmptyState from '../components/OpportunitiesEmptyState';
 import OpportunitiesTable from '../components/OpportunitiesTable';
+import { RecommendationPanel } from '../components/RecommendationPanel';
+import { MatchBreakdownModal } from '../components/MatchBreakdownModal';
 import { useFormatDate } from '../hooks/useFormatDate';
 import { PageHeader } from '../components/ui/PageHeader';
+import packageJson from '../../package.json';
 
 import { type PageType } from '../App';
 import type { JobSearchParams, UnifiedJobResult } from '../types/jobSearch';
@@ -96,6 +102,64 @@ const OpportunitiesPageContent: React.FC<OpportunitiesPageContentProps> = () => 
   const manager = useOpportunitiesManager();
   const opportunities = manager.opportunities;
 
+  const matchResults = useMatchingStore((state) => state.matchResults);
+  const matchingPreferences = useMatchingStore((state) => state.preferences);
+  const loadMatchingState = useMatchingStore((state) => state.loadMatchingState);
+  const computeScores = useMatchingStore((state) => state.computeScores);
+  const [selectedMatch, setSelectedMatch] = useState<{ result: JobMatchResult; opportunity: JobOpportunity } | null>(null);
+  const [matchThreshold, setMatchThreshold] = useState<number>(() => {
+    const persisted = getMatchThresholdOverride();
+    return persisted !== null ? persisted : matchingPreferences.minMatchThreshold;
+  });
+  const isThresholdUserModifiedRef = useRef(false);
+
+  useEffect(() => {
+    if (isThresholdUserModifiedRef.current) {
+      saveMatchThresholdOverride(matchThreshold);
+    }
+  }, [matchThreshold]);
+
+  // Sync threshold from loaded preferences when no user override exists
+  useEffect(() => {
+    const persisted = getMatchThresholdOverride();
+    if (persisted === null) {
+      setMatchThreshold(matchingPreferences.minMatchThreshold);
+    }
+  }, [matchingPreferences.minMatchThreshold]);
+
+  const computedIdsRef = useRef<string>('');
+
+  useEffect(() => {
+    loadMatchingState();
+  }, [loadMatchingState]);
+
+  useEffect(() => {
+    if (!matchingPreferences.enabled || opportunities.length === 0) return;
+    const ids = opportunities.map((o) => o.id).sort().join(',');
+    if (ids === computedIdsRef.current) return;
+    computedIdsRef.current = ids;
+    const apps = useApplicationsStore.getState().applications;
+    computeScores(opportunities, apps).catch(console.error);
+  }, [matchingPreferences.enabled, opportunities, computeScores]);
+
+  const recommendations = useMemo(() => {
+    return Object.entries(matchResults)
+      .map(([opportunityId, result]) => {
+        const opportunity = opportunities.find((o) => o.id === opportunityId);
+        return opportunity ? { opportunity, matchResult: result } : null;
+      })
+      .filter((r): r is { opportunity: JobOpportunity; matchResult: JobMatchResult } => r !== null)
+      .sort((a, b) => b.matchResult.overallScore - a.matchResult.overallScore);
+  }, [matchResults, opportunities]);
+
+  const displayOpportunities = useMemo(() => {
+    if (!matchingPreferences.enabled || matchThreshold === 0) return manager.filteredOpportunities;
+    return manager.filteredOpportunities.filter((opp) => {
+      const result = matchResults[opp.id];
+      return result && result.overallScore >= matchThreshold;
+    });
+  }, [manager.filteredOpportunities, matchResults, matchThreshold, matchingPreferences.enabled]);
+
   return (
     <div className='max-w-7xl mx-auto px-6 lg:px-8 py-8'>
       {/* ── HERO ZONE ── Header + Add Opportunity CTA ── */}
@@ -132,16 +196,89 @@ const OpportunitiesPageContent: React.FC<OpportunitiesPageContentProps> = () => 
       {opportunities.length === 0 ? (
         <OpportunitiesEmptyState />
       ) : (
-        <OpportunitiesTable
-          opportunities={opportunities}
-          filteredOpportunities={manager.filteredOpportunities}
-          searchTerm={manager.searchTerm}
-          onSearchChange={manager.setSearchTerm}
-          onApply={manager.handleApply}
-          onDelete={manager.handleDelete}
-          formatDate={formatLocaleDate}
-        />
+        <>
+          {matchingPreferences.enabled && (
+            <div className="mb-4 flex flex-col sm:flex-row sm:items-center gap-3">
+              <div className="flex-1">
+                <label htmlFor="match-threshold" className="text-sm font-medium text-muted-foreground">
+                  {t('opportunities.minMatchThreshold')}: <span className="text-foreground font-semibold">{matchThreshold}%</span>
+                </label>
+                <input
+                  id="match-threshold"
+                  type="range"
+                  min={0}
+                  max={100}
+                  step={5}
+                  value={matchThreshold}
+                  onChange={(e) => {
+                    isThresholdUserModifiedRef.current = true;
+                    setMatchThreshold(parseInt(e.target.value, 10));
+                  }}
+                  className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer accent-primary"
+                  aria-label={t('opportunities.minMatchThreshold')}
+                />
+              </div>
+              {getMatchThresholdOverride() !== null && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    clearMatchThresholdOverride();
+                    isThresholdUserModifiedRef.current = false;
+                    setMatchThreshold(matchingPreferences.minMatchThreshold);
+                  }}
+                  className="text-xs font-medium text-muted-foreground hover:text-foreground underline underline-offset-2 transition-colors whitespace-nowrap"
+                >
+                  {t('settings.resetDefault')}
+                </button>
+              )}
+              {matchThreshold > 0 && (
+                <p className="text-xs text-muted-foreground whitespace-nowrap">
+                  {t('opportunities.showingAboveThreshold', { count: displayOpportunities.length, threshold: matchThreshold })}
+                </p>
+              )}
+            </div>
+          )}
+          {displayOpportunities.length === 0 && manager.filteredOpportunities.length > 0 ? (
+            <div className="bg-muted rounded-lg border border-border p-8 text-center">
+              <p className="text-sm text-muted-foreground">
+                {t('opportunities.noThresholdMatches', 'No opportunities match the current threshold. Try lowering the minimum match score.')}
+              </p>
+            </div>
+          ) : (
+            <OpportunitiesTable
+              opportunities={opportunities}
+              filteredOpportunities={displayOpportunities}
+              searchTerm={manager.searchTerm}
+              onSearchChange={manager.setSearchTerm}
+              onApply={manager.handleApply}
+              onDelete={manager.handleDelete}
+              formatDate={formatLocaleDate}
+              matchResults={matchResults}
+              onMatchBadgeClick={(result) => {
+                const opp = opportunities.find((o) => o.id === result.opportunityId);
+                if (opp) setSelectedMatch({ result, opportunity: opp });
+              }}
+            />
+          )}
+          {matchingPreferences.enabled && (
+            <div className='mt-8'>
+              <RecommendationPanel
+                recommendations={recommendations}
+                onApply={manager.handleApply}
+                onViewAll={() => { /* scroll to top of table */ }}
+              />
+            </div>
+          )}
+        </>
       )}
+
+      <MatchBreakdownModal
+        isOpen={!!selectedMatch}
+        onClose={() => setSelectedMatch(null)}
+        result={selectedMatch?.result ?? null}
+        opportunityTitle={selectedMatch?.opportunity.position}
+        opportunityCompany={selectedMatch?.opportunity.company}
+      />
 
       <OpportunityForm
         isOpen={manager.isFormOpen}
@@ -161,7 +298,7 @@ const OpportunitiesPageContent: React.FC<OpportunitiesPageContentProps> = () => 
         onConfirm={manager.confirmDelete}
         onCancel={manager.closeDeleteConfirm}
       />
-      <Footer version="2.1.4" />
+      <Footer version={packageJson.version} />
     </div>
   );
 };
