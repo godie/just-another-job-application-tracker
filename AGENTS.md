@@ -58,6 +58,35 @@ The per-PR rule was first exercised end-to-end on the orphan-sweep release (v2.6
 
 If you find yourself about to bump 2.6.0 → 2.6.1 inside a follow-up commit, **stop**. Either the change belongs in a new PR with a deliberate version (PATCH for docs/fixes/refactors, MINOR for user-visible features), or it does not warrant a version bump at all and should ship under 2.6.0 — the orphan-sweep workflow will not flag it, and `CHANGELOG.md` should still record the commit under the 2.6.0 heading. The same rule applies to 2.7.x, 2.8.x, etc.: one branch, one version, enforced by the sweep.
 
+## Contribution Workflow
+
+**All changes land via a pull request. Direct pushes to `main` are forbidden.** This applies to human contributors and to coding agents (Codebuff, GitHub Copilot, etc.) operating in this repo.
+
+### Rule
+
+- **On a feature branch**: push the branch, open a PR against `main`, wait for CI + review, then merge.
+- **On `main` directly**: cut a descriptive branch first (`git checkout -b <type>/<descriptive-name>`, e.g. `fix/typo-in-readme`, `docs/agent-contribution-workflow-rule`, `chore/bump-deps`), commit your work, push the branch, and open a PR. **Never `git push origin main` from a local `main` checkout.**
+
+This rule is self-applying: the change that introduced it (v2.6.1) was made on a feature branch and opened as a PR. Future contributors — including AI agents — should follow the same path.
+
+### Why
+
+- PRs give CI a chance to run lint, build, test, and `knip` **before** the change lands. Failures surface as PR comments, not as a broken `main`.
+- PRs leave an audit trail (review comments, CI logs) tied to a specific change set, which is critical when a regression needs to be bisected weeks later.
+- Direct pushes to `main` bypass branch protection, required reviewers, and the per-PR version rule (see `## Versioning` above). They also break the "one branch, one version" invariant the orphan-sweep workflow is designed to enforce.
+- A clean `main` is a precondition for the `release.published` trigger firing the orphan-sweep workflow reliably.
+
+### Edge cases (legitimate non-contributor pushers)
+
+A small number of automation tools and GitHub-native features act on `main` outside the PR flow. These are not covered by the rule above and are not the responsibility of contributors to police:
+
+- **Dependabot** opens its own PRs (does not push to `main`).
+- **The orphan-sweep workflow** runs on `release.published` and `schedule` triggers; it does not push — it only reads files, runs `scripts/check-orphans.sh`, and creates or updates a tracking issue via `gh issue`.
+- **Release tooling** (when it exists) that pushes a tag to `main` is acting as the release manager, not as a contributor. Tag pushes are not branch pushes and are explicitly out of scope for this rule.
+- **Pre-authorized GitHub Actions tokens** (e.g. dependabot's auto-merge bot) operate under the repo admin's explicit grant. These are pre-audited and not human-driven.
+
+If you are a human or an AI agent making a code or docs change, the rule above applies to you. If you are unsure whether your action counts as a "direct push to main", it probably does — open a PR.
+
 ## Specialized Agents
 
 ### 🕵️ Colector (Collector)
