@@ -24,6 +24,16 @@ name: orphan-sweep
 #   - contents: read  — checkout
 #   - issues:   write — open / edit / close the tracking issue via gh CLI
 on:
+  # TEMP dry-run trigger: GitHub Actions does not honor `workflow_dispatch`
+  # for a workflow file that has never been on the default branch (main),
+  # which is our state (this file is brand-new in this PR). The temp push
+  # trigger below is scoped to changes to this file itself, so the actual
+  # dry-run fires on the next commit+push that touches this file, and a
+  # follow-up commit that removes this block cleanly stops any further
+  # runs. Remove the push block before merge.
+  push:
+    paths:
+      - '.github/workflows/orphan-sweep.yml'
   release:
     types: [published]
   schedule:
@@ -96,19 +106,7 @@ jobs:
             exit 0
           fi
 
-          issue_body="$(printf '## Orphan sweep findings for v%s
-
-**%s** stale quoted literal(s) found outside the allow-listed paths (CHANGELOG.md, package-lock.json, api/composer.lock, api/vendor/**, audit/, package.json, node_modules, .git, .jules).
-
-They should be synced to the current `package.json` version, or added to the AGENTS.md allow-list with rationale if they are legitimately permanent (e.g. a third-party dep whose own version coincidentally matches).
-
-## Findings
-
-%s
-
----
-<sub>Reconstructed by `scripts/check-orphans.sh %s`. Next sweep: tomorrow 06:00 UTC, or on next release tag push.</sub>
-' "$VERSION" "$ORPHAN_COUNT" "$body" "$VERSION")"
+          issue_body="$(printf '## Orphan sweep findings for v%s\n\n**%s** stale quoted literal(s) found outside the allow-listed paths (CHANGELOG.md, package-lock.json, api/composer.lock, api/vendor/**, audit/, package.json, node_modules, .git, .jules).\n\nThey should be synced to the current `package.json` version, or added to the AGENTS.md allow-list with rationale if they are legitimately permanent (e.g. a third-party dep whose own version coincidentally matches).\n\n## Findings\n\n%s\n\n---\n<sub>Reconstructed by `scripts/check-orphans.sh %s`. Next sweep: tomorrow 06:00 UTC, or on next release tag push.</sub>\n' "$VERSION" "$ORPHAN_COUNT" "$body" "$VERSION")"
 
           existing="$(gh issue list -l orphan-sweep --state all --json number --jq '.[0].number // empty')"
           if [ -n "$existing" ]; then
