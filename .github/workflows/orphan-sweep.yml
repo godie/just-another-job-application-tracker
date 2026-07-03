@@ -70,6 +70,13 @@ jobs:
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           echo "Sweeping for quoted \"$VERSION\" references…"
 
+      - name: Install ripgrep
+        # ubuntu-latest runners do not ship ripgrep in the default image
+        # as of 2026-07-03; install it before the sweep step so the
+        # script's rg call resolves. Idempotent: if a future runner
+        # image re-adds rg, apt-get install is a no-op.
+        run: sudo apt-get update && sudo apt-get install -y ripgrep
+
       - name: Run orphan sweep
         id: sweep
         env:
