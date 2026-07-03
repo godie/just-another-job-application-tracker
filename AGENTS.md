@@ -12,7 +12,7 @@ Use SemVer to pick the bump size for the whole branch:
 - **MINOR** (`x.Y.z` → `x.Y+1.z`): new features, new components or API surface, user-visible UX additions. Pick MINOR if the branch introduces something a user can see or do that they could not before.
 - **MAJOR** (`X.y.z` → `X+1.y.z`): breaking changes to public API, removed features, schema migrations.
 
-The single bump **lives at the tip of the branch and is set when the branch is cut or the first commit lands.** Add the matching entry to `CHANGELOG.md` under `## [Unreleased]` in that same first commit; subsequent commits in the branch amend the `[Unreleased]` bullet list (added files, follow-up fixes, new tests) but never the version number. At release time the `[Unreleased]` block is promoted to a dated `## [<version>]` heading.
+The single bump **lives at the tip of the branch and is set when the branch is cut or the first commit lands.** Add the matching entry to `CHANGELOG.md` in that same first commit. This repo's convention is to use a dated `## [<version>]` heading directly (e.g. `## [2.6.0] - 2026-07-03`); `## [Unreleased]` is also acceptable per Keep-a-Changelog, but the existing entries in this file all use the dated form so prefer that for consistency. Subsequent commits in the branch amend the same version's bullet list (added files, follow-up fixes, new tests) but never the version number — at release time the version heading is already the date stamp, no further promotion is needed.
 
 If you're unsure between PATCH and MINOR, ask the user. A feature with no breaking surface is MINOR unless explicitly described as a "fix" in the request.
 
