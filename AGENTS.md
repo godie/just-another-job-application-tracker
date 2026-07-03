@@ -4,15 +4,33 @@ This document provides comprehensive guidelines for agentic coding assistants wo
 
 ## Versioning
 
-**Every change MUST bump `package.json` version.** Use SemVer:
+**Every PR MUST bump `package.json` version exactly once, at PR-open time. Follow-up commits within the same branch MUST NOT re-bump** — they ship under the same version as the PR-opening bump. One branch, one version.
 
-- **PATCH** (`x.y.Z` → `x.y.Z+1`): bug fixes, internal refactors, docs, dependency churn with no API change.
-- **MINOR** (`x.Y.z` → `x.Y+1.z`): new features, new components or API surface, user-visible UX additions.
+Use SemVer to pick the bump size for the whole branch:
+
+- **PATCH** (`x.y.Z` → `x.y.Z+1`): bug fixes, internal refactors, docs, dependency churn with no API change. Pick PATCH if the branch's headline change is described as a "fix" in the request.
+- **MINOR** (`x.Y.z` → `x.Y+1.z`): new features, new components or API surface, user-visible UX additions. Pick MINOR if the branch introduces something a user can see or do that they could not before.
 - **MAJOR** (`X.y.z` → `X+1.y.z`): breaking changes to public API, removed features, schema migrations.
 
-The version bump **ships in the same commit as the change.** Add the matching entry to `CHANGELOG.md` under `## [Unreleased]` immediately so it gets promoted to a dated heading at release time.
+The single bump **lives at the tip of the branch and is set when the branch is cut or the first commit lands.** Add the matching entry to `CHANGELOG.md` under `## [Unreleased]` in that same first commit; subsequent commits in the branch amend the `[Unreleased]` bullet list (added files, follow-up fixes, new tests) but never the version number. At release time the `[Unreleased]` block is promoted to a dated `## [<version>]` heading.
 
 If you're unsure between PATCH and MINOR, ask the user. A feature with no breaking surface is MINOR unless explicitly described as a "fix" in the request.
+
+### Why per-PR, not per-commit
+
+Avoids the 2.6.0 → 2.6.1 micro-bumps that fire on every follow-up fix in the same branch. One logical unit of work = one version. The orphan-sweep workflow that enforces this rule was the first victim of the previous per-commit policy.
+
+### Allow-listed files (legitimate non-current version references)
+
+The bump-every-time rule applies prospectively to **first-party sources**. The following files may legitimately reference a non-current version and are excluded from any orphan sweep:
+
+- **`CHANGELOG.md`** — historical release headings (`## [2.4.2] - 2026-06-24`, etc.) are the immutable record of what actually shipped at that version. The current work-in-progress lives at `## [Unreleased]` and gets promoted to a dated heading at release time. **Do not retroactively edit past entries.**
+- **`package-lock.json` and `api/composer.lock`** — third-party packages whose own versions happen to coincide numerically with our project version (e.g. `ramsey/uuid` upstream at `"4.2.0"` is unrelated to our `2.5.x`). These are dependency versions, **not** project version references. Match literal `2.4.2` in a lockfile is expected and should not trigger a sweep failure.
+- **`api/vendor/**`** — generated composer vendor tree. Mirrors `composer.lock`; never hand-edit. Excluded for the same reason as lockfiles.
+
+When adding a new allow-list entry, document the rationale inline so future maintainers don't second-guess the sweep result. Anything outside this list that contains an outdated version literal is a real orphan and should be synced to the current `package.json` version.
+
+Empirical baseline (post 2.5.1 sweep): `rg '2\.4\.2'` against the repo excluding `node_modules`, `api/vendor`, lockfiles, `.git`, and `## [2.4.2]` in `CHANGELOG.md` returns zero matches — so the rule has zero orphans as of this writing. Use the same incantation (`rg -n '2\.4\.2' -g '!node_modules' -g '!api/vendor' -g '!package-lock.json' -g '!api/composer.lock' -g '!.git'`) to re-verify after any bump.
 
 ## Specialized Agents
 
