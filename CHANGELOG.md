@@ -4,11 +4,22 @@ All notable changes to this project will be documented in this file.
 
 Each release is a dated `## [<version>] - YYYY-MM-DD` heading followed by `### Added`, `### Changed`, `### Fixed`, `### Removed`, `### Security` subsections (Keep a Changelog's structure, without the `[Unreleased]` block this repo does not use).
 
+## [2.6.2] - 2026-07-03 (later)
+
+### Fixed
+
+- `composer install` was failing with `Your lock file does not contain a compatible set of packages` because `symfony/options-resolver v8.1.0` (locked transitively via `php-http/curl-client 2.4.0`) requires PHP >= 8.4.1 but the deploy workflow runs PHP 8.2.31. Added a `conflict` block in `api/composer.json` refusing `symfony/options-resolver >=8.1`; `composer update` resolved to `8.0.8` (PHP 8.2 compatible). `composer install` now exits 0 (verified in both default and `--no-dev` modes). Version bump skipped from 2.6.0 to 2.6.2 because PR #197 (docs: Contribution Workflow rule) already claims 2.6.1 — the two PATCH bumps can merge in any order without a rebase conflict.
+
+  **Forward-looking**: if/when the project migrates the deploy workflow + production server to PHP 8.4, remove the `conflict` block from `api/composer.json`, bump the `php` constraint in `require` from `^8.1` to `^8.4`, and run `composer update symfony/options-resolver` to pick the latest 8.x (8.1+). The existing `^8.1` constraint already covers both 8.2 and 8.4 (it means `>=8.1.0 <9.0.0`), so no constraint widening is needed during the transition — the bump is the strict 8.4+ minimum. The `conflict` block is intentional, not stale — it is the mechanism that keeps the lock resolvable on PHP 8.2.
+
 ## [2.6.1] - 2026-07-03 (later)
 
 ### Added
 
 - New `## Contribution Workflow` section in `AGENTS.md` codifying the "never push to main, always create a PR" rule. The rule is self-applying (this change was made on a feature branch and opened as a PR). Includes rationale (CI gate, audit trail, branch protection) and explicit edge cases (Dependabot, orphan-sweep workflow, tag pushes, pre-authorized Actions tokens) so future contributors — including AI agents — have a clear, mechanical path. The `(later)` annotation on the heading follows the CHANGELOG convention: this patch shipped the same day as 2.6.0, after the minor.
+
+## [2.6.0] - 2026-07-03
+ (fix(composer): refuse symfony/options-resolver >=8.1 to keep PHP 8.2 compat (2.6.2))
 
 ## [2.6.0] - 2026-07-03
 
