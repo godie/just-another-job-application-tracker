@@ -2,6 +2,18 @@
 
 This document provides comprehensive guidelines for agentic coding assistants working on the Job Application Tracker frontend application and Chrome extension. Follow these instructions carefully to maintain code quality, consistency, and user experience.
 
+## Versioning
+
+**Every change MUST bump `package.json` version.** Use SemVer:
+
+- **PATCH** (`x.y.Z` → `x.y.Z+1`): bug fixes, internal refactors, docs, dependency churn with no API change.
+- **MINOR** (`x.Y.z` → `x.Y+1.z`): new features, new components or API surface, user-visible UX additions.
+- **MAJOR** (`X.y.z` → `X+1.y.z`): breaking changes to public API, removed features, schema migrations.
+
+The version bump **ships in the same commit as the change.** Add the matching entry to `CHANGELOG.md` under `## [Unreleased]` immediately so it gets promoted to a dated heading at release time.
+
+If you're unsure between PATCH and MINOR, ask the user. A feature with no breaking surface is MINOR unless explicitly described as a "fix" in the request.
+
 ## Specialized Agents
 
 ### 🕵️ Colector (Collector)
@@ -141,7 +153,7 @@ export const Component: React.FC<ComponentProps> = ({ title, onAction }) => {
 
 1. **Utility-First**: Use Tailwind utility classes directly in JSX
 2. **Responsive Design**: Use responsive prefixes (`sm:`, `md:`, `lg:`, `xl:`, `2xl:`)
-3. **Dark Mode**: Use `dark:` prefix for dark mode styles
+3. **Dark Mode**: Use `dark:` prefix for dark mode
 4. **Consistency**: Follow existing patterns for spacing, colors, and typography
 5. **Avoid Inline Styles**: Prefer Tailwind classes over inline styles (except for dynamic values)
 
@@ -236,7 +248,7 @@ describe('Component', () => {
   it('calls onAction when button is clicked', () => {
     const handleAction = vi.fn();
     render(<Component title="Test" onAction={handleAction} />);
-    
+
     fireEvent.click(screen.getByRole('button'));
     expect(handleAction).toHaveBeenCalledTimes(1);
   });

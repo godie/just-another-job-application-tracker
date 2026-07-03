@@ -25,9 +25,9 @@ use OpenTelemetry\SemConv\ResourceAttributes;
  */
 final class LogfireTelemetry
 {
-    private const SERVICE_VERSION = '2.4.2';
+    private const SERVICE_VERSION = '2.5.0';
     private const INSTRUMENTATION_NAME = 'overphp';
-    private const INSTRUMENTATION_VERSION = '2.4.2';
+    private const INSTRUMENTATION_VERSION = '2.5.0';
 
     private static ?TracerProviderInterface $tracerProvider = null;
     private static ?TracerInterface $tracer = null;

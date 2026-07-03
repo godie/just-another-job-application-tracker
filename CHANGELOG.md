@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [2.5.0] - 2026-07-03
+
+### Added
+- **AGENTS.md relocated to project root** — moved `DOCS/AGENTS.md` to `./AGENTS.md` so it sits next to `README.md` and the package settings files. No content removed; one new section added.
+- **Versioning rule** in `AGENTS.md` — every change MUST bump `package.json` version. SemVer PATCH/MINOR/MAJOR guidance is in the section header; the bump ships in the same commit as the change, with the matching entry under `## [Unreleased]` in this file.
+
 ## [2.4.2] - 2026-06-24
 
 ### Fixed
