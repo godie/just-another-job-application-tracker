@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 
 Each release is a dated `## [<version>] - YYYY-MM-DD` heading followed by `### Added`, `### Changed`, `### Fixed`, `### Removed`, `### Security` subsections (Keep a Changelog's structure, without the `[Unreleased]` block this repo does not use).
 
+## [2.6.3] - 2026-07-03 (later)
+
+### Added
+
+- New reusable CI workflow `.github/workflows/composer-validate.yml` that runs `composer validate --strict --no-check-publish` + `composer install --dry-run --no-dev` after any change to `api/composer.json` or `api/composer.lock`. Called from `.github/workflows/pull-request.yml` (every PR, in parallel with lint/build/test/knip/secrets) and from `.github/workflows/deploy.yml` (before the build job, with `needs: composer-validate` on the build so the deploy fails fast). Uses PHP 8.2 to match the deploy workflow. Would have caught the v2.6.0 release cycle's `symfony/options-resolver v8.1.0` vs PHP 8.2.31 issue as a PR comment instead of a post-merge deploy failure.
+- **Stacked PR**: this PR targets `fix/composer-options-resolver-php82-compat` (PR #198) so the CI can validate against the composer.json that already has the `conflict` block; after PR #198 merges, GitHub auto-retargets this PR to `main`.
+- Version bump 2.6.2 → 2.6.3 (skip pattern continues: 2.6.1 docs rule, 2.6.2 composer fix, 2.6.3 CI check).
+
 ## [2.6.2] - 2026-07-03 (later)
 
 ### Fixed

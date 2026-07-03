@@ -9,9 +9,14 @@ env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
 
 jobs:
+  composer-validate:
+    name: Composer validate
+    uses: ./.github/workflows/composer-validate.yml
+
   build:
     name: Build
     runs-on: ubuntu-latest
+    needs: composer-validate
     outputs:
       artifact-path: ./dist
 
@@ -44,6 +49,12 @@ jobs:
         run: cp -r api dist/
 
       - name: Install Composer dependencies for production
+        # Real install. The composer-validate job (called above with
+        # needs: composer-validate on this build job) is a fast pre-flight
+        # dry-run that catches PHP-version-mismatch lock failures; this
+        # step is the source of truth for install-time issues (e.g. a deps
+        # install script needing a system tool). Both should normally pass
+        # on the same lock, but this is the authoritative one.
         working-directory: dist/api
         run: composer install --no-dev --optimize-autoloader --prefer-dist --no-interaction --no-progress
 

@@ -1,0 +1,78 @@
+name: Composer validate
+
+# Reusable check that catches PHP-version-mismatch lock failures (e.g. the
+# `symfony/options-resolver v8.1.0 requires php >=8.4.1` vs PHP 8.2.31 issue
+# from the v2.6.0 release cycle) at PR time instead of post-merge deploy
+# failure time.
+#
+# Two-step validation:
+#   1. `composer validate --strict --no-check-publish` — checks composer.json
+#      syntax + lock-file consistency. `--no-check-publish` skips the
+#      publish-readiness checks (we ship this as a deployable app, not a
+#      publishable package). `--strict` promotes warnings to errors.
+#   2. `composer install --dry-run --no-dev` — runs the actual dependency
+#      resolver against the current lock, without installing anything. This
+#      is the step that would have caught the options-resolver 8.1.0 issue:
+#      the resolver would report "your PHP version (8.2.31) does not satisfy
+#      that requirement" instead of waiting for the deploy to fail.
+#
+# The check uses the SAME PHP version as the deploy workflow (`php-version`
+# input, default 8.2) so the failure modes are consistent. Bump both
+# together if the project migrates the deploy to PHP 8.4.
+#
+# Called from `.github/workflows/pull-request.yml` (runs on every PR, in
+# parallel with the lint/build/test/knip/secrets jobs) and from
+# `.github/workflows/deploy.yml` (runs before the build job, so the deploy
+# fails fast if the lock is unresolvable on the runner).
+#
+# Future evolution: matrix across multiple PHP versions, add `composer audit`
+# for CVE scanning, or add a `composer outdated` step for staleness reporting.
+# For now, YAGNI: just the two checks that would have caught the v2.6.0
+# options-resolver issue.
+
+# Explicit read-only permissions. The check only reads files; it does not
+# post PR comments, create issues, or push. Declaring this explicitly is
+# the best-practice signal: a future maintainer who adds a `gh` call won't
+# accidentally inherit `write` if GitHub ever changes the defaults.
+permissions:
+  contents: read
+
+on:
+  workflow_call:
+    inputs:
+      php-version:
+        description: 'PHP version to validate against (must match the deploy workflow)'
+        required: false
+        type: string
+        default: '8.2'
+      working-directory:
+        description: 'Composer working directory (relative to repo root)'
+        required: false
+        type: string
+        default: 'api'
+
+jobs:
+  validate:
+    name: composer validate
+    runs-on: ubuntu-latest
+    # 10 min safety margin: composer install --dry-run is normally ~10-30s
+    # but a cold runner (no composer cache, no warm apt) can spike. 5 min
+    # was tight; 10 min is cheap insurance against spurious CI failures.
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@2.37.2
+        with:
+          php-version: ${{ inputs.php-version }}
+          tools: composer:v2
+
+      - name: Composer validate
+        working-directory: ${{ inputs.working-directory }}
+        run: composer validate --strict --no-check-publish
+
+      - name: Composer install (dry-run, no dev)
+        working-directory: ${{ inputs.working-directory }}
+        run: composer install --dry-run --no-dev --no-interaction --no-progress
