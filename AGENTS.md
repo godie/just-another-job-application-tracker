@@ -32,7 +32,11 @@ When adding a new allow-list entry, document the rationale inline so future main
 
 ### GitHub Actions pin renewal
 
-GitHub Actions references (e.g. `actions/checkout@v4`, `shivammathur/setup-php@v2.37.2`) MUST be pinned to a specific tag, never to a floating major. To prevent the pins from going stale, `.github/dependabot.yml` opens a weekly PR that bumps each workflow's `uses:` references. The PR is auto-mergeable when CI passes; majors require human review because they may carry breaking changes.
+GitHub Actions references (e.g. `actions/checkout@v4`, `shivammathur/setup-php@v2.37.2`) MUST be pinned to a specific tag, never to a floating major. Pin renewal is automated by Dependabot — see `.github/dependabot.yml` for the schedule, grouping, and merge policy. Do not duplicate that schedule in prose here; that file is the single source of truth and this subsection is the entry point for a future maintainer who needs to know *why* the pins are pinned and *where* the renewal lives.
+
+### CHANGELOG heading format
+
+Every release heading is `## [<version>] - YYYY-MM-DD` (e.g. `## [2.6.0] - 2026-07-03`). The four-digit year, two-digit month, two-digit day, and the literal ` - ` (space-dash-space) separator are non-negotiable. Future maintainers must not drift to `## [2.6.0] (July 3, 2026)`, `## [2.6.0] / 2026-07-03`, or any other variant — the orphan-sweep workflow (see "Allow-listed files" above) is allowed to assume this exact format when parsing the file.
 
 Empirical baseline (post 2.5.1 sweep): `rg '2\.4\.2'` against the repo excluding `node_modules`, `api/vendor`, lockfiles, `.git`, and `## [2.4.2]` in `CHANGELOG.md` returns zero matches — so the rule has zero orphans as of this writing. Use the same incantation (`rg -n '2\.4\.2' -g '!node_modules' -g '!api/vendor' -g '!package-lock.json' -g '!api/composer.lock' -g '!.git'`) to re-verify after any bump.
 
