@@ -23,38 +23,7 @@ function generateId(len: number): string {
   return Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('');
 }
 
-function generateTraceId(): string {
-  return generateId(32);
-}
-
-function generateSpanId(): string {
-  return generateId(16);
-}
-
 let currentTrace: TraceContext | null = null;
-
-/**
- * Start a new frontend trace. Call this before a user action that triggers
- * API calls (e.g., page navigation, form submission).
- */
-export function startTrace(): TraceContext {
-  currentTrace = {
-    traceId: generateTraceId(),
-    spanId: generateSpanId(),
-    flags: '01',
-  };
-  return currentTrace;
-}
-
-/**
- * Get the current trace context, or start a new one if none exists.
- */
-export function getTraceContext(): TraceContext {
-  if (!currentTrace) {
-    return startTrace();
-  }
-  return currentTrace;
-}
 
 /**
  * Build the W3C traceparent header value.
@@ -66,15 +35,12 @@ export function buildTraceparent(ctx?: TraceContext): string {
     return `00-${ctx.traceId}-${ctx.spanId}-${ctx.flags}`;
   }
   if (!currentTrace) {
-    currentTrace = startTrace();
+    currentTrace = {
+      traceId: generateId(32),
+      spanId: generateId(16),
+      flags: '01',
+    };
   }
-  currentTrace.spanId = generateSpanId();
+  currentTrace.spanId = generateId(16);
   return `00-${currentTrace.traceId}-${currentTrace.spanId}-${currentTrace.flags}`;
-}
-
-/**
- * Clear the current trace context.
- */
-export function clearTrace(): void {
-  currentTrace = null;
 }
