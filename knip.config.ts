@@ -16,6 +16,8 @@ const config: KnipConfig = {
     'tailwindcss',
     // Used via Tailwind v4 @plugin directive in src/index.css; knip cannot trace CSS @plugin imports.
     'tailwindcss-animate',
+    // Scaffolded for upcoming LLM integration; not yet imported until the integration PR lands.
+    'headroom-ai',
   ],
 
   ignoreFiles: [

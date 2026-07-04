@@ -26,6 +26,16 @@ Each release is a dated `## [<version>] - YYYY-MM-DD` heading followed by `### A
 - **`scripts/check-orphans.sh` post-merge**: the `sequence` subcommand is on-disk; the operational hook is `.github/workflows/version-sequence-check.yml` (above). Both audits fire daily at 06:00 UTC + on `release.published`.
 - **Branch lifecycle** (destructive ops applied after this PR opens): PRs `#200`, `#202`, `#203`, `#204` are closed with `superseded by #<this>` comments; their source branches are deleted from origin. Their commits remain reachable through this PR's git history.
 
+## [2.6.7] - 2026-07-04
+
+### Added
+- **`headroom-ai` devDep** — `npm install --save-dev --save-exact headroom-ai@0.22.4` adds the LLM-token-compression SDK to `devDependencies` for toolchain authors to import. The project itself ships with no LLM context compression running (no code change); this PR is dependency-churn-only with no API surface change, so it is a PATCH per AGENTS.md. The package is Apache-2.0 with **zero runtime dependencies**; declared peerDependencies (`@ai-sdk/provider`, `@anthropic-ai/sdk`, `ai`, `openai`) are all marked `optional` per the manifest.
+
+### Notes
+- **Version slot rationale**: 2.6.3 is documented as intentionally unfilled per the `2.6.5` entry's forensic on PR #199's force-push race; 2.6.4 and 2.6.5 were claimed by aborted PRs (`#202`, `#203`) that never landed; 2.6.6 is claimed by PR #204's open `ci/check-version-sequence-gaps` audit-enhancement. This PR skips to 2.6.7 to (a) preserve the loss-slot narrative integrity and (b) avoid colliding with the open 2.6.6 claim. Whichever of #204 or this PR merges first establishes the new floor; the other rebases onto it.
+- **knip watch**: once merged, `npx knip` (the `lint` workflow's neighbour) will treat `headroom-ai` as `unused-devDependencies` until something imports it. Mitigation **applied in this same PR**: `knip.config.ts` -> `ignoreDependencies: ["headroom-ai"]` so the lint CI stays green. The orphan-sweep (`scripts/check-orphans.sh` literal subcommand) will *not* flag `"0.22.4"` as an orphan because `package.json` / `package-lock.json` are excluded by the AGENTS.md Versioning allow-list.
+- **Node engine warning**: `ini@7.0.0` (transitive of `headroom-ai`) declares `engines.node ^22.22.2 || ^24.15.0 || >=26.0.0`; the project's `.nvmrc` pins `22.16.0`. `npm install` emits a non-fatal `EBADENGINE` warn. Bump Node or pin to an older `ini` if a CI strictness flag is added later.
+
 ## [2.6.2] - 2026-07-03 (later)
 
 ### Fixed
