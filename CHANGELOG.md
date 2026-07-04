@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.6.4] - 2026-07-03
+
+### Fixed
+- **CI**: Composer validate gate (added in #199, wired in pull-request.yml) fired and failed on the merged composer.json with exit code 2 because `symfony/http-client ^8.1` requires PHP 8.4.1 but the CI runner uses PHP 8.2.31 and the project's own PHP floor is `^8.1`. Pinned http-client to `^7.0` (the 7.x line requires only PHP 8.2). Strengthened the existing `symfony/options-resolver` conflict from `>=8.1` to `>=8` — the original `>=8.1` left a gap at 8.0.x (the actual offending pin), which also requires PHP 8.4. Refreshed composer.lock to PHP-8.2-compatible versions (`http-client v7.4.14`, `options-resolver v7.4.8`).
+
+
 All notable changes to this project will be documented in this file.
 
 Each release is a dated `## [<version>] - YYYY-MM-DD` heading followed by `### Added`, `### Changed`, `### Fixed`, `### Removed`, `### Security` subsections (Keep a Changelog's structure, without the `[Unreleased]` block this repo does not use).
