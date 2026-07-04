@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 
 Each release is a dated `## [<version>] - YYYY-MM-DD` heading followed by `### Added`, `### Changed`, `### Fixed`, `### Removed`, `### Security` subsections (Keep a Changelog's structure, without the `[Unreleased]` block this repo does not use).
 
+## [2.6.5] - 2026-07-03
+
+### Fixed
+- **CI: restored the `composer-validate` gate** — PR #199 ("ci(workflows): reusable composer-validate check for PRs + deploys (2.6.3)") was merged on 2026-07-03 to PR #198's carrier branch (`fix/composer-options-resolver-php82-compat`, merge commit `aa96f91` at 22:29:09Z), but that PR had already merged into main at 22:27:15Z (the wiring lived only on the carrier branch, which was force-pushed off main during the subsequent rebase race — `aa96f91` and its underlying `26dc843` are not ancestors of origin/main today). The dependency mismatch went undetected on every PR merged afterwards and resurfaced during the 2.6.4 floor-fix (#202). This PR recovers the canonical wiring verbatim from `origin/ci/composer-validate-on-pr-and-deploy` (blob `261b0e2...`) and applies it to main:
+
+  | File | Change |
+  |---|---|
+  | `.github/workflows/composer-validate.yml` (new) | Reusable workflow (`workflow_call`, `permissions: contents: read`, `timeout-minutes: 10`, defaults `php-version: 8.2` + `working-directory: api`). Two-step validation: `composer validate --strict --no-check-publish` followed by `composer install --dry-run --no-dev --no-interaction --no-progress`. Pinned `shivammathur/setup-php@2.37.2` per AGENTS.md GitHub Actions pinning rule. |
+  | `.github/workflows/pull-request.yml` | New `composer-validate:` job appended to `jobs:` calling `./.github/workflows/composer-validate.yml`. Runs in parallel with `lint`, `test`, `build`, `knip`, and `secrets`. |
+  | `.github/workflows/deploy.yml` | New `composer-validate:` job calling the reusable workflow. Adds `needs: composer-validate` to the existing `build:` job so the lock is verified before any deploy artifact is produced. |
+
+  Version bumped to **2.6.5** (not 2.6.3) because the 2.6.3 slot was lost with PR #199's force-push and PR #202 claims 2.6.4. Merging this PR before #202 would invalidate #202's claimed bump; merging after #202 is the safe order. The 2.6.3 slot is intentionally left unfilled — re-claiming it here would force #202 to re-bump and erase the forensic trail.
+
+
 ## [2.6.2] - 2026-07-03 (later)
 
 ### Fixed
