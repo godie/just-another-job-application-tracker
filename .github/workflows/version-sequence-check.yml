@@ -1,0 +1,127 @@
+name: version-sequence-check
+
+# Daily + per-release audit for non-contiguous PATCH gaps in CHANGELOG.md.
+# Authority for this check lives in CHANGELOG.md itself (every shipped
+# release is a dated `## [X.Y.Z] - YYYY-MM-DD` heading) and in
+# AGENTS.md's CHANGELOG-section rule. This workflow automates the check
+# so a lost-version slot (e.g. a force-push race that drops a PR's
+# heading) becomes a tracked issue instead of silent rot that
+# resurfaces only when a future bump collides with the missing slot.
+#
+# Trigger matrix mirrors orphan-sweep.yml:
+#
+#   - release.published  Fires once per release tag (audit trail of
+#                        what actually shipped). Gives a green-circle
+#                        status if the walk returns clean.
+#   - schedule           Fires daily at 06:00 UTC. Catches silent rot
+#                        if anyone force-pushes main or bypasses PR
+#                        checks.
+#   - workflow_dispatch  Manual trigger for ad-hoc audits (e.g.
+#                        immediately before cutting a release
+#                        candidate).
+#
+# Output:
+#   Single sticky tracking issue labeled `version-sequence-check`. The
+#   Action either opens a new one (when gaps appear) or edits/closes an
+#   existing one (when the walk returns clean). Same idempotent
+#   contract as orphan-sweep.yml so an operator never has to clean up
+#   audit comment-spam on every PR.
+#
+# Required permissions:
+#   - contents: read  — checkout
+#   - issues:   write — open / edit / close the tracking issue via gh
+#
+on:
+  release:
+    types: [published]
+  schedule:
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+# Cancel in-progress runs of the same workflow on the same ref so a
+# rapid series of release events doesn't pile up redundant work.
+concurrency:
+  group: version-sequence-check
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: CHANGELOG sequence gap check
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install ripgrep
+        # ubuntu-latest runners do not ship ripgrep in the default
+        # image as of 2026-07-04; install it before the check step so
+        # the script's rg call resolves. Idempotent: if a future
+        # runner image re-adds rg, apt-get install is a no-op.
+        run: sudo apt-get update && sudo apt-get install -y ripgrep
+
+      - name: Run sequence gap check
+        id: check
+        run: |
+          set -uo pipefail
+          scripts/check-orphans.sh sequence > /tmp/gaps.md
+          # Sequence output is `| Missing | Between | And |` — same
+          # Markdown-table convention as the literal sweep in
+          # orphan-sweep.yml. Count actual gap rows by tailing past
+          # the two header lines. Clean-state output
+          # ("_No PATCH gaps detected in CHANGELOG.md._") is a single
+          # line, so the tail yields zero data rows and the count
+          # correctly reports 0.
+          gap_count="$(tail -n +3 /tmp/gaps.md | grep -cE '^\| ' || echo 0)"
+          {
+            echo 'gap_count<<EOF'
+            echo "$gap_count"
+            echo 'EOF'
+          } >> "$GITHUB_OUTPUT"
+          cat /tmp/gaps.md
+
+      - name: Upsert tracking issue
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GAP_COUNT: ${{ steps.check.outputs.gap_count }}
+        run: |
+          set -euo pipefail
+          # Heredoc-format GITHUB_OUTPUT writes include a trailing newline in
+          # the value. Strip CR/LF so downstream `[ -eq 0 ]` and `gh issue
+          # create --title` see clean integers / strings.
+          GAP_COUNT="${GAP_COUNT//[$'\r\n']/}"
+          body="$(cat /tmp/gaps.md)"
+
+          if [ "$GAP_COUNT" -eq 0 ]; then
+            summary="✅ Version sequence check clean (no PATCH gaps)."
+            existing="$(gh issue list -l version-sequence-check --state open --json number --jq '.[0].number // empty')"
+            if [ -n "$existing" ]; then
+              gh issue close "$existing" --comment "$summary"
+              echo "Closed tracking issue #$existing (gap-free)."
+            fi
+            echo "$summary"
+            exit 0
+          fi
+
+          # Heredoc-style GITHUB_OUTPUT renders in the YAML `run: |`
+          # block with 10-space indent. Mirror orphan-sweep.yml's
+          # `printf` pattern so issue body markdown has zero leading
+          # indent on every line. Positional args: GAP_COUNT, body.
+          issue_body="$(printf '## CHANGELOG.md sequence gap findings\n\n**%s** non-contiguous PATCH gap(s) detected between versions actually shipped in CHANGELOG.md. A gap is when the version sequence within a given (major, minor) skips patches (e.g. 2.6.2 → 2.6.5 with no `2.6.3` / `2.6.4` heading).\n\n### Remediation\n\nEach gap is *intentional and historical* only when an upstream PR explicitly claims or skips the missing slot (see e.g. the `## [2.6.5]` entry for the documented 2.6.3 / 2.6.4 force-push case). To silence this audit when the gap is intentional, add an explicit `## [X.Y.Z] - YYYY-MM-DD` heading for the missing version with a one-liner explaining the cause. The script walks `CHANGELOG.md` line-by-line, so a real entry (even a one-liner with no body) satisfies the gap.\n\n### Findings\n\n%s\n\n---\n<sub>Reconstructed by `scripts/check-orphans.sh sequence`. Next sweep: tomorrow 06:00 UTC, or on next release tag push.</sub>\n' "$GAP_COUNT" "$body")"
+
+          existing="$(gh issue list -l version-sequence-check --state all --json number --jq '.[0].number // empty')"
+          if [ -n "$existing" ]; then
+            gh issue edit "$existing" --body "$issue_body"
+            gh issue reopen "$existing" 2>/dev/null || true
+            echo "Updated tracking issue #$existing."
+          else
+            gh issue create \
+              --title "version-sequence-check: ${GAP_COUNT} PATCH gap(s)" \
+              --body "$issue_body" \
+              --label "version-sequence-check"
+            echo "Created new tracking issue."
+          fi
