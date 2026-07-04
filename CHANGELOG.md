@@ -4,6 +4,28 @@ All notable changes to this project will be documented in this file.
 
 Each release is a dated `## [<version>] - YYYY-MM-DD` heading followed by `### Added`, `### Changed`, `### Fixed`, `### Removed`, `### Security` subsections (Keep a Changelog's structure, without the `[Unreleased]` block this repo does not use).
 
+## [2.6.6] - 2026-07-04
+
+### Added
+- **`AGENTS.md` Cross-PR Version Race Playbook** section (#200) — codified diagnostic for the version-slot race this PR itself resolves. Future contributors (human or AI) encountering two PRs claiming the same PATCH slot now have a single canonical playbook to follow rather than re-deriving the recovery each time.
+- **`.github/workflows/composer-validate.yml`** (#203, NEW, 78 lines) — reusable `workflow_call` (`shivammathur/setup-php@2.37.2` pinned per AGENTS.md GitHub Actions pin rule, `permissions: contents: read`, `timeout-minutes: 10`). Two-step validation: `composer validate --strict --no-check-publish` followed by `composer install --dry-run --no-dev --no-interaction --no-progress`. Recovers the gate that was force-pushed off main by PR #199 — the workflow lives on the branch *and* on main after this integration.
+- **`.github/workflows/version-sequence-check.yml`** (#204, NEW, 127 lines) — daily + per-release + dispatch trigger matrix mirroring `orphan-sweep.yml`. Emits a sticky `version-sequence-check` tracking issue (idempotent upsert; closes-with-comment on clean) when the CHANGELOG PATCH sequence is non-contiguous within a `(major, minor)` group.
+- **`scripts/check-orphans.sh` `sequence` subcommand** (#204) — refactors the script into a subcommand-dispatched shell (`literal <version>` | `sequence` | `--help`). The new `sequence` mode walks `CHANGELOG.md` headings with numeric sort + dedup and emits a 5-column `| Missing | Between | Between date | And | And date |` Markdown table. Skip: `[Unreleased]`, major/minor transitions. Backward compat preserved: bare semver arg falls through to `literal`.
+
+### Changed
+- **`api/composer.json`** (#202) — pins `symfony/http-client` to `^7.0` (with companion `api/composer.lock` regeneration) so CI stays resolvable on PHP 8.2. Resolves the lockfile failure surface that made the v2.6.2 partial fix (#197 + #198) insufficient.
+- **`.github/workflows/pull-request.yml`** (#203) — appends a `composer-validate:` job wired to `./.github/workflows/composer-validate.yml`. Hard gate on every PR.
+- **`.github/workflows/deploy.yml`** (#203) — adds `needs: composer-validate` on the existing `build:` job + a matching `composer-validate:` job. The lockfile is verified before any deploy artifact is produced.
+
+### Fixed
+- **`api/src/Telemetry/LogfireTelemetry.php`** (#200) — `+2/-2` refines the v2.5.1 OTel graceful-degradation fix to cover the wider OTel SDK upgrade surface area. The `Attributes::class` gate stays correct when the SDK is missing.
+
+### Notes
+- **Consolidation rationale**: This PR unifies four open PRs (`#200`, `#202`, `#203`, `#204`) that all branched off `main` HEAD `7ccc553` (v2.6.2). Each claimed a distinct PATCH slot (`2.6.4`, `2.6.4`, `2.6.5`, `2.6.6`). Per AGENTS.md's per-PR-version rule (one PR = one version), the consolidated PR claims **2.6.6** (the topmost mental claim from `#204`); the four per-PR slots are absorbed and no longer separately claimable. The 2.6.3 documented-loss slot (per the prior `2.6.5` entry's force-push forensic) stays preserved.
+- **PR `#205` (`chore/add-headroom-ai-devdep`, `2.6.7`) is *not* part of this consolidation**; it merges independently when ready.
+- **`scripts/check-orphans.sh` post-merge**: the `sequence` subcommand is on-disk; the operational hook is `.github/workflows/version-sequence-check.yml` (above). Both audits fire daily at 06:00 UTC + on `release.published`.
+- **Branch lifecycle** (destructive ops applied after this PR opens): PRs `#200`, `#202`, `#203`, `#204` are closed with `superseded by #<this>` comments; their source branches are deleted from origin. Their commits remain reachable through this PR's git history.
+
 ## [2.6.2] - 2026-07-03 (later)
 
 ### Fixed

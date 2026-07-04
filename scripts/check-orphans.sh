@@ -1,13 +1,31 @@
 #!/bin/bash
 #
-# Orphan version sweep — finds stale quoted version literals in the repo.
+# Version audit — repo-wide literal orphan sweep + CHANGELOG sequence
+# gap check.
 #
-# Wraps `rg` to scan every project-tracked file for any literal occurrence
-# of the current package.json version formatted as `"<version>"` (i.e. the
-# JSON-quoted form used in `package.json`, package-lock.json keys,
-# telemetry constants, etc.). Files/paths that legitimately reference
-# past or unrelated versions are excluded per the AGENTS.md Versioning
-# rule's allow-list:
+# Two structurally distinct checks share this single entry point so
+# callers can use one cron trigger per repository without duplicating
+# invocation plumbing.
+#
+#   1. `literal <version>` — the original rg-based sweep. Scans every
+#      project-tracked file for any literal occurrence of the current
+#      package.json version formatted as `"<version>"` (i.e. the
+#      JSON-quoted form used in `package.json`, package-lock.json keys,
+#      telemetry constants, etc.).
+#
+#   2. `sequence` — walks CHANGELOG.md's `## [X.Y.Z] - YYYY-MM-DD`
+#      heading sequence and flags every non-contiguous PATCH gap
+#      within each (major, minor) group. For each minor M.N present in
+#      the changelog, the script groups the PATCH values, walks them
+#      in ascending order, and emits one row per missing patch M.N.K+1
+#      .. M.N.L-1 between two shipped versions M.N.K and M.N.L.
+#      `[Unreleased]` is excluded (matches no semver). Major and MINOR
+#      transitions are NOT flagged: advancing from, say, 2.5.x → 2.6.0
+#      is a deliberate minor bump, not a lost slot.
+#
+# Files/paths that legitimately reference past or unrelated versions
+# are excluded per the AGENTS.md Versioning rule's allow-list for the
+# literal sweep:
 #
 #   - CHANGELOG.md             (immutable historical release headings)
 #   - package-lock.json        (third-party dep versions, unrelated to ours)
@@ -19,104 +37,278 @@
 #   - .git, .jules             (VCS + AI memory, not user-facing)
 #
 # Usage:
-#   scripts/check-orphans.sh <version>
+#   scripts/check-orphans.sh <subcommand> [args]
+#
+# Subcommands:
+#
+#   literal <version>
+#     Run the rg-based literal orphan sweep for the JSON-quoted
+#     "<version>" string. Outputs a Markdown table ready for a GitHub
+#     Issue body (backward-compat: a bare positional version arg also
+#     activates this subcommand).
+#
+#   sequence
+#     Walk CHANGELOG.md and emit every non-contiguous PATCH gap as a
+#     Markdown table row.
+#
+#   --help, -h, help
+#     Print the usage message above.
 #
 # Exit codes:
-#   0  — script ran (regardless of orphan count; the body indicates state)
-#   2  — missing version argument
+#   0  — script ran (regardless of finding count; the body indicates state)
+#   2  — missing version argument or unknown subcommand
 #   3+ — rg's own exit code, propagated for real I/O / permission errors
+#       (only relevant when the literal sweep reaches rg; the sequence
+#       check uses grep/awk and never produces a hard error on missing
+#       text — empty input means "no gaps").
 #
 # Output (stdout, ready for a GitHub Issue body):
-#   When clean: "_No orphans found._"
-#   Otherwise:  a Markdown table
-#               | File | Line | Content |
-#               |---|---|---|
-#               | <path> | <lineno> | `<content>` |
+#   `literal <version>` when clean: "_No orphans found._"
+#   `literal <version>` otherwise:  a Markdown table
+#                                   | File | Line | Content |
+#   `sequence` when clean:          "_No PATCH gaps detected in CHANGELOG.md._"
+#   `sequence` otherwise:           a Markdown table
+#                                   | Missing | Between | And |
 #
 # Cron-friendly: idempotent, no side effects, deterministic output for
 # the same input.
 #
 # Implementation notes (worth preserving across refactors):
 #
-#   1. rg runs in fixed-string mode (`-F`) so the version pattern is
-#      matched byte-for-byte — no regex dot-escaping, no `\b` footgun
-#      between word and non-word characters around the quote boundary.
+#   Each subcommand is implemented as a function (`run_literal_sweep`
+#   and `run_sequence_gap_check`) so the entry-point case dispatch
+#   stays a single, flat switch. The implementation notes live
+#   alongside the function they describe.
 #
-#   2. The `--` separator sits AFTER every `-g` flag and BEFORE the
-#      PATTERN positional arg. If `--` is moved UPSTREAM of any `-g`,
-#      rg treats `-g '!foo'` as `(search-path: -g, search-path: !foo)`
-#      which never exists, so rg exits 2 with `No such file or directory`.
-#      This bug cost one round of CI runs; preserved here so the next
-#      refactor doesn't reintroduce it.
-#
-#   3. The trailing `.` is mandatory. rg defaults to scanning the
-#      current directory when run from an interactive TTY, but in a
-#      non-interactive context (CI runners, cron jobs, command
-#      substitution inside `$()`) it silently falls back to reading
-#      stdin — which is always empty when the workflow doesn't pipe
-#      anything in, leading to "no matches" for files that ARE present.
 
 set -uo pipefail
 
 REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-cd "$REPO_ROOT"
+cd "$REPO_ROOT" || exit
 
-if [ $# -lt 1 ]; then
-  echo "usage: $0 <version>" >&2
-  exit 2
-fi
+# ---------------------------------------------------------------------------
+# Usage
+# ---------------------------------------------------------------------------
 
-VERSION="$1"
+print_usage() {
+  cat <<'EOF'
+usage: scripts/check-orphans.sh <subcommand> [args]
 
-# Pattern: literally `"<version>"` (quotes both sides). In fixed-string
-# mode this matches only the JSON-encoded form, not bare `2.5.0` in
-# prose; package.json sibling keys, etc. Tracked CHANGELOG entries
-# are already excluded by the -g glob below.
-PATTERN="\"${VERSION}\""
+subcommands:
+  literal <version>   Repo-wide literal orphan sweep for the quoted
+                      "<version>" string. Outputs a Markdown table.
+                      Aliases: `orphans`, `orphan`.
+  sequence            Walk CHANGELOG.md's `## [X.Y.Z] - YYYY-MM-DD`
+                      headings and flag every non-contiguous PATCH gap
+                      within each (major, minor) group. Outputs a
+                      Markdown table with the dates of the surrounding
+                      shipped versions.
+                      Aliases: `gaps`, `gap`.
+  --help, -h          Print this message.
 
-# rg exit codes: 0 = matches, 1 = no matches, 2+ = hard error (I/O,
-# permission, broken symlink, invalid pattern). We deliberately treat
-# "no matches" (exit 1) as a clean (orphan-free) state and return 0 so
-# the GitHub Action can publish a green status. Hard errors propagate
-# verbatim so the workflow surfaces a real failure rather than
-# silently logging "no orphans" against a broken fs.
-MATCHES="$(rg -F -n \
-    -g '!node_modules' \
-    -g '!api/vendor' \
-    -g '!package-lock.json' \
-    -g '!api/composer.lock' \
-    -g '!CHANGELOG.md' \
-    -g '!audit' \
-    -g '!package.json' \
-    -g '!.git' \
-    -g '!.jules' \
-    -- "$PATTERN" \
-    . 2>/dev/null)"
-rg_exit=$?
+backward compat: a positional arg matching ^[0-9]+\.[0-9]+\.[0-9]+$
+falls through to `literal <version>`, so the existing orphan-sweep.yml
+invocation `scripts/check-orphans.sh "$VERSION"` keeps working.
+EOF
+}
 
-if [ "$rg_exit" -ge 2 ]; then
-  echo "::error::rg exited with code $rg_exit (permission denied / broken symlink / invalid path)" >&2
-  exit "$rg_exit"
-fi
+# ---------------------------------------------------------------------------
+# run_literal_sweep —
+#   Original rg-based sweep, refactored into a function so the
+#   dispatch above has a single, flat case. Implementation notes
+#   preserved verbatim from the pre-refactor version; the footguns
+#   they document cost a real round of CI runs each time they were
+#   reintroduced, so the next refactor should preserve them.
+# ---------------------------------------------------------------------------
 
-if [ "$rg_exit" -eq 1 ] || [ -z "$MATCHES" ]; then
-  echo "_No orphans found._"
-  exit 0
-fi
+run_literal_sweep() {
+  local version="${1-}"
+  if [ -z "$version" ]; then
+    echo "::error::missing version argument for 'literal' subcommand" >&2
+    exit 2
+  fi
 
-# rg -n prints "<path>:<line>:<content>". Content may legitimately
-# contain colons (rare in this repo but possible in URL-encoded paths
-# or window.location-style strings), so we deliberately preserve only
-# the first two colons as separators and re-join the rest.
-echo "| File | Line | Content |"
-echo "|---|---|---|"
-echo "$MATCHES" | awk -F: '
-  {
-    file = $1
-    line = $2
-    content = $3
-    for (i = 4; i <= NF; i++) content = content ":" $i
-    printf "| %s | %s | `%s` |\n", file, line, content
-  }
-'
-exit 0
+  # Pattern: literally `"<version>"` (quotes both sides). In fixed-string
+  # mode this matches only the JSON-encoded form, not bare `2.5.0` in
+  # prose; package.json sibling keys, etc. Tracked CHANGELOG entries
+  # are already excluded by the -g glob below. The literal string
+  # `"\"${version}\""` is passed to rg after `--` so the embedded
+  # quotes never trip shell-expansion paths.
+  local matches rg_exit
+
+  # rg exit codes: 0 = matches, 1 = no matches, 2+ = hard error (I/O,
+  # permission, broken symlink, invalid pattern). We deliberately treat
+  # "no matches" (exit 1) as a clean (orphan-free) state and return 0 so
+  # the GitHub Action can publish a green status. Hard errors propagate
+  # verbatim so the workflow surfaces a real failure rather than
+  # silently logging "no orphans" against a broken fs.
+  matches="$(rg -F -n \
+      -g '!node_modules' \
+      -g '!api/vendor' \
+      -g '!package-lock.json' \
+      -g '!api/composer.lock' \
+      -g '!CHANGELOG.md' \
+      -g '!audit' \
+      -g '!package.json' \
+      -g '!.git' \
+      -g '!.jules' \
+      -- "\"${version}\"" \
+      . 2>/dev/null)"
+  rg_exit=$?
+
+  if [ "$rg_exit" -ge 2 ]; then
+    echo "::error::rg exited with code $rg_exit (permission denied / broken symlink / invalid path)" >&2
+    exit "$rg_exit"
+  fi
+
+  if [ "$rg_exit" -eq 1 ] || [ -z "$matches" ]; then
+    echo "_No orphans found._"
+    return 0
+  fi
+
+  # rg -n prints "<path>:<line>:<content>". Content may legitimately
+  # contain colons (rare in this repo but possible in URL-encoded paths
+  # or window.location-style strings), so we deliberately preserve only
+  # the first two colons as separators and re-join the rest.
+  echo "| File | Line | Content |"
+  echo "|---|---|---|"
+  echo "$matches" | awk -F: '
+    {
+      file  = $1
+      line  = $2
+      content = $3
+      for (i = 4; i <= NF; i++) content = content ":" $i
+      printf "| %s | %s | `%s` |\n", file, line, content
+    }
+  '
+  return 0
+}
+
+# ---------------------------------------------------------------------------
+# run_sequence_gap_check —
+#   Walks CHANGELOG.md's `## [X.Y.Z] - YYYY-MM-DD` headings and emits
+#   one row per missing patch between consecutive shipped patches
+#   within the same (major, minor) group.
+#
+#   Implementation notes:
+#
+#   1. The grep regex is deliberately tight: `^## \[N.N.N\] - DATE`
+#      where N is `[0-9]+` and DATE is `\d{4}-\d{2}-\d{2}`. This
+#      excludes the `## [Unreleased]` placeholder (no semver body)
+#      AND preserves any trailing parenthetical annotation such as
+#      `(later)` (`[2.6.1] - 2026-07-03 (later)`) by stripping
+#      everything after DATE with `sed`. The `-E` flag enables ERE,
+#      so the alternation `[0-9]+\.[0-9]+\.[0-9]+` is unambiguous
+#      against dotted-prefix anchors.
+#
+#   2. sort -t. -k1,1n -k2,2n -k3,3n -u does a *numeric* sort by
+#      numeric split-fields so 2.6.10 sorts after 2.6.9 (a known
+#      catch when sorting semver strings with a naive lexicographic
+#      order). `-u` collapses duplicate headings e.g. if CHANGELOG.md
+#      ever duplicated `## [2.6.0] - YYYY-MM-DD` (n.b. last-seen SHA
+#      wins; dedup is intentional — duplicates represent a
+#      bookkeeping error, not two distinct releases).
+#
+#   3. awk groups by (major, minor). On a group boundary, the prev
+#      patch + prev version are cleared. Inside a group, for each
+#      pair (prev_patch, cur_patch), `cur_patch - prev_patch > 1`
+#      triggers a loop that emits one row per missing patch in
+#      (prev_patch, cur_patch). Major AND minor transitions naturally
+#      reset prev and are never flagged as gaps — `2.5.x → 2.6.x` is
+#      always a deliberate minor bump, never a lost PATCH slot.
+#
+#   4. Output column shape (`Missing`, `Between`, `And`) matches the
+#      literal sweep's `File / Line / Content` table so
+#      orphan-sweep.yml-style parsers (`tail -n +3 | grep -cE '^\| '`)
+#      work on either subcommand's output identically.
+# ---------------------------------------------------------------------------
+
+run_sequence_gap_check() {
+  # Pull all version-shaped headings from CHANGELOG.md, dedup, sort
+  # numerically by (major, minor, patch). The regex blocks the
+  # `[Unreleased]` placeholder; the trailing `sed` strips any
+  # parenthetical annotation (e.g. `(later)`).
+  local headings
+  headings="$(grep -E '^## \[[0-9]+\.[0-9]+\.[0-9]+\] - [0-9]{4}-[0-9]{2}-[0-9]{2}' CHANGELOG.md \
+    | sed -E 's|^## \[([0-9]+)\.([0-9]+)\.([0-9]+)\] - ([0-9-]+).*|\1.\2.\3 \4|' \
+    | sort -t. -k1,1n -k2,2n -k3,3n -u)"
+
+  if [ -z "$headings" ]; then
+    echo "_CHANGELOG.md has no version-shaped headings._"
+    return 0
+  fi
+
+  # Group by (major, minor). On every group boundary we reset curr.
+  # Within a group, for each consecutive pair (prev, cur), if
+  # cur_patch - prev_patch > 1 emit one row per missing patch N in
+  # (prev_patch, cur_patch).
+  local gaps
+  gaps="$(printf '%s\n' "$headings" | awk '
+    BEGIN { cur_maj=""; cur_min=""; cur_pat=""; cur_vers=""; cur_date=""; }
+    {
+      vers=$1
+      date=$2
+      split(vers, p, ".")
+      maj=p[1] + 0
+      min=p[2] + 0
+      pat=p[3] + 0
+      if (maj == cur_maj && min == cur_min) {
+        if (cur_pat != "" && (pat - cur_pat) > 1) {
+          for (m = cur_pat + 1; m < pat; m++) {
+            printf "| `%d.%d.%d` | `%s` | %s | `%s` | %s |\n", maj, min, m, cur_vers, cur_date, vers, date
+          }
+        }
+      }
+      cur_maj  = maj
+      cur_min  = min
+      cur_pat  = pat
+      cur_vers = vers
+      cur_date = date
+    }
+  ')"
+
+  if [ -z "$gaps" ]; then
+    echo "_No PATCH gaps detected in CHANGELOG.md._"
+    return 0
+  fi
+
+  echo "| Missing | Between | Between date | And | And date |"
+  echo "|---|---|---|---|---|"
+  echo "$gaps"
+  return 0
+}
+
+# ---------------------------------------------------------------------------
+# Dispatch — the only entry point. Restricting all routing to a single
+# `case` keeps the help text and the actual behavior in lock-step: any
+# new subcommand implies adding both a `print_usage` line and a `case`
+# branch, so they cannot drift apart unnoticed.
+# ---------------------------------------------------------------------------
+
+case "${1-}" in
+  literal|orphans|orphan)
+    shift
+    run_literal_sweep "${1-}"
+    ;;
+  sequence|gaps|gap)
+    shift
+    run_sequence_gap_check
+    ;;
+  -h|--help|help|"")
+    print_usage
+    exit 0
+    ;;
+  *)
+    # Backward compat: a bare semver-shaped positional arg falls
+    # through to `literal <version>`, so the orphan-sweep.yml caller
+    # signature `scripts/check-orphans.sh "$VERSION"` keeps working
+    # without a chore change.
+    if [[ "${1-}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+      run_literal_sweep "$1"
+    else
+      echo "::error::unknown subcommand: '${1-}' (expected 'literal <version>', 'sequence', or --help)" >&2
+      print_usage >&2
+      exit 2
+    fi
+    ;;
+esac
