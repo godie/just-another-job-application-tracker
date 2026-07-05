@@ -15,7 +15,7 @@ import ConfirmDialog from '../components/ConfirmDialog';
 import { useOpportunitiesStore } from '../stores/opportunitiesStore';
 import { useApplicationsStore } from '../stores/applicationsStore';
 import { useMatchingStore } from '../stores/matchingStore';
-import { getMatchThresholdOverride, saveMatchThresholdOverride, clearMatchThresholdOverride } from '../storage/matching';
+import { useMatchThreshold } from '../hooks/useMatchThreshold';
 import OpportunitiesEmptyState from '../components/OpportunitiesEmptyState';
 import OpportunitiesTable from '../components/OpportunitiesTable';
 import { RecommendationPanel } from '../components/RecommendationPanel';
@@ -107,25 +107,12 @@ const OpportunitiesPageContent: React.FC<OpportunitiesPageContentProps> = () => 
   const loadMatchingState = useMatchingStore((state) => state.loadMatchingState);
   const computeScores = useMatchingStore((state) => state.computeScores);
   const [selectedMatch, setSelectedMatch] = useState<{ result: JobMatchResult; opportunity: JobOpportunity } | null>(null);
-  const [matchThreshold, setMatchThreshold] = useState<number>(() => {
-    const persisted = getMatchThresholdOverride();
-    return persisted !== null ? persisted : matchingPreferences.minMatchThreshold;
-  });
-  const isThresholdUserModifiedRef = useRef(false);
-
-  useEffect(() => {
-    if (isThresholdUserModifiedRef.current) {
-      saveMatchThresholdOverride(matchThreshold);
-    }
-  }, [matchThreshold]);
-
-  // Sync threshold from loaded preferences when no user override exists
-  useEffect(() => {
-    const persisted = getMatchThresholdOverride();
-    if (persisted === null) {
-      setMatchThreshold(matchingPreferences.minMatchThreshold);
-    }
-  }, [matchingPreferences.minMatchThreshold]);
+  const {
+    matchThreshold,
+    setMatchThreshold,
+    resetThreshold,
+    hasOverride,
+  } = useMatchThreshold();
 
   const computedIdsRef = useRef<string>('');
 
@@ -210,22 +197,15 @@ const OpportunitiesPageContent: React.FC<OpportunitiesPageContentProps> = () => 
                   max={100}
                   step={5}
                   value={matchThreshold}
-                  onChange={(e) => {
-                    isThresholdUserModifiedRef.current = true;
-                    setMatchThreshold(parseInt(e.target.value, 10));
-                  }}
+                  onChange={(e) => setMatchThreshold(parseInt(e.target.value, 10))}
                   className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer accent-primary"
                   aria-label={t('opportunities.minMatchThreshold')}
                 />
               </div>
-              {getMatchThresholdOverride() !== null && (
+              {hasOverride && (
                 <button
                   type="button"
-                  onClick={() => {
-                    clearMatchThresholdOverride();
-                    isThresholdUserModifiedRef.current = false;
-                    setMatchThreshold(matchingPreferences.minMatchThreshold);
-                  }}
+                  onClick={resetThreshold}
                   className="text-xs font-medium text-muted-foreground hover:text-foreground underline underline-offset-2 transition-colors whitespace-nowrap"
                 >
                   {t('settings.resetDefault')}

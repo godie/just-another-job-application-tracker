@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 Each release is a dated `## [<version>] - YYYY-MM-DD` heading followed by `### Added`, `### Changed`, `### Fixed`, `### Removed`, `### Security` subsections (Keep a Changelog's structure, without the `[Unreleased]` block this repo does not use).
 
+## [2.6.3] - 2026-07-05
+
+### Changed
+
+- **Refactor: Extract match threshold logic** — consolidated the duplicated job match threshold state and persistence logic from `HomePage` and `OpportunitiesPage` into a new `useMatchThreshold` custom hook. This improves modularity and ensures consistent behavior across different pages.
+
 ## [2.6.2] - 2026-07-03 (later)
 
 ### Fixed
