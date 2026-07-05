@@ -1,4 +1,4 @@
-import React, { useReducer, useEffect, useCallback, useEffectEvent, useMemo, useRef, useState } from 'react';
+import React, { useReducer, useEffect, useCallback, useEffectEvent, useMemo, useRef } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import { useSEO } from '../seo/useSEO';
 import Footer from '../components/Footer';
@@ -17,7 +17,7 @@ import { useApplicationsStore } from '../stores/applicationsStore';
 import { usePreferencesStore } from '../stores/preferencesStore';
 import { useOpportunitiesStore } from '../stores/opportunitiesStore';
 import { useMatchingStore } from '../stores/matchingStore';
-import { getMatchThresholdOverride, saveMatchThresholdOverride, clearMatchThresholdOverride } from '../storage/matching';
+import { useMatchThreshold } from '../hooks/useMatchThreshold';
 import { useFilteredApplications } from '../hooks/useFilteredApplications';
 import { useTableColumns } from '../hooks/useTableColumns';
 import CurrentViewRenderer from '../components/CurrentViewRenderer';
@@ -227,25 +227,12 @@ const HomePageContent: React.FC<HomePageContentProps> = ({ onNavigate }) => {
   const loadMatchingState = useMatchingStore((state) => state.loadMatchingState);
   const computeScores = useMatchingStore((state) => state.computeScores);
 
-  const [matchThreshold, setMatchThreshold] = useState<number>(() => {
-    const persisted = getMatchThresholdOverride();
-    return persisted !== null ? persisted : matchingPreferences.minMatchThreshold;
-  });
-  const isThresholdUserModifiedRef = useRef(false);
-
-  useEffect(() => {
-    if (isThresholdUserModifiedRef.current) {
-      saveMatchThresholdOverride(matchThreshold);
-    }
-  }, [matchThreshold]);
-
-  // Sync threshold from loaded preferences when no user override exists
-  useEffect(() => {
-    const persisted = getMatchThresholdOverride();
-    if (persisted === null) {
-      setMatchThreshold(matchingPreferences.minMatchThreshold);
-    }
-  }, [matchingPreferences.minMatchThreshold]);
+  const {
+    matchThreshold,
+    setMatchThreshold,
+    resetThreshold,
+    hasOverride,
+  } = useMatchThreshold();
 
   const computedIdsRef = useRef<string>('');
 
@@ -305,22 +292,15 @@ const HomePageContent: React.FC<HomePageContentProps> = ({ onNavigate }) => {
                 max={100}
                 step={5}
                 value={matchThreshold}
-                onChange={(e) => {
-                  isThresholdUserModifiedRef.current = true;
-                  setMatchThreshold(parseInt(e.target.value, 10));
-                }}
+                onChange={(e) => setMatchThreshold(parseInt(e.target.value, 10))}
                 className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer accent-primary"
                 aria-label={t('home.minMatchThreshold')}
               />
             </div>
-            {getMatchThresholdOverride() !== null && (
+            {hasOverride && (
               <button
                 type="button"
-                onClick={() => {
-                  clearMatchThresholdOverride();
-                  isThresholdUserModifiedRef.current = false;
-                  setMatchThreshold(matchingPreferences.minMatchThreshold);
-                }}
+                onClick={resetThreshold}
                 className="text-xs font-medium text-muted-foreground hover:text-foreground underline underline-offset-2 transition-colors whitespace-nowrap"
               >
                 {t('settings.resetDefault')}
