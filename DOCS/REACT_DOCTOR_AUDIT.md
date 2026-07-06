@@ -109,7 +109,7 @@ splits (in order of **yield vs. blast-radius**):
    `{activeSection === 'X' && <XSettings />}` short-circuits.
    Trade-off: it touches every existing `<XSettings/>` import path
    and its test fixtures (higher blast-radius).
-2. **Extract `useSettingsMatching()` sub-hook** from
+2. **Extract `useSettingsMatching()` sub-hook`** from
    `useSettingsManager`. The matching-store binding
    (`matchingProfile`, `matchingPreferences`, `profileStatus`,
    `lastProfileCompute`, `isComputingScores`, `updateMatchingPreferences`,
@@ -141,7 +141,8 @@ into `src/hooks/useFiltersState.ts`. The pattern in
 **Followup tracking:** the candidate split above is tracked in
 full detail (mechanics + non-goals + acceptance criteria +
 rationale-by-name preservation for `syncSearchTermToCanonicalProp`)
-at [`DOCS/FOLLOWUP_FILTERSBAR_REFACTOR.md`](../DOCS/FOLLOWUP_FILTERSBAR_REFACTOR.md).
+at
+[`DOCS/FOLLOWUP_FILTERSBAR_REFACTOR.md`](../DOCS/FOLLOWUP_FILTERSBAR_REFACTOR.md).
 Pick up the task from that doc when the trigger condition fires;
 don't re-derive the plan here.
 
@@ -184,6 +185,14 @@ eslint                    ✅ 0 errors, 0 warnings
 habit-hooks               ✅ 0 violations
 vitest                    ✅ 815/815
 ```
+
+## CI gate state
+
+**Since v2.6.12 ([PR #214](https://github.com/godie/just-another-job-application-tracker/pull/214)):** the React Doctor CI gate is graduated from advisory to `blocking: error`. The action fails the `react-doctor` check on any **new** error-severity finding introduced by the PR diff (against the merge base). Warning-severity findings still surface in the sticky PR summary + inline review comments but do not block the merge.
+
+**Since v2.6.13 ([PR #215 followup](https://github.com/godie/just-another-job-application-tracker/issues/215)):** the `version` input of the `millionco/react-doctor@v2` action is pinned to `"0.5.8"` — the same version the local CLI baseline at commit `cdafe81` was established against (0 issues / 100/100). Pinning to 0.5.8 (instead of the npm-latest 0.7.1 or the action's default `"latest"`) keeps the gate's contract deterministic and known-passing. Bump in a followup PR after validating a newer version against 2-3 React-touching PRs.
+
+**Tightening to `blocking: warning` is tracked separately** in [Issue #216](https://github.com/godie/just-another-job-application-tracker/issues/216) and is gated on a 2-3 week observation period of healthy error-blocking behavior + a 100/100 baseline. The `version` pin must land first (this PR) before #216's tightening can be considered.
 
 ## Related commits
 
