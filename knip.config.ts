@@ -3,7 +3,6 @@ import type { KnipConfig } from 'knip';
 const config: KnipConfig = {
   ignoreDependencies: [
     '@axe-core/playwright',
-    '@vitest/coverage-v8',
     'autoprefixer',
     'axe-playwright',
     'baseline-browser-mapping',
