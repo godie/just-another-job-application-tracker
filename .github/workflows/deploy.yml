@@ -226,4 +226,14 @@ jobs:
   composer-validate:
     name: Composer validate
     uses: ./.github/workflows/composer-validate.yml
+    with:
+      # php-version MUST stay in lock-step with the deploy workflow's main
+      # job (line ~29: shivammathur/setup-php@2.37.2 php-version: "8.2").
+      # composer-validate.yml's own comment enforces the same invariant.
+      # Drift here produces a lockfile-mismatch failure mode identical to
+      # the v2.6.0 release cycle's symfony/options-resolver 8.1.0 episode,
+      # so we pass it explicitly rather than rely on the reusable
+      # workflow's default.
+      php-version: "8.2"
+      working-directory: api
 

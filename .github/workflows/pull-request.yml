@@ -109,6 +109,15 @@ jobs:
       - name: Scan for secrets with local script
         run: bash scripts/scan-secrets.sh --ci
 
+      - name: Check workflow-file wrappers
+        # Pre-merge gate that catches workflow files missing the required
+        # top-level `name:`, `on:`, and `jobs:` wrapper keys (the regression
+        # class observed when PR #206's squash stripped `deploy.yml`'s wrapper).
+        # Fail-fast: runs after secret scan so the secrets job still surfaces
+        # any secret findings on the PR even when the workflow-shape layer
+        # would block the build.
+        run: bash scripts/check-workflow-shape.sh --ci
+
   composer-validate:
     name: Composer validate
     uses: ./.github/workflows/composer-validate.yml
