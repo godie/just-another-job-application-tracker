@@ -234,6 +234,6 @@ jobs:
       # the v2.6.0 release cycle's symfony/options-resolver 8.1.0 episode,
       # so we pass it explicitly rather than rely on the reusable
       # workflow's default.
-      php-version: '8.2'
+      php-version: "8.2"
       working-directory: api
 
