@@ -49,6 +49,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Check workflow-file wrappers
+        # Pre-merge + daily-drift gate. Fails fast before any sweep work
+        # runs so a workflow file missing its `name:`, `on:`, or `jobs:`
+        # wrapper produces a tracking issue instead of silently shipping.
+        # Mirror of the same check wired into `pull-request.yml`.
+        run: bash scripts/check-workflow-shape.sh --ci
+
       - name: Read current version
         id: version
         run: |
