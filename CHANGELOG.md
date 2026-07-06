@@ -1,3 +1,8 @@
+## [2.6.10] - 2026-07-06
+
+### Removed
+- **knip `ignoreDependencies` carry-over** — Removed `@vitest/coverage-v8` from `knip.config.ts`. The dep is genuinely used by the `npm run test:cov` script (`vitest run --coverage`), so knip’s modern analyzer no longer needs the explicit ignore; modern knip reads `package.json` scripts and recognises the dependency as live. Eliminates the stale “Unused listed dependency” hint.
+
 ## [2.6.9] - 2026-07-06
 
 ### Added
