@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 
 Each release is a dated `## [<version>] - YYYY-MM-DD` heading followed by `### Added`, `### Changed`, `### Fixed`, `### Removed`, `### Security` subsections (Keep a Changelog's structure, without the `[Unreleased]` block this repo does not use).
 
+## [2.6.9] - 2026-07-06
+
+### Added
+- **`scripts/check-workflow-shape.sh`** — pre-merge CI gate that fails fast when any `.github/workflows/*.yml` file is missing the required top-level wrapper keys (`name:`, `on:`, `jobs:`). Mirrors the styles of the existing `scripts/check-orphans.sh` (rg-based, subcommand-dispatched) and `scripts/scan-secrets.sh` (concise header, `set -euo pipefail`, `--ci` mode flag). Wired into two places: (a) `.github/workflows/pull-request.yml`'s `secrets` job as a new step that emits `::error file=` annotations under `--ci` mode; (b) `.github/workflows/orphan-sweep.yml`'s `sweep` job as the very first step so a wrapper drift on `main` surfaces as an `orphan-sweep` tracking issue instead of an un-flagged deploy failure. Self-tested locally with both valid and broken fixture files: returns exit 0 on a clean tree, exit 1 on a file with only indented job bodies (the regression class), and prints all offenders before exiting.
+
+### Notes
+- **Regression origin & merge-order dependency**: this gate exists because of the regression observed in the PR #206 squash (commit `4d5748a`). Hotfix PR #208 separately restores the wrapper on `deploy.yml`. This PR's `pull-request.yml` gate fails fast on this PR's own CI run because `deploy.yml` on `main` (the base branch) is still missing the wrapper until #208 merges. The PR body documents the resolution: merge #208 first, then rebase this branch onto post-#208 main and re-push. No re-bump (per AGENTS.md "follow-up commits in same branch MUST NOT re-bump" rule); if #208 lands before this PR, version stays at `2.6.9` and the gate's first CI run will go green.
+- **Why only three keys, not four**: this gate enforces `name:`, `on:`, `jobs:`. `env:` is deliberately NOT enforced because `composer-validate.yml` (the `workflow_call` reusable workflow) omits file-scope env and declares per-job setup instead — enforcing `env:` here would false-positive the existing tree. A future tightening could either (a) add `env: FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'` to `composer-validate.yml` and enable the gate to require it, or (b) make the required-key set configurable via a sentinel. Both deferred to a separate PR to keep this one strictly scoped.
+- **Version slot choice**: PATCH `2.6.7 -> 2.6.9` (skipping the `2.6.8` slot that PR #208 already claims) per the repo's pattern of documenting skipped-version slots in the entry's `### Notes`. Same merge-order choreography as the prior `2.6.4 -> 2.6.5 -> 2.6.6 -> 2.6.7` chain.
+
 ## [2.6.6] - 2026-07-04
 
 ### Added
