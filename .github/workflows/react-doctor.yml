@@ -32,19 +32,20 @@ jobs:
       - uses: actions/checkout@v5
 
       - uses: millionco/react-doctor@v2
-        # Advisory by default: React Doctor reports findings on every PR — a
-        # sticky summary comment, inline review comments, and a commit status
-        # with the health score — but never fails the check, so it won't red-X
-        # a teammate's PR on day one. When your team trusts the signal, graduate
-        # the gate: uncomment the block below and set blocking to "error" (fail
-        # on new error-severity findings) or "warning" (fail on any finding).
+        # React Doctor CI gate — graduated to `blocking: error`. The action now
+        # fails the `react-doctor` check on any NEW error-severity finding
+        # introduced by the PR diff (against the merge base). Warning-severity
+        # findings still surface in the sticky PR summary + inline review
+        # comments but do not block the merge.
+        # The default `scope` (changed-files on PRs, full project on push to
+        # `main`) is preserved: the gate fires on the diff against the merge
+        # base, not on pre-existing findings in `main`.
+        # The remaining options (`comment`, `review-comments`, `commit-status`,
+        # `version`, `directory`, `project`) stay at default — the sticky PR
+        # summary, inline review comments, and score commit status remain
+        # visible so reviewers see the signal even when the gate is green.
+        # Baseline: see `DOCS/REACT_DOCTOR_AUDIT.md` for the live suppression
+        # inventory and current health score.
         # Full reference: https://www.react.doctor/ci
-        # with:
-        #   blocking: error          # Gate level: "none" (advisory, the default) | "warning" | "error"
-        #   scope: full              # On PRs, scan the whole project instead of just changed files
-        #   comment: false           # Disable the sticky PR summary comment
-        #   review-comments: false   # Disable inline review comments on changed lines
-        #   commit-status: false     # Disable the commit status (score + counts, links to the run)
-        #   version: "0.4.0"         # Pin to a specific react-doctor version instead of "latest"
-        #   directory: apps/web      # Scan a sub-directory (default: ".")
-        #   project: "web,admin"     # In a monorepo, scan specific workspace project(s)
+        with:
+          blocking: error
