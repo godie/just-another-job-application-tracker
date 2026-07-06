@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 Each release is a dated `## [<version>] - YYYY-MM-DD` heading followed by `### Added`, `### Changed`, `### Fixed`, `### Removed`, `### Security` subsections (Keep a Changelog's structure, without the `[Unreleased]` block this repo does not use).
 
+## [2.6.8] - 2026-07-06
+
+### Fixed
+- **`.github/workflows/deploy.yml` top-level YAML wrapper** — the PR #206 (`integrate/prs-200-202-203-204` -> 2.6.6) squash accidentally dropped the file's `name:`, `on:`, `env:`, and `jobs:` wrapper, leaving only the three indented job bodies (`build`, `deploy`, `composer-validate`) at the top of the file. The GitHub Actions compositor rejected the file with `(Line: 1, Col: 3): Unexpected value 'build'` and `Required property is missing: jobs`. The wrapper is restored to match the pre-regression shape at commit `7ccc553` and the sibling `pull-request.yml` / `cve-lite.yml` env block convention. All three job bodies already had the correct 2-space indent for `jobs:` children, so no body restructuring was needed.
+
 ## [2.6.6] - 2026-07-04
 
 ### Added

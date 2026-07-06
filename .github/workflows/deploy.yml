@@ -1,3 +1,14 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
+
+jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
