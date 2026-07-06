@@ -36,12 +36,16 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPage = 'applications', onNavig
   const refreshOpportunities = useOpportunitiesStore((state) => state.refreshOpportunities);
   const opportunitiesCount = opportunities.length;
 
-  // Two refresh mechanisms, each covering a different source of
-  // staleness — NOT redundant:
-  //   1. `storage` event fires cross-tab only (not in the writing tab).
-  //   2. Polling catches same-tab writes from non-React code paths
-  //      that bypass the Zustand store. Gated on `isOpen` so a
-  //      closed sidebar doesn't burn CPU.
+  // Three refresh mechanisms, each covering a different source of staleness:
+  //   1. The Zustand selector `state.opportunities` re-renders on
+  //      React-driven store mutations (no listener required for in-tab React
+  //      writes — Zustand's selector subscription handles that natively).
+  //   2. `storage` event fires cross-tab only (not in the writing tab).
+  //   3. `jobOpportunitiesUpdated` CustomEvent fires same-tab on every
+  //      write funneled through `saveOpportunities`, including non-React
+  //      bypass paths (e.g. future extension content scripts, manual
+  //      localStorage writes, or migration scripts).
+  // See AGENTS.md "Reactive state sync" for the policy.
   useEffect(() => {
     loadOpportunities();
 
@@ -51,18 +55,18 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPage = 'applications', onNavig
       }
     };
 
+    const handleOpportunitiesUpdate = () => {
+      refreshOpportunities();
+    };
+
     window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('jobOpportunitiesUpdated', handleOpportunitiesUpdate);
 
     return () => {
       window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('jobOpportunitiesUpdated', handleOpportunitiesUpdate);
     };
   }, [loadOpportunities, refreshOpportunities]);
-
-  useEffect(() => {
-    if (!isOpen) return;
-    const interval = setInterval(refreshOpportunities, 2000);
-    return () => clearInterval(interval);
-  }, [isOpen, refreshOpportunities]);
 
   const handleNavigation = (page: PageType) => {
     if (onNavigate) {

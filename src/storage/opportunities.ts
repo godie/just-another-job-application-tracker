@@ -28,6 +28,14 @@ export const getOpportunities = (): JobOpportunity[] => {
 export const saveOpportunities = (opportunities: JobOpportunity[]): void => {
   try {
     localStorage.setItem(OPPORTUNITIES_STORAGE_KEY, JSON.stringify(opportunities));
+    // M5 audit: notify same-tab listeners (Sidebar, OpportunitiesPage) so
+    // non-React bypass writes propagate without polling. The native `storage`
+    // event covers cross-tab only — same-tab writes need this CustomEvent.
+    // See AGENTS.md "Reactive state sync". `typeof window` guard keeps SSR /
+    // prerender paths (future vite ssr) from crashing on `window is undefined`.
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('jobOpportunitiesUpdated'));
+    }
   } catch (error) {
     console.error("Error saving opportunities to localStorage:", error);
   }
