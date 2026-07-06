@@ -1,3 +1,21 @@
+## [2.6.11] - 2026-07-06
+
+### Changed
+- **`Sidebar.tsx`**: 2-second `setInterval` polling for the `jobOpportunities` count badge replaced with a `storage` + `jobOpportunitiesUpdated` CustomEvent listener pair. Closes the bypass-write gap (extension content scripts, future migration scripts, manual `localStorage.setItem` from the writing tab) — these paths never reached the previous polling.
+- **`useCloudSync.ts`**: 2-second `setTimeout`-driven cloud-push debounce replaced with a `jobApplicationsUpdated` + `jobOpportunitiesUpdated` listener pair. The 2s debounce is preserved (rapid events reset the timer so only the last one fires the network push) and now also covers bypass writes. The hook no longer subscribes to `applications` / `opportunities` selectors, eliminating per-store-mutation re-renders in `App.tsx` that the old `[applications, opportunities, …]`-driven `useEffect` caused.
+- **`OpportunitiesPage.tsx`**: dropped the dead 2-second `setInterval` (the `jobOpportunitiesUpdated` listener was already wired but unused — the new dispatcher makes it live).
+- **`AGENTS.md` "Reactive state sync"**: the table now documents both `jobApplicationsUpdated` and `jobOpportunitiesUpdated` and the `useCloudSync` cloud-push consumer. A new `**Cloud push debounce**` paragraph codifies the listener contract.
+
+### Added
+- **`src/storage/applications.ts`**: `jobApplicationsUpdated` CustomEvent dispatcher in `saveApplications` (mirror of the M5 `jobOpportunitiesUpdated` dispatcher in `saveOpportunities`). Activates the already-present `App.tsx` listener that calls `refreshApplications()`.
+- **`src/components/Sidebar.test.tsx`**: `setInterval` regression guard under `describe('M5 audit: reactive state sync (no polling)')`.
+- **`src/tests/OpportunitiesPage.test.tsx`**: `setInterval` regression guard.
+- **`src/hooks/useCloudSync.test.ts`**: `setInterval` regression guard under `describe('M5-style audit: reactive push (no polling)')`.
+- **`frontend-audit.md`**: the audit document that surfaces the M5 finding. Committed in this PR so the PR body link to the audit is self-contained.
+
+### Notes
+- One branch, one version (per AGENTS.md "Versioning" rule). No version race — `2.6.10` already shipped on `main` via the merged `chore/knip-cleanup-coverage-v8` PR.
+
 ## [2.6.10] - 2026-07-06
 
 ### Removed

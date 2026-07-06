@@ -633,4 +633,21 @@ describe('OpportunitiesPage', () => {
     // Only user changes should persist
     expect(localStorage.getItem('jat_match_threshold_override_v1')).toBe('60');
   });
+
+  describe('M5 audit: reactive state sync (no polling)', () => {
+    // Regression guard for the M5 follow-up PR: the dead `jobOpportunitiesUpdated`
+    // listener is now ACTIVE (paired with the new dispatcher in
+    // `src/storage/opportunities.ts`), and the previous 2-second setInterval
+    // polling was removed. If a future contributor re-adds the polling,
+    // this test fails fast.
+    it('does not schedule setInterval during mount (event-driven refresh only)', () => {
+      const setIntervalSpy = vi.spyOn(globalThis, 'setInterval');
+      try {
+        renderWithProviders(<OpportunitiesPage />);
+        expect(setIntervalSpy).not.toHaveBeenCalled();
+      } finally {
+        setIntervalSpy.mockRestore();
+      }
+    });
+  });
 });

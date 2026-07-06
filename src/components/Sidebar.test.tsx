@@ -16,7 +16,10 @@ const localStorageMock = (() => {
 Object.defineProperty(window, 'localStorage', { value: localStorageMock });
 
 const mockGetOpportunities = vi.fn(() => []);
-vi.mock('../storage/applications', () => ({
+// Mock the SAME module the production store imports from
+// (`src/stores/opportunitiesStore.ts` imports `getOpportunities` from
+// `../storage/opportunities`, not `../storage/applications`).
+vi.mock('../storage/opportunities', () => ({
   getOpportunities: () => mockGetOpportunities(),
 }));
 
@@ -61,7 +64,7 @@ describe('Sidebar', () => {
       });
     });
 
-    it('renders the Opportunities icon alongside the count badge (icon + badge coexistence)', () => {
+    it('renders the Opportunities icon alongside the count badge (icon + badge coexistence)', async () => {
       // Locks the layout contract that the icon and the Badge both
       // render inside the Opportunities Button when count > 0. The
       // Badge is `absolute` positioned so it does not interact with
@@ -85,7 +88,7 @@ describe('Sidebar', () => {
       // badge by its content (the count "1") rather than by a
       // substring class selector — more semantic and robust to
       // className changes.
-      waitFor(() => {
+      await waitFor(() => {
         const badge = screen.getByText('1');
         expect(badge.classList.contains('absolute')).toBe(true);
       });
@@ -126,31 +129,31 @@ describe('Sidebar', () => {
   });
 
   describe('Opportunities Badge', () => {
-    it('displays opportunities count badge when count > 0', () => {
+    it('displays opportunities count badge when count > 0', async () => {
       mockGetOpportunities.mockReturnValue([
         { id: '1', position: 'Engineer', company: 'Test' },
         { id: '2', position: 'Developer', company: 'Test' },
       ]);
-      
+
       render(<Sidebar />);
-      
-      waitFor(() => {
+
+      await waitFor(() => {
         const badge = screen.getByText('2');
         expect(badge).toBeInTheDocument();
       });
     });
 
-    it('displays 9+ when count > 9', () => {
+    it('displays 9+ when count > 9', async () => {
       const manyOpportunities = Array.from({ length: 15 }, (_, i) => ({
         id: `${i}`,
         position: `Position ${i}`,
         company: 'Test',
       }));
       mockGetOpportunities.mockReturnValue(manyOpportunities);
-      
+
       render(<Sidebar />);
-      
-      waitFor(() => {
+
+      await waitFor(() => {
         const badge = screen.getByText('9+');
         expect(badge).toBeInTheDocument();
       });
@@ -158,12 +161,28 @@ describe('Sidebar', () => {
 
     it('does not display badge when count is 0', () => {
       mockGetOpportunities.mockReturnValue([]);
-      
+
       render(<Sidebar />);
-      
+
       const opportunitiesButton = screen.getByText('Opportunities').closest('button');
       const badge = opportunitiesButton?.querySelector('.bg-red-500');
       expect(badge).not.toBeInTheDocument();
+    });
+  });
+
+  describe('M5 audit: reactive state sync (no polling)', () => {
+    // Regression guard for the M5 follow-up PR: the 2-second setInterval
+    // on `isOpen` was replaced with a `jobOpportunitiesUpdated` CustomEvent
+    // listener pair (see AGENTS.md "Reactive state sync"). If a future
+    // contributor re-adds the polling, this test fails fast.
+    it('does not schedule setInterval during mount (event-driven refresh only)', () => {
+      const setIntervalSpy = vi.spyOn(globalThis, 'setInterval');
+      try {
+        render(<Sidebar currentPage="applications" onNavigate={vi.fn()} />);
+        expect(setIntervalSpy).not.toHaveBeenCalled();
+      } finally {
+        setIntervalSpy.mockRestore();
+      }
     });
   });
 });

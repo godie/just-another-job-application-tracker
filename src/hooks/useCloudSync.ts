@@ -122,8 +122,6 @@ export function useCloudSync() {
   const { isAuthenticated, isLoading: isAuthLoading } = useAuthStore();
   const setApplications = useApplicationsStore((state) => state.setApplications);
   const setOpportunities = useOpportunitiesStore((state) => state.setOpportunities);
-  const applications = useApplicationsStore((state) => state.applications);
-  const opportunities = useOpportunitiesStore((state) => state.opportunities);
   const {
     isSyncPaused,
     isConflictDetected,
@@ -163,16 +161,41 @@ export function useCloudSync() {
   }, [isAuthenticated, isAuthLoading, isConflictDetected, isSyncPaused, setApplications, setOpportunities, setConflict]);
 
   useEffect(() => {
-    if (isAuthenticated && _initialLoadDone && !syncInProgress.current && !isSyncPaused) {
-      syncInProgress.current = true;
-      const timer = setTimeout(() => {
-        void pushCloudData(applications, opportunities).finally(() => {
+    if (!isAuthenticated || !_initialLoadDone || isSyncPaused) return;
+
+    // M5-style event-driven push: instead of subscribing to store state
+    // (which misses bypass writes that don't go through the Zustand
+    // store), we listen to the same CustomEvents the write funnel
+    // (`saveApplications` / `saveOpportunities`) dispatches. The 2s
+    // debounce is preserved: rapid events reset the timer so only the
+    // last one fires the network push (batch imports, form updates).
+    let debounceTimer: ReturnType<typeof setTimeout> | null = null;
+
+    const schedulePush = () => {
+      if (debounceTimer) clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => {
+        if (syncInProgress.current) return;
+        syncInProgress.current = true;
+        // Read latest store state at push time (not at effect time) so the
+        // push payload reflects any writes that happened during the 2s
+        // debounce window, including the event that triggered this push.
+        const apps = useApplicationsStore.getState().applications;
+        const opps = useOpportunitiesStore.getState().opportunities;
+        void pushCloudData(apps, opps).finally(() => {
           syncInProgress.current = false;
         });
       }, 2000);
-      return () => clearTimeout(timer);
-    }
-  }, [applications, opportunities, isAuthenticated, isSyncPaused]);
+    };
+
+    window.addEventListener('jobApplicationsUpdated', schedulePush);
+    window.addEventListener('jobOpportunitiesUpdated', schedulePush);
+
+    return () => {
+      window.removeEventListener('jobApplicationsUpdated', schedulePush);
+      window.removeEventListener('jobOpportunitiesUpdated', schedulePush);
+      if (debounceTimer) clearTimeout(debounceTimer);
+    };
+  }, [isAuthenticated, isSyncPaused]);
 
   return { isSyncing: syncInProgress.current };
 }

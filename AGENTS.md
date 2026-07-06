@@ -87,6 +87,40 @@ A small number of automation tools and GitHub-native features act on `main` outs
 
 If you are a human or an AI agent making a code or docs change, the rule above applies to you. If you are unsure whether your action counts as a "direct push to main", it probably does — open a PR.
 
+### Force-push on a solo chore branch: `--force-with-lease` vs `--force`
+
+When you amend a solo chore branch (the `chore/...` namespace this repo uses for toolchain-only follow-ups), `git push --force-with-lease` rejects on the **second** amend onward even though plain `git push --force` succeeds. This is a known trap, not a permissions bug, and it has bitten several chore amend cycles in this repo's recent history (PR #212 in particular).
+
+**Symptom.** `git push --force-with-lease origin chore/<branch>` exits 1 right after a successful `git commit --amend`. The accompanying message usually contains "stale info" or "remote ref 'refs/heads/chore/<branch>' does not match the expected value". Immediately re-running the same push as `git push --force origin chore/<branch>` succeeds.
+
+**Root cause (verified by sandbox reproduction).** `--force-with-lease` defaults the lease's expected value to `@{u}` — the **upstream-tracking-branch SHA captured at the moment `git push --set-upstream` last ran** (i.e., the first push that created the branch on origin). That SHA never refreshes automatically, even after a successful `--force` push. On the second amend:
+
+1. Local HEAD is the new amended SHA (e.g. `a1b2c3`).
+2. `@{u}` is still pinned to the original SHA captured at set-upstream time (e.g. `d4e5f6`).
+3. Remote is at the SHA from your **previous** `--force` push (e.g. `g7h8i9`).
+4. Lease compares remote against `@{u}`: `g7h8i9 ≠ d4e5f6` → reject.
+
+**Diagnostic** (run whenever a `--force-with-lease` push rejects):
+
+```bash
+# What the lease is comparing against (often stale-by-design after the first
+# set-upstream):
+git rev-parse '@{u}'
+# What the remote actually has right now:
+git rev-parse origin/<branch>
+# If they differ AND you are the sole committer on this branch, the lease is
+# over-cautious and safe to fall back to --force:
+git log --author='<your-handle>' origin/<branch>..HEAD
+```
+
+**Recommended workflow for solo chore branches in this repo.**
+
+- **First push on a new branch**: `git push --set-upstream origin chore/<branch>` — establishes tracking; `origin/<branch>` exists.
+- **Subsequent amend + force-push cycles**: `git push --force origin chore/<branch>` — the lease's stale-upstream-tracking behaviour has no safety value when you are the only writer; the audit trail is the PR itself.
+- **If branch protection or org policy requires the lease**: after every successful force-push, re-run `git push --set-upstream origin chore/<branch>` to refresh `@{u}` to the new remote SHA. It’s an extra roundtrip but the lease then protects against the (still rare) race where stale local commits slip in.
+
+**Why `--force` is acceptable here.** Solo chore branches are by design single-author. A force-push cannot lose anyone else's commits — the lease is meant to protect shared branches, not solo branches, and its protective value is misaligned with the solo-branch invariant. Reserve `--force-with-lease` for branches you share with other committers (e.g. a long-running integration branch).
+
 ## Cross-PR Version Race Playbook
 
 The [per-PR version rule](#versioning) says "one branch, one version" and the [Contribution Workflow rule](#contribution-workflow) says "all changes via PR". When two PRs are open in parallel, both can only merge after claiming a distinct version. This section documents the playbook for resolving the race without a rebase conflict at merge time.
@@ -268,6 +302,63 @@ npm run lint
 npm test
 ```
 
+## Test Coverage Tooling
+
+Vitest (with `@vitest/coverage-v8`) is the coverage producer; `knip` is the dependency-graph auditor. They are independent tools and their behaviour must be reasoned about separately. This section codifies the relationship so future contributors don't treat the appearance or disappearance of coverage artefacts as a regression when `vite.config.ts` or `knip.config.ts` is touched.
+
+### `npm run test:cov` reporter set is pinned explicitly
+
+The script is `vitest run --coverage` (defined in `package.json` `scripts.test:cov`). Its reporter set is **pinned explicitly** in `vite.config.ts` `test.coverage.reporter` so codecov.io / SonarQube integrations have the artefacts they need on disk locally:
+
+```ts
+// vite.config.ts
+test: {
+  // ... globals, environment, setupFiles, include, pool ...
+  coverage: {
+    reporter: ['text', 'html', 'clover', 'json', 'json-summary', 'lcov'],
+  },
+}
+```
+
+What each producer emits under `./coverage/`:
+
+| Reporter | File | Purpose |
+| --- | --- | --- |
+| `text` | (stdout) | Per-file coverage table printed by vitest. Verbose in CI logs; swap to `text-summary` (one-liner) or drop entirely if log noise is a concern. |
+| `html` | `index.html` | Human-browsable HTML report (drill-down per file). |
+| `clover` | `clover.xml` | Clover XML (Atlassian / Jenkins integrations). |
+| `json` | `coverage-final.json` | Full coverage map (raw per-file coverage objects, ~1 MB typ). |
+| `json-summary` | `coverage-summary.json` | Summary view — `{ total: { statements, branches, functions, lines: { pct, covered, total } } }`. Most integrations prefer this over `coverage-final.json`. |
+| `lcov` | `lcov.info` | The de-facto standard for codecov.io, SonarQube, Coveralls, Coverity. |
+
+**Defaults warn:** vitest's default reporter set is `['text', 'html', 'clover', 'json']` only — the table above documents what each of the 6 explicit reporters in this repo emits, and `coverage-summary.json` and `lcov.info` only ship because we pin those two explicitly; dropping the array silently breaks every third-party coverage consumer.
+
+**Byte-equivalent verification** (pinned as of `2.6.10`): `npm run test:cov` against vitest 4.1.0 + `@vitest/coverage-v8` 4.1.0 + Node 22.16.0 emits all 5 on-disk artefacts (`coverage-summary.json`, `lcov.info`, `clover.xml`, `index.html`, `coverage-final.json`) plus a stdout `text` table. The exact byte sizes are not stable across versions but the file-name set is. `coverage/` is `.gitignore`'d (the `coverage/` line in `.gitignore`) so the artefacts never enter source control — verify that entry before merge if `coverage/` ever shows up in `git status`.
+
+### `@vitest/coverage-v8` and `knip ignoreDependencies`
+
+`@vitest/coverage-v8` is a `devDependencies` entry referenced by `package.json` `scripts.test:cov`'s `--coverage` flag. There is **no source import** of the package — vitest loads it through its own plugin resolution when the flag is set.
+
+`knip` is the static analyser that audits dependency health. Modern knip (this repo pins `^6.10.0`) reads `package.json` `scripts` to discover which devDependencies are referenced, so the `scripts.test:cov` reference is automatically picked up — knip does **not** flag `@vitest/coverage-v8` as unused.
+
+**Why this matters.** In earlier knip versions the script-aware discovery was incomplete, so projects kept an entry in `knip.config.ts` -> `ignoreDependencies: ['@vitest/coverage-v8']` to silence a false-positive "Unused listed dependency" hint. As of `2.6.10` (chore PR #212) that entry is removed. If you ever re-add it because knip *does* flag the dep, **do not** — masking the flag with `ignoreDependencies` re-introduces the noise that prompted removal; instead walk the concrete drift checklist below to find the root cause:
+
+- **`vitest` misspelled in `scripts.test:cov`** — a typo would make knip unable to resolve `vitest` as the runner, orphaning the `@vitest/coverage-v8` reference. Fix: restore the correct spelling in `package.json`.
+- **Script renamed away from `test:cov`** — knip's script-aware discovery matches refs against script names; if `npm run test:cov` becomes (say) `npm run coverage`, the `@vitest/coverage-v8` reference is no longer matched. Fix: rename the script back, or teach knip the new name in `knip.config.ts` `scripts` plugin config (knip 6.x supports custom `package.json` script names).
+- **Knip downgrade past its script-aware release** — knip `^6.10.0` (this repo's pin) was the version that shipped script-aware devDep discovery; `5.x` and earlier lacked it so the `@vitest/coverage-v8` reference is silently orphaned. Fix: upgrade knip back to `^6.10.0` (or later script-aware release).
+
+**Cross-check command** when in doubt:
+
+```bash
+# Confirm knip honours the script reference (exit 0 with no coverage-v8
+# mention in output = no false-positive):
+npm run knip
+# If knip flags "@vitest/coverage-v8", that is a real config drift and the
+# ignore entry would be masking it, not solving it.
+```
+
+The byte-equivalent verification in the previous subsection covers the producer side; `npm run knip` exiting 0 with no coverage-v8 mention (per the [Quality Assurance Checklist](#quality-assurance-checklist)) covers the consumer side.
+
 ## Code Style Guidelines
 
 ### TypeScript/React Standards
@@ -346,6 +437,33 @@ export const Component: React.FC<ComponentProps> = ({ title, onAction }) => {
   </button>
 </div>
 ```
+
+### Brand color exceptions
+
+A small number of components intentionally carry literal hex / SVG `fill` values that bypass the `earth / sage / terracotta` semantic-token system. The bypass is **deliberate**: preserving upstream brand identity is more important than token-system uniformity for these surfaces. Any new addition to this table must include the **why** (one line) so a future contributor does not silently rewrite it back through the token registry.
+
+| Identifier / Component | Exact values | Locations | Reason |
+| --- | --- | --- | --- |
+| Buy Me a Coffee donation CTA | `#FFDD00` (resting), `#FFCC00` (hover) | `src/components/DonationSection.tsx` | The button visually *is* BMC's brand asset; substituting a project-token yellow creates a wrong-impression mismatch that hurts trust. |
+| Google G logo (4-stop) | `#4285F4`, `#34A853`, `#FBBC05`, `#EA4335` | `src/components/ConnectGoogleButton.tsx`, `src/components/GoogleAuthCard.tsx`, `src/pages/BackupSyncPage.tsx`, `src/components/AuthModals.tsx` | Required to match Google's own brand-asset SVGs; deviating from the official hexes violates [Google's branding guidelines](https://developers.google.com/identity/branding-guidelines). |
+
+**Rule of thumb**: when adding a new component whose visual identity must match an upstream brand, prefer documenting it in this table over promoting it to a project semantic token. The token system tracks the *project's* brand; upstream brand colors should not pollute it.
+
+### Reactive state sync
+
+Local data stores (`localStorage['jobApplications']` + the `useApplicationsStore` Zustand store, and `localStorage['jobOpportunities']` + the `useOpportunitiesStore` Zustand store) are mirrored into UI consumers and the cloud-push hook via three orthogonal mechanisms. Each covers a distinct class of source write — do not collapse them.
+
+| Source write path | Mechanism | Why this one, not the others |
+| --- | --- | --- |
+| In-tab React write (e.g. `addApplication`, `deleteApplication`, `addOpportunity`, `deleteOpportunity`, `setApplications` / `setOpportunities` from cloud sync) | Zustand selector subscription: any component calling `useApplicationsStore((s) => s.applications)` or `useOpportunitiesStore((s) => s.opportunities)` re-renders automatically on store mutation. **No listener required.** | The store mutation and the React render are atomic — the listener would be redundant work. |
+| Cross-tab write (same browser, different tab) | Native `window.addEventListener('storage', ...)` keyed on `e.key === 'jobApplications' \|\| e.key === 'jobOpportunities' \|\| e.key === null` (clear). | The native `storage` event fires in every tab except the writing tab — it is the only reliable cross-tab signal we get. |
+| Same-tab non-React bypass write (extension content scripts, manual `localStorage.setItem`, future migration scripts) | Custom `window.dispatchEvent(new CustomEvent('jobApplicationsUpdated'))` in `src/storage/applications.ts:saveApplications` and `window.dispatchEvent(new CustomEvent('jobOpportunitiesUpdated'))` in `src/storage/opportunities.ts:saveOpportunities` (i.e. the two write funnels). Listeners in `App`, `Sidebar`, `OpportunitiesPage`, and `useCloudSync`. | The native `storage` event does not fire in the writing tab, and Zustand selectors only see store mutations, not direct localStorage writes. The CustomEvent is the bridge from the write funnel to the readers. |
+
+**Adding a new read-side component** that displays applications or opportunities count: subscribe via the Zustand selector for React writes; add the same `storage` + (`jobApplicationsUpdated` and/or `jobOpportunitiesUpdated`) listener pair if it must show fresh counts on cross-tab or bypass writes. Do not add `setInterval` polling — it is an antipattern in this codebase (M5 audit, 2026-07-06).
+
+**Adding a new write-side path** (manual `localStorage` write, etc.): dispatch the appropriate `jobApplicationsUpdated` / `jobOpportunitiesUpdated` event after the write so the same-tab listener pair in existing readers fires. Alternative: route through `saveApplications` / `saveOpportunities` directly, which dispatches the event for you.
+
+**Cloud push debounce** (`src/hooks/useCloudSync.ts`): the hook's push `useEffect` subscribes to BOTH `jobApplicationsUpdated` and `jobOpportunitiesUpdated` and POSTs to `/api/sync/{applications,opportunities}` 2s after the last event in a burst. The 2s window coalesces rapid writes (batch imports, form updates) into a single network round-trip. Bypass writes (extension content scripts, future migration scripts) are covered automatically because they route through the dispatcher. Do not re-introduce `setInterval` or per-`useStore` state subscriptions here — both create the same bypass-write gap that M5 closed (any write that does not pass through the Zustand store would be silently dropped, just like the original Sidebar polling). The store's `getState()` is read inside the timer callback, not subscribed to, so re-renders on every store mutation are avoided.
 
 ### Type Definitions
 
@@ -603,6 +721,7 @@ Before committing code:
 - ✅ Responsive design: Test on mobile and desktop viewports
 - ✅ Dark mode: Verify components work in both light and dark themes
 - ✅ Chrome extension: Test extension build if modifying extension code
+- ✅ **Coverage tooling**: `npm run knip` exits 0 with no `@vitest/coverage-v8` "unused dep" flag (vitest 4.x + knip 6.x auto-discover the dep via `scripts.test:cov`'s `--coverage` flag). Deep-dive, including the byte-equivalent verification procedure and the three drift classes above, in [Test Coverage Tooling](#test-coverage-tooling).
 
 ## Testing Infrastructure
 
@@ -611,6 +730,7 @@ Before committing code:
 - **Mocking**: Comprehensive mocks for localStorage, Chrome APIs, Google OAuth
 - **Coverage**: Aim for high test coverage, especially for core functionality
 - **TDD**: Write tests before or alongside implementation
+- **Coverage tooling details**: see [Test Coverage Tooling](#test-coverage-tooling) for the `vite.config.ts` `coverage.reporter` pin rationale, the `@vitest/coverage-v8` ↔ `knip.config.ts` `ignoreDependencies` relationship, and the byte-equivalent verification procedure.
 
 ## Chrome Extension Specific Guidelines
 

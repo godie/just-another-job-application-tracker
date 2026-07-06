@@ -429,16 +429,11 @@ function useOpportunitiesManager() {
     };
 
     window.addEventListener('storage', handleStorageChange);
-    window.addEventListener('jobOpportunitiesUpdated', handleOpportunitiesUpdate as EventListener);
-
-    const interval = setInterval(() => {
-      refreshOpportunities();
-    }, 2000);
+    window.addEventListener('jobOpportunitiesUpdated', handleOpportunitiesUpdate);
 
     return () => {
       window.removeEventListener('storage', handleStorageChange);
       window.removeEventListener('jobOpportunitiesUpdated', handleOpportunitiesUpdate as EventListener);
-      clearInterval(interval);
     };
   }, [loadOpportunities, refreshOpportunities]);
 
