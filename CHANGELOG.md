@@ -1,3 +1,15 @@
+## [2.6.9] - 2026-07-06
+
+### Added
+- **Workflow shape gate (#209)** — New `scripts/check-workflow-shape.sh` fails fast when any `.github/workflows/*.yml` is missing its top-level `name:` / `on:` / `jobs:` wrapper. Wired into `.github/workflows/pull-request.yml` (pre-merge) and `.github/workflows/orphan-sweep.yml` (daily drift).
+
+### Changed
+- **Deploy workflow `composer-validate` pin (#210)** — `deploy.yml` now passes an explicit `with: { php-version: '8.2', working-directory: api }` to the reusable `composer-validate` workflow so the PHP-version + working-directory contract is mechanical instead of comment-anchored.
+- **Match threshold logic extraction (#207)** — Threshold state lifted out of `src/pages/HomePage.tsx` and `src/pages/OpportunitiesPage.tsx` into a reusable `src/hooks/useMatchThreshold.ts` hook.
+
+### Notes
+- This unified release subsumes PRs #207, #209, and #210. The original three PRs will be closed as superseded once this one merges.
+
 # Changelog
 
 All notable changes to this project will be documented in this file.
