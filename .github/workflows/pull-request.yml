@@ -121,3 +121,41 @@ jobs:
   composer-validate:
     name: Composer validate
     uses: ./.github/workflows/composer-validate.yml
+
+  phpunit:
+    name: PHPUnit
+    runs-on: ubuntu-latest
+    # Explicit read-only permissions: the job only runs tests, no gh
+    # or write operations. Mirrors the composer-validate job's
+    # permissions block.
+    permissions:
+      contents: read
+    # 10 min safety margin: composer install is normally ~30-60s on
+    # cold cache, phpunit is ~5-15s for the current 66 tests / 223
+    # assertions. 5 min would be tight if the runner pulls a fresh
+    # composer cache; 10 min matches the composer-validate workflow's
+    # safety margin for the same reason.
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@2.37.2
+        with:
+          # php-version MUST stay in lock-step with the deploy
+          # workflow's main job (deploy.yml line 32 + 237) and the
+          # composer-validate workflow's default. Drift produces a
+          # CI-vs-deploy PHP-version mismatch identical in failure
+          # mode to the v2.6.0 release cycle's symfony/options-
+          # resolver 8.1.0 episode.
+          php-version: '8.4'
+          tools: composer:v2
+
+      - name: Composer install (with dev deps for phpunit)
+        working-directory: api
+        run: composer install --prefer-dist --no-interaction --no-progress
+
+      - name: Run PHPUnit
+        working-directory: api
+        run: vendor/bin/phpunit --configuration phpunit.xml
