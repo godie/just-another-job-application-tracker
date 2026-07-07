@@ -45,7 +45,7 @@ api/vendor/
 
 .agents
 .kiro
-api/.phpunit.result.cache
+api/.phpunit.cache/
 .claude
 .codebudd
 .cursor
