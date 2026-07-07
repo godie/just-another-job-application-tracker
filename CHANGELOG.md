@@ -1,3 +1,16 @@
+## [2.6.16] - 2026-07-07
+
+### Security
+- **`robmorgan/phinx` bumped 0.16.11 -> 0.16.12** (api/composer.json) — Composer noted the 0.16.12 release with a `!` prefix in `composer outdated` output, denoting a strong-advisory / security update per Composer notation. Phinx is the migration tool used in the `api/` migrations tree (`api/composer.json` `require-dev.robmorgan/phinx`); no production code path. The patch-level jump (0.16.11 -> 0.16.12 within the same 0.16.x minor) preserves API surface; `composer install --dry-run --no-dev --no-interaction --no-progress` should resolve cleanly with no transitive changes beyond the phinx package stamp in `api/composer.lock`.
+
+### Notes
+- **Single-bump scope** — this is the only change in the PR. `package.json` version bump 2.6.15 -> 2.6.16 (per AGENTS.md Versioning rule; one PR = one version). No source-code change, no API surface, no UI, no schema.
+- **Slot math** — `2.6.15` was sealed on `origin/main@f20c0892` by PR #221 (the `blocking: warning` followup). This PR claims the next free slot: `2.6.16`. **Cross-PR version race notice**: [PR #220](https://github.com/godie/just-another-job-application-tracker/pull/220) (`chore/audit-memo-anchor-and-attribution-fixups`) is concurrently OPEN against `origin/main@c450db0` (an older `baseRefOid`; it branched before PR #221 merged) and still claims `2.6.15`. Per the AGENTS.md Cross-PR Version Race Playbook (Issue #218 hardening, delivered by PR #219 / v2.6.13), PR #220 should rebase onto the post-merge commit (`origin/main@f20c0892`) and bump to `2.6.17` (the slot immediately above this one). This PR and PR #220 do not touch the same files outside the CHANGELOG + package metadata, so the rebase is mechanical.
+- **Why PATCH not MINOR** — the dep bump is a single-package advisory patch within the 0.16.x line, no API surface change, no schema, no user-visible behavior. AGENTS.md SemVer PATCH guidance applies.
+- **Why not also bump `phpunit/phpunit` 10.5.63 -> ~13.2.3** — this is a 3-step MAJOR-version jump (10 -> 11 -> 12 -> 13) where each step needs test-config + assertion-API rewrites (PHPUnit 10 -> 11 drops many legacy assertion patterns and changes the `phpunit.xml` config schema; 11 -> 12 adds a PHP 8.3 requirement). Deferred to a followup that scopes the test-config migration chore.
+- **Why not also bump `symfony/http-client` 7.4.14 -> ~8.1.1** — this is a MAJOR-version jump that requires PHP 8.4+; the deploy workflow runs PHP 8.2.31 per the v2.6.2 CHANGELOG note pinning PHP 8.2. Deferred to a followup that aligns the deploy PHP version first. Both deferred to separate followup PRs scoped to the actual blocking question (PHP version migration for symfony, test-config migration for phpunit); a single-PR fan-out of all three Composer updates would not be reviewable.
+- **`api/composer.lock`** — phinx package `version` + `source.reference` stamp updated; transitive deps unchanged at this patch-level jump (verified via `composer update robmorgan/phinx --with-dependencies` resolving only the phinx entry).
+
 ## [2.6.15] - 2026-07-07
 
 ### Changed
