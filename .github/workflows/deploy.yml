@@ -194,6 +194,33 @@ jobs:
         run: |
           ssh -v -i ~/.ssh/deploy_key -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -p ${REMOTE_PORT} ${REMOTE_USER}@${REMOTE_HOST} "whoami; pwd"
 
+      - name: Pre-deploy PHP version check (v2.6.19 GATE)
+        env:
+          REMOTE_USER: ${{ secrets.REMOTE_USER }}
+          REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
+          REMOTE_PORT: ${{ secrets.REMOTE_PORT }}
+        run: |
+          # v2.6.19 GATE: shipping v2.6.19+ to a PHP < 8.4.1 production
+          # server would trigger fatal runtime errors on the first HTTP
+          # request (symfony/http-client 8.1.1 hard-requires php >=8.4.1;
+          # the dist/api/vendor/ tree rsync'd from the Actions-built
+          # artifact is compiled against the PHP 8.4 ABI). This step
+          # enforces the gate programmatically: parses the production
+          # server's `php -v` output and fails the deploy if the version
+          # is below 8.4.1. See DOCS/PRODUCTION_PHP_UPGRADE.md (v2.6.27)
+          # for the operator-facing upgrade procedure.
+          PHP_VER=$(ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -p ${REMOTE_PORT} ${REMOTE_USER}@${REMOTE_HOST} "php -v" | head -1 | sed -E 's/^PHP ([0-9]+\.[0-9]+\.[0-9]+).*/\1/')
+          REQUIRED='8.4.1'
+          if [ -z "$PHP_VER" ]; then
+            echo "::error::Could not detect PHP version on the production server (php -v returned no parseable version). The codebase requires PHP ${REQUIRED} or newer per the v2.6.19 PRODUCTION SERVER UPGRADE GATE. See DOCS/PRODUCTION_PHP_UPGRADE.md for the upgrade procedure."
+            exit 1
+          fi
+          if [ "$(printf '%s\n' "$PHP_VER" "$REQUIRED" | sort -V | head -1)" != "$REQUIRED" ]; then
+            echo "::error::Production server is on PHP ${PHP_VER}; the codebase requires PHP ${REQUIRED} or newer per the v2.6.19 PRODUCTION SERVER UPGRADE GATE. See DOCS/PRODUCTION_PHP_UPGRADE.md for the upgrade procedure."
+            exit 1
+          fi
+          echo "Production server PHP ${PHP_VER} >= ${REQUIRED} OK"
+
       - name: Deploy with rsync and retries
         env:
           REMOTE_USER: ${{ secrets.REMOTE_USER }}
