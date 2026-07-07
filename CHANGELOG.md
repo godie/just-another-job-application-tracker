@@ -1,3 +1,32 @@
+## [2.6.29] - 2026-07-07
+
+### Fixed
+- **"Test pending forever" CI race** (`.github/workflows/pull-request.yml`) — added `concurrency.cancel-in-progress: true` at the workflow level (scoped via `group: ${{ github.workflow }}-${{ github.ref }}` so PR #1's stale runs do not cancel PR #2's in-flight checks) to aggressively prune stale runs from previous commits, freeing up runner queue slots to prevent GHA parallel-limit exhaustion. Added explicit `timeout-minutes` thresholds to the 5 older jobs that previously had no cap: `test` (15m), `secrets` (10m), `build` (10m), `lint` (5m), `knip` (5m). This converts infinite `pending` states (due to Vitest OOMs, TruffleHog full-history stalls, or general runner network hangs) into hard failures that can be cleanly re-run, eliminating the need to bypass branch protection via `--admin` for the "Test pending forever" failure mode.
+
+### Added
+- **`AGENTS.md` CI Race Playbook** — codified the `timeout-minutes` + `concurrency` rule into a formal playbook (mirroring the structure of the existing Cross-PR Version Race Playbook) to document how the project structurally defends against runner deadlocks. Includes the post-mortem on the 7 `--admin` bypasses in the post-2.6.20 cycle (PRs #226, #227, #228, #229, #230, #231, #232), the `timeout-minutes` ceiling table per job, the "do NOT bypass with --admin" guidance, and the forward-looking maintenance rules.
+- **`scripts/check-yml-timeouts.sh`** — a new pre-merge gate (mirroring the style of the existing `scripts/check-workflow-shape.sh` and `scripts/check-orphans.sh` — bash with `--ci` mode flag, `::error file=` annotations, `set -euo pipefail`) that fails any future PR introducing a `jobs:` block without a `timeout-minutes:` cap. The Python parser handles well-formatted YAML job blocks at 2-space indent under `jobs:` and `timeout-minutes:` keys at 4-space indent; reusable-workflow files with no `jobs:` block (e.g., `composer-validate.yml`'s `workflow_call` trigger) are correctly skipped. Wired into the existing `secrets:` job's pre-merge check layer (right after `scripts/check-workflow-shape.sh --ci`).
+
+### Why PATCH not MINOR
+- The change is CI infrastructure only (workflow file + bash script + docs). No source-code change, no API surface, no UI, no schema. AGENTS.md SemVer PATCH guidance applies (the rationale is "tighten the merge contract" — a hard-bounded `timeout-minutes` cap plus stale-run pruning plus a regression guard makes the recurring `--admin` bypass unnecessary for the "Test pending" failure mode).
+
+### Slot math
+- `2.6.28` was sealed on `origin/main@a7eeb53` by PR #232 (the pre-deploy PHP version check from the v2.6.19 GATE, the OTHER half of the v2.6.19 defense-in-depth pair). This PR claims the next free slot: `2.6.29`. No concurrent open PRs require a skip-ahead at this time.
+
+### Validation evidence
+- ✅ Workflow-shape gate (`bash scripts/check-workflow-shape.sh --ci`) — the new `concurrency:` block + 5 `timeout-minutes:` additions + the new step in the `secrets:` job all preserve the required `name:`, `on:`, `jobs:` wrapper shape across all 8 workflow files.
+- ✅ **Lockfile drift fixup** — `package-lock.json` root stamp was at `2.6.24` (the prior 4 PRs v2.6.25, v2.6.26, v2.6.27, v2.6.28 re-bumped `package.json` but did not re-bump the lockfile root stamp alongside). This PR brings the root stamp forward to `2.6.29` to match `package.json`. No dependency tree changes.
+- ✅ New yml-timeouts gate (`bash scripts/check-yml-timeouts.sh --ci`) — the new gate passes against the modified `pull-request.yml` (all 7 jobs now have `timeout-minutes:`) and against the unmodified other 7 workflow files. The gate was dry-run validated with 6 mock scenarios: (a) all-good, (b) one job missing timeout, (c) one job with wrong indent, (d) one job with inline-comment after the value, (e) reusable-workflow file with no `jobs:` block, (f) all-timeouts-missing regression.
+- ✅ `pull-request.yml` is well-formed YAML (parses cleanly with the gate's Python parser; round-trips through PyYAML).
+- ✅ AGENTS.md "CI Race Playbook" section inserted right before "Specialized Agents" (no other content disturbed; the existing Cross-PR Version Race Playbook section above it is unchanged).
+- ✅ No new action pins introduced (the new step uses `actions/checkout@v4` already present in the same job, so the AGENTS.md "GitHub Actions pin renewal" rule is satisfied without touching `dependabot.yml`).
+
+### Refs
+- v2.6.26 (PR #230, the `phpunit:` CI job — partial fix that this PR supersedes; the phpunit job was a parallel non-required signal that did not gate the merge, so the `Test:` (vitest) job's `pending` state still blocked every one of the post-2.6.20 PRs)
+- v2.6.19 (the PRODUCTION SERVER UPGRADE GATE — different race class, but the same pattern of "hard structural defense > soft workaround")
+- v2.6.13 (PR #219, the Cross-PR Version Race Playbook — the structural model for the new CI Race Playbook)
+- PRs #226, #227, #228, #229, #230, #231, #232 (the 7 `--admin --squash --delete-branch` bypasses that this PR makes unnecessary; documented in the AGENTS.md CI Race Playbook "Concrete example from the post-2.6.20 cycle" section)
+
 ## [2.6.28] - 2026-07-07
 
 ### Added

@@ -12,6 +12,11 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
+    # CI RACE: bounded wait. npm ci + Vite build + composer install (no-dev)
+    # + tarball typically take 3-6 min on cold cache. 15 min is a generous
+    # ceiling for the work + ample cold-runner headroom. See AGENTS.md
+    # "CI Race Playbook".
+    timeout-minutes: 15
     needs: composer-validate
     outputs:
       artifact-path: ./dist
@@ -81,6 +86,13 @@ jobs:
     name: Deploy
     needs: build
     runs-on: ubuntu-latest
+    # CI RACE: bounded wait. The deploy job is the longest in the repo:
+    # artifact download + extract + 12 deploy steps + rsync with 5-attempt
+    # retry (the rsync step alone can legitimately take 5-10 min on a slow
+    # network with retries). 30 min is a generous ceiling that accommodates
+    # worst-case cold cache + ample retry headroom. See AGENTS.md
+    # "CI Race Playbook".
+    timeout-minutes: 30
 
     steps:
       - name: Download artifact
@@ -253,6 +265,13 @@ jobs:
   composer-validate:
     name: Composer validate
     uses: ./.github/workflows/composer-validate.yml
+    # CI RACE: bounded wait. The called `composer-validate.yml` reusable
+    # workflow has its own `timeout-minutes: 10` cap, but the calling
+    # job here ALSO needs a cap (the calling-side cap governs how long
+    # the reusable workflow call can run before GHA cancels it). 10 min
+    # matches the called workflow's own ceiling. See AGENTS.md
+    # "CI Race Playbook".
+    timeout-minutes: 10
     with:
       # php-version MUST stay in lock-step with the deploy workflow's main
       # job (line ~29: shivammathur/setup-php@2.37.2 php-version: "8.4").

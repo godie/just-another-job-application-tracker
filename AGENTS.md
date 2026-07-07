@@ -264,6 +264,69 @@ If more than 4 PRs race for the next PATCH, the skip pattern generalizes: the Nt
 
 If the version numbers are getting absurd (e.g., 4 PATCH bumps in a day, all 2.6.x), consider whether the changes should be combined into fewer PRs. The per-PR rule says "one logical unit of work = one version" — combining two closely related changes into one PR is sometimes the right call (the trade-off is fewer PRs but more atomic units of work). The decision is a judgment call: ask whether the two changes would be merged separately if a third change came along that depended on one but not the other. If yes, keep them as separate PRs. If no, combine.
 
+## CI Race Playbook
+
+The [Cross-PR Version Race Playbook](#cross-pr-version-race-playbook) handles version-slot races (two PRs claiming the same `2.6.x` slot). This playbook handles a different class of race: **CI jobs sitting at `pending` indefinitely** and blocking the merge because the workflow file omitted a `timeout-minutes:` cap. The historical response was `--admin --squash --delete-branch`, which this playbook is designed to make unnecessary.
+
+### The race
+
+GitHub Actions jobs report a final state — `success`, `failure`, `cancelled` — only when the underlying step exits. If the runner is queue-stalled, the process OOMs, or a long-running tool (Vitest, TruffleHog, Knip) hangs, the job never exits. Without an explicit `timeout-minutes:` cap, the job sits at `pending` up to GitHub's default **6-hour limit**.
+
+Because checks like `Test` and `Secret Scan` are **required** in this repo's branch protection (per `gh api repos/.../branches/main/protection`), a `pending` job blocks the merge. The historical response was `gh pr merge --admin --squash --delete-branch`, which the CHANGELOG for [v2.6.26](CHANGELOG.md) explicitly documents:
+
+> "the slow vitest `Test:` job sat at `pending`, the unrelated `.github/dependabot.yml` check failed because the PR didn't touch that file, and the merge had to bypass via `--admin`"
+
+The pattern recurred across at least **7 PRs** in the post-2.6.20 cycle: #226, #227, #228, #229, #230, #231, #232 — every one of them merged via `--admin --squash --delete-branch`. The new `phpunit:` job added in v2.6.26 (PR #230) was meant to help, but it was a parallel non-required signal — it did not gate the merge, so the `Test:` (vitest) job's `pending` state still blocked every one of those PRs. v2.6.29 (this playbook's implementation PR) closes the gap structurally.
+
+### The fix (two layers)
+
+**Layer 1 — bounded wait (`.github/workflows/pull-request.yml`):** every `jobs:` entry gets an explicit `timeout-minutes:` cap. The 5 older jobs (which previously had no cap at all) now have:
+
+| Job | timeout-minutes | Why this ceiling |
+| --- | --- | --- |
+| `lint` | 5 | `npm run lint` is normally < 30s; 5 min accommodates a slow cache restore + ample headroom |
+| `test` (vitest) | 15 | 868 tests normally run in 30s-2 min; 15 min accommodates a Vitest OOM or happy-dom hang |
+| `build` | 10 | Vite 7 build is normally 1-3 min; 10 min accommodates an unresolvable import |
+| `knip` (Unused Code) | 5 | `npm run knip` is normally < 30s; 5 min is generous |
+| `secrets` (Secret Scan) | 10 | TruffleHog with `fetch-depth: 0` is the slowest step; 10 min accommodates cold cache |
+
+The newer `phpunit:` and `composer-validate:` jobs already had `timeout-minutes: 10` (set in their respective PRs: #230 and the original composer-validate introduction). The 5 older jobs were the actual gap.
+
+**Layer 2 — stale-run pruning (`.github/workflows/pull-request.yml`):** the workflow gains a `concurrency.cancel-in-progress: true` block at the top level, scoped via `group: ${{ github.workflow }}-${{ github.ref }}`. Pushing a new commit to a PR immediately cancels the previous run, freeing up runner queue slots instead of letting stale jobs string back-to-back. The `${{ github.workflow }}-${{ github.ref }}` group key ensures each PR's runs are scoped independently — a push to PR #1 does NOT cancel PR #2's in-flight checks. Mirrors the pattern already in `.github/workflows/orphan-sweep.yml`.
+
+**Layer 3 — regression guard (`scripts/check-yml-timeouts.sh`):** a new pre-merge gate that fails any future PR introducing a `jobs:` block without a `timeout-minutes:` cap. Wired into the existing `secrets:` job's pre-merge check layer (right after `scripts/check-workflow-shape.sh --ci`), so the gate runs on every PR. Mirrors the style of `check-workflow-shape.sh` (bash with `--ci` mode flag, `::error file=` annotations, `set -euo pipefail`). The Python parser handles well-formatted YAML job blocks at 2-space indent under `jobs:` and `timeout-minutes:` keys at 4-space indent; reusable-workflow files with no `jobs:` block (e.g., `composer-validate.yml`'s `workflow_call` trigger) are correctly skipped.
+
+### What to do if a CI job times out (do NOT bypass with `--admin`)
+
+When the cap fires, the job reports a red `failure` after N minutes (instead of sitting at `pending` for hours). That is the intended behavior — the failure is visible, attributable, and re-runnable:
+
+1. **Check the job logs.** The `::error::` annotation and the step that timed out are both in the GitHub Actions UI; copy the last ~50 lines of output.
+2. **If the timeout was a one-off runner stall** (GHA queue backlog, transient network blip): click **Re-run failed jobs** in the PR's Checks tab. Do not bypass the check.
+3. **If the timeout was a real regression** (e.g., a Vitest test that genuinely needs > 15 min): bump the cap in `pull-request.yml` + document the new ceiling in the CI Race Playbook + add a `## [version]` CHANGELOG entry explaining the bump. Bumping the cap is a deliberate decision, not a workaround.
+4. **If the timeout was a config drift** (e.g., a new `jobs:` block was added without a `timeout-minutes:` cap): the new `scripts/check-yml-timeouts.sh` gate would have caught it at PR-open time. If the gate somehow missed it, fix the workflow file + add a regression test to the gate if the parser has a gap.
+
+`--admin --squash --delete-branch` is **not** an acceptable response to a CI timeout. It bypasses branch protection, leaves no audit trail of what timed out, and propagates the regression class to the next PR. The 7 historical `--admin` bypasses (PRs #226 through #232) are documented in the CHANGELOG; future bypasses would erode that audit trail.
+
+### Concrete example from the post-2.6.20 cycle (2026-07-04 to 2026-07-07)
+
+Seven PRs hit the same pattern, each merged via `--admin --squash --delete-branch`:
+
+- **PR #226** (v2.6.22, CHANGELOG drift fixup) — the `Test` check sat at `pending` past 30 min; merge bypassed.
+- **PR #227** (v2.6.23, descriptive backend logging feature) — same pattern; bypassed.
+- **PR #228** (v2.6.24, `Logger::format()` public-method exposure) — same pattern; bypassed.
+- **PR #229** (v2.6.25, LoggerTest NIT cleanups) — same pattern; bypassed.
+- **PR #230** (v2.6.26, `phpunit:` CI job) — same pattern despite adding the parallel phpunit signal; bypassed.
+- **PR #231** (v2.6.27, `DOCS/PRODUCTION_PHP_UPGRADE.md` operator runbook) — same pattern; bypassed.
+- **PR #232** (v2.6.28, pre-deploy PHP version check) — same pattern; bypassed.
+
+After v2.6.29 (this PR) lands, the 5 older jobs have explicit timeouts, stale runs are pruned via `concurrency.cancel-in-progress: true`, and the `scripts/check-yml-timeouts.sh` gate prevents future jobs from being added without a cap. The next PR that hits a slow runner should see a red `failure` after at most 15 min, with the timeout visible in the step output — re-runnable, attributable, and auditable.
+
+### Forward-looking
+
+If a CI timeout starts firing routinely (e.g., the `Test` job caps at 15 min three weeks in a row), it is a signal that the test suite has outgrown the cap. The right response is a deliberate bump + a CHANGELOG entry explaining the new ceiling, not a `--admin` bypass. The cap is a **deliberate design knob**, not a workaround — change it consciously, with the audit trail.
+
+The `scripts/check-yml-timeouts.sh` gate is the regression guard: any new `jobs:` block added without a `timeout-minutes:` cap will fail the PR-open check. The gate is wired into the `secrets:` job's pre-merge check layer so it runs on every PR. If a future workflow file's job block does not match the gate's parsing assumptions (e.g., unusual YAML style or a non-standard job declaration form), the gate will produce a false negative — fix the gate, not the workflow file.
+
 ## Specialized Agents
 
 ### 🕵️ Colector (Collector)

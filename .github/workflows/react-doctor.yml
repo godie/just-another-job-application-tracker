@@ -28,6 +28,12 @@ concurrency:
 jobs:
   react-doctor:
     runs-on: ubuntu-latest
+    # CI RACE: bounded wait. The `millionco/react-doctor@v2` action is
+    # normally fast (< 2 min for a typical PR diff), but a slow
+    # dependency install or a hung action step could sit at `pending`
+    # indefinitely. 10 min is a generous ceiling. See AGENTS.md
+    # "CI Race Playbook".
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v5
 
