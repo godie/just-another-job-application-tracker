@@ -93,6 +93,7 @@ export default defineConfig({
     outDir: 'dist',
     rollupOptions: {
       output: {
+        // Avoid using eval in output to prevent CSP issues
         format: 'es',
         generatedCode: {
           constBindings: true,
@@ -130,14 +131,18 @@ export default defineConfig({
         },
       },
     },
+    // Use modern target to avoid eval in production
     target: 'es2015',
+    // Source maps can cause CSP issues with eval, disable for production
     sourcemap: false,
+    // Use esbuild (default) which doesn't use eval
     minify: 'esbuild',
   },
   test: {
     globals: true, // Allows using functions like 'describe', 'it', 'expect' globally
     environment: 'happy-dom', // Using happy-dom instead of jsdom to avoid DONT_CONTEXTIFY error
     setupFiles: './src/setupTests.ts', // File to set up testing library extensions
+    // Specify where tests are located
     include: ['**/*.test.{ts,tsx}'],
     pool: 'forks',
   },
