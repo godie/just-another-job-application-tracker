@@ -1,3 +1,15 @@
+## [2.6.14] - 2026-07-07
+
+### Added
+- **`react-doctor` tool version pin** — `.github/workflows/react-doctor.yml` now passes `with: { version: "0.5.8", ... }` to `millionco/react-doctor@v2`, matching the local CLI baseline at commit `cdafe81` per `DOCS/REACT_DOCTOR_AUDIT.md` "Verification snapshot" (0 issues / 100/100). Pinning to 0.5.8 (instead of the npm-latest 0.7.1 or the action's default `"latest"`) keeps the gate's contract deterministic and known-passing. Bump in a followup PR after validating a newer version against 2-3 React-touching PRs.
+- **`DOCS/REACT_DOCTOR_AUDIT.md` "CI gate state" subsection** — a new subsection documenting the v2.6.12 graduation to `blocking: error` (PR #214) and the v2.6.14 `version: "0.5.8"` pin (this PR). Closes the cross-doc drift flagged by the code-reviewer on PR #214.
+
+### Notes
+- **Why pin to 0.5.8, not 0.7.1 or `"latest"`** — the local CLI baseline at `cdafe81` was established against `react-doctor` v0.5.8, so 0.5.8 is the version we KNOW passes 0 issues / 100/100. Pinning to 0.7.1 (npm-latest) would risk surprise new rules firing on the first PR after the pin. Pinning to `"latest"` (the action's default) is a floating pin that defeats the purpose of locking the contract. The tradeoff: 0.5.8 is older and may miss bug fixes; mitigation is a followup bump after validation.
+- **Version-slot rationale** — `2.6.10`, `2.6.11` (PR #213, M5 dispatcher), `2.6.12` (PR #214, gate graduation), `2.6.13` (PR #219, docs-harden) are ALL sealed on `origin/main` between this PR's initial open (`2.6.13` claim, commit `686a8fd`) and this re-attempt. Per the AGENTS.md "Cross-PR Version Race Playbook" (now hardened on `main` by PR #219 itself — see Issue #218), this PR skip-ahead re-claims the next free slot — `2.6.14` — rather than colliding with PR #219's already-landed `2.6.13` entry. This PR's original `## [2.6.13]` entry on the branch was therefore renamed to `## [2.6.14]` during the post-PR-open rebase on top of `origin/main@792624b`; the merged result preserves PR #219's `2.6.13` entry in chronological position and slots this branch's content immediately above it. Refs: #215 (the original "pin and document" followup), #216 (the "tighten to blocking: warning" followup, gated on this PR landing), #217 (this PR's tracking issue).
+- **Dependency on the user directive** — this PR must merge before [Issue #216](https://github.com/godie/just-another-job-application-tracker/issues/216) (tighten to `blocking: warning`) can be considered. The version pin is the prerequisite for raising the gate's strictness, per the "version pin first, then escalate strictness" ordering in the followup chain.
+- **Local devDep drift (out of scope)** — `package.json` `devDependencies.react-doctor: ^0.2.11` is drifted (this resolves to 0.2.x, not 0.5.8). The local `npm run doctor` script (`npx react-doctor@latest`) uses 0.7.1. This creates a local-vs-CI skew on the dev side. A followup PR should bump the local devDep to `^0.5.8` (or `~0.5.8`) to match the CI pin.
+
 ## [2.6.13] - 2026-07-07
 
 ### Changed

@@ -32,20 +32,27 @@ jobs:
       - uses: actions/checkout@v5
 
       - uses: millionco/react-doctor@v2
-        # React Doctor CI gate — graduated to `blocking: error`. The action now
-        # fails the `react-doctor` check on any NEW error-severity finding
-        # introduced by the PR diff (against the merge base). Warning-severity
+        # React Doctor CI gate — graduated to `blocking: error` (PR #214, 2.6.12)
+        # and pinned to `version: "0.5.8"` (PR #217, this PR, 2.6.14).
+        #
+        # `blocking: error` fails the check on any NEW error-severity finding
+        # introduced by the PR diff against the merge base. Warning-severity
         # findings still surface in the sticky PR summary + inline review
         # comments but do not block the merge.
-        # The default `scope` (changed-files on PRs, full project on push to
-        # `main`) is preserved: the gate fires on the diff against the merge
-        # base, not on pre-existing findings in `main`.
-        # The remaining options (`comment`, `review-comments`, `commit-status`,
-        # `version`, `directory`, `project`) stay at default — the sticky PR
-        # summary, inline review comments, and score commit status remain
-        # visible so reviewers see the signal even when the gate is green.
-        # Baseline: see `DOCS/REACT_DOCTOR_AUDIT.md` for the live suppression
-        # inventory and current health score.
+        #
+        # `version: "0.5.8"` locks the gate's contract to a deterministic,
+        # known-passing tool version (matches the local CLI baseline at
+        # commit `cdafe81` per `DOCS/REACT_DOCTOR_AUDIT.md` "Verification
+        # snapshot": 0 issues / 100/100). Bump in a followup PR after
+        # validating a newer version against 2-3 React-touching PRs.
+        #
+        # The default `scope: changed-files` is preserved on PRs so the gate
+        # fires only on the diff against the merge base (unaffected by
+        # pre-existing findings on `main`). Baseline + intentional suppressions
+        # live in `DOCS/REACT_DOCTOR_AUDIT.md` — that document is the source
+        # of truth for the gate's health score, not the workflow file.
+        #
         # Full reference: https://www.react.doctor/ci
         with:
           blocking: error
+          version: "0.5.8"
