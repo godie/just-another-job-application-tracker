@@ -1,3 +1,14 @@
+## [2.6.13] - 2026-07-07
+
+### Changed
+- **`AGENTS.md` Cross-PR Version Race Playbook** (Issue #218) — two rebase-vs-merge gotchas hardened with explicit paragraphs in the `### CHANGELOG merge resolution` subsection, both directly addressing traps the post-2.6.10 / 2.6.11 / 2.6.12 cycle actually hit:
+  - **Marker format gotcha** — the in-script Python regex's trailer anchored to `>>>>>>> [0-9a-f]+`, which only matches hex SHAs. During `git merge` (vs `git rebase`) Git emits a branch name on the `>>>>>>>` side (`>>>>>>> origin/main`, `>>>>>>> feat/v3-migration`), so the original regex silently failed: `re.search` returned `None`, the script's `m.group(...)` calls raised `AttributeError`, and the CHANGELOG conflict block sat untouched. Anchor changed to `>>>>>>> \S+`; an in-script multi-line comment documents the failure mode + the one-character fix; a new "Marker format gotcha" paragraph above the script explains the operation→marker-form mapping (rebase = SHA, merge = branch).
+  - **`--ours` / `--theirs` semantics** — the two flags have inverse meanings in `git rebase` vs `git merge` and the conflict markers look identical in both operations, so there is no in-conflict-marker signal about which side is which (`git status` and `git diff` show the conflict but not which operation produced it). A new "rebase vs merge" paragraph after the "For the simpler case" line tabulates the inverse semantics, walks the version-race example (`package.json` bumping 2.6.12 → 2.6.13 in one branch), and recommends `git merge origin/main --no-edit --no-commit` + `git checkout --theirs <file>` for single-file version-bump conflicts (the merge model's `--theirs` is unambiguous; the rebase model's requires a side-of-the-line lookup at flag-typing time).
+
+### Notes
+- Docs-only PATCH. No source-code change, no API surface, no UI. The hardening targets future contributors opening a PATCH-bumping PR against a parallel PATCH-bumping PR — the same trap the post-2.6.10 / 2.6.11 / 2.6.12 cycle actually hit, and a future race would reproduce exactly because the playbook did not document either gotcha.
+- `package-lock.json` root stamp regenerated to match the `2.6.13` bump; the diff is `+2/-2` over the previously-regenerated `2f94744` lockfile (root stamp + a nested stamp updating in lockstep with the root, no em-dash line because the prior `2f94744` regen already canonicalized the `habit-hooks` deprecation string).
+
 ## [2.6.11] - 2026-07-06
 
 ### Changed

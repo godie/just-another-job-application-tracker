@@ -190,6 +190,13 @@ When two PRs both modify `CHANGELOG.md` (each adding an entry above the current 
 
 Resolution: take `theirs_without_base + ours`, where `theirs` is the newer-version entry and `ours` is the older-version entry. The trailing `## [<base>]` from `ours` is preserved. The Python script that does this:
 
+**Marker format gotcha (read this before copying the script).** Git uses two different forms for the trailing `>>>>>>>` marker, and which form fires depends on the operation, not the user:
+
+- **`git rebase`**: `>>>>>>> <hex-sha>` (e.g. `>>>>>>> a1b2c3d4...`). The identifier is the SHA of the commit being replayed onto the new base.
+- **`git merge`**:  `>>>>>>> <branch-or-tag>` (e.g. `>>>>>>> origin/main`, `>>>>>>> feat/v3-migration`). The identifier is the branch name Git is importing.
+
+The `<<<<<<< HEAD` marker is consistent across both modes — `HEAD` is always the branch the operation is running on. A regex anchored to a hex hash on the `>>>>>>>` side — e.g. `>>>>>>> [0-9a-f]+` — silently fails on the branch-name form. `re.search` returns `None`, the subsequent `m.group(...)` calls raise `AttributeError`, and the conflict block sits untouched in `CHANGELOG.md`. The script is well-formed and well-tested against the SHA form; the failure is invisible until a real merge conflict applies it to the branch-name form. The fix is one character: anchor the trailer with `>>>>>>> \S+` so any non-whitespace identifier matches. The `>` that closes the marker is not whitespace, so the match terminates at the end of the identifier regardless of which form Git used.
+
 ```python
 # Concrete example: base version is 2.6.0 (the version that both PRs branched
 # from). The pattern generalizes to any base version — replace '2.6.0' with
@@ -198,7 +205,18 @@ import re
 BASE = '2.6.0'  # the version that was on main when both PRs were cut
 with open('CHANGELOG.md', 'r') as f:
     content = f.read()
-pattern = re.compile(r'<<<<<<< HEAD\n(.*?)=======\n(.*?)>>>>>>> [0-9a-f]+', re.DOTALL)
+# NOTE: the trailing `>>>>>>>` marker after a conflict block is a hex SHA
+# during a `git rebase` (e.g. `>>>>>>> a1b2c3d4...`) BUT a branch name
+# during a `git merge` (e.g. `>>>>>>> origin/main`, `>>>>>>> feat/v3-migration`).
+# The original `[0-9a-f]+` only matched hex hashes and silently failed on
+# the branch-name form — `re.search` returned `None`, the script's
+# `m.group(...)` calls raised `AttributeError`, and the conflict block
+# sat untouched in `CHANGELOG.md`. The fix is one character: `\S+`
+# matches any non-whitespace identifier. The `>` that closes the marker
+# is not whitespace, so the match terminates at the end of the identifier
+# regardless of whether Git used a SHA (rebase) or a branch name (merge)
+# on the `>>>>>>>` side.
+pattern = re.compile(r'<<<<<<< HEAD\n(.*?)=======\n(.*?)>>>>>>> \S+', re.DOTALL)
 m = pattern.search(content)
 ours, theirs = m.group(1), m.group(2)  # ours = older entry, theirs = newer entry
 def strip_anchor(s, base):
@@ -211,7 +229,23 @@ with open('CHANGELOG.md', 'w') as f:
     f.write(content)
 ```
 
-For the simpler case (just version files, no CHANGELOG merge), `git checkout --theirs <file>` is enough — "theirs" in a rebase is the commit being replayed (the later PR), and you want to keep the later PR's higher version. The `package.json` and `LogfireTelemetry.php` files both have this property: keep `theirs` (the higher version).
+**During a rebase (this subsection):** for the simpler case (just version files, no CHANGELOG merge), `git checkout --theirs <file>` is enough — "theirs" in a rebase is the commit being replayed (the later PR), and you want to keep the later PR's higher version. The `package.json` and `LogfireTelemetry.php` files both have this property: keep `theirs` (the higher version). The next paragraph covers the merge variant, where `--theirs` means the opposite side.
+
+**`--ours` / `--theirs` semantics: rebase vs merge (read this before flagging either side).** The two flags have **exactly inverse meanings** in `git rebase` vs `git merge`. The diff output and conflict markers of either operation look identical — same `<<<<<<< HEAD`, same `=======`, same `>>>>>>> …` — so there is **no in-conflict-marker signal** about which side is which:
+
+| Operation | `--ours` resolves to | `--theirs` resolves to |
+| --- | --- | --- |
+| `git rebase <base>` | the **base** branch (`<base>`'s HEAD) | the **commit being replayed** (your branch's tip) |
+| `git merge <other>` | your **current branch** / `HEAD` | the **other** branch (`<other>`'s HEAD) |
+
+In the version-race case where one branch's `package.json` says `2.6.12` and another says `2.6.13`, the right answer is "keep whichever is the higher version" — but the flag for that operation differs:
+
+- During a **rebase**, `git checkout --theirs package.json` keeps the **commit being replayed** (your branch → the higher bump).
+- During a **merge**, `git checkout --theirs package.json` keeps the **other branch** (the older base → the lower version; **wrong**).
+
+The two operations use `--theirs` for opposite sides of the same conflict. There is no warning at flag-typing time. **`git status` and `git diff` show the conflict but not which operation produced it**, so by the time you're flagging a file you're three commands past the point where a wrong flag could have been detected statically.
+
+**Recommendation:** when the conflict is on a single file whose value differs only by version (no semantic conflict), use `git merge origin/main --no-edit --no-commit` (not `git rebase`) and `git checkout --theirs <file>` to keep the other branch's value. The merge model's `--theirs` is unambiguous in this convention — it means "the branch I just merged in" — whereas the rebase model's `--theirs` requires remembering which side is being replayed *before* typing the flag. This is a recommendation, not a rule: if the rest of the branch is already rebased onto `origin/main`, switching strategies mid-rebase causes worse problems than a one-character lookup.
 
 ### Concrete example from the 2.6.x release cycle (2026-07-03)
 
