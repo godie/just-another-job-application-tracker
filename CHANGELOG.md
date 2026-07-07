@@ -23,6 +23,33 @@
 - MDN CSP `script-src` directive: https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP#script-src
 - `@react-oauth/google` docs: https://www.npmjs.com/package/@react-oauth/google
 
+## [2.6.34] - 2026-07-07
+
+### Added
+
+- **NEW CI guard `scripts/check-yml-concurrency.sh` (v2.6.34 PATCH)** — a superset of the v2.6.29 `scripts/check-yml-timeouts.sh` guard. Asserts every `.github/workflows/*.yml` has BOTH a top-level `concurrency:` block AND `concurrency.cancel-in-progress: true` AND a `timeout-minutes:` cap on every job. The script is self-contained (no inter-script dependency on `check-yml-timeouts.sh`), mirrors the v2.6.29 style (bash + python3 heredoc, `--ci` mode flag, `::error file=` annotations, `set -euo pipefail`, "report all errors then exit 1" failure mode), and includes a 50-line comment block explaining the v2.6.34 design rationale + the relationship to v2.6.29 (timeout-only) and v2.6.33 (4 concurrency additions) + a reference to AGENTS.md "CI Race Playbook". Closes the loop on the post-2.6.20 cycle of 7 `--admin` bypasses (PRs #226, #227, #228, #229, #230, #231, #232) that the v2.6.29 fix was designed to prevent structurally.
+
+- **3 CI gate wire-ups (pull-request.yml, orphan-sweep.yml, version-sequence-check.yml)** — added a new step after the existing `check-yml-timeouts.sh --ci` step in each of the 3 CI gates. The new step has a 10-12 line comment + `bash scripts/check-yml-concurrency.sh --ci` command, mirroring the style of the existing step. The existing `check-yml-timeouts.sh --ci` calls are KEPT (not replaced) for defense-in-depth + backwards compat; the new guard is a strict superset that catches both concurrency config drift AND timeout config drift.
+
+### Changed
+
+- **3 layers of the CI Race Playbook now form a complete regression guard:**
+  1. **v2.6.29** — `scripts/check-yml-timeouts.sh` (timeout-only check) + `concurrency.cancel-in-progress: true` on `pull-request.yml` + `orphan-sweep.yml`
+  2. **v2.6.33** — extended `concurrency.cancel-in-progress: true` to 4 more workflows (deploy.yml, code-audit.yml, cve-lite.yml, composer-validate.yml)
+  3. **v2.6.34** — promoted the v2.6.33 inline check to a permanent CI guard via the new `scripts/check-yml-concurrency.sh` script + wired it into the 3 existing CI gates
+
+  The 3 layers collectively prevent the regression class that produced the 7 `--admin` bypasses: a workflow file added or modified without `concurrency:` + `cancel-in-progress: true` + `timeout-minutes:` now produces a tracked CI failure on every PR, not a post-merge "Test pending forever" stall.
+
+- **3 negative tests verified (local validation):** the new guard correctly FAILS when (a) `cancel-in-progress: true` is set to `false` in `orphan-sweep.yml`, (b) the `concurrency:` block is removed from `cve-lite.yml`, (c) a `timeout-minutes:` cap is removed from `code-audit.yml`. All 3 produces precise `::error file=` annotations pointing to the exact issue + restore + re-verify the guard passes again.
+
+- **Slot math** — `2.6.34` was the next free slot after `2.6.33` (sealed in PR #237). Lockfile root stamp bumped in sync: `2.6.33` -> `2.6.34`.
+
+- **Validation evidence** — `npm run lint` + `npm test` (901 vitest tests) + `vendor/bin/phpunit` (66 tests / 223 assertions) all pass on the diff. All 4 CI guards (`scripts/check-workflow-shape.sh --ci`, `scripts/check-yml-timeouts.sh --ci`, `scripts/check-yml-concurrency.sh --ci`, plus the existing secret scan) all pass on the diff. The 3 negative tests above confirm the new guard's failure modes are precise.
+
+- **Refs** — AGENTS.md "CI Race Playbook" section, GitHub Actions concurrency docs (https://docs.github.com/en/actions/using-jobs/using-concurrency), the v2.6.29 `check-yml-timeouts.sh` design (PR #233), the v2.6.33 4-workflow extension (PR #237). The new guard mirrors the v2.6.29 style (bash + python3 heredoc + regex-based YAML parsing since PyYAML is not guaranteed on `ubuntu-latest` runners).
+
+- **Deferred followup (v2.6.35+ candidate):** add a `command -v python3 >/dev/null` precheck to both `check-yml-timeouts.sh` and `check-yml-concurrency.sh` for a clearer error message if Python is missing from the runner (currently the scripts fail with a generic `python3: command not found`). Mirrors the pattern of the existing `sudo apt-get install -y ripgrep` idempotent install in `orphan-sweep.yml` and `version-sequence-check.yml`.
+
 ## [2.6.33] - 2026-07-07
 
 ### Changed

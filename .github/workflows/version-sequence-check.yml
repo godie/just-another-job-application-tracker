@@ -67,6 +67,19 @@ jobs:
         # post-mortem on the post-2.6.20 cycle of `--admin` bypasses.
         run: bash scripts/check-yml-timeouts.sh --ci
 
+      - name: Check workflow-file concurrency + timeouts
+        # v2.6.34 gate: superset of the v2.6.29 check-yml-timeouts.sh
+        # guard above. Asserts EVERY workflow has BOTH a top-level
+        # concurrency: block AND concurrency.cancel-in-progress: true
+        # AND a timeout-minutes: cap on every job. The duplicate
+        # ::error annotation with the gate above (when a job is
+        # missing timeout-minutes:) is INTENTIONAL defense-in-depth:
+        # this guard is the canonical concurrency + timeout check, the
+        # old guard is the focused timeout check, and a future
+        # regression in one parser is caught by the other. See AGENTS.md
+        # CI Race Playbook and the v2.6.34 CHANGELOG entry.
+        run: bash scripts/check-yml-concurrency.sh --ci
+
       - name: Install ripgrep
         # ubuntu-latest runners do not ship ripgrep in the default
         # image as of 2026-07-04; install it before the check step so
