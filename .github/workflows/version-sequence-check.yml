@@ -57,6 +57,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Check workflow-file job timeouts
+        # Pre-merge + daily-drift gate. Catches the regression class
+        # where a workflow file is added or modified without a
+        # `timeout-minutes:` cap on its jobs, and a runner stall turns
+        # into a permanent `pending` state. Mirror of the same check
+        # wired into `pull-request.yml` and `orphan-sweep.yml`. See
+        # AGENTS.md "CI Race Playbook" for the design rationale and
+        # post-mortem on the post-2.6.20 cycle of `--admin` bypasses.
+        run: bash scripts/check-yml-timeouts.sh --ci
+
       - name: Install ripgrep
         # ubuntu-latest runners do not ship ripgrep in the default
         # image as of 2026-07-04; install it before the check step so

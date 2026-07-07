@@ -56,6 +56,16 @@ jobs:
         # Mirror of the same check wired into `pull-request.yml`.
         run: bash scripts/check-workflow-shape.sh --ci
 
+      - name: Check workflow-file job timeouts
+        # Pre-merge + daily-drift gate. Mirror of the same check wired
+        # into `pull-request.yml`'s `secrets:` job. Catches the regression
+        # class that produced the "Test pending forever" race in the
+        # post-2.6.20 cycle: a workflow file is added or modified without
+        # a `timeout-minutes:` cap on its jobs, and a runner stall turns
+        # into a permanent `pending` state. See AGENTS.md
+        # "CI Race Playbook" for the design rationale and post-mortem.
+        run: bash scripts/check-yml-timeouts.sh --ci
+
       - name: Read current version
         id: version
         run: |

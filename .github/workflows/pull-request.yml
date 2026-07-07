@@ -5,6 +5,18 @@ on:
     branches:
       - main
 
+# Cancel in-progress runs of the same workflow on the same ref. Without this,
+# pushing a new commit to a PR strings stale jobs back-to-back, exhausting
+# GitHub's parallel runner limits and causing subsequent jobs to sit at
+# `pending` for the full queue-stall duration. Mirrors the pattern already
+# used by `.github/workflows/orphan-sweep.yml` (see its `concurrency` block).
+# The `${{ github.workflow }}-${{ github.ref }}` group key ensures each PR's
+# runs are scoped independently — a push to PR #1 does NOT cancel PR #2's
+# in-flight checks. See AGENTS.md "CI Race Playbook" for the design.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
 
@@ -12,6 +24,11 @@ jobs:
   lint:
     name: Lint
     runs-on: ubuntu-latest
+    # CI RACE: bounded wait. `npm run lint` is normally < 30s, but a hung
+    # npm-registry fetch or a slow cache restore could sit at `pending`
+    # indefinitely without this cap. 5 min is a generous ceiling for the
+    # work + ample cold-runner headroom. See AGENTS.md "CI Race Playbook".
+    timeout-minutes: 5
 
     steps:
       - name: Checkout repo
@@ -32,6 +49,15 @@ jobs:
   test:
     name: Test
     runs-on: ubuntu-latest
+    # CI RACE: bounded wait. Vitest is normally 30s-2min on this repo
+    # (868 tests per the AGENTS.md Quality Assurance Checklist), but a
+    # Vitest OOM, a happy-dom hang, or an npm-registry stall could sit
+    # at `pending` indefinitely. 15 min is the longest of the five
+    # timeouts because Vitest is the only job with non-deterministic
+    # test counts and potential happy-dom leaks — it's the job that
+    # most plausibly could hit the cap on a real regression. See
+    # AGENTS.md "CI Race Playbook".
+    timeout-minutes: 15
 
     steps:
       - name: Checkout repo
@@ -52,6 +78,12 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
+    # CI RACE: bounded wait. Vite 7 production build is normally 1-3 min
+    # on this repo, but a slow cache restore, an unresolvable import, or
+    # a hung esbuild worker could sit at `pending` indefinitely. 10 min
+    # is a generous ceiling for the work + ample cold-runner headroom.
+    # See AGENTS.md "CI Race Playbook".
+    timeout-minutes: 10
 
     steps:
       - name: Checkout repo
@@ -72,6 +104,11 @@ jobs:
   knip:
     name: Unused Code
     runs-on: ubuntu-latest
+    # CI RACE: bounded wait. `npm run knip` is normally < 30s, but a knip
+    # bug or a slow dep-graph crawl could sit at `pending` indefinitely.
+    # 5 min is a generous ceiling for the work + ample cold-runner
+    # headroom. See AGENTS.md "CI Race Playbook".
+    timeout-minutes: 5
 
     steps:
       - name: Checkout repo
@@ -92,6 +129,14 @@ jobs:
   secrets:
     name: Secret Scan
     runs-on: ubuntu-latest
+    # CI RACE: bounded wait. The `fetch-depth: 0` checkout + TruffleHog
+    # full-history scan is the slowest step in this job (TruffleHog
+    # alone can take 3-5 min on a repo of this size with a cold
+    # TruffleHog binary cache). A network stall mid-scan or a hung
+    # TruffleHog process would otherwise sit at `pending` indefinitely.
+    # 10 min is a generous ceiling that accommodates worst-case cold
+    # cache + ample headroom. See AGENTS.md "CI Race Playbook".
+    timeout-minutes: 10
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -118,9 +163,29 @@ jobs:
         # would block the build.
         run: bash scripts/check-workflow-shape.sh --ci
 
+      - name: Check workflow-file job timeouts
+        # Pre-merge gate that fails when any job in any workflow is missing
+        # a `timeout-minutes:` cap. Catches the regression class that
+        # produced the recurring "Test pending forever" race in the
+        # post-2.6.20 cycle (PRs #226, #227, #228, #229, #230, #231, #232
+        # all hit the same pattern: a job sat at `pending` indefinitely
+        # because the workflow file omitted a `timeout-minutes:` cap, and
+        # the merge had to bypass via `--admin`). See AGENTS.md
+        # "CI Race Playbook" for the design rationale and post-mortem.
+        # Mirrors the style of `scripts/check-workflow-shape.sh` (bash,
+        # --ci mode flag, ::error file= annotations, set -euo pipefail).
+        run: bash scripts/check-yml-timeouts.sh --ci
+
   composer-validate:
     name: Composer validate
     uses: ./.github/workflows/composer-validate.yml
+    # CI RACE: bounded wait. The called `composer-validate.yml` reusable
+    # workflow has its own `timeout-minutes: 10` cap, but the calling
+    # job here ALSO needs a cap (the calling-side cap governs how long
+    # the reusable workflow call can run before GHA cancels it). 10 min
+    # matches the called workflow's own ceiling. See AGENTS.md
+    # "CI Race Playbook".
+    timeout-minutes: 10
 
   phpunit:
     name: PHPUnit
