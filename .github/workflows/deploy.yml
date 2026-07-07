@@ -5,6 +5,30 @@ on:
     branches:
       - main
 
+# v2.6.33 CI RACE: extend the v2.6.29 `concurrency.cancel-in-progress: true`
+# hardening to the deploy workflow. The v2.6.29 fix landed only on
+# `pull-request.yml` (line 11) and `orphan-sweep.yml` (line 23), leaving
+# the deploy workflow's 3 jobs (build + deploy + composer-validate) able
+# to pile up stale runs on a rapid series of main pushes, re-introducing
+# the same parallel-runner-exhaustion pattern that v2.6.29 fixed for the
+# PR workflow. The `${{ github.workflow }}-${{ github.ref }}` group key
+# ensures each main-branch deploy is scoped independently — a push to a
+# different ref (if `on: push` is ever widened) does NOT cancel a
+# main-branch deploy in flight.
+#
+# Cancellation safety: a mid-deploy cancel is recoverable because the
+# rsync step uses `--partial` (line ~225: `ARGS="-az --delete --chmod=...
+# --partial --progress"`), which preserves partially-transferred files
+# in place. A re-push triggers a fresh rsync that resumes against the
+# partial destination, so the prod server is never left in a
+# half-deployed state longer than the next push. This is the same
+# trade-off v2.6.29 made for `pull-request.yml`. See AGENTS.md
+# "CI Race Playbook" for the design rationale and post-mortem on the
+# post-2.6.20 cycle of `--admin` bypasses.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
 

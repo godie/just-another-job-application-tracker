@@ -23,6 +23,32 @@
 - MDN CSP `script-src` directive: https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP#script-src
 - `@react-oauth/google` docs: https://www.npmjs.com/package/@react-oauth/google
 
+## [2.6.33] - 2026-07-07
+
+### Changed
+
+- **Extended v2.6.29 `concurrency.cancel-in-progress: true` coverage to 4 more workflows (v2.6.33 PATCH).** Added the `concurrency:` block (workflow-level) to:
+  1. `.github/workflows/deploy.yml` — the prod-deploy workflow; triggers on `push: main`, runs the build + deploy + composer-validate jobs
+  2. `.github/workflows/code-audit.yml` — the weekly code audit; triggers on PR + push-to-main + weekly cron + manual
+  3. `.github/workflows/cve-lite.yml` — the CVE scan; triggers on PR + push-to-main
+  4. `.github/workflows/composer-validate.yml` — the reusable `workflow_call:` workflow called by `pull-request.yml` and `deploy.yml`
+
+  All 4 use the standard `${{ github.workflow }}-${{ github.ref }}` group pattern (consistent with `pull-request.yml`), with a 6-12 line comment block explaining the v2.6.33 extension + the rsync `--partial` mitigation for deploy cancellation (see below) + a reference to AGENTS.md "CI Race Playbook".
+
+- **6-vs-4 discrepancy callout (READ THIS FIRST):** The user-facing request was to add `concurrency.cancel-in-progress: true` to "the 6 missing workflows". The actual missing count was **4**, not 6. The prior investigation's basher output missed that `.github/workflows/react-doctor.yml` and `.github/workflows/version-sequence-check.yml` **already had** `concurrency:` blocks (added in v2.6.13 and v2.6.27 respectively, with their own group patterns that are intentionally preserved: `react-doctor-${{ github.event.pull_request.number || github.ref }}` and `version-sequence-check`). The 4 unchanged workflows (`pull-request.yml`, `orphan-sweep.yml`, `react-doctor.yml`, `version-sequence-check.yml`) collectively cover the same scenario space as the 4 patched workflows, so the v2.6.29 fix is now uniformly applied to all 8 workflows.
+
+- **`timeout-minutes:` was already in place on every job in every workflow** per the v2.6.29 fix (PR #233). The v2.6.33 patch only adds the `concurrency:` block to the 4 missing-concurrency workflows; no timeout additions were needed because the v2.6.29 `check-yml-timeouts.sh` guard already enforces that every job in every workflow has a `timeout-minutes:` cap. The v2.6.33 patch passes both `scripts/check-yml-timeouts.sh --ci` (existing guard) and `scripts/check-workflow-shape.sh --ci` (existing guard).
+
+- **Rsync `--partial` mitigation for deploy cancellation safety (NIT 3 from code-review):** A mid-deploy cancel (triggered by a new main push while a previous deploy is in flight) is recoverable because the rsync step in `deploy.yml` line ~225 uses `ARGS="-az --delete --chmod=Du=rwx,Dg=rx,Fu=rw,Fg=r --partial --progress"`. The `--partial` flag preserves partially-transferred files in place, so a re-push triggers a fresh rsync that resumes against the partial destination — the prod server is never left in a half-deployed state longer than the next push. This is documented in the new deploy.yml concurrency block comment (lines 15-23).
+
+- **Slot math** — `2.6.33` was the next free slot after `2.6.32` (sealed in PR #236). Lockfile root stamp bumped in sync: `2.6.32` -> `2.6.33`.
+
+- **Validation evidence** — `npm run lint` + `npm test` (901 vitest tests) + `vendor/bin/phpunit` (66 tests / 223 assertions) all pass on the diff. The 3 CI guards (`scripts/check-yml-timeouts.sh --ci`, `scripts/check-workflow-shape.sh --ci`, plus a NEW inline `concurrency.cancel-in-progress: true` coverage check across all 8 workflows) all pass on the diff. The new inline check uses `python3 + yaml.safe_load` to parse every workflow file and assert it has `concurrency: cancel-in-progress: true` at the workflow level; it is the prototype for the deferred followup (see below).
+
+- **Refs** — W3C CSP3 spec (https://www.w3.org/TR/CSP3/), MDN Content Security Policy (https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP), GitHub Actions concurrency docs (https://docs.github.com/en/actions/using-jobs/using-concurrency), AGENTS.md "CI Race Playbook" section. Prior PRs in the series: PR #233 (v2.6.29 CI Race Playbook), PR #234 (v2.6.30 frame-ancestors), PR #235 (v2.6.31 script-src Google), PR #236 (v2.6.32 comprehensive CSP audit).
+
+- **Deferred followup (v2.6.34 candidate):** extract the new inline `concurrency.cancel-in-progress: true` coverage check into a permanent `scripts/check-yml-concurrency.sh` guard (mirroring `scripts/check-yml-timeouts.sh` from v2.6.29) and wire it into the existing 3 CI gates (`pull-request.yml`, `orphan-sweep.yml`, `version-sequence-check.yml`) so future drift in concurrency config is caught pre-merge. The current patch includes the inline check for local validation but does not promote it to a permanent CI guard; that is the natural next iteration of the v2.6.29 hardening pattern.
+
 ## [2.6.32] - 2026-07-07
 
 ### Changed
