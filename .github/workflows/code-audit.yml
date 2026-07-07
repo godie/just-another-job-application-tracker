@@ -17,6 +17,17 @@ permissions:
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
 
+# v2.6.33 CI RACE: extend the v2.6.29 `concurrency.cancel-in-progress: true`
+# hardening to the code-audit workflow. Cancels in-flight runs of the same
+# workflow on the same ref so a rapid burst of PRs (the trigger matrix
+# includes PR + push-to-main + weekly cron + manual) doesn't pile up stale
+# audit jobs and re-introduce the parallel-runner-exhaustion pattern that
+# v2.6.29 fixed for `pull-request.yml`. Mirrors the pattern in
+# `.github/workflows/pull-request.yml`. See AGENTS.md "CI Race Playbook".
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   audit:
     runs-on: ubuntu-latest
