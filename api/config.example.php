@@ -23,6 +23,13 @@ return [
     ],
     'route_prefix' => getenv('API_PREFIX') ?: '/api',
     'controller_namespace' => getenv('CONTROLLER_NAMESPACE') ?: 'OverPHP\\Controllers',
+    // Descriptive logging toggle. Off by default in the production template
+    // (set LOGGING_ENABLED=true in .env to enable). Output goes to PHP's
+    // error_log destination (typically stderr in containerized deploys, or
+    // the file configured by the `error_log` ini setting).
+    'logging' => [
+        'enabled' => filter_var(getenv('LOGGING_ENABLED') ?: 'false', FILTER_VALIDATE_BOOLEAN),
+    ],
     'benchmark' => [
         'enabled' => filter_var(getenv('BENCHMARK_ENABLED') ?: 'false', FILTER_VALIDATE_BOOLEAN),
     ],

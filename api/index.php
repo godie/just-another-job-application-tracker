@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use OverPHP\Core\Benchmark;
 use OverPHP\Core\Container;
+use OverPHP\Core\Logger;
 use OverPHP\Core\Router;
 use OverPHP\Core\Security;
 use OverPHP\Libs\Database;
@@ -19,6 +20,24 @@ ini_set('log_errors', '1');
 $config = file_exists(__DIR__ . '/config.php')
     ? require __DIR__ . '/config.php'
     : require __DIR__ . '/config.example.php';
+
+// Initialize the descriptive logger first so the rest of the bootstrap can
+// emit request-context logs (request.received + request.completed around
+// the router run). Disabled by default in config.example.php; flip via
+// LOGGING_ENABLED=true in .env.
+Logger::init($config['logging'] ?? []);
+
+$requestStart = microtime(true);
+$requestMethod = strtoupper((string) ($_SERVER['REQUEST_METHOD'] ?? 'GET'));
+$requestUri = (string) ($_SERVER['REQUEST_URI'] ?? '/');
+$requestIp = (string) ($_SERVER['REMOTE_ADDR'] ?? '');
+$requestUserAgent = (string) ($_SERVER['HTTP_USER_AGENT'] ?? '');
+Logger::info('request.received', [
+    'method' => $requestMethod,
+    'uri' => $requestUri,
+    'client_ip' => $requestIp,
+    'user_agent' => $requestUserAgent,
+]);
 
 $controllerNamespace = rtrim((string) ($config['controller_namespace'] ?? 'OverPHP\\Controllers'), '\\');
 if ($controllerNamespace === '') {
@@ -178,6 +197,13 @@ $router->add('GET', '/agent/job-applications', function () {
 });
 
 $router->run();
+
+Logger::info('request.completed', [
+    'method' => $requestMethod,
+    'uri' => $requestUri,
+    'status' => http_response_code() ?: 200,
+    'duration_ms' => (int) round((microtime(true) - $requestStart) * 1000),
+]);
 
 // ── Flush telemetry at end of request ──
 LogfireTelemetry::shutdown();
