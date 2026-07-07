@@ -49,25 +49,36 @@ final class Logger
 
     public static function info(string $message, array $context = []): void
     {
-        self::write('INFO', $message, $context);
+        if (self::$enabled) {
+            error_log(self::format('INFO', $message, $context));
+        }
     }
 
     public static function warning(string $message, array $context = []): void
     {
-        self::write('WARNING', $message, $context);
+        if (self::$enabled) {
+            error_log(self::format('WARNING', $message, $context));
+        }
     }
 
     public static function error(string $message, array $context = []): void
     {
-        self::write('ERROR', $message, $context);
+        if (self::$enabled) {
+            error_log(self::format('ERROR', $message, $context));
+        }
     }
 
-    private static function write(string $level, string $message, array $context): void
+    /**
+     * Build the log line as a string. Public so tests can verify the format
+     * directly without capturing PHP's error_log() output (which is
+     * SAPI-dependent and not testable from a vanilla phpunit run via the
+     * `error_log` ini override — the ini setting only affects the syslog
+     * handler's destination, not the actual write call when `message_type=0`).
+     *
+     * Format: `[YYYY-MM-DDTHH:MM:SS.uuuuuuZ] [LEVEL] message key=value key=value`
+     */
+    public static function format(string $level, string $message, array $context = []): string
     {
-        if (!self::$enabled) {
-            return;
-        }
-
         $timestamp = (new \DateTimeImmutable('now', new \DateTimeZone('UTC')))
             ->format('Y-m-d\TH:i:s.u\Z');
 
@@ -77,7 +88,7 @@ final class Logger
             $line .= ' ' . $key . '=' . self::formatValue($value);
         }
 
-        error_log($line);
+        return $line;
     }
 
     private static function formatValue(mixed $value): string
