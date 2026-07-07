@@ -1,3 +1,28 @@
+## [2.6.30] - 2026-07-07
+
+### Fixed
+- **`frame-ancestors` ignored in `<meta>` delivery** (`index.html`, line 68) — the W3C Content Security Policy spec (W3C §6.1) explicitly excludes `frame-ancestors` from `<meta http-equiv="Content-Security-Policy">` delivery: *"The frame-ancestors directive MUST be delivered via an HTTP response header. It is ignored when delivered via a `<meta>` element."* The directive was present in the `<meta>` tag (inherited from the v2.6.21 security-headers PR #151) but was silently ignored by every browser. This PR removes the ignored `frame-ancestors 'none'; ` from the meta tag, replacing it with an HTML comment block explaining the rationale. The directive remains correctly enforced by the HTTP header layer (3 surfaces): the Apache `Header set` in `public/.htaccess` (the canonical prod path), the PHP `header()` call in `api/src/Core/Security.php` (the API path), and the Vite dev-server plugin in `vite.config.ts` (the local dev path). All three layers set `frame-ancestors 'none';` in the `Content-Security-Policy` HTTP response header, which is the W3C-mandated delivery mechanism for this directive. The other directives in the meta tag (`default-src`, `script-src`, `style-src`, `img-src`, `font-src`, `connect-src`) remain valid in `<meta>` delivery and continue to provide first-paint defense-in-depth before the HTTP headers arrive.
+
+### Why PATCH not MINOR
+- The change is a security tightening of the meta-tag CSP layer (removes an ignored no-op directive; adds a comment block explaining the rationale). No source-code change, no API surface, no UI, no schema. AGENTS.md SemVer PATCH guidance applies (the rationale is "tighten the security contract" — the `frame-ancestors` directive is now correctly enforced by the HTTP header layer only, with the meta tag no longer claiming to enforce it).
+
+### Slot math
+- `2.6.29` was sealed on `origin/main@5e25b81` by PR #233 (the CI Race Playbook: bounded wait + stale-run pruning + regression guard). This PR claims the next free slot: `2.6.30`. No concurrent open PRs require a skip-ahead at this time.
+
+### Validation evidence
+- ✅ The meta tag in `index.html` no longer contains `frame-ancestors` (verified via `grep -F frame-ancestors index.html` returning 0 matches after the change, vs 1 match before).
+- ✅ The Apache `public/.htaccess` still sets `Content-Security-Policy: ...frame-ancestors 'none';` via `Header set` (unchanged; this is the canonical prod delivery mechanism per W3C).
+- ✅ The PHP `api/src/Core/Security.php` still emits `Content-Security-Policy: ...frame-ancestors 'none';` via `header()` (unchanged; this is the API delivery mechanism per W3C).
+- ✅ The Vite dev server `vite.config.ts` still injects `Content-Security-Policy: ...frame-ancestors 'none';` as an HTTP response header (unchanged; this is the local-dev delivery mechanism per W3C).
+- ✅ `npm run lint` + `npm test` + `vendor/bin/phpunit` all pass (no source-code changes; the change is comment-only + a removed directive from the meta tag).
+- ✅ `bash scripts/check-workflow-shape.sh --ci` + `bash scripts/check-yml-timeouts.sh --ci` both pass (no workflow file changes).
+
+### Refs
+- W3C Content Security Policy Level 2, §6.1: *"The frame-ancestors directive MUST be delivered via an HTTP response header. It is ignored when delivered via a `<meta>` element."* (https://www.w3.org/TR/CSP2/#directive-frame-ancestors)
+- W3C Content Security Policy Level 3, §6.1.2.6: same restriction, carried forward to CSP3.
+- v2.6.21 (PR #151, `fix/security-headers-csp-hsts`) — the PR that originally added the meta-tag CSP layer with the now-ignored `frame-ancestors 'none';` directive. The CHANGELOG entry for v2.6.21 documents the CSP setup in detail (the "Apache security-headers" + "Content-Security-Policy (CSP) meta tag" bullets).
+- v2.6.21 CHANGELOG "CSP `base-uri` + `form-action` absent" note — the prior audit-cycle note that called out a different CSP mismatch (the documented `base-uri` / `form-action` deferral). The current PR is a separate finding; the deferred nonce/hash tightening pass remains a future followup.
+
 ## [2.6.29] - 2026-07-07
 
 ### Fixed
