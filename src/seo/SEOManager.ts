@@ -66,6 +66,20 @@ export class SEOManager {
   static upsertJsonLd(data: Record<string, unknown> | null): void {
     const selector = 'script[type="application/ld+json"][data-seo="true"]';
     const existing = document.head.querySelector<HTMLScriptElement>(selector);
+    // v2.6.35: read the CSP nonce injected by the Vite `cspNoncePlugin`
+    // (see `vite.config.ts`). The nonce is REQUIRED for the JSON-LD
+    // script to pass the strict meta tag CSP (`script-src 'self'
+    // 'nonce-...'`). The nonce is also required for the 2 static
+    // inline scripts in `index.html` (the theme IIFE + the Speculation
+    // Rules JSON), which the Vite plugin nonces at build time.
+    // The `.htaccess` HTTP header CSP retains `'unsafe-inline'` as a
+    // fallback for the JSON-LD injection (the meta tag is the EFFECTIVE
+    // policy per W3C CSP3 AND-logic of multiple policies — a script
+    // must pass ALL policies, so the meta tag's nonce requirement is
+    // the binding constraint; an XSS payload without the nonce is
+    // blocked by the meta tag regardless of `'unsafe-inline'` in the
+    // HTTP header).
+    const nonce = document.documentElement.dataset.cspNonce ?? '';
 
     if (data === null) {
       if (existing !== null) {
@@ -76,10 +90,15 @@ export class SEOManager {
 
     if (existing !== null) {
       existing.textContent = JSON.stringify(data, null, 2);
+      // Re-apply the nonce in case the page was hot-reloaded and the
+      // nonce rotated (dev server only; production has a per-build
+      // nonce that's stable for the lifetime of the page).
+      if (nonce) existing.setAttribute('nonce', nonce);
     } else {
       const el = document.createElement('script');
       el.setAttribute('type', 'application/ld+json');
       el.setAttribute('data-seo', 'true');
+      if (nonce) el.setAttribute('nonce', nonce);
       el.textContent = JSON.stringify(data, null, 2);
       document.head.appendChild(el);
     }

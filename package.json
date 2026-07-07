@@ -1,7 +1,7 @@
 {
   "name": "just-another-job-application-tracker",
   "private": true,
-  "version": "2.6.34",
+  "version": "2.6.35",
   "type": "module",
   "engines": {
     "node": "22.x"

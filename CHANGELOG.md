@@ -1,3 +1,23 @@
+## [2.6.35] - 2026-07-07
+
+### Security
+- **CSP: nonce-based meta tag (HYBRID design).** The `<meta http-equiv="Content-Security-Policy">` tag in `index.html` is now rewritten at build time by the new `cspNoncePlugin()` in `vite.config.ts` to use a per-build `'nonce-<value>'` instead of `'unsafe-inline'`. The plugin also adds the nonce to the 2 static inline scripts (theme-pre-mount IIFE + Speculation Rules JSON) and exposes it on `<html data-csp-nonce="<value>">` so the runtime JSON-LD injection in `SEOManager.ts` can read it via `document.documentElement.dataset.cspNonce` and add it to the dynamically-injected JSON-LD script tag.
+- **HYBRID rationale (W3C CSP3 AND-logic).** Per CSP3, when multiple policies are present (HTTP header + meta tag), the browser enforces the INTERSECTION — a script must pass ALL policies. If `.htaccess` had hash-only `script-src`, the runtime JSON-LD would pass the meta tag (has nonce) but FAIL `.htaccess` (no hash match for dynamic content) and be silently blocked, breaking Google rich results. The hybrid keeps `'unsafe-inline'` in `.htaccess` as a permissive fallback; the meta tag's nonce requirement is the binding constraint. An XSS payload without the per-build nonce is BLOCKED by the meta tag regardless of `'unsafe-inline'` in the HTTP header. Net effect: strict nonce-based effective policy + no JSON-LD regression.
+- **The 2 SHA-256 hashes computed in the prior step are discarded.** The hybrid design supersedes the strict-hash design because the strict-hash design would block the runtime JSON-LD injection. The hashes are documented in git history (the prior `.htaccess` state) for reference.
+- **Vite dev server keeps `'unsafe-inline'`.** Vite HMR + React Refresh inject inline scripts that change on every dev save and cannot be pre-hashed or nonced at dev-server boot. The dev server's CSP is HTTP-header-only (no meta tag in dev), so `'unsafe-inline'` is the only practical option for HMR.
+
+### Changed
+- `vite.config.ts`: new `cspNoncePlugin()` (inlined, ~90 lines) generates a per-build (prod) or per-request (dev) nonce via `crypto.randomBytes(16).toString('base64')`, injects `data-csp-nonce="<value>"` on `<html>`, rewrites the meta tag's `script-src` to use the nonce, and adds `nonce="<value>"` to the 2 static inline scripts. TS7006 fix: explicit string types on the nested `.replace()` callback parameters.
+- `src/seo/SEOManager.ts`: `upsertJsonLd()` now reads the nonce from `document.documentElement.dataset.cspNonce` and adds it to the JSON-LD script tag (both new + existing elements, re-applied in case of HMR rotation). The function gracefully handles a missing nonce (empty string → no nonce attribute).
+- `public/.htaccess`: REVERTED to use `'unsafe-inline'` in `script-src` (removed the 2 SHA-256 hashes that were added in the prior step). The `'unsafe-inline'` is a permissive fallback for the runtime JSON-LD injection; the meta tag's nonce is the effective policy.
+- `index.html`: the 50-line CSP HTML comment is updated to document the v2.6.35 hybrid design (nonce-based meta tag via Vite plugin, `'unsafe-inline'` fallback in `.htaccess`, effective policy is nonce-based strict, AND-logic explanation, why the dev server keeps `'unsafe-inline'`).
+
+### Closes
+- v2.6.32 deferred followup: SHA-256 hash tightening for the 2 inline scripts in `index.html`. The followup is closed via the HYBRID design (nonce in meta tag + `'unsafe-inline'` in `.htaccess`), which achieves the security goal without breaking the runtime JSON-LD injection.
+
+### Known limitation
+- The runtime JSON-LD injection in `SEOManager.ts` passes the meta tag via the nonce (from `data-csp-nonce`) and passes `.htaccess` via `'unsafe-inline'`. The effective policy is the meta tag's nonce requirement. If the Vite plugin fails to inject the nonce (e.g., in a test environment or a custom build mode), the JSON-LD would be blocked by the meta tag. The `upsertJsonLd()` function handles this gracefully (no nonce attribute → meta tag blocks the script → silent SEO regression). Future improvement: refactor JSON-LD to external files so the `'unsafe-inline'` in `.htaccess` can be dropped entirely.
+
 ## [2.6.31] - 2026-07-07
 
 ### Fixed

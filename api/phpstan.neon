@@ -1,0 +1,10 @@
+parameters:
+    level: 6
+    paths:
+        - controllers
+        - src
+        - helpers
+        - tests
+    excludePaths:
+        - vendor/
+    checkMissingIterableValueType: false
