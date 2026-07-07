@@ -16,8 +16,19 @@ final class Security
 
     private static ?bool $isSecureCache = null;
 
-    /** @var string Default Content Security Policy */
-    private static string $csp = "default-src 'self'; script-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; object-src 'none'; frame-ancestors 'none';";
+    /** @var string Default Content Security Policy
+     *
+     * Aligned with the frontend 3-layer CSP from v2.6.32 (index.html meta
+     * tag + public/.htaccess + vite.config.ts dev server), minus the
+     * Google domains (this is the API surface — serves JSON, not HTML
+     * with embedded Google SDKs) and minus `script-src 'unsafe-inline'`
+     * (the API never injects inline scripts). Adds the same
+     * defense-in-depth directives (`base-uri 'self'`, `form-action 'self'`,
+     * `frame-src 'none'`, `worker-src 'self'`, `manifest-src 'self'`) so
+     * the 4-layer CSP is structurally consistent and any future drift
+     * between layers is easy to spot in diff review.
+     */
+    private static string $csp = "default-src 'self'; script-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; object-src 'none'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; frame-src 'none'; worker-src 'self'; manifest-src 'self';";
 
     /**
      * Set whether CSRF protection is enabled.
