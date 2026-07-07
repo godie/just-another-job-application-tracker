@@ -65,7 +65,20 @@
 
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://accounts.google.com https://oauth2.googleapis.com https://www.googleapis.com; frame-ancestors 'none';" />
+    <!--
+      Content Security Policy (CSP) — see v2.6.30 CHANGELOG for the
+      `frame-ancestors` rationale. Per the W3C CSP spec (W3C §6.1),
+      `frame-ancestors` is the ONLY directive that is ignored when
+      delivered via a `<meta http-equiv>` element; it MUST be
+      delivered via an HTTP response header. The directive is
+      correctly enforced by the HTTP header layer below (Apache
+      `public/.htaccess` + PHP `api/src/Core/Security.php` + Vite
+      dev server `vite.config.ts`). The `<meta>` tag here covers
+      the other directives (`default-src`, `script-src`, `style-src`,
+      `img-src`, `font-src`, `connect-src`) for first-paint
+      defense-in-depth before the HTTP headers arrive.
+    -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://accounts.google.com https://oauth2.googleapis.com https://www.googleapis.com;" />
     <title>JAJAT</title>
     <script>
       // Apply theme before React mounts to prevent flash
