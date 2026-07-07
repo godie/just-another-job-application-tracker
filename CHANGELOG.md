@@ -1,3 +1,28 @@
+## [2.6.31] - 2026-07-07
+
+### Fixed
+- **CSP `script-src` blocked Google Sign-In SDK** (`index.html`, `public/.htaccess`, `vite.config.ts`) — the `@react-oauth/google` React wrapper (used by the app per `vite.config.ts` `manualChunks` config line 115) internally injects a `<script src="https://accounts.google.com/gsi/client">` tag at runtime to load the Google Identity Services SDK. The previous CSP only allowed `'self' 'unsafe-inline'` in `script-src`, so the browser blocked the GSI script load with the error *"Loading the script 'https://accounts.google.com/gsi/client' violates the following Content Security Policy directive: 'script-src 'self' 'unsafe-inline''."* This broke Google Sign-In at runtime. This PR adds `https://accounts.google.com https://*.gstatic.com` to `script-src` in the 3 aligned frontend CSP layers (the meta tag in `index.html`, the Apache `Header set` in `public/.htaccess`, and the Vite dev-server `security-headers` plugin in `vite.config.ts`). The `*.gstatic.com` wildcard covers Google's static CDN (used by GSI for font/asset loads). The PHP `api/src/Core/Security.php` layer is intentionally NOT updated — the API surface serves JSON responses, not HTML pages with embedded Google SDKs, so its stricter `script-src 'self'` (no `'unsafe-inline'`, no Google domains) is correct for the API threat model. All other CSP directives (`default-src`, `style-src`, `img-src`, `font-src`, `connect-src`, `frame-ancestors`) are unchanged. The `connect-src` directive already allowed Google domains (used for OAuth token exchange + Google Sheets API calls); the fix extends the same allow-list to `script-src` for the GSI SDK load.
+
+### Why PATCH not MINOR
+- The change is a CSP tightening (adds a narrowly-scoped allow-list entry to `script-src`; the previous state was a bug that broke Google Sign-In at runtime). No source-code change, no API surface, no UI, no schema. AGENTS.md SemVer PATCH guidance applies (the rationale is "fix a runtime bug" — the GSI SDK was being blocked by the previous CSP, so Google Sign-In didn't work in production).
+
+### Slot math
+- `2.6.30` was sealed on `origin/main@ee565ff` by PR #234 (the W3C `frame-ancestors` `<meta>` removal, the previous CSP fix). This PR claims the next free slot: `2.6.31`. No concurrent open PRs require a skip-ahead at this time.
+
+### Validation evidence
+- ✅ All 3 aligned frontend CSP layers now have the same `script-src` value: `script-src 'self' 'unsafe-inline' https://accounts.google.com https://*.gstatic.com;`
+- ✅ The PHP `api/src/Core/Security.php` layer is intentionally unchanged (API surface doesn't load the GSI SDK)
+- ✅ `npm run lint` + `npm test` + `vendor/bin/phpunit` all pass (no source-code changes; the change is 3 CSP string updates + version metadata)
+- ✅ `bash scripts/check-workflow-shape.sh --ci` + `bash scripts/check-yml-timeouts.sh --ci` both pass (no workflow file changes)
+- ✅ The Google Sign-In flow now loads the GSI SDK from `https://accounts.google.com/gsi/client` without CSP blocking (verified via browser test on the dev server with the updated `vite.config.ts`)
+
+### Refs
+- v2.6.30 (PR #234, the previous CSP fix: W3C `frame-ancestors` `<meta>` removal) — the PR that fixed the *other* CSP layer (frame-ancestors instead of script-src). Both fixes share the same root cause: the CSP was set up in v2.6.21 (PR #151) but the directive values were never re-audited as the app's external dependencies evolved.
+- v2.6.21 (PR #151, `fix/security-headers-csp-hsts`) — the PR that originally added the meta-tag CSP layer with the now-too-restrictive `script-src 'self' 'unsafe-inline'` value. The CHANGELOG entry for v2.6.21 documents the CSP setup in detail.
+- Google Identity Services SDK docs: https://developers.google.com/identity/oauth2/web/guides/use-token-model
+- MDN CSP `script-src` directive: https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP#script-src
+- `@react-oauth/google` docs: https://www.npmjs.com/package/@react-oauth/google
+
 ## [2.6.30] - 2026-07-07
 
 ### Fixed
