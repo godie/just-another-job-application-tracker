@@ -2,8 +2,10 @@ name: Composer validate
 
 # Reusable check that catches PHP-version-mismatch lock failures (e.g. the
 # `symfony/options-resolver v8.1.0 requires php >=8.4.1` vs PHP 8.2.31 issue
-# from the v2.6.0 release cycle, resurfaced during the 2.6.4 floor-fix in #202)
-# at PR time instead of post-merge deploy failure time.
+# from the v2.6.0 release cycle, resurfaced during the 2.6.4 floor-fix in
+# #202, and resolved in 2.6.19 by bumping the deploy to PHP 8.4 + removing
+# the `symfony/options-resolver >=8` conflict block that #202 had added as
+# a stopgap) at PR time instead of post-merge deploy failure time.
 #
 # Two-step validation:
 #   1. `composer validate --strict --no-check-publish` — checks composer.json
@@ -17,8 +19,8 @@ name: Composer validate
 #      that requirement" instead of waiting for the deploy to fail.
 #
 # The check uses the SAME PHP version as the deploy workflow (`php-version`
-# input, default 8.2) so the failure modes are consistent. Bump both
-# together if the project migrates the deploy to PHP 8.4.
+# input, default 8.4) so the failure modes are consistent. Bump both
+# together if the project migrates the deploy to a new PHP version.
 #
 # Called from `.github/workflows/pull-request.yml` (runs on every PR, in
 # parallel with the lint/build/test/knip/secrets jobs) and from
@@ -44,7 +46,7 @@ on:
         description: 'PHP version to validate against (must match the deploy workflow)'
         required: false
         type: string
-        default: '8.2'
+        default: '8.4'
       working-directory:
         description: 'Composer working directory (relative to repo root)'
         required: false
