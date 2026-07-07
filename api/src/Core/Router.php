@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace OverPHP\Core;
 
 use OverPHP\Telemetry\LogfireTelemetry;
+use OverPHP\Core\Logger;
 use OpenTelemetry\Context\Context;
 use OpenTelemetry\API\Trace\SpanKind;
 
@@ -150,6 +151,10 @@ final class Router
             if (!isset($this->routes[$method])) {
                 $span->setStatus(\OpenTelemetry\API\Trace\StatusCode::STATUS_ERROR, 'Route not found');
                 $span->setAttribute('http.status_code', 404);
+                Logger::warning('router.route_not_found', [
+                    'method' => $method,
+                    'uri' => $uri,
+                ]);
                 $this->sendError(404, 'Not Found');
                 return;
             }
@@ -182,11 +187,21 @@ final class Router
 
             $span->setStatus(\OpenTelemetry\API\Trace\StatusCode::STATUS_ERROR, 'Route not found');
             $span->setAttribute('http.status_code', 404);
+            Logger::warning('router.route_not_found', [
+                'method' => $method,
+                'uri' => $uri,
+            ]);
             $this->sendError(404, 'Not Found');
         } catch (\Throwable $e) {
             $span->recordException($e);
             $span->setStatus(\OpenTelemetry\API\Trace\StatusCode::STATUS_ERROR, $e->getMessage());
             $span->setAttribute('http.status_code', 500);
+            Logger::error('router.exception', [
+                'class' => $e::class,
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
             throw $e;
         } finally {
             $scope->detach();
@@ -202,6 +217,10 @@ final class Router
 
             $token = $_SERVER['HTTP_X_CSRF_TOKEN'] ?? $_SERVER['HTTP_X_XSRF_TOKEN'] ?? $_POST['_csrf_token'] ?? null;
             if (!Security::validateCsrfToken($token)) {
+                Logger::warning('router.csrf_failed', [
+                    'method' => $method,
+                    'path' => $_SERVER['REQUEST_URI'] ?? '/',
+                ]);
                 $this->sendError(403, 'Invalid CSRF token');
                 return false;
             }

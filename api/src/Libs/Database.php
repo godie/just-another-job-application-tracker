@@ -8,6 +8,7 @@ use OverPHP\Libs\Drivers\DriverInterface;
 use OverPHP\Libs\Drivers\MysqlDriver;
 use OverPHP\Libs\Drivers\PostgresDriver;
 use OverPHP\Libs\Drivers\SqliteDriver;
+use OverPHP\Core\Logger;
 
 final class Database
 {
@@ -92,12 +93,18 @@ final class Database
             return $this->connection;
         } catch (\PDOException $e) {
             $this->lastError = 'Database connection failed. Please check your configuration and logs.';
-            error_log('Database Connection Error: ' . $e->getMessage());
+            Logger::error('db.connection_failed', [
+                'driver' => $driverName,
+                'error' => $e->getMessage(),
+            ]);
             $this->connection = null;
             return null;
         } catch (\Throwable $e) {
             $this->lastError = 'An unexpected error occurred in the database layer.';
-            error_log('Unexpected Database Error: ' . $e->getMessage());
+            Logger::error('db.unexpected_error', [
+                'driver' => $driverName,
+                'error' => $e->getMessage(),
+            ]);
             $this->connection = null;
             return null;
         }
