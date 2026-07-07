@@ -63,8 +63,8 @@ final class LoggerTest extends TestCase
     public function testFormatIsAlwaysAvailableRegardlessOfEnabledFlag(): void
     {
         // format() has no enabled check; the gating happens in info/warning/
-        // error. Tests of the format don't need to set up the enabled flag.
-        Logger::init(['enabled' => false]);
+        // error. The setUp() already initializes enabled to false, so this
+        // test only needs to verify the format output is stable.
         $line = Logger::format('INFO', 'test.event', ['key' => 'value']);
 
         $this->assertStringContainsString('test.event', $line);
@@ -131,21 +131,16 @@ final class LoggerTest extends TestCase
     public function testInfoIsNoOpWhenDisabled(): void
     {
         // The disabled flag is checked inside info() before the error_log
-        // call. We can't easily capture error_log from a vanilla phpunit run
-        // (see the class docblock), so we verify the gating indirectly: the
-        // enabled flag is false, and the format() method (which is the
-        // only thing the write call would do) is independent of the flag.
+        // call. The only externally-observable "no-op" contract available
+        // from a vanilla phpunit run is "the call does not throw" — the
+        // `error_log` ini setting only affects the syslog handler's
+        // destination, not the message_type=0 write call, so capturing
+        // the actual write from a unit test is not feasible. If the gate
+        // were missing, the call would write to PHP's syslog, which is
+        // harmless in a test environment but would surface in phpunit's
+        // stderr capture.
         Logger::init(['enabled' => false]);
         $this->assertFalse(Logger::isEnabled());
-
-        // The actual call must not throw and must not write to error_log.
-        // We rely on the isEnabled() gate inside info() to short-circuit;
-        // if the gate were missing, the call would write to PHP's syslog,
-        // which is harmless in a test environment but would surface in
-        // phpunit's stderr capture. The format() output below is what
-        // *would* have been written.
         Logger::info('test.event', ['key' => 'value']);
-        $this->assertSame(Logger::format('INFO', 'test.event', ['key' => 'value']), $line = Logger::format('INFO', 'test.event', ['key' => 'value']));
-        $this->assertStringContainsString('test.event', $line);
     }
 }

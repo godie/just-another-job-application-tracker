@@ -1,3 +1,17 @@
+## [2.6.25] - 2026-07-07
+
+### Fixed
+- **`api/tests/Core/LoggerTest.php` NIT cleanups from the v2.6.23 code review** — the prior code-review on the original Logger refactor (shipped in v2.6.23) flagged 3 NITs. The most useful one (replace the reflection-based `setUp` with a `Logger::init(['enabled' => false])` call) was already addressed in v2.6.24 (PR #228). This v2.6.25 PR addresses the 2 remaining NITs:
+  - **Tautological `assertSame(X, X)` removed from `testInfoIsNoopWhenDisabled`** — the assertion was a leftover from the v2.6.24 refactor (the original test probably tried to capture `error_log()` output; the refactor replaced it with a self-asserting no-op where the expected and actual arguments were the same `Logger::format()` call). The test now just verifies the `info()` call does not throw when disabled (the only externally-observable no-op contract available from a vanilla phpunit run; the `error_log` ini setting only affects the syslog handler destination, not the message_type=0 write call, so capturing the actual write from a unit test is not feasible).
+  - **Redundant `Logger::init(['enabled' => false])` removed from `testFormatIsAlwaysAvailableRegardlessOfEnabledFlag`** — the `setUp()` already initializes enabled to false. The test comment now notes the setUp handles it, so the in-test init call was duplicative.
+
+### Notes
+- **Why PATCH not MINOR** — the change is a test-code cleanup (NIT fixes from the v2.6.23 code review). No behavior change, no API surface, no source-code change outside the test file. AGENTS.md SemVer PATCH guidance applies.
+- **Slot math** — `2.6.24` was sealed on `origin/main@8bdb09a2` by PR #228 (the `Logger::format()` public-method exposure + test rewrite). This PR claims the next free slot: `2.6.25`. No concurrent open PRs require a skip-ahead at this time.
+- **What was the 3rd NIT (the reflection-based `setUp`)** — flagged in the v2.6.23 code review; addressed in v2.6.24 (PR #228) by replacing the reflection-based reset with `Logger::init(['enabled' => false])`. No further action needed.
+- **`package.json`** — bumped 2.6.24 -> 2.6.25 per AGENTS.md Versioning rule; `package-lock.json` root stamp regenerated (+2/-2).
+- **Validation evidence** (2 checks, all exit 0): `cd api && vendor/bin/phpunit --configuration phpunit.xml --filter LoggerTest` (11 tests, 22 assertions, all pass) + `cd api && vendor/bin/phpunit --configuration phpunit.xml` (full suite, 66 tests, 223 assertions, no regressions).
+
 ## [2.6.24] - 2026-07-07
 
 ### Fixed
