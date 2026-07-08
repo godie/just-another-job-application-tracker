@@ -43,6 +43,7 @@
   },
   "scripts": {
     "test": "phpunit --configuration phpunit.xml",
+    "test:smoke": "phpunit --configuration phpunit.xml --group smoke",
     "phinx": "vendor/bin/phinx -c ../phinx.php"
   },
   "config": {
