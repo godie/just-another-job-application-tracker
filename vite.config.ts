@@ -4,6 +4,96 @@ import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { VitePWA } from 'vite-plugin-pwa'
 import path from 'path'
+import crypto from 'node:crypto'
+
+/**
+ * v2.6.35 CSP nonce plugin.
+ *
+ * Generates a per-build (production) or per-request (dev) nonce, then:
+ *   1. Adds `data-csp-nonce="<value>"` to `<html>` so runtime code
+ *      (`SEOManager.ts`) can read it and add it to dynamically-injected
+ *      inline scripts (e.g. JSON-LD).
+ *   2. Replaces `'unsafe-inline'` in the meta tag's `script-src` with
+ *      `'nonce-<value>'`, removing the loose source for production.
+ *   3. Adds `nonce="<value>"` to the 2 static inline scripts in
+ *      `index.html` (theme-pre-mount IIFE + Speculation Rules JSON).
+ *
+ * Why this exists: the runtime JSON-LD injection in `SEOManager.ts`
+ * (`upsertJsonLd`) is page-specific and cannot be pre-hashed. Without
+ * `'unsafe-inline'` AND without a nonce, the JSON-LD scripts would be
+ * blocked by CSP. A nonce is the only W3C-compliant way to allow
+ * dynamic inline scripts without loosening the policy.
+ *
+ * Per-build in production (the hook runs once during `vite build`,
+ * the nonce is baked into the static HTML). Per-request in dev
+ * (the hook runs on every page load, the nonce rotates on every
+ * request — defense against nonce-reuse attacks).
+ *
+ * The dev server's CSP (set by the `security-headers` plugin below)
+ * still uses `'unsafe-inline'` because Vite HMR + React Refresh
+ * inject inline scripts that change on every dev save and cannot
+ * be nonced. The nonce flow is only for the meta tag (production
+ * primary CSP); the dev server's HTTP header CSP keeps `'unsafe-inline'`
+ * for HMR compatibility.
+ */
+function cspNoncePlugin(): import('vite').Plugin {
+  return {
+    name: 'csp-nonce',
+    transformIndexHtml: {
+      order: 'pre',
+      handler(html) {
+        const nonce = crypto.randomBytes(16).toString('base64')
+
+        // 1. Add nonce to <html> as data-csp-nonce (so runtime can read it).
+        //    Inject right after `<html ` so the attribute is on the same
+        //    line as the existing lang="en" attribute.
+        let updated = html.replace(
+          /<html /,
+          `<html data-csp-nonce="${nonce}" `,
+        )
+
+        // 2. Replace 'unsafe-inline' in the meta tag's script-src with the
+        //    nonce. The meta tag's script-src value is parsed as a single
+        //    regex match on the full content attribute, then the
+        //    script-src portion is rewritten to swap 'unsafe-inline' for
+        //    'nonce-<value>'. Other directives are preserved verbatim.
+        updated = updated.replace(
+          /<meta http-equiv="Content-Security-Policy" content="([^"]*)"/,
+          (_match, content) => {
+            const newContent = content.replace(
+              /(script-src )([^;]+)/,
+              (_scriptMatch: string, prefix: string, sources: string) => {
+                // Replace 'unsafe-inline' with 'nonce-<value>' in the
+                // script-src source list. Other sources (e.g. 'self',
+                // https://accounts.google.com) are preserved.
+                const newSources = sources.replace(
+                  /'unsafe-inline'/,
+                  `'nonce-${nonce}'`,
+                )
+                return prefix + newSources
+              },
+            )
+            return `<meta http-equiv="Content-Security-Policy" content="${newContent}"`
+          },
+        )
+
+        // 3. Add nonce to the 2 static inline scripts. Two regex passes
+        //    because the Speculation Rules script has a type= attribute
+        //    (which would not match the bare `<script>` regex).
+        updated = updated.replace(
+          /<script>/g,
+          `<script nonce="${nonce}">`,
+        )
+        updated = updated.replace(
+          /<script type="speculationrules">/g,
+          `<script type="speculationrules" nonce="${nonce}">`,
+        )
+
+        return updated
+      },
+    },
+  }
+}
 
 const apiProxyTarget = process.env.VITE_API_PROXY_TARGET || 'http://localhost:8080'
 
@@ -24,6 +114,7 @@ export default defineConfig({
     },
   },
   plugins: [
+    cspNoncePlugin(),
     react(),
     tailwindcss(),
     VitePWA({
