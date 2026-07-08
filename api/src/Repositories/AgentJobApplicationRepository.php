@@ -46,7 +46,7 @@ class AgentJobApplicationRepository
     {
         $data = $application->toDatabase();
         $columns = implode(', ', array_keys($data));
-        $placeholders = implode(', ', array_map(fn ($k) => ":$k", array_keys($data)));
+        $placeholders = implode(', ', array_map(fn (int|string $k): string => ":$k", array_keys($data)));
 
         $sql = "INSERT INTO agent_job_applications ($columns) VALUES ($placeholders)";
         $stmt = $this->db->prepare($sql);

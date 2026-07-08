@@ -52,7 +52,7 @@ class UserRepository
     {
         $data = $user->toDatabase();
         $columns = implode(', ', array_keys($data));
-        $placeholders = implode(', ', array_map(fn($k) => ":$k", array_keys($data)));
+        $placeholders = implode(', ', array_map(fn(int|string $k): string => ":$k", array_keys($data)));
 
         $sql = "INSERT INTO users ($columns) VALUES ($placeholders)";
         $stmt = $this->db->prepare($sql);

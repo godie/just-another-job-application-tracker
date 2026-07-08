@@ -80,7 +80,7 @@ on:
 
 jobs:
   quality-gate:
-    name: PHPStan + PHPUnit
+    name: PHPStan + PHPUnit + Rector
     runs-on: ubuntu-latest
     # 10 min safety margin. Composer install is normally 30-60 s on a
     # cold cache; phpstan 5-10 s; phpunit 5-15 s. 10 min is the
@@ -137,3 +137,22 @@ jobs:
         # dynamic-call-site safety net for future refactors.
         working-directory: api
         run: vendor/bin/phpunit --configuration phpunit.xml
+
+      - name: Run Rector dry-run (Phase 8+)
+        # Phase 8 ships `rector/rector: ^2` in api/composer.json
+        # `require-dev`. The gate runs Rector in `--dry-run` mode so
+        # any pending refactor (drift like the Phase 0 typed-closure
+        # residue fixed in this same Phase 8 commit at
+        # api/src/Repositories/AgentJobApplicationRepository.php
+        # line 49: `fn ($k) => ":$k"` -> `fn (int|string $k): string => ":$k"`)
+        # blocks the workflow with exit code 2 before landing on
+        # main. Uses the comprehensive `api/rector.php` config
+        # (src/ + tests/). `api/rector-pass-tests.php` is
+        # committed as a developer-tool for scoped local refactoring
+        # but NOT invoked here. Flags chosen for terse CI logs:
+        # --no-progress-bar strips the per-file spinner;
+        # --no-ansi keeps diff blocks monochrome in the GH Actions
+        # log viewer; --memory-limit=512M matches the dev-loop
+        # invocation that produced the Phase 3 baseline.
+        working-directory: api
+        run: vendor/bin/rector process --dry-run --config=rector.php --no-progress-bar --no-ansi --memory-limit=512M

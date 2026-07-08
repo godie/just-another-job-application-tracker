@@ -101,7 +101,7 @@ class Opportunity
             'is_deleted' => $this->isDeleted ? 1 : 0,
         ];
 
-        return array_filter($data, fn($value) => $value !== null);
+        return array_filter($data, fn(int|string|null $value): bool => $value !== null);
     }
 
     /**

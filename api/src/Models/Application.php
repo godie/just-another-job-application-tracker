@@ -126,7 +126,7 @@ class Application
             "is_deleted" => $this->isDeleted ? 1 : 0,
         ];
 
-        return array_filter($data, fn($value) => $value !== null);
+        return array_filter($data, fn(string|int|null|false $value): bool => $value !== null);
     }
 
     public function toArray(): array
@@ -149,7 +149,7 @@ class Application
             "followUpDate" => $this->followUpDate,
             "customFields" => $this->customFields,
             "timeline" => array_map(
-                fn(InterviewEvent $event) => $event->toArray(),
+                fn(InterviewEvent $event): array => $event->toArray(),
                 $this->timeline,
             ),
             "lastUpdate" => $this->lastUpdate,
