@@ -327,6 +327,24 @@ If a CI timeout starts firing routinely (e.g., the `Test` job caps at 15 min thr
 
 The `scripts/check-yml-timeouts.sh` gate is the regression guard: any new `jobs:` block added without a `timeout-minutes:` cap will fail the PR-open check. The gate is wired into the `secrets:` job's pre-merge check layer so it runs on every PR. If a future workflow file's job block does not match the gate's parsing assumptions (e.g., unusual YAML style or a non-standard job declaration form), the gate will produce a false negative — fix the gate, not the workflow file.
 
+### CI Deadlock Fix (v2.6.35): reusable-workflow concurrency scoping
+
+**The problem.** The v2.6.33 `concurrency.cancel-in-progress: true` hardening applied the same `group: ${{ github.workflow }}-${{ github.ref }}` key to all workflow files, including the reusable `composer-validate.yml`. When a caller workflow (`pull-request.yml` or `deploy.yml`) invokes the reusable workflow via `uses:`, GitHub Actions evaluates `github.workflow` in the **caller's** context — so the reusable workflow gets the same concurrency group as the parent. The engine then deadlocks: the parent holds the concurrency lock while waiting for the child to complete, but the child is queued behind the parent's own lock.
+
+**The fix.** `composer-validate.yml`'s concurrency group gains a `-composer-validate` suffix, scoping it independently of its callers:
+
+```yaml
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-composer-validate
+  cancel-in-progress: true
+```
+
+This preserves the desired behavior: the reusable workflow cancels its own in-flight runs on new commits, but does NOT share a concurrency group with the parent — so both can run concurrently. The `scripts/check-yml-concurrency.sh` gate is unaffected: it only validates the **presence** of `concurrency:` and `cancel-in-progress: true`, not the specific group value.
+
+**Why this is safe.** The `-composer-validate` suffix ensures the reusable workflow's concurrency group is distinct from any caller. When `pull-request.yml` calls `composer-validate.yml`, the caller's group is `Pull Request-refs/pull/X/merge` while the reusable workflow's group is `Pull Request-refs/pull/X/merge-composer-validate` — no conflict. When `deploy.yml` calls `composer-validate.yml`, the caller's group is `Deploy-refs/heads/main` while the reusable workflow's group is `Deploy-refs/heads/main-composer-validate` — no conflict. A deploy-time `composer-validate` still does NOT cancel a PR-time `composer-validate` (and vice versa), because the groups differ by ref.
+
+**Future-proofing.** Any new reusable workflow added to the repo that includes a `concurrency:` block MUST use a group key with a unique suffix (matching the workflow name) to avoid reintroducing this deadlock. The `scripts/check-yml-concurrency.sh` gate does not enforce this by design (it validates presence, not the specific group value), so the suffix convention is a human-enforced rule documented here.
+
 ## Specialized Agents
 
 ### 🕵️ Colector (Collector)

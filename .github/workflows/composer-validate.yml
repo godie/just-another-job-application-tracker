@@ -53,17 +53,22 @@ on:
         type: string
         default: 'api'
 
-# v2.6.33 CI RACE: extend the v2.6.29 `concurrency.cancel-in-progress: true`
-# hardening to the composer-validate reusable workflow. Because this is a
-# `workflow_call:` trigger, `github.workflow` and `github.ref` are evaluated
-# in the CALLER's context — so the group key correctly scopes each call
-# independently. `pull-request.yml` (PR #1) and `deploy.yml` (main push)
-# calling this workflow produce different groups, so a slow PR call does
-# NOT cancel an in-flight deploy-time call and vice versa. Cancels
-# in-flight calls of the same caller+ref when a new commit arrives. See
-# AGENTS.md "CI Race Playbook".
+# v2.6.35 DEADLOCK FIX: the v2.6.33 concurrency block shared the same
+# `${{ github.workflow }}-${{ github.ref }}` group key as the caller
+# workflows (`pull-request.yml`, `deploy.yml`). Because GitHub Actions
+# evaluates `github.workflow` in the CALLER's context when this reusable
+# workflow is invoked via `workflow_call`, both parent and child get the
+# same group. The engine then deadlocks: the parent holds the group while
+# waiting for the child, but the child is queued behind the parent's lock.
+#
+# FIX: the `-composer-validate` suffix scopes this workflow's concurrency
+# group independently of its callers. The reusable workflow can now run
+# concurrently with its parent (each scoped to its own group), while still
+# cancelling its own in-flight runs when a new commit arrives. The
+# `cancel-in-progress: true` remains — it cancels only this workflow's
+# stale runs, not the caller's. See AGENTS.md "CI Deadlock Fix (v2.6.35)".
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}-composer-validate
   cancel-in-progress: true
 
 jobs:
