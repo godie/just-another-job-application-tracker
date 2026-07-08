@@ -242,10 +242,15 @@ jobs:
           # server's `php -v` output and fails the deploy if the version
           # is below 8.4.1. See DOCS/PRODUCTION_PHP_UPGRADE.md (v2.6.27)
           # for the operator-facing upgrade procedure.
-          PHP_VER=$(ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -p ${REMOTE_PORT} ${REMOTE_USER}@${REMOTE_HOST} "php -v" | head -1 | sed -E 's/^PHP ([0-9]+\.[0-9]+\.[0-9]+).*/\1/')
+          # Use php-8.4 explicitly because non-interactive SSH sessions
+          # (GitHub Actions runner) do NOT load .bash_profile, so bare
+          # `php` resolves to the system default (8.2) even after the
+          # operator upgrades the server via the DreamHost panel + .bash_profile.
+          # DreamHost provides per-version binaries at /usr/local/bin/php-X.Y.
+          PHP_VER=$(ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -p ${REMOTE_PORT} ${REMOTE_USER}@${REMOTE_HOST} "php-8.4 -v" | head -1 | sed -E 's/^PHP ([0-9]+\.[0-9]+\.[0-9]+).*/\1/')
           REQUIRED='8.4.1'
           if [ -z "$PHP_VER" ]; then
-            echo "::error::Could not detect PHP version on the production server (php -v returned no parseable version). The codebase requires PHP ${REQUIRED} or newer per the v2.6.19 PRODUCTION SERVER UPGRADE GATE. See DOCS/PRODUCTION_PHP_UPGRADE.md for the upgrade procedure."
+            echo "::error::Could not detect PHP version on the production server (php-8.4 -v returned no parseable version; is PHP 8.4 installed?). The codebase requires PHP ${REQUIRED} or newer per the v2.6.19 PRODUCTION SERVER UPGRADE GATE. See DOCS/PRODUCTION_PHP_UPGRADE.md for the upgrade procedure."
             exit 1
           fi
           if [ "$(printf '%s\n' "$PHP_VER" "$REQUIRED" | sort -V | head -1)" != "$REQUIRED" ]; then
