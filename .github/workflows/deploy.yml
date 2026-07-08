@@ -297,7 +297,6 @@ jobs:
     # both exempt `uses:` callers for the same reason; see AGENTS.md "CI
     # Race Playbook".
     with:
-    with:
       # php-version MUST stay in lock-step with the deploy workflow's main
       # job (line ~29: shivammathur/setup-php@2.37.2 php-version: "8.4").
       # composer-validate.yml's own comment enforces the same invariant.
