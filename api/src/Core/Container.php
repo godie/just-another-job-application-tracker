@@ -79,9 +79,14 @@ final class Container
     /**
      * Instantiate a concrete instance of the given type.
      *
+     * Note: \Closure is absent from the native signature because PHP 8.4
+     * rejects object-subtype redundancies in union types (\Closure is
+     * itself an object subtype). PHPDoc preserves the intent; the
+     * is_object() guard below returns Closures unchanged.
+     *
      * @param string|object|\Closure $concrete
      */
-    private function build(string|object|\Closure $concrete): object
+    private function build(string|object $concrete): object
     {
         if (is_object($concrete)) {
             return $concrete;
