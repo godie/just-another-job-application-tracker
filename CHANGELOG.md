@@ -1,3 +1,16 @@
+## [2.6.36] - 2026-07-08
+
+### Removed
+- **Redundant `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24` env var** (`pull-request.yml`, `deploy.yml`, `cve-lite.yml`, `code-audit.yml`) — as of June 16, 2026, GitHub Actions runners default to Node 24. This opt-in env var was needed before that date to force Node 24; it is now dead config.
+
+### Changed
+- **Bumped `actions/checkout@v4` → `@v5`** across all 8 workflow files (13 occurrences) — v4 uses Node 20 runtime (deprecated); v5 uses Node 24.
+- **Bumped `actions/setup-node@v4` → `@v5`** across 4 workflow files (7 occurrences) — same Node 20 → 24 migration.
+
+### Validation
+- Both `check-yml-concurrency.sh --ci` and `check-yml-timeouts.sh --ci` pass on all 9 workflow files.
+- Zero remaining `actions/checkout@v4`, `actions/setup-node@v4`, or `FORCE_JAVASCRIPT_ACTIONS_TO_NODE24` references confirmed via code search.
+
 ## [2.6.35] - 2026-07-07
 
 ### Security
