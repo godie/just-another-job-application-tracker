@@ -217,7 +217,7 @@ class AppAuthController
             email: $googleUser['email'],
             oauthId: $googleUser['sub'],
             updateId: [$this->userRepo, 'updateGoogleId'],
-            createUser: fn () => User::fromGoogle($googleUser),
+            createUser: fn (): User => User::fromGoogle($googleUser),
             successMessage: 'Google login successful'
         );
     }
@@ -292,7 +292,7 @@ class AppAuthController
             email: $linkedinUser['email'],
             oauthId: $linkedinUser['sub'],
             updateId: [$this->userRepo, 'updateLinkedInId'],
-            createUser: fn () => User::fromLinkedIn($linkedinUser),
+            createUser: fn (): User => User::fromLinkedIn($linkedinUser),
             successMessage: 'LinkedIn login successful'
         );
     }

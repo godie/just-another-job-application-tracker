@@ -168,7 +168,7 @@ class AgentJobApplicationController
 
         return Response::json([
             'success' => true,
-            'data' => array_map(fn ($item) => $item->toArray(), $result['items']),
+            'data' => array_map(fn (AgentJobApplication $item): array => $item->toArray(), $result['items']),
             'meta' => [
                 'total' => $result['total'],
                 'limit' => $filters['limit'] ?? 50,

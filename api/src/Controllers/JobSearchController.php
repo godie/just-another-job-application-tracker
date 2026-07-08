@@ -431,7 +431,7 @@ class JobSearchController
                 'page' => (string) $page,
                 'results_per_page' => $pageSize,
             ];
-            $queryString = http_build_query(array_filter($cjParams, fn($v) => $v !== ''));
+            $queryString = http_build_query(array_filter($cjParams, fn($v): bool => $v !== ''));
             $ch = curl_init("https://search.api.careerjet.net/v4/query?{$queryString}");
             curl_setopt_array($ch, [
                 CURLOPT_RETURNTRANSFER => true,

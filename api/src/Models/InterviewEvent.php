@@ -74,7 +74,7 @@ class InterviewEvent
             "interviewer_name" => $this->interviewerName,
         ];
 
-        return array_filter($data, fn($value) => $value !== null);
+        return array_filter($data, fn(int|string|null $value): bool => $value !== null);
     }
 
     /**
