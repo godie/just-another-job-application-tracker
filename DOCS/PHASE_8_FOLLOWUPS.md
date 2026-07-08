@@ -45,10 +45,10 @@ silent-apply defense rationale.
 ## Forward-looking (Phase 8.1 candidates)
 
 These items would extend the Phase 8 follow-up pattern to additional
-defense layers. Listed in priority order (highest impact first); items
-1-4 are local heuristic extensions to the existing pre-push hook, and
-item 5 is a new pre-push check for `composer.json` / `composer.lock`
-drift.
+defense layers. Listed in priority order (highest impact first). Items
+1, 2, 5 are pre-push check extensions (new heuristics that run on
+staged files); items 3, 4 are hook meta-changes (behavior or
+location).
 
 1. **Suppression-directive rationale check** — extend the pre-push
    hook to detect new `@phpstan-ignore` / `eslint-disable` /
