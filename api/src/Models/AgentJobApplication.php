@@ -253,7 +253,6 @@ class AgentJobApplication
     /**
      * Normalize technologies array: lowercase, trim, deduplicate
      *
-     * @param mixed $technologies
      * @return string[]
      */
     private static function normalizeTechnologies(mixed $technologies): array

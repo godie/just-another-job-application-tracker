@@ -97,7 +97,6 @@ class RateLimiter
      * Build a standardized 429 error response array.
      *
      * @param array{retryAfter: int, limit: int, windowSeconds: int} $rateLimitInfo
-     * @return array
      */
     public static function buildRateLimitError(array $rateLimitInfo): array
     {

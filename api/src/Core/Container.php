@@ -31,9 +31,7 @@ final class Container
     /**
      * Register a binding.
      *
-     * @param string $abstract
      * @param callable|string|object $concrete
-     * @param bool $shared
      */
     public function bind(string $abstract, mixed $concrete, bool $shared = false): void
     {

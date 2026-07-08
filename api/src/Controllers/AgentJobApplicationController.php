@@ -171,8 +171,8 @@ class AgentJobApplicationController
             'data' => array_map(fn ($item) => $item->toArray(), $result['items']),
             'meta' => [
                 'total' => $result['total'],
-                'limit' => (int) ($filters['limit'] ?? 50),
-                'offset' => (int) ($filters['offset'] ?? 0),
+                'limit' => $filters['limit'] ?? 50,
+                'offset' => $filters['offset'] ?? 0,
             ],
         ]);
     }

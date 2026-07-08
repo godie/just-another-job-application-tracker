@@ -105,14 +105,12 @@ class InterviewEvent
             id: $data["id"] ?? null,
             applicationId: $applicationId,
             userId: $userId,
-            organizationId: null,
             type: $data["type"] ?? "application_submitted",
             customTypeName: $data["customTypeName"] ?? null,
             date: $data["date"] ?? date("Y-m-d H:i:s"),
             status: $data["status"] ?? "pending",
             notes: $data["notes"] ?? null,
             interviewerName: $data["interviewerName"] ?? null,
-            createdAt: null,
         );
     }
 

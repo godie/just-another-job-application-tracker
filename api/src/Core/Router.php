@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace OverPHP\Core;
 
+use OpenTelemetry\API\Trace\Propagation\TraceContextPropagator;
+use OpenTelemetry\API\Trace\StatusCode;
 use OverPHP\Telemetry\LogfireTelemetry;
 use OverPHP\Core\Logger;
 use OpenTelemetry\Context\Context;
@@ -115,7 +117,7 @@ final class Router
         $traceparent = $_SERVER['HTTP_TRACEPARENT'] ?? '';
         $parentContext = Context::getRoot();
         if ($traceparent !== '') {
-            $parentContext = \OpenTelemetry\API\Trace\Propagation\TraceContextPropagator::getDefault()
+            $parentContext = TraceContextPropagator::getDefault()
                 ->extract(['traceparent' => $traceparent]);
         }
 
@@ -149,7 +151,7 @@ final class Router
             }
 
             if (!isset($this->routes[$method])) {
-                $span->setStatus(\OpenTelemetry\API\Trace\StatusCode::STATUS_ERROR, 'Route not found');
+                $span->setStatus(StatusCode::STATUS_ERROR, 'Route not found');
                 $span->setAttribute('http.status_code', 404);
                 Logger::warning('router.route_not_found', [
                     'method' => $method,
@@ -185,7 +187,7 @@ final class Router
                 return;
             }
 
-            $span->setStatus(\OpenTelemetry\API\Trace\StatusCode::STATUS_ERROR, 'Route not found');
+            $span->setStatus(StatusCode::STATUS_ERROR, 'Route not found');
             $span->setAttribute('http.status_code', 404);
             Logger::warning('router.route_not_found', [
                 'method' => $method,
@@ -194,7 +196,7 @@ final class Router
             $this->sendError(404, 'Not Found');
         } catch (\Throwable $e) {
             $span->recordException($e);
-            $span->setStatus(\OpenTelemetry\API\Trace\StatusCode::STATUS_ERROR, $e->getMessage());
+            $span->setStatus(StatusCode::STATUS_ERROR, $e->getMessage());
             $span->setAttribute('http.status_code', 500);
             Logger::error('router.exception', [
                 'class' => $e::class,

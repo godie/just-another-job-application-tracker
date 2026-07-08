@@ -88,11 +88,7 @@ class AppAuthController
         $passwordHash = User::hashPassword($password);
         $user = User::create(
             email: $email,
-            organizationId: null,
             passwordHash: $passwordHash,
-            linkedinId: null,
-            googleId: null,
-            username: null,
             displayName: is_string($displayName) && $displayName !== '' ? $displayName : null,
             role: 'member'
         );

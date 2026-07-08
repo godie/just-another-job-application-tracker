@@ -122,7 +122,7 @@ class JobSearchController
             [$allResults, $errors] = $this->fetchAllSources($keywords, $location, $remoteOnly, $techStack, $page, $pageSize);
             $totalCount = count($allResults);
         } elseif ($queryJooble) {
-            [$joobleResults, $joobleErr] = $this->fetchJooble($keywords, $location, $remoteOnly, $page, $pageSize);
+            [$joobleResults, $joobleErr] = $this->fetchJooble($keywords, $location, $remoteOnly, $page);
             if ($joobleErr !== null) {
                 $errors[] = $joobleErr;
             }
@@ -192,7 +192,7 @@ class JobSearchController
         int $pageSize
     ): array {
         // Careerjet uses country code in URL path. Default to 'es' (Spain) for LatAm coverage.
-        $countryCode = $this->locationToCountryCode($location) ?: 'es';
+        $this->locationToCountryCode($location) ?: 'es';
 
         $params = [
             'affid' => $this->careerjetAffid,
@@ -273,8 +273,7 @@ class JobSearchController
         string $keywords,
         string $location,
         bool $remoteOnly,
-        int $page,
-        int $pageSize
+        int $page
     ): array {
         $body = ['keywords' => $keywords, 'page' => (string) $page];
         if ($location !== '') {
@@ -332,7 +331,7 @@ class JobSearchController
     ): array {
         if (!function_exists('curl_multi_init')) {
             // Fallback to sequential
-            [$joobleResults, $joobleErr] = $this->fetchJooble($keywords, $location, $remoteOnly, $page, $pageSize);
+            [$joobleResults, $joobleErr] = $this->fetchJooble($keywords, $location, $remoteOnly, $page);
             [$tsResults, $tsErr] = $this->fetchTheirstack($keywords, $location, $remoteOnly, $techStack, $page, $pageSize);
             [$azResults, $azErr] = $this->fetchAdzuna($keywords, $location, $remoteOnly, $page, $pageSize);
             [$cjResults, $cjErr] = $this->fetchCareerjet($keywords, $location, $remoteOnly, $page, $pageSize);
@@ -739,167 +738,6 @@ class JobSearchController
         }, $jobs);
 
         return [$results, null];
-    }
-
-    // ────────────────────────────────────────────
-    //  Parallel fetcher (curl_multi_exec)
-    // ────────────────────────────────────────────
-
-    /**
-     * Fetch both Jooble and TheirStack in parallel using curl_multi.
-     * Falls back to sequential if curl_multi is unavailable.
-     *
-     * @return array{0: array, 1: array}  [merged results, errors]
-     */
-    private function fetchBothSources(
-        string $keywords,
-        string $location,
-        bool $remoteOnly,
-        array $techStack,
-        int $page,
-        int $pageSize
-    ): array {
-        if (!function_exists('curl_multi_init')) {
-            // Fallback to sequential
-            [$joobleResults, $joobleErr] = $this->fetchJooble($keywords, $location, $remoteOnly, $page, $pageSize);
-            [$tsResults, $tsErr] = $this->fetchTheirstack($keywords, $location, $remoteOnly, $techStack, $page, $pageSize);
-            $errors = [];
-            if ($joobleErr !== null) { $errors[] = $joobleErr; }
-            if ($tsErr !== null) { $errors[] = $tsErr; }
-            return [array_merge($joobleResults, $tsResults), $errors];
-        }
-
-        // Build Jooble request
-        $joobleBody = ['keywords' => $keywords, 'page' => (string) $page];
-        if ($location !== '') { $joobleBody['location'] = $location; }
-        if ($remoteOnly) { $joobleBody['location'] = trim(($joobleBody['location'] ?? '') . ' remote'); }
-        $joobleUrl = 'https://jooble.org/api/' . $this->joobleApiKey;
-        $joobleJson = json_encode($joobleBody);
-
-        // Build TheirStack request
-        $tsBody = [
-            'page' => $page - 1,
-            'limit' => $pageSize,
-            'job_title_or' => [$keywords],  // Full phrase
-            'order_by' => [['field' => 'date_posted', 'desc' => true]],
-            'posted_at_max_age_days' => 30,
-        ];
-        $countryCode = $this->locationToCountryCode($location);
-        if ($countryCode !== null) { $tsBody['job_country_code_or'] = [$countryCode]; }
-        if ($remoteOnly) { $tsBody['remote'] = true; }
-        if (count($techStack) > 0) { $tsBody['technology_slug_or'] = $techStack; }
-        $tsUrl = 'https://api.theirstack.com/v1/jobs/search';
-        $tsJson = json_encode($tsBody);
-
-        if ($joobleJson === false || $tsJson === false) {
-            return [[], [['source' => 'proxy', 'message' => 'Failed to encode request body']]];
-        }
-
-        $mh = curl_multi_init();
-
-        // Jooble handle
-        $chJooble = curl_init($joobleUrl);
-        curl_setopt_array($chJooble, [
-            CURLOPT_POST => true,
-            CURLOPT_POSTFIELDS => $joobleJson,
-            CURLOPT_HTTPHEADER => ['Content-Type: application/json'],
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_TIMEOUT => 5,
-        ]);
-        curl_multi_add_handle($mh, $chJooble);
-
-        // TheirStack handle
-        $chTs = curl_init($tsUrl);
-        curl_setopt_array($chTs, [
-            CURLOPT_POST => true,
-            CURLOPT_POSTFIELDS => $tsJson,
-            CURLOPT_HTTPHEADER => [
-                'Content-Type: application/json',
-                'Authorization: Bearer ' . $this->theirstackApiKey,
-                'Accept: application/json',
-            ],
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_TIMEOUT => 5,
-        ]);
-        curl_multi_add_handle($mh, $chTs);
-
-        // Execute parallel
-        $running = 0;
-        do {
-            curl_multi_exec($mh, $running);
-            curl_multi_select($mh, 1);
-        } while ($running > 0);
-
-        $joobleRaw = curl_multi_getcontent($chJooble);
-        $tsRaw = curl_multi_getcontent($chTs);
-
-        curl_multi_remove_handle($mh, $chJooble);
-        curl_multi_remove_handle($mh, $chTs);
-        curl_multi_close($mh);
-        curl_close($chJooble);
-        curl_close($chTs);
-
-        // Parse results
-        $results = [];
-        $errors = [];
-
-        if ($joobleRaw !== false) {
-            $joobleData = json_decode($joobleRaw, true);
-            if (is_array($joobleData) && isset($joobleData['jobs'])) {
-                foreach ($joobleData['jobs'] as $job) {
-                    $url = is_string($job['link'] ?? null) ? $job['link'] : '';
-                    $loc = is_string($job['location'] ?? null) ? $job['location'] : null;
-                    $results[] = [
-                        'id' => $this->hashId('jooble', $url),
-                        'position' => is_string($job['title'] ?? null) ? $job['title'] : 'Unknown Position',
-                        'company' => is_string($job['company'] ?? null) ? $job['company'] : 'Unknown Company',
-                        'location' => $loc,
-                        'remote' => $this->isRemote($loc ?? ''),
-                        'salary' => is_string($job['salary'] ?? null) ? $job['salary'] : null,
-                        'description' => $this->truncate(is_string($job['snippet'] ?? null) ? $job['snippet'] : null, 1000),
-                        'url' => $url,
-                        'postedDate' => is_string($job['updated'] ?? null) ? $job['updated'] : null,
-                        'source' => 'jooble',
-                        'techStack' => [],
-                    ];
-                }
-            } else {
-                $errors[] = ['source' => 'jooble', 'message' => 'Jooble API unavailable'];
-            }
-        } else {
-            $errors[] = ['source' => 'jooble', 'message' => 'Jooble API unavailable'];
-        }
-
-        if ($tsRaw !== false) {
-            $tsData = json_decode($tsRaw, true);
-            if (is_array($tsData) && isset($tsData['data'])) {
-                $tsJobs = is_array($tsData['data']) ? $tsData['data'] : [];
-                foreach ($tsJobs as $job) {
-                    $url = is_string($job['url'] ?? null) ? $job['url'] : '';
-                    $loc = is_string($job['location'] ?? null) ? $job['location'] : null;
-                    $tech = is_array($job['technology_slugs'] ?? null) ? $job['technology_slugs'] : [];
-                    $results[] = [
-                        'id' => $this->hashId('theirstack', $url),
-                        'position' => is_string($job['job_title'] ?? $job['title'] ?? null) ? ($job['job_title'] ?? $job['title']) : 'Unknown Position',
-                        'company' => is_string($job['company_name'] ?? $job['company'] ?? null) ? ($job['company_name'] ?? $job['company']) : 'Unknown Company',
-                        'location' => $loc,
-                        'remote' => $this->isRemote($loc ?? '') || ($job['remote'] ?? false) === true,
-                        'salary' => is_string($job['salary'] ?? null) ? $job['salary'] : null,
-                        'description' => $this->truncate(is_string($job['description'] ?? $job['snippet'] ?? null) ? ($job['description'] ?? $job['snippet']) : null, 1000),
-                        'url' => $url,
-                        'postedDate' => is_string($job['date_posted'] ?? null) ? $job['date_posted'] : null,
-                        'source' => 'theirstack',
-                        'techStack' => array_slice($tech, 0, 10),
-                    ];
-                }
-            } else {
-                $errors[] = ['source' => 'theirstack', 'message' => 'TheirStack API unavailable'];
-            }
-        } else {
-            $errors[] = ['source' => 'theirstack', 'message' => 'TheirStack API unavailable'];
-        }
-
-        return [$results, $errors];
     }
 
     // ────────────────────────────────────────────
