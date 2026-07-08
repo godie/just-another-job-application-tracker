@@ -12,6 +12,10 @@
 - `public/.htaccess`: REVERTED to use `'unsafe-inline'` in `script-src` (removed the 2 SHA-256 hashes that were added in the prior step). The `'unsafe-inline'` is a permissive fallback for the runtime JSON-LD injection; the meta tag's nonce is the effective policy.
 - `index.html`: the 50-line CSP HTML comment is updated to document the v2.6.35 hybrid design (nonce-based meta tag via Vite plugin, `'unsafe-inline'` fallback in `.htaccess`, effective policy is nonce-based strict, AND-logic explanation, why the dev server keeps `'unsafe-inline'`).
 
+### Added (follow-up commits on the feat/ci-gate-and-bodyformat-split branch)
+
+- **Pre-push hook silent-apply defense + dev-loop workflow doc + Phase 8 follow-up list** (`scripts/install-pre-push-hook.sh` + `dev-loop.md` + `DOCS/PHASE_8_FOLLOWUPS.md` + this CHANGELOG entry) — extends the existing pre-push hook (drift detector only) with a Layer 2 silent-apply defense: `php -l` on every staged `.php` file, warn on syntax errors. Defends against the b4e3ef0 incident class (a `str_replace` edit silently dropped the trailing `;` from `api/rector.php`'s return statement; the missing `;` was caught only after PHPStan re-ran the next day). The hook is local + advisory (warn-only, exit 0); the CI quality-gate workflow remains the authoritative layer. Adds 2 new docs as the entry-point for the dev-loop workflow (`dev-loop.md`) and the Phase 8 follow-up enumeration (`DOCS/PHASE_8_FOLLOWUPS.md` — 6 completed follow-ups + this silent-apply defense + 5 forward-looking Phase 8.1 candidates). The `scripts/install-pre-push-hook.sh` installer is tracked alongside the new hook content. Per the per-PR version rule, no version bump (this is a follow-up commit on the same branch at 2.6.35).
+
 ### Closes
 - v2.6.32 deferred followup: SHA-256 hash tightening for the 2 inline scripts in `index.html`. The followup is closed via the HYBRID design (nonce in meta tag + `'unsafe-inline'` in `.htaccess`), which achieves the security goal without breaking the runtime JSON-LD injection.
 
