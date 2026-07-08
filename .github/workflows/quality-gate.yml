@@ -4,7 +4,7 @@ name: Quality Gate
 # Runs on every push that touches files under api/. Gates future commits at
 # the source before they reach main:
 #
-#   1. PHPStan static analysis at level 5 (defined in api/phpstan.neon).
+#   1. PHPStan static analysis at level 6 (defined in api/phpstan.neon).
 #      MUST stay at 0 errors. `--memory-limit=512M` matches the dev-loop
 #      invocation that produced the Phase 3 baseline (15 -> 0 errors).
 #      Drift to a higher error count fails the workflow. New PHPStan
@@ -116,8 +116,8 @@ jobs:
         working-directory: api
         run: composer install --prefer-dist --no-interaction --no-progress
 
-      - name: Run PHPStan (level 5)
-        # Level 5 is defined in api/phpstan.neon. Pass/fail is the
+      - name: Run PHPStan (level 6)
+        # Level 6 is defined in api/phpstan.neon. Pass/fail is the
         # PHPStan exit code (non-zero if any error). The
         # `--memory-limit=512M` matches the dev-loop invocation that
         # produced the Phase 3 15 -> 0 baseline. `--no-progress`
