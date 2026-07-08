@@ -23,6 +23,10 @@ per the per-PR version rule.
 | 4 | Q8 | `b4e3ef0` | Drop 3 no-op `withX(0)` calls in `api/rector.php` (Rector 2.x is opt-in per rule set) | `api/rector.php` |
 | 5 | (new) | `91c01b7` | Add `ModelMapperSmokeTest` — runtime-safety contract for `updateUser` with integer-keyed arrays (the post-Phase-8 typed-closure widening contract) | `api/tests/Models/ModelMapperSmokeTest.php` |
 | 6 | (new) | `f3f5208` | Add `--stop-on-failure` to `test:smoke` composer script for faster local feedback | `api/composer.json` |
+| 7 | (new) | `489ef21` | Add `ContainerSmokeTest` — runtime-safety contract for the `\InvalidArgumentException` throw in `Container::build()` (direct `make()` case + `bind()`+`make()` case) | `api/tests/Core/ContainerSmokeTest.php` |
+| 8 | (new) | `6b15a41` | Container::build PHP 8.4 redundant-type fixup — drop `\Closure` from the native signature (PHP 8.4 rejects `Closure <: object` redundancy; kept in the `@param string\|object\|\Closure $concrete` PHPDoc to preserve doc intent) | `api/src/Core/Container.php` |
+| 9 | (new) | `8c8e524` | Enable Rector CI gate — `withDeadCodeLevel(20)` + `withCodeQualityLevel(20)` so the dry-run actually validates code (was a green-by-default no-op before this commit: Rector 2.5.4 emitted `[WARNING] Register rules or sets...` with zero files scanned) | `api/rector.php` |
+| 10 | (new) | `21b1f66` | Align quality-gate PHPStan comments with neon (level 6) — verified codebase clean at the actual neon-configured level 6 (0 errors), and surfaces a stale-ignoreErrors warning at level 5 + 7 type errors at level 7 (sanity probe); updated the 3 stale `level 5` references in the workflow file | `.github/workflows/quality-gate.yml` |
 
 ## This PR — silent-apply defense
 
@@ -104,3 +108,24 @@ location).
 - **`api/tests/Models/ModelMapperSmokeTest.php`** — the runtime-
   safety smoke test that locks in the integer-key contract
   (the Phase 8 follow-up that started this doc).
+
+## Gates Now Validate (formal CI signal)
+
+The 4 follow-up commits — `489ef21` (ContainerSmokeTest), `6b15a41`
+(PHP 8.4 redundant-type fixup), `8c8e524` (Rector enablement), `21b1f66`
+(PHPStan level 6 alignment) — produce the expected green-PHPStan +
+green-PHPUnit + red-Rector signal on the CI quality-gate workflow
+(verified on CI run `28968609054`, commit `21b1f66`):
+
+- ✅ **PHPStan (level 6)**: 0 errors (verified locally + on CI run `28968609054`).
+- ✅ **PHPUnit**: 71 tests, all green (3 `ModelMapperSmokeTest` + 2 `ContainerSmokeTest` cases included in `composer run test:smoke`).
+- ❌ **Rector dry-run**: exit 2 — **the gate IS doing its job** (was a green-by-default no-op before commit `8c8e524`).
+
+The 2 Rector findings are known current debt:
+
+1. `controllers/GoogleSheetsController.php:271` — `RecastingRemovalRector` drops an unnecessary `(int)` cast.
+2. `src/Controllers/JobSearchController.php:92` — `RepeatedOrEqualToInArrayRector` converts an `||` chain to `in_array()`.
+
+These are 1-line applications, deferred per the user's scope-of-change ask ("add real rule level, confirm non-empty output"). They become Phase 8.1 follow-up candidates #6 and #7 — landing a future commit that applies both closes the gate to all-green.
+
+**Status: gates-now-validate milestone reached.** The 5 forward-looking Phase 8.1 candidates (this PR's pre-push hook extensions, strict pre-push mode, `.githooks/` tracking, and the pre-push `composer validate --strict` check) remain open.
