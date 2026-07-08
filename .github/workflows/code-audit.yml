@@ -14,9 +14,6 @@ permissions:
   contents: read
   pull-requests: write
 
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
-
 # v2.6.33 CI RACE: extend the v2.6.29 `concurrency.cancel-in-progress: true`
 # hardening to the code-audit workflow. Cancels in-flight runs of the same
 # workflow on the same ref so a rapid burst of PRs (the trigger matrix
@@ -38,10 +35,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: '22'
           cache: 'npm'
