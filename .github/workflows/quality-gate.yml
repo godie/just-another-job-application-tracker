@@ -1,0 +1,139 @@
+name: Quality Gate
+
+# Phase 4 CI gate for the api/ PHP backend on feat/ci-gate-and-bodyformat-split.
+# Runs on every push that touches files under api/. Gates future commits at
+# the source before they reach main:
+#
+#   1. PHPStan static analysis at level 5 (defined in api/phpstan.neon).
+#      MUST stay at 0 errors. `--memory-limit=512M` matches the dev-loop
+#      invocation that produced the Phase 3 baseline (15 -> 0 errors).
+#      Drift to a higher error count fails the workflow. New PHPStan
+#      errors of any identifier are caught here before they land.
+#
+#   2. PHPUnit behavioral tests (66 tests, 223 assertions on the v2.4+
+#      branch as of the Phase 3 commit). Dynamic-call regressions —
+#      constructor changes that break factory wiring, missing imports,
+#      `is_array()` checks that compile but break at runtime — are
+#      caught here. The Phase 2 tests/ refactor (commit 923cbfe)
+#      removed 3 dead guards; this gate is the safety net that future
+#      test-side refactors need.
+#
+# Design follows project conventions documented in existing workflows
+# (`.github/workflows/composer-validate.yml` + `pull-request.yml`'s phpunit
+# job + `.github/AGENTS.md` "CI Race Playbook"):
+#
+#   - `permissions: contents: read` — explicitly read-only so a future
+#     maintainer who adds a `gh` call doesn't accidentally inherit the
+#     default `write` scope. Mirrors composer-validate.yml + the phpunit
+#     job in pull-request.yml.
+#
+#   - `concurrency: ${{ github.workflow }}-${{ github.ref }}` with
+#     `cancel-in-progress: true` — guards against the parallel-runner-
+#     exhaustion pattern that produced the v2.6.29 / v2.6.33 batch of
+#     `--admin` bypasses. Each (workflow, ref) pair gets its own scope,
+#     so a fast follow-up push to PR #1 does NOT cancel an in-flight
+#     quality-gate run on PR #2. Mirrors the pattern across all 8
+#     existing workflows.
+#
+#   - `timeout-minutes: 10` on every job — REQUIRED by the
+#     `scripts/check-yml-timeouts.sh --ci` + `scripts/check-yml-concurrency.sh --ci`
+#     gates wired into `pull-request.yml`'s secrets job (introduced in
+#     v2.6.29 + v2.6.34 to enforce the CI Race Playbook post-mortem).
+#     10 min matches composer-validate + the existing phpunit job in
+#     pull-request.yml: composer install is normally 30-60 s on cold
+#     cache, phpstan 5-10 s, phpunit 5-15 s, so 10 min is generous
+#     ceiling with cold-cache headroom.
+#
+#   - `shivammathur/setup-php@2.37.2` — exact pin matches deploy.yml +
+#     composer-validate.yml + pull-request.yml's phpunit job. Dependabot
+#     opens a weekly PR to renew this pin (`.github/dependabot.yml`
+#     "github-actions-patches" group, `pull-request-batch-size: 5`).
+#     Drift across the 4 workflows that share this pin produces a
+#     CI-vs-deploy PHP-version mismatch identical to the v2.6.0 release
+#     cycle's `symfony/options-resolver 8.1.0` episode — so we pin in
+#     lock-step and rely on Dependabot to keep all 4 in sync.
+
+# Explicit read-only permissions — see comment above. Mirrors
+# composer-validate.yml + the phpunit job in pull-request.yml.
+permissions:
+  contents: read
+
+# CI Race Playbook: scope concurrency per-workflow per-ref so PR pushes
+# to different branches do not cancel each other's quality-gate runs.
+# Mirrors the pattern in composer-validate.yml + pull-request.yml +
+# deploy.yml + code-audit.yml. See AGENTS.md "CI Race Playbook".
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  push:
+    # `branches:` defaults to all branches when omitted, so this fires
+    # on every push to ANY ref. Explicit `branches: ['**']` is the
+    # same behavior with intent-stated. The `paths:` filter scopes the
+    # run to api/ changes only — pushes that touch only frontend files
+    # do NOT consume CI minutes on the PHP quality gate. Mirrors the
+    # CI-on-frontend vs CI-on-api separation already documented in
+    # deploy.yml + pull-request.yml.
+    branches: ['**']
+    paths: ['api/**']
+
+jobs:
+  quality-gate:
+    name: PHPStan + PHPUnit
+    runs-on: ubuntu-latest
+    # 10 min safety margin. Composer install is normally 30-60 s on a
+    # cold cache; phpstan 5-10 s; phpunit 5-15 s. 10 min is the
+    # standard ceiling for composer-validate + the existing phpunit
+    # job in pull-request.yml. `timeout-minutes:` is REQUIRED by the
+    # check-yml-timeouts.sh / check-yml-concurrency.sh gates in
+    # pull-request.yml's secrets job (CI Race Playbook enforcement).
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP 8.4
+        # Pin in lock-step with deploy.yml + composer-validate.yml +
+        # pull-request.yml. Dependabot weekly renews the v2.x.y patch
+        # via `groups: github-actions-patches` (see .github/dependabot.yml).
+        # Drift here produces the same CI-vs-deploy PHP-version
+        # mismatch class as the v2.6.0 symfony/options-resolver 8.1.0
+        # failure mode documented in composer-validate.yml's header
+        # comment.
+        uses: shivammathur/setup-php@2.37.2
+        with:
+          php-version: '8.4'
+          tools: composer:v2
+
+      - name: Composer install (with dev deps for phpstan + phpunit)
+        # Dev deps are REQUIRED: phpstan lives in `require-dev` of
+        # api/composer.json, phpunit lives in `require-dev`. `--prefer-dist`
+        # leverages the runner's local composer cache for faster cold
+        # installs. Same flags as pull-request.yml's phpunit job line
+        # 191 + composer-validate.yml's pattern.
+        working-directory: api
+        run: composer install --prefer-dist --no-interaction --no-progress
+
+      - name: Run PHPStan (level 5)
+        # Level 5 is defined in api/phpstan.neon. Pass/fail is the
+        # PHPStan exit code (non-zero if any error). The
+        # `--memory-limit=512M` matches the dev-loop invocation that
+        # produced the Phase 3 15 -> 0 baseline. `--no-progress`
+        # reduces log noise for GH Actions UI without changing exit
+        # behavior. A NEW error in src/ from any future commit will
+        # fail this step and block the workflow.
+        working-directory: api
+        run: vendor/bin/phpstan analyse src/ --memory-limit=512M --no-progress
+
+      - name: Run PHPUnit
+        # `--configuration phpunit.xml` points to api/phpunit.xml's
+        # default test suite (tests/Controllers, tests/Core,
+        # tests/Middleware, tests/Models). Same invocation as
+        # pull-request.yml's phpunit job line 194 — preserved here so
+        # a Phase 4 latency measurement is apples-to-apples. PHPUnit
+        # exit non-zero on any test failure; this is the
+        # dynamic-call-site safety net for future refactors.
+        working-directory: api
+        run: vendor/bin/phpunit --configuration phpunit.xml
