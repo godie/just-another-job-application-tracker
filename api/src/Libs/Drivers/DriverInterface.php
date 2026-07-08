@@ -23,7 +23,6 @@ interface DriverInterface
      *
      * @param array $driverConfig  The config sub-array for this driver
      *                             (e.g. $config['database']['mysql']).
-     * @return \PDO
      * @throws \RuntimeException  When the connection cannot be established.
      */
     public function connect(array $driverConfig): \PDO;

@@ -1,6 +1,6 @@
 <?php
 class UserController {
-    public function profile() {
+    public function profile(): array {
         // Imagina que aquí consultas la DB
         return[
             "username" => "godieboy",
@@ -9,7 +9,7 @@ class UserController {
         ];
     }
 
-    public function update() {
+    public function update(): array {
         // Lógica para el POST
        return ["message" => "Perfil actualizado"];
     }

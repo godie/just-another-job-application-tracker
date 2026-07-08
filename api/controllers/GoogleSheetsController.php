@@ -60,7 +60,7 @@ class GoogleSheetsController
         return get_valid_access_token($this->config);
     }
 
-    private function sanitizeInput($data)
+    private function sanitizeInput(array $data): array
     {
         // Slicer: Sanitize on output, not on input when sending to an API.
         // Munging data with htmlspecialchars() here will corrupt data in Google Sheets.
@@ -252,7 +252,7 @@ class GoogleSheetsController
         $this->makeGoogleApiRequest($url, $accessToken, 'POST', $formatData);
     }
 
-    private function makeGoogleApiRequest(string $url, string $accessToken, string $method = 'GET', $data = null): ?array
+    private function makeGoogleApiRequest(string $url, string $accessToken, string $method = 'GET', array|object|null $data = null): ?array
     {
         $ch = curl_init($url);
         $headers = [

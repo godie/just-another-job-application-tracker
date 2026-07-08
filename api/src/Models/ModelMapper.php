@@ -84,7 +84,7 @@ class ModelMapper
         $columns = implode(", ", array_keys($data));
         $placeholders = implode(
             ", ",
-            array_map(fn($k) => ":$k", array_keys($data)),
+            array_map(fn(int|string $k): string => ":$k", array_keys($data)),
         );
 
         $stmt = $this->pdo->prepare(
@@ -106,7 +106,7 @@ class ModelMapper
 
         $sets = implode(
             ", ",
-            array_map(fn($k) => "$k = :$k", array_keys($data)),
+            array_map(fn($k): string => "$k = :$k", array_keys($data)),
         );
 
         $stmt = $this->pdo->prepare("UPDATE users SET $sets WHERE id = :id");
@@ -247,7 +247,7 @@ class ModelMapper
         $columns = implode(", ", array_keys($data));
         $placeholders = implode(
             ", ",
-            array_map(fn($k) => ":$k", array_keys($data)),
+            array_map(fn(int|string $k): string => ":$k", array_keys($data)),
         );
 
         $stmt = $this->pdo->prepare(
@@ -269,7 +269,7 @@ class ModelMapper
 
         $sets = implode(
             ", ",
-            array_map(fn($k) => "$k = :$k", array_keys($mappedData)),
+            array_map(fn($k): string => "$k = :$k", array_keys($mappedData)),
         );
 
         $stmt = $this->pdo->prepare(
@@ -366,7 +366,7 @@ class ModelMapper
         $columns = implode(", ", array_keys($data));
         $placeholders = implode(
             ", ",
-            array_map(fn($k) => ":$k", array_keys($data)),
+            array_map(fn(int|string $k): string => ":$k", array_keys($data)),
         );
 
         $stmt = $this->pdo->prepare(
@@ -386,7 +386,7 @@ class ModelMapper
 
         $sets = implode(
             ", ",
-            array_map(fn($k) => "$k = :$k", array_keys($mappedData)),
+            array_map(fn(int|string $k): string => "$k = :$k", array_keys($mappedData)),
         );
 
         $stmt = $this->pdo->prepare(
@@ -496,7 +496,7 @@ class ModelMapper
         $columns = implode(", ", array_keys($data));
         $placeholders = implode(
             ", ",
-            array_map(fn($k) => ":$k", array_keys($data)),
+            array_map(fn(int|string $k): string => ":$k", array_keys($data)),
         );
 
         $stmt = $this->pdo->prepare(
@@ -517,7 +517,7 @@ class ModelMapper
 
         $sets = implode(
             ", ",
-            array_map(fn($k) => "$k = :$k", array_keys($mappedData)),
+            array_map(fn($k): string => "$k = :$k", array_keys($mappedData)),
         );
 
         $stmt = $this->pdo->prepare(
@@ -609,7 +609,7 @@ class ModelMapper
             // Update
             $sets = implode(
                 ", ",
-                array_map(fn($k) => "$k = :$k", array_keys($mapped)),
+                array_map(fn($k): string => "$k = :$k", array_keys($mapped)),
             );
             $mapped["user_id"] = $userId;
 
@@ -624,7 +624,7 @@ class ModelMapper
             $columns = implode(", ", array_keys($mapped));
             $placeholders = implode(
                 ", ",
-                array_map(fn($k) => ":$k", array_keys($mapped)),
+                array_map(fn(string $k): string => ":$k", array_keys($mapped)),
             );
 
             $stmt = $this->pdo->prepare(
@@ -676,7 +676,7 @@ class ModelMapper
         $columns = implode(", ", array_keys($data));
         $placeholders = implode(
             ", ",
-            array_map(fn($k) => ":$k", array_keys($data)),
+            array_map(fn(int|string $k): string => ":$k", array_keys($data)),
         );
 
         $stmt = $this->pdo->prepare(

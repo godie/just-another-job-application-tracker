@@ -15,7 +15,7 @@ final class Container
     /** @var array<string, mixed> */
     private array $instances = [];
 
-    /** @var array<string, \ReflectionClass> */
+    /** @var array<string, \ReflectionClass<object>> */
     private static array $reflectionCache = [];
 
     private static ?self $instance = null;
@@ -31,9 +31,7 @@ final class Container
     /**
      * Register a binding.
      *
-     * @param string $abstract
      * @param callable|string|object $concrete
-     * @param bool $shared
      */
     public function bind(string $abstract, mixed $concrete, bool $shared = false): void
     {
@@ -80,11 +78,27 @@ final class Container
 
     /**
      * Instantiate a concrete instance of the given type.
+     *
+     * Note: \Closure is absent from the native signature because PHP 8.4
+     * rejects object-subtype redundancies in union types (\Closure is
+     * itself an object subtype). PHPDoc preserves the intent; the
+     * is_object() guard below returns Closures unchanged.
+     *
+     * @param string|object|\Closure $concrete
      */
-    private function build(mixed $concrete): mixed
+    private function build(string|object $concrete): object
     {
-        if (!is_string($concrete) || !class_exists($concrete)) {
+        if (is_object($concrete)) {
             return $concrete;
+        }
+
+        // After the is_object guard above, $concrete is guaranteed to be a
+        // string (Closure is an object subtype). class_exists is the only
+        // remaining validity check.
+        if (!class_exists($concrete)) {
+            throw new \InvalidArgumentException(
+                'Cannot build instance: unknown class ' . $concrete
+            );
         }
 
         if (isset(self::$reflectionCache[$concrete])) {

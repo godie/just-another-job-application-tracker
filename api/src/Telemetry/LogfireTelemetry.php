@@ -126,7 +126,7 @@ final class LogfireTelemetry
      */
     public static function shutdown(): void
     {
-        if (self::$tracerProvider !== null) {
+        if (self::$tracerProvider !== null && self::$tracerProvider instanceof TracerProvider) {
             try {
                 self::$tracerProvider->shutdown();
             } catch (\Throwable $e) {

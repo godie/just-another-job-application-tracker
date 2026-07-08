@@ -38,7 +38,6 @@ abstract class AbstractDriver implements DriverInterface
      * Merge user-provided PDO options with framework defaults.
      *
      * @param array $overrides  User-provided PDO attribute overrides.
-     * @return array
      */
     protected function mergeOptions(array $overrides): array
     {

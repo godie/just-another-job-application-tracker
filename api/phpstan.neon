@@ -7,4 +7,6 @@ parameters:
         - tests
     excludePaths:
         - vendor/
-    checkMissingIterableValueType: false
+    ignoreErrors:
+        -
+            identifier: missingType.iterableValue

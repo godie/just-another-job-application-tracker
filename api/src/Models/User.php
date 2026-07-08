@@ -131,14 +131,9 @@ class User
             googleId: $googleId,
             username: $username,
             displayName: $displayName,
-            avatarUrl: null,
             isPublic: false,
-            bio: null,
             role: $role,
             isActive: true,
-            createdAt: null,
-            updatedAt: null,
-            lastLoginAt: null,
         );
     }
 
@@ -153,8 +148,6 @@ class User
             id: null,
             organizationId: $organizationId,
             email: $googleUser["email"] ?? "",
-            passwordHash: null,
-            linkedinId: null,
             googleId: $googleUser["google_id"] ?? ($googleUser["sub"] ?? null),
             username: $googleUser["name"] ?? null,
             displayName: $googleUser["name"] ?? null,
@@ -163,9 +156,6 @@ class User
             bio: $googleUser["bio"] ?? null,
             role: "member",
             isActive: true,
-            createdAt: null,
-            updatedAt: null,
-            lastLoginAt: null,
         );
     }
 
@@ -180,19 +170,13 @@ class User
             id: null,
             organizationId: $organizationId,
             email: $linkedinUser["email"] ?? "",
-            passwordHash: null,
             linkedinId: $linkedinUser["linkedin_id"] ?? ($linkedinUser["sub"] ?? null),
-            googleId: null,
             username: $linkedinUser["name"] ?? null,
             displayName: $linkedinUser["name"] ?? null,
             avatarUrl: $linkedinUser["picture"] ?? null,
             isPublic: false,
-            bio: null,
             role: "member",
             isActive: true,
-            createdAt: null,
-            updatedAt: null,
-            lastLoginAt: null,
         );
     }
 
@@ -216,7 +200,7 @@ class User
             "is_active" => $this->isActive ? 1 : 0,
         ];
 
-        return array_filter($data, fn($value) => $value !== null);
+        return array_filter($data, fn(int|string|null $value): bool => $value !== null);
     }
 
     /**

@@ -20,7 +20,7 @@ final class HelloController
     {
         return [
             'message' => 'Hello from OverPHP!',
-            'db_enabled' => $this->db ? $this->db->isEnabled() : false,
+            'db_enabled' => $this->db && $this->db->isEnabled(),
         ];
     }
 

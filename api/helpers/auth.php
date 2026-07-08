@@ -99,24 +99,14 @@ function auth_set_access_cookies(string $accessToken, int $expiresInSeconds, arr
 
 function auth_set_cookie(string $name, string $value, int $expiresAt, bool $secure): void
 {
-    if (PHP_VERSION_ID >= 70300) {
-        setcookie($name, $value, [
-            'expires' => $expiresAt,
-            'path' => '/',
-            'domain' => '',
-            'secure' => $secure,
-            'httponly' => true,
-            'samesite' => 'Strict',
-        ]);
-    } else {
-        $header = $name . '=' . urlencode($value);
-        $header .= '; expires=' . gmdate('D, d M Y H:i:s T', $expiresAt);
-        $header .= '; path=/; httponly; samesite=Strict';
-        if ($secure) {
-            $header .= '; secure';
-        }
-        header('Set-Cookie: ' . $header, false);
-    }
+    setcookie($name, $value, [
+        'expires' => $expiresAt,
+        'path' => '/',
+        'domain' => '',
+        'secure' => $secure,
+        'httponly' => true,
+        'samesite' => 'Strict',
+    ]);
 }
 
 function auth_clear_cookies(array $config): void
@@ -132,24 +122,14 @@ function auth_clear_cookies(array $config): void
     ];
 
     foreach ($names as $n) {
-        if (PHP_VERSION_ID >= 70300) {
-            setcookie($n, '', [
-                'expires' => $past,
-                'path' => '/',
-                'domain' => '',
-                'secure' => $secure,
-                'httponly' => true,
-                'samesite' => 'Strict',
-            ]);
-        } else {
-            $header = $n . '=';
-            $header .= '; expires=' . gmdate('D, d M Y H:i:s T', $past);
-            $header .= '; path=/; httponly; samesite=Strict';
-            if ($secure) {
-                $header .= '; secure';
-            }
-            header('Set-Cookie: ' . $header, false);
-        }
+        setcookie($n, '', [
+            'expires' => $past,
+            'path' => '/',
+            'domain' => '',
+            'secure' => $secure,
+            'httponly' => true,
+            'samesite' => 'Strict',
+        ]);
         unset($_COOKIE[$n]);
     }
 }

@@ -46,7 +46,7 @@ class AgentJobApplicationRepository
     {
         $data = $application->toDatabase();
         $columns = implode(', ', array_keys($data));
-        $placeholders = implode(', ', array_map(fn ($k) => ":$k", array_keys($data)));
+        $placeholders = implode(', ', array_map(fn (int|string $k): string => ":$k", array_keys($data)));
 
         $sql = "INSERT INTO agent_job_applications ($columns) VALUES ($placeholders)";
         $stmt = $this->db->prepare($sql);
@@ -109,7 +109,7 @@ class AgentJobApplicationRepository
             $params['agent_name'] = $filters['agent_name'];
         }
 
-        $whereSql = $where !== [] ? 'WHERE ' . implode(' AND ', $where) : '';
+        $whereSql = 'WHERE ' . implode(' AND ', $where);
 
         // Count total
         $countSql = "SELECT COUNT(*) FROM agent_job_applications {$whereSql}";

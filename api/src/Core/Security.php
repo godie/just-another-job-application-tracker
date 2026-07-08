@@ -154,7 +154,7 @@ final class Security
     /**
      * Securely encode data to JSON.
      */
-    public static function jsonEncode(mixed $data): string|false
+    public static function jsonEncode(mixed $data): string
     {
         return json_encode($data, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_THROW_ON_ERROR);
     }

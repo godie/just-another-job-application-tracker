@@ -1,4 +1,3 @@
-/* php/job-application-tracker/api/src/Models/Organization.php */
 <?php
 declare(strict_types=1);
 
@@ -75,8 +74,6 @@ class Organization
             slug: $slug ?? self::generateSlug($name),
             description: $description,
             settings: $settings,
-            createdAt: null,
-            updatedAt: null,
             isActive: true,
         );
     }
@@ -94,7 +91,7 @@ class Organization
             "is_active" => $this->isActive ? 1 : 0,
         ];
 
-        return array_filter($data, fn($value) => $value !== null);
+        return array_filter($data, fn(string|null|false|int $value): bool => $value !== null);
     }
 
     /**

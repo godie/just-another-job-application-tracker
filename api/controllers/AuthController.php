@@ -155,44 +155,6 @@ class AuthController
         return $decoded;
     }
 
-    private function refreshAccessToken(string $refreshToken): array
-    {
-        $clientId = $this->config['google_client_id'] ?? '';
-        $clientSecret = $this->config['google_client_secret'] ?? '';
-        if ($clientId === '' || $clientSecret === '') {
-            return ['error' => 'Server OAuth not configured'];
-        }
-
-        $body = http_build_query([
-            'refresh_token' => $refreshToken,
-            'client_id' => $clientId,
-            'client_secret' => $clientSecret,
-            'grant_type' => 'refresh_token',
-        ]);
-
-        $opts = [
-            'http' => [
-                'method' => 'POST',
-                'header' => "Content-Type: application/x-www-form-urlencoded\r\n",
-                'content' => $body,
-                'ignore_errors' => true,
-            ],
-        ];
-        $ctx = stream_context_create($opts);
-        $result = @file_get_contents(self::TOKEN_URL, false, $ctx);
-
-        if ($result === false) {
-            return ['error' => 'Failed to refresh token'];
-        }
-
-        $decoded = json_decode($result, true);
-        if (!is_array($decoded) || empty($decoded['access_token'])) {
-            return ['error' => 'Invalid refresh response'];
-        }
-
-        return $decoded;
-    }
-
     private function setAccessCookie(string $accessToken, int $expiresInSeconds): void
     {
         $name = $this->config['cookie_name'];
@@ -216,24 +178,14 @@ class AuthController
 
     private function setCookie(string $name, string $value, int $expiresAt, bool $secure): void
     {
-        if (PHP_VERSION_ID >= 70300) {
-            setcookie($name, $value, [
-                'expires' => $expiresAt,
-                'path' => '/',
-                'domain' => '',
-                'secure' => $secure,
-                'httponly' => true,
-                'samesite' => 'Strict',
-            ]);
-        } else {
-            $header = $name . '=' . urlencode($value);
-            $header .= '; expires=' . gmdate('D, d M Y H:i:s T', $expiresAt);
-            $header .= '; path=/; httponly; samesite=Strict';
-            if ($secure) {
-                $header .= '; secure';
-            }
-            header('Set-Cookie: ' . $header, false);
-        }
+        setcookie($name, $value, [
+            'expires' => $expiresAt,
+            'path' => '/',
+            'domain' => '',
+            'secure' => $secure,
+            'httponly' => true,
+            'samesite' => 'Strict',
+        ]);
     }
 
     /** GET /auth/cookie - Return current access token; refresh if expired and refresh_token present */
@@ -280,24 +232,14 @@ class AuthController
         ];
 
         foreach ($names as $name) {
-            if (PHP_VERSION_ID >= 70300) {
-                setcookie($name, '', [
-                    'expires' => $past,
-                    'path' => '/',
-                    'domain' => '',
-                    'secure' => $secure,
-                    'httponly' => true,
-                    'samesite' => 'Strict',
-                ]);
-            } else {
-                $header = $name . '=';
-                $header .= '; expires=' . gmdate('D, d M Y H:i:s T', $past);
-                $header .= '; path=/; httponly; samesite=Strict';
-                if ($secure) {
-                    $header .= '; secure';
-                }
-                header('Set-Cookie: ' . $header, false);
-            }
+            setcookie($name, '', [
+                'expires' => $past,
+                'path' => '/',
+                'domain' => '',
+                'secure' => $secure,
+                'httponly' => true,
+                'samesite' => 'Strict',
+            ]);
             unset($_COOKIE[$name]);
         }
     }
