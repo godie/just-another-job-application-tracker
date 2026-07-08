@@ -10,7 +10,8 @@ if (file_exists($envFile)) {
         if (isset($line[0]) && $line[0] !== '#') {
             $parts = explode('=', $line, 2);
             if (count($parts) === 2) {
-                putenv(trim($parts[0]) . '=' . trim($parts[1]));
+                $value = trim($parts[1], " \t\n\r\0\x0B\"'");
+                putenv(trim($parts[0]) . '=' . $value);
             }
         }
     }
@@ -33,6 +34,9 @@ return [
     ],
     'security' => [
         'csrf_enabled' => filter_var(getenv('CSRF_ENABLED') ?: 'false', FILTER_VALIDATE_BOOLEAN),
+    ],
+    'logging' => [
+        'enabled' => filter_var(getenv('LOGGING_ENABLED') ?: 'false', FILTER_VALIDATE_BOOLEAN),
     ],
     'database' => [
         'enabled' => filter_var(getenv('DB_ENABLED') ?: 'false', FILTER_VALIDATE_BOOLEAN),
@@ -61,4 +65,9 @@ return [
     'refresh_cookie_days' => 30,
     'google_client_id' => getenv('GOOGLE_CLIENT_ID') ?: '__VITE_GOOGLE_CLIENT_ID__',
     'google_client_secret' => getenv('GOOGLE_CLIENT_SECRET') ?: '__VITE_GOOGLE_CLIENT_SECRET__',
+    'logfire' => [
+        'token' => getenv('LOGFIRE_TOKEN') ?: '',
+        'service_name' => getenv('OTEL_SERVICE_NAME') ?: 'overphp-api',
+        'base_url' => getenv('LOGFIRE_BASE_URL') ?: 'https://logfire-us.pydantic.dev',
+    ],
 ];

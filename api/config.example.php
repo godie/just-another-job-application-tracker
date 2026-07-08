@@ -10,7 +10,8 @@ if (file_exists($envFile)) {
         if (isset($line[0]) && $line[0] !== '#') {
             $parts = explode('=', $line, 2);
             if (count($parts) === 2) {
-                putenv(trim($parts[0]) . '=' . trim($parts[1]));
+                $value = trim($parts[1], " \t\n\r\0\x0B\"'");
+                putenv(trim($parts[0]) . '=' . $value);
             }
         }
     }

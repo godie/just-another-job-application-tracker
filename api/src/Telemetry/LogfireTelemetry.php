@@ -25,9 +25,9 @@ use OpenTelemetry\SemConv\ResourceAttributes;
  */
 final class LogfireTelemetry
 {
-    private const SERVICE_VERSION = '2.6.4';
+    private const SERVICE_VERSION = '2.6.36';
     private const INSTRUMENTATION_NAME = 'overphp';
-    private const INSTRUMENTATION_VERSION = '2.6.4';
+    private const INSTRUMENTATION_VERSION = '2.6.36';
 
     private static ?TracerProviderInterface $tracerProvider = null;
     private static ?TracerInterface $tracer = null;
@@ -102,15 +102,23 @@ final class LogfireTelemetry
 
             self::$tracer = self::$tracerProvider->getTracer(self::INSTRUMENTATION_NAME, self::INSTRUMENTATION_VERSION);
         } catch (\Throwable $e) {
-            // Swallow initialization errors so the app never fails because of telemetry.
             error_log('[LogfireTelemetry] Init failed: ' . $e->getMessage());
+            // Reset to null so future tracer() calls return the cached noop.
+            self::$tracerProvider = null;
         }
     }
 
     public static function tracer(): TracerInterface
     {
         if (self::$tracer === null) {
-            return (new TracerProvider())->getTracer('noop');
+            // Cache a single no-op tracer instance so repeated calls during
+            // a request (router, controllers, middleware) don't create a new
+            // SDK TracerProvider every time — that's a CPU/memory sinkhole.
+            static $noopTracer = null;
+            if ($noopTracer === null) {
+                $noopTracer = (new TracerProvider())->getTracer('noop');
+            }
+            return $noopTracer;
         }
         return self::$tracer;
     }

@@ -14,6 +14,14 @@ const NON_COMPANY_PREFIXES = [
 
 const JOB_TITLE_ENDS = /(?:Engineer|Developer|Manager|Designer|Analyst|Consultant|Specialist|Lead|Principal|Staff|Director|Architect|Intern)$/i;
 
+const EXCLUDED_NAMES = new Set([
+  'workable', 'no-reply', 'noreply', 'donotreply', 'notifications',
+  'hiring team', 'recruiting team', 'talent team',
+  'recruiting', 'hiring', 'talent', 'team', 'careers', 'jobs',
+]);
+
+const EXCLUDED_DOMAIN_PATTERN = /greenhouse|ashbyhq|workday|teamtailor|workable|lever|applytojob|postmark|amazonses|notifications|send/;
+
 export class EmailAdapter {
   applicationFromEvent(event: Event, email?: Email): Omit<JobApplication, 'id'> {
     const date = event.date.split('T')[0] ?? event.date;
@@ -231,10 +239,7 @@ export class EmailAdapter {
     match = from.match(/^([A-Z][A-Za-z0-9 &']+?)(?:\s+(?:Recruiting|Hiring|Team|Talent)?(?:\s+Team)?)?\s*</);
     if (match) {
       const name = match[1].trim();
-      const excludedNames = ['Workable', 'no-reply', 'noreply', 'donotreply', 'notifications',
-        'Hiring Team', 'Recruiting Team', 'Talent Team',
-        'Recruiting', 'Hiring', 'Talent', 'Team', 'Careers', 'Jobs'];
-      if (!excludedNames.some(p => name.toLowerCase() === p.toLowerCase())) {
+      if (!EXCLUDED_NAMES.has(name.toLowerCase())) {
         return this.cleanCompanyName(name);
       }
     }
@@ -242,8 +247,7 @@ export class EmailAdapter {
     match = fromLower.match(/@([a-z0-9-]+)\.(com|org|io|co|net|ca|ai|ai\.com)/);
     if (match) {
       const domain = match[1];
-      const excludedDomains = ['greenhouse', 'ashbyhq', 'workday', 'teamtailor', 'workable', 'lever', 'applytojob', 'postmark', 'amazonses', 'notifications', 'send'];
-      if (!excludedDomains.some(d => domain.includes(d))) {
+      if (!EXCLUDED_DOMAIN_PATTERN.test(domain)) {
         return this.cleanCompanyName(domain);
       }
     }
