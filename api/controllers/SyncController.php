@@ -10,7 +10,7 @@ class SyncController {
         require_once __DIR__ . '/../helpers/db.php';
     }
 
-    private function checkAuth() {
+    private function checkAuth(): mixed {
         if (!isset($_SESSION['user_id'])) {
             http_response_code(401);
             echo json_encode(['success' => false, 'error' => 'Not authenticated']);
@@ -19,7 +19,7 @@ class SyncController {
         return $_SESSION['user_id'];
     }
 
-    public function getApplications() {
+    public function getApplications(): array {
         $userId = $this->checkAuth();
         try {
             $db = DB::getInstance($this->config)->getConnection();
@@ -54,7 +54,7 @@ class SyncController {
         }
     }
 
-    public function saveApplications() {
+    public function saveApplications(): array {
         $userId = $this->checkAuth();
         $json = file_get_contents('php://input') ?: '[]';
         $apps = json_decode($json, true);
@@ -124,7 +124,7 @@ class SyncController {
         }
     }
 
-    public function getOpportunities() {
+    public function getOpportunities(): array {
         $userId = $this->checkAuth();
         try {
             $db = DB::getInstance($this->config)->getConnection();
@@ -143,7 +143,7 @@ class SyncController {
         }
     }
 
-    public function saveOpportunities() {
+    public function saveOpportunities(): array {
         $userId = $this->checkAuth();
         $json = file_get_contents('php://input') ?: '[]';
         $opps = json_decode($json, true);

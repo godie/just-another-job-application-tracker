@@ -1,6 +1,12 @@
 parameters:
-    level: 5
+    level: 6
     paths:
-        - src/
-    treatPhpDocTypesAsCertain: false
-    reportUnmatchedIgnoredErrors: false
+        - controllers
+        - src
+        - helpers
+        - tests
+    excludePaths:
+        - vendor/
+    ignoreErrors:
+        -
+            identifier: missingType.iterableValue

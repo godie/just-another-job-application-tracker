@@ -1,1 +1,1 @@
-<?php class HelloController { public function index() { return ["message" => "hello"]; } }
+<?php class HelloController { public function index(): array { return ["message" => "hello"]; } }

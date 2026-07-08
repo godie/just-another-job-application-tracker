@@ -15,7 +15,7 @@ final class Container
     /** @var array<string, mixed> */
     private array $instances = [];
 
-    /** @var array<string, \ReflectionClass> */
+    /** @var array<string, \ReflectionClass<object>> */
     private static array $reflectionCache = [];
 
     private static ?self $instance = null;
