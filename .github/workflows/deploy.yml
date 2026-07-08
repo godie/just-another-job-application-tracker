@@ -289,13 +289,14 @@ jobs:
   composer-validate:
     name: Composer validate
     uses: ./.github/workflows/composer-validate.yml
-    # CI RACE: bounded wait. The called `composer-validate.yml` reusable
-    # workflow has its own `timeout-minutes: 10` cap, but the calling
-    # job here ALSO needs a cap (the calling-side cap governs how long
-    # the reusable workflow call can run before GHA cancels it). 10 min
-    # matches the called workflow's own ceiling. See AGENTS.md
-    # "CI Race Playbook".
-    timeout-minutes: 10
+    # NOTE: GitHub Actions strictly forbids `timeout-minutes:` on jobs that
+    # `uses:` a reusable workflow (composer-validate.yml); the parser rejects
+    # the file with "Unexpected value 'timeout-minutes'". The 10-minute cap is
+    # enforced inside the called workflow's `validate` job. The CI gates
+    # `scripts/check-yml-timeouts.sh` and `scripts/check-yml-concurrency.sh`
+    # both exempt `uses:` callers for the same reason; see AGENTS.md "CI
+    # Race Playbook".
+    with:
     with:
       # php-version MUST stay in lock-step with the deploy workflow's main
       # job (line ~29: shivammathur/setup-php@2.37.2 php-version: "8.4").
