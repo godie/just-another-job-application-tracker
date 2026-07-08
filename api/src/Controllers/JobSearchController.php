@@ -92,16 +92,16 @@ class JobSearchController
         $remoteOnly = ($data['remoteOnly'] ?? null) === true;
 
         // Determine which sources to query
-        $queryJooble = ($source === 'jooble' || $source === 'both' || $source === 'all') && $this->joobleApiKey !== '';
-        $queryTheirstack = ($source === 'theirstack' || $source === 'both' || $source === 'all') && $this->theirstackApiKey !== '';
+        $queryJooble = (in_array($source, ['jooble', 'both', 'all'], true)) && $this->joobleApiKey !== '';
+        $queryTheirstack = (in_array($source, ['theirstack', 'both', 'all'], true)) && $this->theirstackApiKey !== '';
         $queryAdzuna = ($source === 'adzuna' || $source === 'all') && $this->adzunaAppId !== '' && $this->adzunaApiKey !== '';
         $queryCareerjet = ($source === 'careerjet' || $source === 'all') && $this->careerjetApiKey !== '' && $this->careerjetAffid !== '';
 
         if (!$queryJooble && !$queryTheirstack && !$queryAdzuna && !$queryCareerjet) {
             http_response_code(503);
             $missing = [];
-            if ($source === 'jooble' || $source === 'both' || $source === 'all') { $missing[] = 'Jooble'; }
-            if ($source === 'theirstack' || $source === 'both' || $source === 'all') { $missing[] = 'TheirStack'; }
+            if (in_array($source, ['jooble', 'both', 'all'], true)) { $missing[] = 'Jooble'; }
+            if (in_array($source, ['theirstack', 'both', 'all'], true)) { $missing[] = 'TheirStack'; }
             if ($source === 'adzuna' || $source === 'all') { $missing[] = 'Adzuna'; }
             if ($source === 'careerjet' || $source === 'all') { $missing[] = 'Careerjet'; }
             return ['error' => 'not_configured', 'message' => 'Job search API key(s) not configured: ' . implode(', ', $missing)];

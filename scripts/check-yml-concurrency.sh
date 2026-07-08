@@ -179,6 +179,8 @@ for path in sorted(
     in_jobs = False
     current_job = None
     has_timeout = False
+    is_caller_job = False
+    USES_RE = re.compile(r'^(?:    |\t\t)uses:\s*(.+?)\s*(#.*)?$')
 
     for line in lines:
         stripped = line.rstrip('\n')
@@ -200,11 +202,12 @@ for path in sorted(
             and not line.startswith('\t')
             and not line.startswith('#')
         ):
-            if current_job and not has_timeout:
+            if current_job and not has_timeout and not is_caller_job:
                 missing_timeout.append((path, current_job))
             in_jobs = False
             current_job = None
             has_timeout = False
+            is_caller_job = False
             continue
 
         if not in_jobs:
@@ -214,10 +217,19 @@ for path in sorted(
         m = JOB_NAME_RE.match(line)
         if m:
             # Finalize the previous job before starting a new one.
-            if current_job and not has_timeout:
+            if current_job and not has_timeout and not is_caller_job:
                 missing_timeout.append((path, current_job))
             current_job = m.group(1)
             has_timeout = False
+            is_caller_job = False
+            continue
+
+        # Detect `uses:` under the current job (4-space indent) — marks
+        # this job as a reusable-workflow caller, exempt from the timeout
+        # check (GHA strictly forbids `timeout-minutes:` on caller jobs).
+        m = USES_RE.match(line)
+        if m and current_job:
+            is_caller_job = True
             continue
 
         # Detect `timeout-minutes:` under the current job (4-space indent).
@@ -227,7 +239,7 @@ for path in sorted(
 
     # Finalize the last job in the file (the loop above only finalizes on
     # block-exit or on a new-job boundary).
-    if in_jobs and current_job and not has_timeout:
+    if in_jobs and current_job and not has_timeout and not is_caller_job:
         missing_timeout.append((path, current_job))
 
 # --- Report ------------------------------------------------------------
