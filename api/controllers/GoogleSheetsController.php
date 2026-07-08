@@ -252,7 +252,7 @@ class GoogleSheetsController
         $this->makeGoogleApiRequest($url, $accessToken, 'POST', $formatData);
     }
 
-    private function makeGoogleApiRequest(string $url, string $accessToken, string $method = 'GET', mixed $data = null): ?array
+    private function makeGoogleApiRequest(string $url, string $accessToken, string $method = 'GET', array|object|null $data = null): ?array
     {
         $ch = curl_init($url);
         $headers = [

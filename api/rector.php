@@ -13,6 +13,7 @@ return RectorConfig::configure()
     ])
     // uncomment to reach your current PHP version
     // ->withPhpSets()
-    ->withTypeCoverageLevel(0)
-    ->withDeadCodeLevel(0)
-    ->withCodeQualityLevel(0);
+    // Note: Rector 2.x is opt-in per rule set. The withTypeCoverageLevel /
+    // withDeadCodeLevel / withCodeQualityLevel methods only enable checks
+    // when called with a level > 0; calling them with 0 is a no-op.
+;
