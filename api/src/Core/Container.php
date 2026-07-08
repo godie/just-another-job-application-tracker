@@ -78,11 +78,22 @@ final class Container
 
     /**
      * Instantiate a concrete instance of the given type.
+     *
+     * @param string|object|\Closure $concrete
      */
-    private function build(mixed $concrete): mixed
+    private function build(string|object|\Closure $concrete): object
     {
-        if (!is_string($concrete) || !class_exists($concrete)) {
+        if (is_object($concrete)) {
             return $concrete;
+        }
+
+        // After the is_object guard above, $concrete is guaranteed to be a
+        // string (Closure is an object subtype). class_exists is the only
+        // remaining validity check.
+        if (!class_exists($concrete)) {
+            throw new \InvalidArgumentException(
+                'Cannot build instance: unknown class ' . $concrete
+            );
         }
 
         if (isset(self::$reflectionCache[$concrete])) {

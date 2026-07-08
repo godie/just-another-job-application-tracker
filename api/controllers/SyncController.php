@@ -10,13 +10,13 @@ class SyncController {
         require_once __DIR__ . '/../helpers/db.php';
     }
 
-    private function checkAuth(): mixed {
+    private function checkAuth(): int {
         if (!isset($_SESSION['user_id'])) {
             http_response_code(401);
             echo json_encode(['success' => false, 'error' => 'Not authenticated']);
             exit;
         }
-        return $_SESSION['user_id'];
+        return (int) $_SESSION['user_id'];
     }
 
     public function getApplications(): array {
