@@ -222,6 +222,8 @@ const SuggestionForm: React.FC<SuggestionFormProps> = ({ onNavigate }) => {
     ? false
     : isSubmitting || !explanation.trim() || !captchaInput.trim() || !captchaId || isRefreshingCaptcha;
 
+  const selectedTypesSet = new Set(selectedTypes);
+
   return (
     <Card className="p-6">
       <div className="flex items-center justify-between mb-4">
@@ -253,7 +255,7 @@ const SuggestionForm: React.FC<SuggestionFormProps> = ({ onNavigate }) => {
           <div className="flex flex-wrap gap-3">
             {suggestionTypes.map((type) => {
               const inputId = `suggestion-type-${type.id}`;
-              const isActive = selectedTypes.includes(type.id);
+              const isActive = selectedTypesSet.has(type.id);
 
               return (
                 <label
