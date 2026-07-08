@@ -60,11 +60,6 @@ class AppAuthController
     {
         $data = $this->getInputJson();
 
-        if (!is_array($data)) {
-            http_response_code(400);
-            return ['success' => false, 'error' => 'Invalid JSON body'];
-        }
-
         $email = $data['email'] ?? null;
         $password = $data['password'] ?? null;
         $displayName = $data['displayName'] ?? null;
@@ -111,11 +106,6 @@ class AppAuthController
     public function login(): array
     {
         $data = $this->getInputJson();
-
-        if (!is_array($data)) {
-            http_response_code(400);
-            return ['success' => false, 'error' => 'Invalid JSON body'];
-        }
 
         $email = $data['email'] ?? null;
         $password = $data['password'] ?? null;
@@ -173,11 +163,6 @@ class AppAuthController
     public function google(): array
     {
         $data = $this->getInputJson();
-
-        if (!is_array($data)) {
-            http_response_code(400);
-            return ['success' => false, 'error' => 'Invalid JSON body'];
-        }
 
         $googleToken = $data['googleToken'] ?? null;
         if (!is_string($googleToken) || $googleToken === '') {
@@ -250,11 +235,6 @@ class AppAuthController
     public function linkedin(): array
     {
         $data = $this->getInputJson();
-
-        if (!is_array($data)) {
-            http_response_code(400);
-            return ['success' => false, 'error' => 'Invalid JSON body'];
-        }
 
         $code = $data['code'] ?? null;
         $redirectUri = $data['redirectUri'] ?? null;
@@ -354,11 +334,6 @@ class AppAuthController
     {
         $data = $this->getInputJson();
 
-        if (!is_array($data)) {
-            http_response_code(400);
-            return ['success' => false, 'error' => 'Invalid JSON body'];
-        }
-
         $email = $data['email'] ?? null;
 
         if (!is_string($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -399,11 +374,6 @@ class AppAuthController
     public function reset(): array
     {
         $data = $this->getInputJson();
-
-        if (!is_array($data)) {
-            http_response_code(400);
-            return ['success' => false, 'error' => 'Invalid JSON body'];
-        }
 
         $token = $data['token'] ?? null;
         $password = $data['password'] ?? null;

@@ -109,7 +109,7 @@ class AgentJobApplicationRepository
             $params['agent_name'] = $filters['agent_name'];
         }
 
-        $whereSql = $where !== [] ? 'WHERE ' . implode(' AND ', $where) : '';
+        $whereSql = 'WHERE ' . implode(' AND ', $where);
 
         // Count total
         $countSql = "SELECT COUNT(*) FROM agent_job_applications {$whereSql}";

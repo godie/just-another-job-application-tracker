@@ -37,7 +37,7 @@ final class Router
 
     private readonly string $controllerNamespace;
     private readonly string $prefix;
-    private readonly ?Container $container;
+    private readonly Container $container;
     /** @var array{enabled:bool,path:string,fallback_index:string} */
     private readonly array $clientConfig;
     private readonly ?string $resolvedClientPath;
@@ -117,7 +117,7 @@ final class Router
         $traceparent = $_SERVER['HTTP_TRACEPARENT'] ?? '';
         $parentContext = Context::getRoot();
         if ($traceparent !== '') {
-            $parentContext = TraceContextPropagator::getDefault()
+            $parentContext = TraceContextPropagator::getInstance()
                 ->extract(['traceparent' => $traceparent]);
         }
 

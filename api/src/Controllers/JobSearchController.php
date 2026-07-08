@@ -62,11 +62,6 @@ class JobSearchController
 
         $data = $this->getInputJson();
 
-        if (!is_array($data)) {
-            http_response_code(400);
-            return ['error' => 'invalid_body', 'message' => 'Invalid JSON body'];
-        }
-
         // Validate keywords
         $keywords = is_string($data['keywords'] ?? null) ? trim($data['keywords']) : '';
         if ($keywords === '') {
@@ -459,7 +454,7 @@ class JobSearchController
             curl_multi_remove_handle($mh, $ch);
             curl_close($ch);
 
-            if ($raw === false) {
+            if (!is_string($raw)) {
                 $errors[] = ['source' => $source, 'message' => ucfirst($source) . ' API unavailable'];
                 continue;
             }
