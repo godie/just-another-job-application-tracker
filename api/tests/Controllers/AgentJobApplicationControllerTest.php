@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace OverPHP\Tests\Controllers;
 
+use OverPHP\Core\Response;
 use OverPHP\Controllers\AgentJobApplicationController;
 use OverPHP\Libs\Database;
-use OverPHP\Repositories\AgentJobApplicationRepository;
 use PHPUnit\Framework\TestCase;
 
 use function OverPHP\Helpers\app_session_start;
@@ -600,7 +600,7 @@ class AgentJobApplicationControllerTest extends TestCase
         ];
     }
 
-    private function captureResponse(\OverPHP\Core\Response $response): string
+    private function captureResponse(Response $response): string
     {
         ob_start();
         $response->send();

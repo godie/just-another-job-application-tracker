@@ -8,8 +8,6 @@ use OverPHP\Controllers\AppAuthController;
 use OverPHP\Libs\Database;
 use OverPHP\Models\ModelMapper;
 use OverPHP\Models\User;
-use OverPHP\Repositories\AgentJobApplicationRepository;
-use OverPHP\Repositories\UserRepository;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -24,8 +22,6 @@ class ModelMapperUserDeactivationTest extends TestCase
 {
     private \PDO $db;
     private ModelMapper $mapper;
-    private UserRepository $userRepo;
-    private AgentJobApplicationRepository $agentRepo;
 
     protected function setUp(): void
     {
@@ -78,8 +74,6 @@ class ModelMapperUserDeactivationTest extends TestCase
         $prop->setValue($database, $this->db);
 
         $this->mapper = new ModelMapper($this->db);
-        $this->userRepo = new UserRepository($this->db);
-        $this->agentRepo = new AgentJobApplicationRepository($this->db);
 
         app_session_start_clean();
     }

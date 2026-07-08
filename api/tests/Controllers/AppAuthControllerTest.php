@@ -159,7 +159,7 @@ class AppAuthControllerTest extends TestCase
 
     public function testLoginRegeneratesSessionId(): void
     {
-        $user = $this->createTestUser('session-test@example.com', 'oldpassword123');
+        $this->createTestUser('session-test@example.com', 'oldpassword123');
         $this->controller->mockInput = [
             'email' => 'session-test@example.com',
             'password' => 'oldpassword123',
