@@ -1,3 +1,40 @@
+## [2.6.39] - 2026-07-09
+
+### Added
+- **Dockerized API runtime** (`api/Dockerfile`, `.dockerignore`) — added a PHP 8.4.1 Apache image for the API, installs Composer dependencies in a separate vendor stage, enables Apache `headers`/`rewrite`, installs PDO drivers for SQLite/MySQL/PostgreSQL, and exposes a container healthcheck against `/api/hello`.
+
+### Changed
+- **Compose stack wiring** (`docker-compose.yml`, `.env.docker.example`) — the existing Compose stack now builds the API image successfully, persists SQLite/suggestions data through `./api/data`, passes Logfire/runtime variables through the environment, disables static-client serving in the API container because the frontend already runs as its own Vite service, checks API health via `/api/hello` instead of `/`, and uses `127.0.0.1` for the frontend healthcheck so it reflects the Vite listener inside the container.
+- **CORS env support** (`api/config.php`, `api/config.example.php`) — `ALLOWED_ORIGINS` now accepts a comma-separated origin list so the Docker Compose variable actually controls API CORS behavior.
+- **Version metadata sync** (`package.json`, `package-lock.json`, `api/src/Telemetry/LogfireTelemetry.php`) — bumped this branch to `2.6.39` because `origin/main` already claims `package.json` version `2.6.38`; aligned the Logfire service/instrumentation version constants with the PR version.
+
+### Validation
+- `docker compose config` passes.
+- `docker-compose build api` and `docker-compose build frontend` pass.
+- `docker-compose up -d` starts the stack; `http://localhost:5173/` returns HTTP 200 and `http://localhost:5173/api/hello` returns `{"message":"Hello from OverPHP!","db_enabled":false}` through the frontend proxy.
+- Container PHP syntax checks pass for `/var/www/html/index.php` and `/var/www/html/config.php`.
+
+## [2.6.38] - 2026-07-09
+
+### Changed
+- **Version-slot reconciliation for PR #247 merge** — the `chore/node24-cleanup` merge commit (`bad5bf8`) reconciled parallel branch versions by setting `package.json` to `2.6.38` after `main` had already claimed `2.6.37`. This heading documents the existing `origin/main` version slot so future sequence checks see a contiguous changelog.
+
+## [2.6.37] - 2026-07-08
+
+### Fixed
+- **LogfireTelemetry: span loss on unhandled exceptions** — wrap `$router->run()` in `try/finally` so `shutdown()` always flushes pending spans
+- **LogfireTelemetry: noop tracer sinkhole** — cache single noop tracer instead of creating new `TracerProvider` on every `tracer()` call
+- **config.example.php: .env quote stripping** — strip `"` and `'` from values so `LOGFIRE_TOKEN="abc"` doesn't generate `401 Unauthorized`
+- **LogfireTelemetry: sync version constants** — `SERVICE_VERSION` and `INSTRUMENTATION_VERSION` updated from `2.6.4` to `2.6.37`
+- **LogfireTelemetry: enhanced error diagnostics** — reset provider to null on init failure so future calls don't re-try with partial state
+
+### Added
+- **`/api/health` diagnostic endpoint** — gated behind `DEBUG=true`, returns server status, config file presence, vendor existence, and token state for troubleshooting
+- **`request.received` log moved inside try block** — ensures the entry log fires on every request, including ones that crash
+
+### Changed
+- **react-doctor perf: array lookups to Set/Map in 5 files** — `FiltersBar`, `KanbanView`, `SuggestionForm`, `FieldsSettings`, `emailAdapter`
+
 ## [2.6.36] - 2026-07-08
 
 ### Removed
@@ -684,4 +721,3 @@ Hotfix patch released the same day as v2.3.0. Both fixes are producer-side-only 
 - Fixes high CVE-2026-53571 and CVE-2026-53632 in vite (`server.fs.deny` bypass, NTLMv2 hash disclosure)
 - Fixes medium CVE-2026-49458, CVE-2026-49459, and CVE-2026-49978 in dompurify (XSS bypasses via IN_PLACE mode and shadow DOM)
 - Fixes low CVE-2026-49356 in `@babel/core` (arbitrary file read via sourceMappingURL)
-
