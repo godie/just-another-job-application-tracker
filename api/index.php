@@ -21,6 +21,14 @@ $config = file_exists(__DIR__ . '/config.php')
     ? require __DIR__ . '/config.php'
     : require __DIR__ . '/config.example.php';
 
+if (file_exists(__DIR__ . '/vendor/autoload.php')) {
+    require_once __DIR__ . '/vendor/autoload.php';
+} else {
+    require_once __DIR__ . '/src/Helpers/cors.php';
+    require_once __DIR__ . '/src/Helpers/database.php';
+    require_once __DIR__ . '/src/Helpers/appAuth.php';
+}
+
 // Initialize the descriptive logger first so the rest of the bootstrap can
 // emit request-context logs (request.received + request.completed around
 // the router run). Disabled by default in config.example.php; flip via
@@ -32,25 +40,13 @@ $requestMethod = strtoupper((string) ($_SERVER['REQUEST_METHOD'] ?? 'GET'));
 $requestUri = (string) ($_SERVER['REQUEST_URI'] ?? '/');
 $requestIp = (string) ($_SERVER['REMOTE_ADDR'] ?? '');
 $requestUserAgent = (string) ($_SERVER['HTTP_USER_AGENT'] ?? '');
-Logger::info('request.received', [
-    'method' => $requestMethod,
-    'uri' => $requestUri,
-    'client_ip' => $requestIp,
-    'user_agent' => $requestUserAgent,
-]);
 
 $controllerNamespace = rtrim((string) ($config['controller_namespace'] ?? 'OverPHP\\Controllers'), '\\');
 if ($controllerNamespace === '') {
     $controllerNamespace = 'OverPHP\\Controllers';
 }
 
-if (file_exists(__DIR__ . '/vendor/autoload.php')) {
-    require_once __DIR__ . '/vendor/autoload.php';
-} else {
-    require_once __DIR__ . '/src/Helpers/cors.php';
-    require_once __DIR__ . '/src/Helpers/database.php';
-    require_once __DIR__ . '/src/Helpers/appAuth.php';
-
+if (!file_exists(__DIR__ . '/vendor/autoload.php')) {
     spl_autoload_register(function (string $class) use ($controllerNamespace): void {
         $prefix = 'OverPHP\\';
         if (!str_starts_with($class, $prefix)) {
@@ -196,14 +192,50 @@ $router->add('GET', '/agent/job-applications', function () {
     return (new AgentJobApplicationController())->index();
 });
 
-$router->run();
+// ── Diagnostic health check (only when DEBUG=true, bypasses auth) ──
+if (!empty(getenv('DEBUG')) && ($requestMethod === 'GET') && ($requestUri === '/api/health' || $requestUri === '/health')) {
+    header('Content-Type: application/json; charset=utf-8');
+    echo json_encode([
+        'success' => true,
+        'service' => 'overphp-api',
+        'version' => '2.6.36',
+        'php' => PHP_VERSION,
+        'time' => gmdate('Y-m-d\TH:i:s\Z'),
+        'config' => [
+            'config_file' => file_exists(__DIR__ . '/config.php') ? 'config.php' : 'config.example.php',
+            'env_loaded' => file_exists(__DIR__ . '/.env'),
+            'vendor_exists' => file_exists(__DIR__ . '/vendor/autoload.php'),
+        ],
+        'logfire' => [
+            'token_set' => !empty(getenv('LOGFIRE_TOKEN')),
+            'token_source' => !empty(getenv('LOGFIRE_TOKEN')) ? 'env' : 'missing',
+            'base_url' => getenv('LOGFIRE_BASE_URL') ?: 'https://logfire-us.pydantic.dev',
+        ],
+        'logging' => [
+            'enabled' => Logger::isEnabled(),
+        ],
+    ], JSON_PRETTY_PRINT);
+    return;
+}
 
-Logger::info('request.completed', [
-    'method' => $requestMethod,
-    'uri' => $requestUri,
-    'status' => http_response_code() ?: 200,
-    'duration_ms' => (int) round((microtime(true) - $requestStart) * 1000),
-]);
+// ── Router dispatch (wrapped so telemetry flushes even on crash) ──
+try {
+    Logger::info('request.received', [
+        'method' => $requestMethod,
+        'uri' => $requestUri,
+        'client_ip' => $requestIp,
+        'user_agent' => $requestUserAgent,
+    ]);
 
-// ── Flush telemetry at end of request ──
-LogfireTelemetry::shutdown();
+    $router->run();
+} finally {
+    Logger::info('request.completed', [
+        'method' => $requestMethod,
+        'uri' => $requestUri,
+        'status' => http_response_code() ?: 200,
+        'duration_ms' => (int) round((microtime(true) - $requestStart) * 1000),
+    ]);
+
+    // ── Flush telemetry at end of request ──
+    LogfireTelemetry::shutdown();
+}

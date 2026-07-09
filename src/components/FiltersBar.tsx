@@ -98,6 +98,8 @@ const FiltersBar: React.FC<FiltersBarProps> = React.memo(({ filters, onFiltersCh
 
   const statusInclude = filters.statusInclude || [];
   const statusExclude = filters.statusExclude || [];
+  const statusIncludeSet = new Set(statusInclude);
+  const statusExcludeSet = new Set(statusExclude);
 
   return (
     <div className='flex flex-wrap items-end gap-3 sm:gap-4 py-3 border-b border-border dark:border-border'>
@@ -128,11 +130,11 @@ const FiltersBar: React.FC<FiltersBarProps> = React.memo(({ filters, onFiltersCh
                       id={`status-include-${status}`}
                       name={`status-include-${status}`}
                       type='checkbox'
-                      checked={statusInclude.includes(status)}
-                      onChange={() => handleStatusIncludeToggle(status)}
-                      className='rounded border-input text-primary focus:ring-ring bg-background'
-                      aria-label={t(`statuses.${status.toLowerCase()}`, status)}
-                    />
+                  checked={statusIncludeSet.has(status)}
+                  onChange={() => handleStatusIncludeToggle(status)}
+                  className='rounded border-input text-primary focus:ring-ring bg-background'
+                  aria-label={t(`statuses.${status.toLowerCase()}`, status)}
+                />
                     <span className='text-xs text-foreground'>{t(`statuses.${status.toLowerCase()}`, status)}</span>
                   </label>
                 ))}
@@ -151,11 +153,11 @@ const FiltersBar: React.FC<FiltersBarProps> = React.memo(({ filters, onFiltersCh
                       id={`status-exclude-${status}`}
                       name={`status-exclude-${status}`}
                       type='checkbox'
-                      checked={statusExclude.includes(status)}
-                      onChange={() => handleStatusExcludeToggle(status)}
-                      className='rounded border-input text-destructive focus:ring-destructive bg-background'
-                      aria-label={`${t('filters.exclude')}: ${t(`statuses.${status.toLowerCase()}`, status)}`}
-                    />
+                  checked={statusExcludeSet.has(status)}
+                  onChange={() => handleStatusExcludeToggle(status)}
+                  className='rounded border-input text-destructive focus:ring-destructive bg-background'
+                  aria-label={`${t('filters.exclude')}: ${t(`statuses.${status.toLowerCase()}`, status)}`}
+                />
                     <span className='text-xs text-foreground'>{t(`statuses.${status.toLowerCase()}`, status)}</span>
                   </label>
                 ))}

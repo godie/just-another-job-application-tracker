@@ -25,12 +25,15 @@ const FieldsSettings: React.FC<FieldsSettingsProps> = ({
     onMoveField(index, hoverIndex);
   };
 
+  const enabledSet = new Set(enabledFields);
+  const defaultFieldIds = new Set(defaultFields.map((f) => f.id));
+
   return (
     <div className="space-y-6">
       <div className="border border-border rounded overflow-hidden divide-y divide-border">
         {orderedFields.map((field, index) => {
-          const isEnabled = enabledFields.includes(field.id);
-          const isCustom = !defaultFields.find((f) => f.id === field.id);
+          const isEnabled = enabledSet.has(field.id);
+          const isCustom = !defaultFieldIds.has(field.id);
           return (
             <div
               key={field.id}

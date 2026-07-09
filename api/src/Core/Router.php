@@ -204,7 +204,7 @@ final class Router
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
             ]);
-            throw $e;
+            $this->sendError(500, 'Internal Server Error');
         } finally {
             $scope->detach();
             $span->end();

@@ -76,8 +76,10 @@ const KanbanView: React.FC<KanbanViewProps> = ({ applications, onSelectJob, onEd
       }
     });
 
+    const orderedStatusesSet = new Set(orderedStatuses);
+
     statuses.forEach((status) => {
-      if (!orderedStatuses.includes(status) && !status.startsWith('Interviewing - ')) {
+      if (!orderedStatusesSet.has(status) && !status.startsWith('Interviewing - ')) {
         otherStatuses.push(status);
       }
     });
