@@ -1,19 +1,3 @@
-## [2.6.37] - 2026-07-08
-
-### Fixed
-- **LogfireTelemetry: span loss on unhandled exceptions** — wrap `$router->run()` in `try/finally` so `shutdown()` always flushes pending spans
-- **LogfireTelemetry: noop tracer sinkhole** — cache single noop tracer instead of creating new `TracerProvider` on every `tracer()` call
-- **config.example.php: .env quote stripping** — strip `"` and `'` from values so `LOGFIRE_TOKEN="abc"` doesn't generate `401 Unauthorized`
-- **LogfireTelemetry: sync version constants** — `SERVICE_VERSION` and `INSTRUMENTATION_VERSION` updated from `2.6.4` → `2.6.37`
-- **LogfireTelemetry: enhanced error diagnostics** — reset provider to null on init failure so future calls don't re-try with partial state
-
-### Added
-- **`/api/health` diagnostic endpoint** — gated behind `DEBUG=true`, returns server status, config file presence, vendor existence, and token state for troubleshooting
-- **`request.received` log moved inside try block** — ensures the entry log fires on every request, including ones that crash
-
-### Changed
-- **react-doctor perf: array lookups → Set/Map in 5 files** — `FiltersBar`, `KanbanView`, `SuggestionForm`, `FieldsSettings`, `emailAdapter`
-
 ## [2.6.36] - 2026-07-08
 
 ### Removed
