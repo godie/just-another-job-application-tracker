@@ -17,11 +17,13 @@ if (file_exists($envFile)) {
     }
 }
 
+$allowedOrigins = array_values(array_filter(array_map(
+    'trim',
+    explode(',', getenv('ALLOWED_ORIGINS') ?: 'http://localhost:5173,https://jajat.godieboy.com')
+)));
+
 return [
-    'allowed_origins' => [
-        'http://localhost:5173',
-        'https://jajat.godieboy.com',
-    ],
+    'allowed_origins' => $allowedOrigins,
     'route_prefix' => getenv('API_PREFIX') ?: '/api',
     'controller_namespace' => getenv('CONTROLLER_NAMESPACE') ?: 'OverPHP\\Controllers',
     // Descriptive logging toggle. Off by default in the production template
