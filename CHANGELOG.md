@@ -1,3 +1,8 @@
+## [2.6.40] - 2026-07-09
+
+### Changed
+- **Centralized filter types and defaults** (`src/types/filters.ts`, `src/components/FiltersBar.tsx`, `src/pages/HomePage.tsx`) — moved the `defaultFilters` constant and `Filters` interface to `src/types/filters.ts` to eliminate duplication across the component, page, and test layers.
+
 ## [2.6.39] - 2026-07-09
 
 ### Added

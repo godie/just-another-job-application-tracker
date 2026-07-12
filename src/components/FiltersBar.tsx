@@ -2,16 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Input } from './ui/Input';
 import { Select } from './ui/Select';
-
-export interface Filters {
-  search: string;
-  status: string; // Legacy: single status filter (for backward compatibility)
-  statusInclude: string[]; // Statuses to include (if empty, include all)
-  statusExclude: string[]; // Statuses to exclude
-  platform: string;
-  dateFrom: string;
-  dateTo: string;
-}
+import { type Filters } from '../types/filters';
 
 interface FiltersBarProps {
   filters: Filters;
