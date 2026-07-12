@@ -1,7 +1,7 @@
 import { renderHook } from '@testing-library/react';
 import { useFilteredApplications } from './useFilteredApplications';
 import { type JobApplication } from '../types/applications';
-import { type Filters } from '../components/FiltersBar';
+import { defaultFilters } from '../types/filters';
 import { describe, it, expect } from 'vitest';
 
 const mockApplications: JobApplication[] = [
@@ -22,16 +22,6 @@ const mockApplications: JobApplication[] = [
     timeline: [],
   },
 ];
-
-const defaultFilters: Filters = {
-  search: '',
-  status: '',
-  statusInclude: [],
-  statusExclude: [],
-  platform: '',
-  dateFrom: '',
-  dateTo: '',
-};
 
 describe('useFilteredApplications referential identity', () => {
   it('should maintain referential identity for unchanged applications', () => {

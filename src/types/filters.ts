@@ -7,3 +7,13 @@ export interface Filters {
   dateFrom: string;
   dateTo: string;
 }
+
+export const defaultFilters: Filters = {
+  search: '',
+  status: '',
+  statusInclude: [],
+  statusExclude: [],
+  platform: '',
+  dateFrom: '',
+  dateTo: '',
+};

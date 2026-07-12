@@ -1,3 +1,12 @@
+## [2.6.43] - 2026-08-31
+
+### Changed
+- **Centralized filter types and defaults** (`src/types/filters.ts`, `src/components/FiltersBar.tsx`, `src/pages/HomePage.tsx`, and related tests) so the shared `Filters` contract and `defaultFilters` value have one source of truth instead of being duplicated across the page, component, and test layers.
+- **Synchronized project version metadata** in `package.json`, `package-lock.json`, and `api/src/Telemetry/LogfireTelemetry.php` for this rebased standalone PR.
+
+### Validation
+- `npm test`, `npm run lint`, and `npm run build` pass.
+
 ## [2.6.41] - 2026-08-07
 
 ### Fixed
