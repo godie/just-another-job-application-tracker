@@ -3,7 +3,8 @@ import { useTranslation, Trans } from 'react-i18next';
 import { useSEO } from '../seo/useSEO';
 import Footer from '../components/Footer';
 import ViewSwitcher, { type ViewType } from '../components/ViewSwitcher';
-import FiltersBar, { type Filters } from '../components/FiltersBar';
+import FiltersBar from '../components/FiltersBar';
+import { type Filters, defaultFilters } from '../types/filters';
 import MetricsSummary from '../components/MetricsSummary';
 import { useAlert } from '../components/AlertProvider';
 import type { JobApplication } from '../types/applications';
@@ -41,16 +42,6 @@ function loadInitialFilters(): Filters {
   }
   return defaultFilters;
 }
-
-const defaultFilters: Filters = {
-  search: '',
-  status: '',
-  statusInclude: [],
-  statusExclude: [],
-  platform: '',
-  dateFrom: '',
-  dateTo: '',
-};
 
 import { type PageType } from '../App';
 

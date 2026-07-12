@@ -1,16 +1,7 @@
 import { render, screen, fireEvent, act } from '@testing-library/react';
 import { describe, expect, test, vi, beforeEach, afterEach } from 'vitest';
-import FiltersBar, { type Filters } from '../components/FiltersBar';
-
-const defaultFilters: Filters = {
-  search: '',
-  status: '',
-  statusInclude: [],
-  statusExclude: [],
-  platform: '',
-  dateFrom: '',
-  dateTo: '',
-};
+import FiltersBar from '../components/FiltersBar';
+import { defaultFilters } from '../types/filters';
 
 describe('FiltersBar', () => {
   beforeEach(() => {
