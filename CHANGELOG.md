@@ -1,3 +1,9 @@
+## [2.6.40] - 2026-07-09
+
+### Changed
+- **Refactor application status badge lookup** (`src/utils/status.ts`) — replaced the if/else-if chains in `getBadgeVariantForStatus` with an object map lookup (`STATUS_VARIANT_MAP`). This improves readability, eliminates redundant conditionals, and reduces cognitive load.
+- **Added unit tests for status badge lookup** (`src/utils/status.test.ts`) — added a comprehensive suite of unit tests to verify the `getBadgeVariantForStatus` function behaves correctly under all conditions (case-insensitivity, default fallback, exact matches).
+
 ## [2.6.39] - 2026-07-09
 
 ### Added
