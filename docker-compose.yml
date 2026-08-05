@@ -21,7 +21,7 @@ services:
       - .:/app
       - /app/node_modules
     healthcheck:
-      test: ['CMD', 'wget', '-q', '--spider', 'http://localhost:5173']
+      test: ['CMD', 'wget', '-q', '--spider', 'http://127.0.0.1:5173']
       interval: 30s
       timeout: 10s
       retries: 3
@@ -50,13 +50,17 @@ services:
       - DB_PASSWORD=${DB_PASSWORD:-}
       - DB_CHARSET=${DB_CHARSET:-utf8mb4}
       - DB_SQLITE_PATH=${DB_SQLITE_PATH:-/var/www/html/data/jajat.sqlite}
+      - SUGGESTIONS_DB_PATH=${SUGGESTIONS_DB_PATH:-/var/www/html/data/suggestions.db}
       - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-http://localhost:5173}
-      - CLIENT_ENABLED=true
-      - CLIENT_PATH=/var/www/html
+      - CLIENT_ENABLED=false
+      - LOGGING_ENABLED=${LOGGING_ENABLED:-false}
+      - LOGFIRE_TOKEN=${LOGFIRE_TOKEN:-}
+      - OTEL_SERVICE_NAME=${OTEL_SERVICE_NAME:-overphp-api}
+      - LOGFIRE_BASE_URL=${LOGFIRE_BASE_URL:-https://logfire-us.pydantic.dev}
     volumes:
       - ./api/data:/var/www/html/data
     healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://localhost/']
+      test: ['CMD', 'curl', '-fsS', 'http://localhost/api/hello']
       interval: 30s
       timeout: 10s
       retries: 3
