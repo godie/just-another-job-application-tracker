@@ -1,3 +1,7 @@
+## [2.6.39] - 2026-07-29
+
+### Added
+- **Networking CRM roadmap and implementation plan** — defines a local-first contacts and follow-up workflow, optional account sync, invitation-only coach access, and candidate-controlled comments and change suggestions for hosted and self-hosted installations.
 ## [2.6.39] - 2026-07-09
 
 ### Added
