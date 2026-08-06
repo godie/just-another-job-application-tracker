@@ -44,8 +44,14 @@ const AuthForm: React.FC<AuthFormProps> = ({ mode, onNavigate, onSuccess }) => {
         body: JSON.stringify({ email, password }),
       });
 
+      if (!res.ok) {
+        const errorData = (await res.json().catch(() => null)) as { error?: string } | null;
+        showError(errorData?.error || (isRegister ? 'Registration failed' : 'Login failed'));
+        return;
+      }
+
       const data = await res.json();
-      if (res.ok && data.success) {
+      if (data.success) {
         setUser(data.user);
         showSuccess(isRegister ? 'Account created successfully!' : 'Logged in successfully!');
         if (onSuccess) onSuccess();

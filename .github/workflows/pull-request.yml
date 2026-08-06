@@ -123,6 +123,37 @@ jobs:
       - name: Run Knip
         run: npm run knip
 
+  npm-audit:
+    name: NPM Audit
+    runs-on: ubuntu-latest
+    # CI RACE: bounded wait. `npm audit` queries the npm registry
+    # advisory API against package-lock.json — normally < 30s, but a
+    # slow registry response or a rate-limit could sit at `pending`
+    # indefinitely without this cap. 5 min is a generous ceiling for
+    # the work + ample cold-runner headroom. See AGENTS.md
+    # "CI Race Playbook".
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v5
+
+      - name: Setup Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Run npm audit (fail on any vulnerability)
+        # v2.6.40 gate: `npm audit` reads package-lock.json directly — no
+        # `npm ci` needed, which keeps this gate fast (~30s).
+        # `--audit-level=low` is the strictest practical threshold: any
+        # advisory (low, moderate, high, critical) fails the PR. The
+        # dependency tree was swept clean in 2.6.40 (0 vulnerabilities
+        # per the npm audit + cve-lite sweep), so any finding here is a
+        # regression introduced by the PR and blocks the merge.
+        run: npm audit --audit-level=low
+
   secrets:
     name: Secret Scan
     runs-on: ubuntu-latest

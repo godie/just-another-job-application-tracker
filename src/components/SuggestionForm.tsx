@@ -136,9 +136,15 @@ const SuggestionForm: React.FC<SuggestionFormProps> = ({ onNavigate }) => {
         },
       });
 
+      if (!response.ok) {
+        const errorData = (await response.json().catch(() => null)) as { error?: string } | null;
+        const translate = translationRef.current;
+        throw new Error(errorData?.error || translate?.('support.captchaError') || 'Captcha error');
+      }
+
       const data = await response.json().catch(() => null);
 
-      if (!response.ok || !data?.success || !data.captchaId || !data.challenge) {
+      if (!data?.success || !data.captchaId || !data.challenge) {
         const translate = translationRef.current;
         throw new Error(data?.error || translate?.('support.captchaError') || 'Captcha error');
       }
@@ -201,9 +207,14 @@ const SuggestionForm: React.FC<SuggestionFormProps> = ({ onNavigate }) => {
         }),
       });
 
+      if (!response.ok) {
+        const errorData = (await response.json().catch(() => null)) as { error?: string } | null;
+        throw new Error(errorData?.error || t('support.submitError'));
+      }
+
       const data = await response.json().catch(() => null);
 
-      if (!response.ok || !data?.success) {
+      if (!data?.success) {
         throw new Error(data?.error || t('support.submitError'));
       }
 

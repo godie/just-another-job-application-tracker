@@ -1,9 +1,17 @@
-const VAULT_KEY = 'gemini_vault';
+const VAULT_KEY = 'gemini_vault_v1';
+const LEGACY_VAULT_KEY = 'gemini_vault';
 
 interface EncryptedVault {
   ciphertext: string;
   salt: string;
   iv: string;
+}
+
+function getStoredVault(): string | null {
+  // Versioned key first; fall back to the legacy unversioned key so existing
+  // users don't lose their stored API key on upgrade. The legacy entry is
+  // removed once the vault is re-saved under the v1 key.
+  return localStorage.getItem(VAULT_KEY) ?? localStorage.getItem(LEGACY_VAULT_KEY);
 }
 
 function getSubtleCrypto(): SubtleCrypto {
@@ -82,11 +90,12 @@ export async function encryptAndSave(
   };
 
   localStorage.setItem(VAULT_KEY, JSON.stringify(vault));
+  localStorage.removeItem(LEGACY_VAULT_KEY);
 }
 
 export async function decryptKey(masterPassword: string): Promise<string> {
   const subtle = getSubtleCrypto();
-  const raw = localStorage.getItem(VAULT_KEY);
+  const raw = getStoredVault();
   if (!raw) {
     throw new Error('No encrypted key found in storage.');
   }
@@ -108,9 +117,10 @@ export async function decryptKey(masterPassword: string): Promise<string> {
 }
 
 export function hasKeyStored(): boolean {
-  return localStorage.getItem(VAULT_KEY) !== null;
+  return getStoredVault() !== null;
 }
 
 export function clearStoredKey(): void {
   localStorage.removeItem(VAULT_KEY);
+  localStorage.removeItem(LEGACY_VAULT_KEY);
 }

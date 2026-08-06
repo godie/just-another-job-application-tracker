@@ -17,12 +17,18 @@ export interface SyncStatus {
   spreadsheetId: string | null;
 }
 
-const SYNC_STATUS_KEY = 'googleSheetsSyncStatus';
-const SPREADSHEET_ID_KEY = 'googleSheetsSpreadsheetId';
+const SYNC_STATUS_KEY = 'googleSheetsSyncStatus_v1';
+const LEGACY_SYNC_STATUS_KEY = 'googleSheetsSyncStatus';
+const SPREADSHEET_ID_KEY = 'googleSheetsSpreadsheetId_v1';
+const LEGACY_SPREADSHEET_ID_KEY = 'googleSheetsSpreadsheetId';
 
 export const getSyncStatus = (): SyncStatus => {
   try {
-    const stored = localStorage.getItem(SYNC_STATUS_KEY);
+    // Versioned key first; legacy unversioned key as fallback so existing
+    // users keep their stored sync status on upgrade (migrated on next save).
+    const stored =
+      localStorage.getItem(SYNC_STATUS_KEY) ??
+      localStorage.getItem(LEGACY_SYNC_STATUS_KEY);
     if (stored) {
       return JSON.parse(stored);
     }
@@ -43,6 +49,7 @@ export const saveSyncStatus = (status: Partial<SyncStatus>): void => {
     const current = getSyncStatus();
     const updated = { ...current, ...status };
     localStorage.setItem(SYNC_STATUS_KEY, JSON.stringify(updated));
+    localStorage.removeItem(LEGACY_SYNC_STATUS_KEY);
   } catch (error) {
     console.error('Error saving sync status:', error);
   }
@@ -50,7 +57,10 @@ export const saveSyncStatus = (status: Partial<SyncStatus>): void => {
 
 export const getStoredSpreadsheetId = (): string | null => {
   try {
-    return localStorage.getItem(SPREADSHEET_ID_KEY);
+    return (
+      localStorage.getItem(SPREADSHEET_ID_KEY) ??
+      localStorage.getItem(LEGACY_SPREADSHEET_ID_KEY)
+    );
   } catch {
     return null;
   }
@@ -59,6 +69,7 @@ export const getStoredSpreadsheetId = (): string | null => {
 export const storeSpreadsheetId = (spreadsheetId: string): void => {
   try {
     localStorage.setItem(SPREADSHEET_ID_KEY, spreadsheetId);
+    localStorage.removeItem(LEGACY_SPREADSHEET_ID_KEY);
     saveSyncStatus({ spreadsheetId });
   } catch (error) {
     console.error('Error storing spreadsheet ID:', error);

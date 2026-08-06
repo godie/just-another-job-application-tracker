@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 
 export function useSelection<T>(initialSelection: T[] = []) {
-  const [selected, setSelected] = useState<Set<T>>(new Set(initialSelection));
+  const [selected, setSelected] = useState<Set<T>>(() => new Set(initialSelection));
 
   const toggle = useCallback((item: T) => {
     setSelected((prev) => {

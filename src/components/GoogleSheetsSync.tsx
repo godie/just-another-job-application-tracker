@@ -150,7 +150,7 @@ const GoogleSheetsSync: React.FC<GoogleSheetsSyncProps> = ({ applications, onSyn
       dispatch({ type: 'SET_FIELD', field: 'spreadsheetUrl', value: sheetInfo.spreadsheetUrl });
       showSuccess(t('sheets.spreadsheetCreated'));
 
-      window.open(sheetInfo.spreadsheetUrl, '_blank');
+      window.open(sheetInfo.spreadsheetUrl, '_blank', 'noopener,noreferrer');
 
       setTimeout(() => {
         handleSync();
@@ -166,7 +166,7 @@ const GoogleSheetsSync: React.FC<GoogleSheetsSyncProps> = ({ applications, onSyn
 
   const handleOpenSheet = () => {
     if (spreadsheetUrl) {
-      window.open(spreadsheetUrl, '_blank');
+      window.open(spreadsheetUrl, '_blank', 'noopener,noreferrer');
     }
   };
 

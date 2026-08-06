@@ -264,7 +264,8 @@ describe('GoogleSheetsSync Component', () => {
       await waitFor(() => {
         expect(mockWindowOpen).toHaveBeenCalledWith(
           'https://docs.google.com/spreadsheets/d/new-id-123',
-          '_blank'
+          '_blank',
+          'noopener,noreferrer'
         );
       });
     });
@@ -458,7 +459,8 @@ describe('GoogleSheetsSync Component', () => {
 
       expect(mockWindowOpen).toHaveBeenCalledWith(
         'https://docs.google.com/spreadsheets/d/test-id-123',
-        '_blank'
+        '_blank',
+        'noopener,noreferrer'
       );
     });
   });

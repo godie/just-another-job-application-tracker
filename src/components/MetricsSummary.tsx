@@ -38,7 +38,7 @@ const MetricsSummary: React.FC<MetricsSummaryProps> = ({ applications }) => {
         </p>
       </div>
 
-      <div className='bg-sage-50 border-l-2 border-primary/50 px-7 py-7'>
+      <div className='bg-sage-50 border-l-2 border-primary/50 p-7'>
         <p className='text-sm font-semibold uppercase tracking-[0.12em] text-primary'>
           {t('home.metrics.interviews')}
         </p>
@@ -47,7 +47,7 @@ const MetricsSummary: React.FC<MetricsSummaryProps> = ({ applications }) => {
         </p>
       </div>
 
-      <div className='bg-card border-l-2 border-earth-300 px-7 py-7'>
+      <div className='bg-card border-l-2 border-earth-300 p-7'>
         <p className='text-sm font-semibold uppercase tracking-[0.12em] text-earth-500'>
           {t('home.metrics.offers')}
         </p>
