@@ -73,7 +73,12 @@ describe('App Navigation and History', () => {
 
     render(<App />);
 
-    expect(await screen.findByRole('heading', { level: 1, name: /Settings/i })).toBeInTheDocument();
+    // SettingsPage is lazy-loaded; the default 1s findByRole timeout is too
+    // tight under parallel test load (intermittent flake). Give the lazy
+    // chunk a generous window.
+    expect(
+      await screen.findByRole('heading', { level: 1, name: /Settings/i }, { timeout: 5000 })
+    ).toBeInTheDocument();
   });
 
   it('updates the URL when the page changes', async () => {
@@ -152,7 +157,9 @@ describe('App Navigation and History', () => {
       window.dispatchEvent(new PopStateEvent('popstate', { state: { page: 'settings' } }));
     });
 
-    expect(await screen.findByRole('heading', { level: 1, name: /Settings/i })).toBeInTheDocument();
+    expect(
+      await screen.findByRole('heading', { level: 1, name: /Settings/i }, { timeout: 5000 })
+    ).toBeInTheDocument();
   });
 
   it('wraps route swaps in document.startViewTransition when the API is supported', async () => {
@@ -183,7 +190,7 @@ describe('App Navigation and History', () => {
       // the time this assert runs React has already committed the new page.
       expect(startViewTransition).toHaveBeenCalledTimes(1);
       expect(
-        await screen.findByRole('heading', { level: 1, name: /Settings/i }),
+        await screen.findByRole('heading', { level: 1, name: /Settings/i }, { timeout: 5000 }),
       ).toBeInTheDocument();
     } finally {
       Reflect.deleteProperty(document, 'startViewTransition');

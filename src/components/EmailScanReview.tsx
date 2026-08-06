@@ -291,7 +291,7 @@ export function EmailScanReview() {
 
     if (chatbot) {
       showSuccess(t('settings.emailScan.promptCopiedToOpen', { name: chatbot.name }));
-      window.open(chatbot.url, '_blank');
+      window.open(chatbot.url, '_blank', 'noopener,noreferrer');
     } else {
       showSuccess(t('settings.emailScan.promptCopied'));
     }

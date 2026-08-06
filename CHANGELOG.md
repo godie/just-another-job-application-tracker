@@ -1,3 +1,47 @@
+## [2.6.40] - 2026-08-05
+
+### Security
+- **All `npm audit` and `cve-lite` findings resolved** — 4 npm audit advisories (6 cve-lite findings across 4 packages) cleared with minimal, in-range lockfile churn:
+  - `brace-expansion` (high, transitive, 8 paths incl. prod) — `1.1.15→1.1.18`, `2.1.1→2.1.4`, `5.0.7→5.0.9`, all within parent `minimatch` semver ranges.
+  - `postcss` (high, direct) — `^8.5.6` → `^8.5.25` (path traversal in source-map auto-loading).
+  - `dompurify` (low, direct) — `^3.4.11` → `^3.4.13` (`CUSTOM_ELEMENT_HANDLING` bypass).
+  - `fast-uri` (high, transitive) — `3.1.3` → `3.1.5` (host confusion via backslash).
+  - `nanoid` (transitive patch) — `3.3.15` → `3.3.17` picked up by the same update.
+- `npm audit` reports **0 vulnerabilities**; `cve-lite . --json` reports **0 findings**.
+
+### CI
+- **New `npm-audit` job in `pull-request.yml`** — runs `npm audit --audit-level=low` on every PR against `package-lock.json` (no install needed, ~30s) and fails the PR on any advisory (low, moderate, high, critical). With the tree swept clean in this same release, any finding is a regression and blocks the merge.
+- **`cve-lite.yml` `--fail-on` tightened `critical` → `low`** — the CVE Scan check (already running on every PR + push to main) previously failed only on critical findings, silently passing medium/high regressions. It now fails on any advisory at or above low.
+
+### Security (backend)
+- **`composer audit --locked` confirms the backend was already clean** — 0 advisories across all 79 locked packages (32 runtime + 47 dev); `composer validate --strict` passes (lockfile in sync). No backend vulnerability fixes were required.
+- **In-range dependency updates applied** (maintenance, not security): `symfony/http-client` 8.1.1→8.1.3 (patch), `phpstan/phpstan` 2.2.5→2.2.8 (patch), `open-telemetry/sdk` 1.14.0→1.15.0 + `open-telemetry/api` 1.9.0→1.10.0 (minor), `rector/rector` 2.5.4→2.6.1 (minor). `phpunit` intentionally left on `^11` (13.x is a deliberate major pin).
+
+### Fixed
+- **recharts no longer loads eagerly** (`src/components/BarChartWidget.tsx`) — the static `import ... from 'recharts'` was replaced with a `React.lazy(() => import('recharts').then(...))` dynamic import, so the ~100 kB gzipped chart library downloads only when a chart actually renders instead of riding along in the Insights chunk. The stale `react-doctor-disable-next-line` suppression (written in the old comment format the current CLI no longer recognizes) was deleted.
+
+### Changed
+- **Redundant padding axes collapsed** (`src/components/MetricsSummary.tsx`, `src/pages/OpportunitiesPage.tsx`) — four `px-7 py-7` class pairs collapsed to `p-7` per the `design-no-redundant-padding-axes` rule; the `px-8 py-7` cards are intentionally left split (8 ≠ 7).
+
+### Removed
+- **`BarChartWidget.tsx` react-doctor suppression** — the `prefer-dynamic-import` directive is gone (root cause fixed instead). `DOCS/REACT_DOCTOR_AUDIT.md` inventory updated from 7 to 6 suppressions.
+
+### Fixed (fresh react-doctor scan pass)
+- **Reverse-tabnabbing fixed** (`EmailScanReview.tsx`, `GoogleSheetsSync.tsx`) — `window.open(..., '_blank')` now passes `'noopener,noreferrer'` so a page opened from a user-supplied chatbot URL or a Google Sheets URL cannot take over the app's tab (`window-open-without-noopener`, 3×).
+- **Side effects removed from state updaters** (`OnboardingWizard.tsx`) — `goNext`/`goPrev`/`goToStep` no longer call `setDirection`/`onNavigate`/`handleClose` inside the `setStep` updater; in StrictMode those updaters run twice, which could double-navigate or double-close (`no-impure-state-updater` / `no-side-effect-in-state-updater-function`, 10×).
+- **IME composition guard on Enter-to-submit** (`SheetSelectInput.tsx`, `TagInput.tsx`) — Enter keydown during a CJK/IME composition no longer submits/creates a tag prematurely (`no-enter-submit-without-ime-composition-guard`, 2×).
+- **Fetch response status checked before body read** (`AuthForm.tsx`, `SuggestionForm.tsx`, `gmailClient.ts`, `SuggestionsViewerPage.tsx`, `jobSearchApi.ts`) — HTTP error responses are no longer parsed as successful payloads; error bodies are read only after `!response.ok` (`no-fetch-response-used-without-status-check`, 7×).
+- **Cloud-sync fetches are abortable** (`useCloudSync.ts`) — pull and push now accept an `AbortSignal` wired to effect cleanup so in-flight sync requests can't outlive the effect (`no-fetch-in-effect`, 2×).
+- **Object URL revoked after CSV export** (`CSVActions.tsx`) — `URL.revokeObjectURL` is now called so each export doesn't leak a blob URL for the session's lifetime (`no-create-object-url-without-revoke`).
+- **Alert timer cleanup + ref moved out of render** (`Alert.tsx`) — the inner 300 ms hide timer is tracked and cleared, and `onCloseRef` is assigned in an effect instead of during render (`effect-needs-cleanup`, `no-ref-current-in-render`).
+- **Eager `new Set()` initializer made lazy** (`useSelection.ts`) — `useState(() => new Set(initialSelection))` stops allocating a fresh Set on every render (`no-eager-new-in-use-state-initializer`).
+- **Versioned localStorage keys with legacy fallback** (`useCrypto.ts`, `googleSheets.ts`) — `gemini_vault` → `gemini_vault_v1`, `googleSheetsSyncStatus`/`googleSheetsSpreadsheetId` → `_v1` variants; legacy keys are still read on first access and removed after re-save, so no user data is lost (`client-localstorage-no-version`, 2×; tests updated in `src/tests/googleSheets.test.ts`).
+
+### Notes
+- Deliberately avoided `npm audit fix`'s over-broad plan (tailwindcss 4.3.2 / rollup 4.62.2 / oxlint / oxc-resolver tree churn) — targeted in-range updates achieve the same security result with no breaking restructure. The engine warning it surfaced for `ini@7` is pre-existing (already installed via `react-doctor → effect`), not introduced by either path.
+- **`no-cascading-set-state` (Alert.tsx) deliberately untouched** — the rule is retired upstream (per its canonical docs: "This detector no longer participates in current analysis. No application code change is required."). Verified there is no repo config enabling it; it disappears with an upstream ruleset bump, no code change needed.
+- **Deferred (see follow-up):** the 12 `no-ref-current-in-render` sites outside `Alert.tsx` (best-practice ref pattern; proper fix needs React 19.2 `useEffectEvent` or per-file restructuring), `no-transition-all` (27 cosmetic sites), `no-giant-component` (HomePage), and the a11y `label-has-associated-control` / `control-has-associated-label` clusters.
+
 ## [2.6.39] - 2026-07-09
 
 ### Added

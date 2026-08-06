@@ -43,16 +43,26 @@ const ALERT_ICONS = {
 const Alert: React.FC<AlertProps> = ({ type, message, onClose, duration = 5000 }) => {
   const [isVisible, setIsVisible] = useState(true);
   const onCloseRef = useRef(onClose);
-  onCloseRef.current = onClose;
 
   useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
+
+  // react-doctor-disable-next-line effect-needs-cleanup -- canonical rule waiver: the inner 300 ms hide timer IS cleared by the returned teardown (`clearTimeout(hideTimer)`); the detector's cleanup matcher only inspects top-level statements and cannot trace timer ids created inside a nested timer callback (documented recipe false-positive case), react-doctor/effect-needs-cleanup
+  useEffect(() => {
     if (duration > 0) {
+      // Canonical cleanup shape: the nested hide timer is a closure variable
+      // cleared by the same returned teardown as the outer timer.
+      let hideTimer: ReturnType<typeof setTimeout> | null = null;
       const timer = setTimeout(() => {
         setIsVisible(false);
-        setTimeout(() => onCloseRef.current?.(), 300);
+        hideTimer = setTimeout(() => onCloseRef.current?.(), 300);
       }, duration);
 
-      return () => clearTimeout(timer);
+      return () => {
+        clearTimeout(timer);
+        if (hideTimer) clearTimeout(hideTimer);
+      };
     }
   }, [duration]);
 

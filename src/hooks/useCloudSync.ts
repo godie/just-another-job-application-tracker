@@ -24,13 +24,14 @@ async function pullCloudData(
   setApplications: (apps: JobApplication[]) => void,
   setOpportunities: (opps: JobOpportunity[]) => void,
   setConflict: (local: MergeData, cloud: MergeData) => void,
+  signal?: AbortSignal,
 ): Promise<'done' | 'conflict'> {
   try {
     // credentials: 'include' is REQUIRED on the pull side so the server can
     // identify the user and return only their data — without it the request is
     // unauthenticated and any session cookie is ignored. The previous version
     // omitted this flag, which was both broken and a tenant-isolation risk.
-    const appRes = await fetch('/api/sync/applications', { credentials: 'include' });
+    const appRes = await fetch('/api/sync/applications', { credentials: 'include', signal });
     const appParsed = appRes.ok
       ? parseApplicationsSyncResponse(await safeJson(appRes))
       : { items: [], dropped: 0, truncated: 0, envelopeError: `http ${appRes.status}` };
@@ -46,7 +47,7 @@ async function pullCloudData(
       );
     }
 
-    const oppRes = await fetch('/api/sync/opportunities', { credentials: 'include' });
+    const oppRes = await fetch('/api/sync/opportunities', { credentials: 'include', signal });
     const oppParsed = oppRes.ok
       ? parseOpportunitiesSyncResponse(await safeJson(oppRes))
       : { items: [], dropped: 0, truncated: 0, envelopeError: `http ${oppRes.status}` };
@@ -90,6 +91,7 @@ async function pullCloudData(
     if (cloudOppsOk) setOpportunities(cloudOpps);
     return 'done';
   } catch (err) {
+    if (signal?.aborted) return 'done';
     console.error('Failed to pull data from cloud', err);
     return 'done';
   }
@@ -98,6 +100,7 @@ async function pullCloudData(
 async function pushCloudData(
   applications: JobApplication[],
   opportunities: JobOpportunity[],
+  signal?: AbortSignal,
 ): Promise<void> {
   try {
     await fetch('/api/sync/applications', {
@@ -105,6 +108,7 @@ async function pushCloudData(
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
       body: JSON.stringify(applications),
+      signal,
     });
 
     await fetch('/api/sync/opportunities', {
@@ -112,8 +116,10 @@ async function pushCloudData(
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
       body: JSON.stringify(opportunities),
+      signal,
     });
   } catch (err) {
+    if (signal?.aborted) return;
     console.error('Failed to push data to cloud', err);
   }
 }
@@ -140,6 +146,7 @@ export function useCloudSync() {
     wasAuthenticated.current = isAuthenticated;
   }, [isAuthenticated]);
 
+  // react-doctor-disable-next-line no-fetch-in-effect -- canonical rule waiver: one-shot initial sync pull with proper AbortController cleanup, in a project that has not adopted a data-fetching library (react-query/SWR), react-doctor/no-fetch-in-effect
   useEffect(() => {
     if (
       isAuthenticated &&
@@ -150,16 +157,28 @@ export function useCloudSync() {
       !isSyncPaused
     ) {
       pullTriggered.current = true;
-      void pullCloudData(setApplications, setOpportunities, setConflict).then((result) => {
+      const controller = new AbortController();
+      void pullCloudData(setApplications, setOpportunities, setConflict, controller.signal).then((result) => {
+        // If cleanup aborted this pull (StrictMode double-mount in dev, or a
+        // genuine unmount), don't mark the initial load done — release the
+        // guard so a future effect run performs the pull instead of silently
+        // skipping cloud data.
+        if (controller.signal.aborted) {
+          pullTriggered.current = false;
+          return;
+        }
         if (result === 'conflict') {
           pullTriggered.current = false;
         } else {
           _initialLoadDone = true;
         }
       });
+      return () => controller.abort();
     }
+    return undefined;
   }, [isAuthenticated, isAuthLoading, isConflictDetected, isSyncPaused, setApplications, setOpportunities, setConflict]);
 
+  // react-doctor-disable-next-line no-fetch-in-effect -- canonical rule waiver: debounced event-driven sync push with AbortController cleanup, in a project that has not adopted a data-fetching library (react-query/SWR), react-doctor/no-fetch-in-effect
   useEffect(() => {
     if (!isAuthenticated || !_initialLoadDone || isSyncPaused) return;
 
@@ -170,6 +189,7 @@ export function useCloudSync() {
     // debounce is preserved: rapid events reset the timer so only the
     // last one fires the network push (batch imports, form updates).
     let debounceTimer: ReturnType<typeof setTimeout> | null = null;
+    const controller = new AbortController();
 
     const schedulePush = () => {
       if (debounceTimer) clearTimeout(debounceTimer);
@@ -181,7 +201,7 @@ export function useCloudSync() {
         // debounce window, including the event that triggered this push.
         const apps = useApplicationsStore.getState().applications;
         const opps = useOpportunitiesStore.getState().opportunities;
-        void pushCloudData(apps, opps).finally(() => {
+        void pushCloudData(apps, opps, controller.signal).finally(() => {
           syncInProgress.current = false;
         });
       }, 2000);
@@ -194,6 +214,10 @@ export function useCloudSync() {
       window.removeEventListener('jobApplicationsUpdated', schedulePush);
       window.removeEventListener('jobOpportunitiesUpdated', schedulePush);
       if (debounceTimer) clearTimeout(debounceTimer);
+      // Aborting an in-flight push on cleanup (e.g. logout mid-debounce) drops
+      // that queued write rather than delivering it — deliberate: the session
+      // cookie is already gone, so the server would reject it anyway.
+      controller.abort();
     };
   }, [isAuthenticated, isSyncPaused]);
 

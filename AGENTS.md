@@ -889,6 +889,8 @@ Remember: Test first, type everything, follow React best practices, maintain con
 
 Run `cve-lite . --json` in the project root. The results are saved to `cve-lite-scan-<timestamp>.json` in the current directory.
 
+**CI gate (v2.6.40):** `.github/workflows/cve-lite.yml` runs `cve-lite . --json --usage --fail-on low` on every PR and push to main, so any advisory at or above `low` fails the check. `pull-request.yml`'s `npm-audit` job additionally runs `npm audit --audit-level=low` on every PR. The dependency tree was swept clean in 2.6.40, so any finding on a PR is a regression that blocks the merge; do not bypass with `--admin` — use `cve-lite overrides` (documented in the workflow) for unfixable findings instead.
+
 ### Getting scan data
 
 Key fields in each finding:

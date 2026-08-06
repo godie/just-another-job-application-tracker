@@ -59,14 +59,27 @@ describe('Google Sheets Utilities', () => {
         lastSyncError: null,
         spreadsheetId: 'test-id',
       };
-      localStorageMock.setItem('googleSheetsSyncStatus', JSON.stringify(storedStatus));
+      localStorageMock.setItem('googleSheetsSyncStatus_v1', JSON.stringify(storedStatus));
       
       const status = getSyncStatus();
       expect(status).toEqual(storedStatus);
     });
 
+    test('should read legacy unversioned key as fallback (migration)', () => {
+      const legacyStatus: SyncStatus = {
+        isSyncing: false,
+        lastSyncTime: '2023-06-01T00:00:00.000Z',
+        lastSyncError: null,
+        spreadsheetId: 'legacy-id',
+      };
+      localStorageMock.setItem('googleSheetsSyncStatus', JSON.stringify(legacyStatus));
+      
+      const status = getSyncStatus();
+      expect(status).toEqual(legacyStatus);
+    });
+
     test('should handle invalid JSON gracefully', () => {
-      localStorageMock.setItem('googleSheetsSyncStatus', 'invalid-json');
+      localStorageMock.setItem('googleSheetsSyncStatus_v1', 'invalid-json');
       
       const status = getSyncStatus();
       expect(status).toEqual({
@@ -86,11 +99,11 @@ describe('Google Sheets Utilities', () => {
         lastSyncError: null,
         spreadsheetId: null,
       };
-      localStorageMock.setItem('googleSheetsSyncStatus', JSON.stringify(initialStatus));
+      localStorageMock.setItem('googleSheetsSyncStatus_v1', JSON.stringify(initialStatus));
       
       saveSyncStatus({ lastSyncTime: '2024-01-01T00:00:00.000Z' });
       
-      const saved = JSON.parse(localStorageMock.getItem('googleSheetsSyncStatus') || '{}');
+      const saved = JSON.parse(localStorageMock.getItem('googleSheetsSyncStatus_v1') || '{}');
       expect(saved.lastSyncTime).toBe('2024-01-01T00:00:00.000Z');
       expect(saved.isSyncing).toBe(false);
     });
@@ -102,11 +115,11 @@ describe('Google Sheets Utilities', () => {
         lastSyncError: 'Previous error',
         spreadsheetId: 'old-id',
       };
-      localStorageMock.setItem('googleSheetsSyncStatus', JSON.stringify(existingStatus));
+      localStorageMock.setItem('googleSheetsSyncStatus_v1', JSON.stringify(existingStatus));
       
       saveSyncStatus({ lastSyncError: null });
       
-      const saved = JSON.parse(localStorageMock.getItem('googleSheetsSyncStatus') || '{}');
+      const saved = JSON.parse(localStorageMock.getItem('googleSheetsSyncStatus_v1') || '{}');
       expect(saved.lastSyncError).toBeNull();
       expect(saved.lastSyncTime).toBe('2024-01-01T00:00:00.000Z');
       expect(saved.spreadsheetId).toBe('old-id');
@@ -119,8 +132,13 @@ describe('Google Sheets Utilities', () => {
     });
 
     test('should return stored spreadsheet ID', () => {
-      localStorageMock.setItem('googleSheetsSpreadsheetId', 'test-spreadsheet-id');
+      localStorageMock.setItem('googleSheetsSpreadsheetId_v1', 'test-spreadsheet-id');
       expect(getStoredSpreadsheetId()).toBe('test-spreadsheet-id');
+    });
+
+    test('should read legacy unversioned spreadsheet ID as fallback (migration)', () => {
+      localStorageMock.setItem('googleSheetsSpreadsheetId', 'legacy-id');
+      expect(getStoredSpreadsheetId()).toBe('legacy-id');
     });
   });
 
@@ -128,8 +146,8 @@ describe('Google Sheets Utilities', () => {
     test('should store spreadsheet ID and update sync status', () => {
       storeSpreadsheetId('new-spreadsheet-id');
       
-      expect(localStorageMock.getItem('googleSheetsSpreadsheetId')).toBe('new-spreadsheet-id');
-      const status = JSON.parse(localStorageMock.getItem('googleSheetsSyncStatus') || '{}');
+      expect(localStorageMock.getItem('googleSheetsSpreadsheetId_v1')).toBe('new-spreadsheet-id');
+      const status = JSON.parse(localStorageMock.getItem('googleSheetsSyncStatus_v1') || '{}');
       expect(status.spreadsheetId).toBe('new-spreadsheet-id');
     });
   });
@@ -155,7 +173,7 @@ describe('Google Sheets Utilities', () => {
         title: 'Test Sheet',
       });
 
-      expect(localStorageMock.getItem('googleSheetsSpreadsheetId')).toBe('test-id-123');
+      expect(localStorageMock.getItem('googleSheetsSpreadsheetId_v1')).toBe('test-id-123');
     });
 
     test('should handle API errors', async () => {
@@ -211,7 +229,7 @@ describe('Google Sheets Utilities', () => {
     ];
 
     test('should sync applications successfully', async () => {
-      localStorageMock.setItem('googleSheetsSpreadsheetId', 'test-id');
+      localStorageMock.setItem('googleSheetsSpreadsheetId_v1', 'test-id');
       
       const mockResponse = {
         success: true,
@@ -263,7 +281,7 @@ describe('Google Sheets Utilities', () => {
     });
 
     test('should handle sync errors', async () => {
-      localStorageMock.setItem('googleSheetsSpreadsheetId', 'test-id');
+      localStorageMock.setItem('googleSheetsSpreadsheetId_v1', 'test-id');
 
       vi.mocked(global.fetch).mockResolvedValueOnce({
         ok: false,
@@ -275,7 +293,7 @@ describe('Google Sheets Utilities', () => {
     });
 
     test('should update sync status on success', async () => {
-      localStorageMock.setItem('googleSheetsSpreadsheetId', 'test-id');
+      localStorageMock.setItem('googleSheetsSpreadsheetId_v1', 'test-id');
       
       const mockResponse = {
         success: true,
@@ -289,14 +307,14 @@ describe('Google Sheets Utilities', () => {
 
       await syncToGoogleSheets(mockApplications);
 
-      const status = JSON.parse(localStorageMock.getItem('googleSheetsSyncStatus') || '{}');
+      const status = JSON.parse(localStorageMock.getItem('googleSheetsSyncStatus_v1') || '{}');
       expect(status.isSyncing).toBe(false);
       expect(status.lastSyncTime).toBeTruthy();
       expect(status.lastSyncError).toBeNull();
     });
 
     test('should update sync status on error', async () => {
-      localStorageMock.setItem('googleSheetsSpreadsheetId', 'test-id');
+      localStorageMock.setItem('googleSheetsSpreadsheetId_v1', 'test-id');
 
       vi.mocked(global.fetch).mockResolvedValueOnce({
         ok: false,
@@ -310,7 +328,7 @@ describe('Google Sheets Utilities', () => {
         /* error captured in sync status below */
       }
 
-      const status = JSON.parse(localStorageMock.getItem('googleSheetsSyncStatus') || '{}');
+      const status = JSON.parse(localStorageMock.getItem('googleSheetsSyncStatus_v1') || '{}');
       expect(status.isSyncing).toBe(false);
       expect(status.lastSyncError).toBe('Server error');
     });

@@ -36,6 +36,7 @@ export const SheetSelectInput: React.FC<SheetSelectInputProps> = ({
           aria-label={t('sheets.placeholder')}
           className="flex-1 px-3 py-2 border border-border rounded text-sm focus:ring-2 focus:ring-ring focus:border-ring bg-card text-foreground"
           onKeyDown={(e) => {
+            if (e.nativeEvent.isComposing) return;
             if (e.key === 'Enter') {
               onSetSheet();
             } else if (e.key === 'Escape') {

@@ -312,7 +312,7 @@ const OpportunitiesMetrics: React.FC<OpportunitiesMetricsProps> = ({ total, rece
         </p>
       </div>
 
-      <div className='bg-sage-50 border-l-2 border-primary/50 px-7 py-7 transition-colors duration-300'>
+      <div className='bg-sage-50 border-l-2 border-primary/50 p-7 transition-colors duration-300'>
         <p className='text-sm font-semibold uppercase tracking-[0.12em] text-primary'>
           {t('opportunities.metrics.thisWeek', 'This Week')}
         </p>
@@ -321,7 +321,7 @@ const OpportunitiesMetrics: React.FC<OpportunitiesMetricsProps> = ({ total, rece
         </p>
       </div>
 
-      <div className='bg-card border-l-2 border-earth-300 px-7 py-7 transition-colors duration-300'>
+      <div className='bg-card border-l-2 border-earth-300 p-7 transition-colors duration-300'>
         <p className='text-sm font-semibold uppercase tracking-[0.12em] text-earth-500'>
           {t('opportunities.metrics.remote', 'Remote')}
         </p>

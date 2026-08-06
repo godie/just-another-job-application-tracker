@@ -129,52 +129,48 @@ export async function searchJobs(
     } satisfies JobSearchError;
   }
 
-  const data = await response.json().catch(() => null);
-
   if (!response.ok) {
+    const errorData = (await response.json().catch(() => null)) as {
+      message?: string;
+      retryAfter?: number;
+    } | null;
+
     if (response.status === 401) {
       throw {
         error: 'auth_required',
-        message:
-          (data as { message?: string })?.message ??
-          'Authentication required. Please sign in.',
+        message: errorData?.message ?? 'Authentication required. Please sign in.',
       } satisfies JobSearchError;
     }
 
     if (response.status === 429) {
       throw {
         error: 'rate_limited',
-        message:
-          (data as { message?: string })?.message ?? 'Too many requests.',
-        retryAfter: (data as { retryAfter?: number })?.retryAfter,
+        message: errorData?.message ?? 'Too many requests.',
+        retryAfter: errorData?.retryAfter,
       } satisfies JobSearchError;
     }
 
     if (response.status === 502 || response.status === 504) {
       throw {
         error: 'upstream_error',
-        message:
-          (data as { message?: string })?.message ??
-          'Job board API unavailable.',
+        message: errorData?.message ?? 'Job board API unavailable.',
       } satisfies JobSearchError;
     }
 
     if (response.status === 503) {
       throw {
         error: 'not_configured',
-        message:
-          (data as { message?: string })?.message ??
-          'Job search API key(s) not configured on server.',
+        message: errorData?.message ?? 'Job search API key(s) not configured on server.',
       } satisfies JobSearchError;
     }
 
     throw {
       error: 'network_error',
-      message:
-        (data as { message?: string })?.message ??
-        'Search failed. Please try again.',
+      message: errorData?.message ?? 'Search failed. Please try again.',
     } satisfies JobSearchError;
   }
+
+  const data = await response.json().catch(() => null);
 
   const scalars = jobSearchScalarsSchema.safeParse(data);
   if (!scalars.success) {

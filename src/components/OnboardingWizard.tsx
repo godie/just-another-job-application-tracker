@@ -62,35 +62,28 @@ const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onClose, onNavigate
   useKeyboardEscape(handleClose, true);
 
   const goNext = useCallback(() => {
-    setStep((currentStep) => {
-      if (currentStep < STEPS.length - 1) {
-        setDirection('next');
-        return currentStep + 1;
-      }
-      if (onNavigate) {
-        onNavigate('applications');
-      }
-      handleClose();
-      return currentStep;
-    });
-  }, [handleClose, onNavigate]);
+    if (step < STEPS.length - 1) {
+      setDirection('next');
+      setStep(step + 1);
+      return;
+    }
+    if (onNavigate) {
+      onNavigate('applications');
+    }
+    handleClose();
+  }, [step, handleClose, onNavigate]);
 
   const goPrev = useCallback(() => {
-    setStep((currentStep) => {
-      if (currentStep > 0) {
-        setDirection('prev');
-        return currentStep - 1;
-      }
-      return currentStep;
-    });
-  }, []);
+    if (step > 0) {
+      setDirection('prev');
+      setStep(step - 1);
+    }
+  }, [step]);
 
   const goToStep = useCallback((index: number) => {
-    setStep((currentStep) => {
-      setDirection(index > currentStep ? 'next' : 'prev');
-      return index;
-    });
-  }, []);
+    setDirection(index > step ? 'next' : 'prev');
+    setStep(index);
+  }, [step]);
 
   const current = STEPS[step];
   const isFirst = step === 0;

@@ -67,7 +67,12 @@ project uses the default (CLI surface only).
 > treated as the durable source of truth for LOC claims.
 
 At commit `cdafe81`, `npx react-doctor` reports **0 issues / 100/100
-score** and **all 7 in-source suppressions are intentional**:
+score** and **all suppressions were intentional**. The live inventory
+has **9 rows today**: the `BarChartWidget.tsx` row was removed in
+v2.6.40 — recharts is now loaded via an in-widget `React.lazy` dynamic
+import instead of a suppressed static import (see removal note below
+the table) — and three canonical-rule-waiver rows were added in v2.6.40
+(see the waiver note below the table):
 
 | File | Line | Rule(s) | Literal `-- <WHY>` rationale (extracted from the directive line) |
 |------|-----:|---------|---------|
@@ -76,10 +81,16 @@ score** and **all 7 in-source suppressions are intentional**:
 | `src/utils/matching.ts`           | 221 | `js-set-map-lookups` | `String.prototype.includes on lowercased locations.` |
 | `src/utils/matching.ts`           | 223 | `js-set-map-lookups` | `String.prototype.includes on lowercased locations.` |
 | `src/utils/geminiJobScoring.ts`   | 207 | `async-await-in-loop` | `concurrentMap already caps parallelism to limit; this worker loop is intentionally sequential within a single worker.` |
-| `src/components/BarChartWidget.tsx` | 2 | `prefer-dynamic-import` | `recharts is code-split by parent InsightsPage via React.lazy()` |
 | `src/components/FiltersBar.tsx`   |  51 | `no-derived-state`, `no-chain-state-updates` | No inline `-- <WHY>` tail on the directive. **The rationale is intentionally the extracted helper name** `syncSearchTermToCanonicalProp` (introduced in commit `bd534ec`), not an inline comment. Reviewers cross-reference that function for justification; the rationale-by-name is deliberate, not a missed review step. |
+| `src/hooks/useCloudSync.ts`      | 149 | `no-fetch-in-effect` | `canonical rule waiver: one-shot initial sync pull with proper AbortController cleanup, in a project that has not adopted a data-fetching library (react-query/SWR)` |
+| `src/hooks/useCloudSync.ts`      | 173 | `no-fetch-in-effect` | `canonical rule waiver: debounced event-driven sync push with AbortController cleanup, in a project that has not adopted a data-fetching library (react-query/SWR)` |
+| `src/components/Alert.tsx`       |  51 | `effect-needs-cleanup` | `canonical rule waiver: the inner 300 ms hide timer IS cleared by the returned teardown (clearTimeout(hideTimer)); the detector's cleanup matcher only inspects top-level statements and cannot trace timer ids created inside a nested timer callback (documented recipe false-positive case)` |
 
-All seven are documented in their immediate code comment (the
+> **Removed in v2.6.40:** `src/components/BarChartWidget.tsx` line 2 — `prefer-dynamic-import` ("recharts is code-split by parent InsightsPage via React.lazy()"). No longer a suppression: the static `import ... from 'recharts'` was replaced with `React.lazy(() => import('recharts').then(...))` inside `BarChartWidget.tsx`, so the rule has no static import to flag and the directive was deleted. The comment format was also stale (missing the `react-doctor/` rule prefix the current CLI requires).
+>
+> **Added in v2.6.40 (canonical rule waivers):** `useCloudSync.ts` (×2 `no-fetch-in-effect`) and `Alert.tsx` (×1 `effect-needs-cleanup`). Both follow the rules' own canonical validation prompts, which explicitly authorize suppression for (a) one-shot fetches with proper `AbortController` cleanup in a project that has not adopted a data-fetching library (the sync fetch/push are now abortable via signals wired to effect cleanup), and (b) timers that ARE released by the returned teardown but whose ids are created inside nested callbacks the detector's cleanup matcher cannot trace. The AbortController + teardown-cleanup fixes shipped in the same change; these directives only document the residual detector false positives.
+
+The six remaining suppressions are documented in their immediate code comment (the
 trailing `-- <WHY>` rationale). The habit-hooks audit
 (`habit-hooks-prompts/non-essential-comment.md`) prevents an agent
 from stripping the WHY tail when reacting to a future

@@ -38,9 +38,13 @@ const SuggestionsViewerPage: React.FC<SuggestionsViewerPageProps> = ({ onNavigat
         method: 'GET',
         credentials: 'include',
       });
-      const data = await response.json();
+      if (!response.ok) {
+        const errorData = (await response.json().catch(() => null)) as { error?: string } | null;
+        throw new Error(errorData?.error || 'Failed to fetch suggestions');
+      }
 
-      if (!response.ok || !data.success) {
+      const data = await response.json();
+      if (!data.success) {
         throw new Error(data.error || 'Failed to fetch suggestions');
       }
 

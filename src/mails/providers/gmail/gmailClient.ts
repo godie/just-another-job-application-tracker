@@ -3,16 +3,6 @@ import { GmailRateLimitError } from '../../errors';
 
 const RATE_LIMIT_STATUSES = [429, 503];
 
-function throwIfNotOk(res: Response, body: { error?: { message?: string } }, context: string): never {
-  if (res.ok) return undefined as never;
-  if (RATE_LIMIT_STATUSES.includes(res.status)) {
-    throw new GmailRateLimitError(
-      res.status,
-      body?.error?.message ?? 'Too many requests. Please try again in a few minutes.'
-    );
-  }
-  throw new Error(body?.error?.message ?? `${context}: ${res.status}`);
-}
 
 export class GmailEmailClient implements EmailProvider {
   private accessToken: string;
@@ -27,13 +17,19 @@ export class GmailEmailClient implements EmailProvider {
       { headers: { Authorization: `Bearer ${this.accessToken}` } }
     );
 
-    const body = await res.json().catch(() => ({}));
     if (!res.ok) {
-      throwIfNotOk(res, body, 'Gmail search failed');
+      const errorBody = (await res.json().catch(() => ({}))) as { error?: { message?: string } };
+      if (RATE_LIMIT_STATUSES.includes(res.status)) {
+        throw new GmailRateLimitError(
+          res.status,
+          errorBody?.error?.message ?? 'Too many requests. Please try again in a few minutes.'
+        );
+      }
+      throw new Error(errorBody?.error?.message ?? `Gmail search failed: ${res.status}`);
     }
 
-    const data = body as { messages?: { id: string }[] };
-    return data.messages?.map((m) => m.id) ?? [];
+    const body = (await res.json().catch(() => ({}))) as { messages?: { id: string }[] };
+    return body.messages?.map((m) => m.id) ?? [];
   }
 
   async getMessage(id: string): Promise<RawEmail> {
@@ -42,10 +38,18 @@ export class GmailEmailClient implements EmailProvider {
       { headers: { Authorization: `Bearer ${this.accessToken}` } }
     );
 
-    const body = await res.json().catch(() => ({})) as Record<string, unknown>;
     if (!res.ok) {
-      throwIfNotOk(res, body as { error?: { message?: string } }, 'Gmail getMessage failed');
+      const errorBody = (await res.json().catch(() => ({}))) as { error?: { message?: string } };
+      if (RATE_LIMIT_STATUSES.includes(res.status)) {
+        throw new GmailRateLimitError(
+          res.status,
+          errorBody?.error?.message ?? 'Too many requests. Please try again in a few minutes.'
+        );
+      }
+      throw new Error(errorBody?.error?.message ?? `Gmail getMessage failed: ${res.status}`);
     }
+
+    const body = await res.json().catch(() => ({})) as Record<string, unknown>;
 
     const payload = body.payload as {
       headers?: { name: string; value: string }[];
