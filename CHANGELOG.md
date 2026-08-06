@@ -42,6 +42,10 @@
 - **`no-cascading-set-state` (Alert.tsx) deliberately untouched** — the rule is retired upstream (per its canonical docs: "This detector no longer participates in current analysis. No application code change is required."). Verified there is no repo config enabling it; it disappears with an upstream ruleset bump, no code change needed.
 - **Deferred (see follow-up):** the 12 `no-ref-current-in-render` sites outside `Alert.tsx` (best-practice ref pattern; proper fix needs React 19.2 `useEffectEvent` or per-file restructuring), `no-transition-all` (27 cosmetic sites), `no-giant-component` (HomePage), and the a11y `label-has-associated-control` / `control-has-associated-label` clusters.
 
+## [2.6.39] - 2026-07-29
+
+### Added
+- **Networking CRM roadmap and implementation plan** — defines a local-first contacts and follow-up workflow, optional account sync, invitation-only coach access, and candidate-controlled comments and change suggestions for hosted and self-hosted installations.
 ## [2.6.39] - 2026-07-09
 
 ### Added
