@@ -7,6 +7,7 @@ const Table = ({
   <section
     className="relative w-full overflow-auto rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
     aria-label="Data Table"
+    tabIndex={0}
   >
     <table
       ref={ref}
