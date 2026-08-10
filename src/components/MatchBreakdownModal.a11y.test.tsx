@@ -30,9 +30,8 @@ describe('MatchBreakdownModal accessibility', () => {
 
     const bars = screen.getAllByRole('progressbar');
     expect(bars).toHaveLength(6);
-    expect(bars[0]).toHaveAttribute('aria-valuenow', '80');
-    expect(bars[0]).toHaveAttribute('aria-valuemin', '0');
-    expect(bars[0]).toHaveAttribute('aria-valuemax', '100');
+    expect(bars[0]).toHaveAttribute('value', '80');
+    expect(bars[0]).toHaveAttribute('max', '100');
     expect(bars[0]).toHaveAccessibleName('Role Fit');
   });
 });

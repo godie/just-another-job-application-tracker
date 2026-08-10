@@ -102,10 +102,8 @@ const KanbanView: React.FC<KanbanViewProps> = ({ applications, onSelectJob, onEd
   }
 
   return (
-    <div
+    <section
       className='flex overflow-x-auto gap-x-4 snap-x snap-mandatory focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2'
-      tabIndex={0}
-      role='region'
       aria-label={t('kanban.board', 'Application board')}
     >
       {grouped.map(({ status, items }) => {
@@ -187,7 +185,7 @@ const KanbanView: React.FC<KanbanViewProps> = ({ applications, onSelectJob, onEd
                   </button>
                   <footer className='px-4 py-2 border-t border-border bg-muted rounded-b flex flex-col gap-2'>
                     {/* Keyboard accessible status change buttons */}
-                    <div className='flex flex-wrap gap-1' role='group' aria-label={t('kanban.moveToStatus')}>
+                    <div className='flex flex-wrap gap-1' aria-label={t('kanban.moveToStatus')}>
                       {statusOptions.slice(0, 3).map((targetStatus) => (
                         <Button
                           key={targetStatus}
@@ -245,7 +243,7 @@ const KanbanView: React.FC<KanbanViewProps> = ({ applications, onSelectJob, onEd
         }}
         onCancel={() => setDeleteConfirm({ isOpen: false, application: null })}
       />
-    </div>
+    </section>
   );
 };
 

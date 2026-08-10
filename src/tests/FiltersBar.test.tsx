@@ -41,6 +41,31 @@ describe('FiltersBar', () => {
     expect(handleFiltersChange).toHaveBeenCalledWith({ ...defaultFilters, search: 'frontend' });
   });
 
+  test('syncs external search changes without an effect state cascade', () => {
+    const handleFiltersChange = vi.fn();
+    const { rerender } = render(
+      <FiltersBar
+        filters={defaultFilters}
+        onFiltersChange={handleFiltersChange}
+        availableStatuses={[]}
+        availablePlatforms={[]}
+        onClear={vi.fn()}
+      />
+    );
+
+    rerender(
+      <FiltersBar
+        filters={{ ...defaultFilters, search: 'remote' }}
+        onFiltersChange={handleFiltersChange}
+        availableStatuses={[]}
+        availablePlatforms={[]}
+        onClear={vi.fn()}
+      />
+    );
+
+    expect(screen.getByLabelText(/Search/i)).toHaveValue('remote');
+  });
+
   test('calls onClear when clear button clicked', () => {
     const handleClear = vi.fn();
     render(

@@ -7,6 +7,8 @@ import { resolveMerge, type MergeStrategy, type MergeData } from '../../utils/me
 import { markInitialLoadDone } from '../../hooks/useCloudSync';
 import useFocusTrap from '../../hooks/useFocusTrap';
 import useKeyboardEscape from '../../hooks/useKeyboardEscape';
+import useDialogBackdropClose from '../../hooks/useDialogBackdropClose';
+import useNativeDialog from '../../hooks/useNativeDialog';
 
 interface MergePromptModalProps {
   onClose?: () => void;
@@ -21,6 +23,7 @@ const MergePromptModal: React.FC<MergePromptModalProps> = ({ onClose }) => {
   const setApplications = useApplicationsStore((state) => state.setApplications);
   const setOpportunities = useOpportunitiesStore((state) => state.setOpportunities);
   const modalRef = useRef<HTMLDivElement>(null);
+  const dialogRef = useRef<HTMLDialogElement>(null);
   const handleCancel = () => {
     onClose?.();
     if (!onClose) clearConflict();
@@ -28,6 +31,8 @@ const MergePromptModal: React.FC<MergePromptModalProps> = ({ onClose }) => {
 
   useFocusTrap(modalRef, Boolean(localData && cloudData));
   useKeyboardEscape(handleCancel, Boolean(localData && cloudData));
+  useNativeDialog(dialogRef, Boolean(localData && cloudData), handleCancel);
+  useDialogBackdropClose(dialogRef, handleCancel);
 
   if (!localData || !cloudData) return null;
 
@@ -81,14 +86,12 @@ const MergePromptModal: React.FC<MergePromptModalProps> = ({ onClose }) => {
   ];
 
   return (
-    <div
-      role='dialog'
+    <dialog
+      ref={dialogRef}
       aria-modal='true'
       aria-labelledby='merge-prompt-title'
       className='fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm'
-      onClick={(event) => {
-        if (event.target === event.currentTarget) handleCancel();
-      }}
+
     >
       <div ref={modalRef} className='bg-card border border-border rounded-xl shadow-2xl max-w-lg w-full mx-4 overflow-hidden'>
         {/* Header */}
@@ -180,7 +183,7 @@ const MergePromptModal: React.FC<MergePromptModalProps> = ({ onClose }) => {
           </button>
         </div>
       </div>
-    </div>
+    </dialog>
   );
 };
 

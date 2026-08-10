@@ -4,6 +4,11 @@ import { formatDate, getStageDisplayName, getEventStatusColor } from './timeline
 
 
 describe('formatDate', () => {
+  it('reuses the formatter for repeated locale formatting', () => {
+    expect(formatDate('2025-06-15', 'en-US')).toBe('Jun 15, 2025');
+    expect(formatDate('2025-06-16', 'en-US')).toBe('Jun 16, 2025');
+  });
+
   it('formats a valid YYYY-MM-DD date string to locale format', () => {
     const result = formatDate('2025-06-15', 'en-US');
     expect(result).toBe('Jun 15, 2025');

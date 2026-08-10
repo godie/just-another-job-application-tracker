@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { Table } from './Table';
 
 describe('Table accessibility', () => {
-  it('makes the horizontal overflow region focusable and named', () => {
+  it('provides a named horizontal overflow region without a misleading tab stop', () => {
     render(
       <Table>
         <thead>
@@ -16,7 +16,7 @@ describe('Table accessibility', () => {
     );
 
     const region = screen.getByRole('region', { name: /data table/i });
-    expect(region).toHaveAttribute('tabindex', '0');
     expect(region).toHaveAttribute('aria-label', 'Data Table');
+    expect(region).not.toHaveAttribute('tabindex');
   });
 });

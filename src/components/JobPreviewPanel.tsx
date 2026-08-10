@@ -286,7 +286,7 @@ const JobPreviewPanel: React.FC<JobPreviewPanelProps> = ({
   const { t } = useTranslation();
   const applications = useApplicationsStore((state) => state.applications);
   const application = applications.find((app) => app.id === jobId);
-  const panelRef = useRef<HTMLElement>(null);
+  const panelRef = useRef<HTMLDialogElement>(null);
   const wasApplicationAvailable = useRef(Boolean(application));
 
   useFocusTrap(panelRef);
@@ -360,9 +360,9 @@ const JobPreviewPanel: React.FC<JobPreviewPanelProps> = ({
       />
 
       {/* Panel */}
-      <aside
+      <dialog
         ref={panelRef}
-        role="dialog"
+        open
         aria-modal="true"
         aria-labelledby="job-preview-title"
         className="fixed right-0 top-0 bottom-0 w-full sm:w-[480px] bg-card shadow-2xl z-50 flex flex-col animate-slide-in-right"
@@ -378,7 +378,7 @@ const JobPreviewPanel: React.FC<JobPreviewPanelProps> = ({
         ) : (
           <PreviewEmptyContent onClose={onClose} />
         )}
-      </aside>
+      </dialog>
     </>
   );
 };

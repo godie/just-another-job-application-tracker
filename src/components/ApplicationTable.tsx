@@ -101,7 +101,7 @@ const ApplicationTable: React.FC<ApplicationTableProps> = ({ columns, data, onSe
           <TableBody>
             {paginatedData.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={columns.length + (hasPositionColumn ? 1 : 2)} className='px-4 sm:px-6 py-10 text-center text-muted-foreground italic text-sm font-medium' role='status' aria-live='polite'>
+                <TableCell colSpan={columns.length + (hasPositionColumn ? 1 : 2)} className='px-4 sm:px-6 py-10 text-center text-muted-foreground italic text-sm font-medium' aria-live='polite'>
                   {t('home.noApplications')}
                 </TableCell>
               </TableRow>

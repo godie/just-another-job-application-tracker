@@ -40,8 +40,7 @@ const GDPRCookieBanner: React.FC<GDPRCookieBannerProps> = ({ onConsentChange }) 
   if (!isVisible) return null;
 
   return (
-    <div
-      role="region"
+    <section
       aria-labelledby="cookie-banner-title"
       className="fixed bottom-0 left-0 right-0 z-[55] animate-in slide-in-from-bottom-4 fade-in duration-500 transition-[opacity,transform]"
     >
@@ -179,7 +178,7 @@ const GDPRCookieBanner: React.FC<GDPRCookieBannerProps> = ({ onConsentChange }) 
           </div>
         )}
       </div>
-    </div>
+    </section>
   );
 };
 

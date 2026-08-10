@@ -296,11 +296,10 @@ describe('JobPreviewPanel', () => {
   });
 
 
-  it('has dialog semantics and an accessible title', () => {
+  it('has native dialog semantics and an accessible title', () => {
     renderPanel('app-1');
     const panel = screen.getByTestId('preview-panel');
-    expect(panel).toHaveAttribute('role', 'dialog');
-    expect(panel).toHaveAttribute('aria-modal', 'true');
+    expect(panel.tagName.toLowerCase()).toBe('dialog');
     expect(panel).toHaveAttribute('aria-labelledby', 'job-preview-title');
     expect(screen.getByRole('dialog', { name: 'Job Preview' })).toBe(panel);
   });

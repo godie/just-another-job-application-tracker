@@ -2,6 +2,8 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import useKeyboardEscape from '../hooks/useKeyboardEscape';
 import useFocusTrap from '../hooks/useFocusTrap';
+import useDialogBackdropClose from '../hooks/useDialogBackdropClose';
+import useNativeDialog from '../hooks/useNativeDialog';
 import { Button } from './ui/Button';
 import { markOnboardingComplete } from './OnboardingWizard.utils';
 
@@ -34,6 +36,7 @@ const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onClose, onNavigate
   const [direction, setDirection] = useState<'next' | 'prev'>('next');
   const [isVisible, setIsVisible] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
+  const dialogRef = useRef<HTMLDialogElement>(null);
   const closeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
@@ -52,6 +55,9 @@ const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onClose, onNavigate
     }, 300);
   }, [onClose]);
 
+  useNativeDialog(dialogRef, true, handleClose);
+  useDialogBackdropClose(dialogRef, handleClose);
+
   useEffect(() => {
     const timeout = closeTimeoutRef.current;
     return () => {
@@ -64,7 +70,7 @@ const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onClose, onNavigate
   const goNext = useCallback(() => {
     if (step < STEPS.length - 1) {
       setDirection('next');
-      setStep(step + 1);
+      setStep((currentStep) => currentStep + 1);
       return;
     }
     if (onNavigate) {
@@ -76,7 +82,7 @@ const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onClose, onNavigate
   const goPrev = useCallback(() => {
     if (step > 0) {
       setDirection('prev');
-      setStep(step - 1);
+      setStep((currentStep) => currentStep - 1);
     }
   }, [step]);
 
@@ -94,16 +100,14 @@ const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onClose, onNavigate
     : 'animate-in slide-in-from-left-8 fade-in duration-300';
 
   return (
-    <div
-      role="dialog"
+    <dialog
+      ref={dialogRef}
       aria-modal="true"
       aria-labelledby="onboarding-title"
       className={`fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm transition-opacity duration-300 flex items-center justify-center ${
         isVisible ? 'opacity-100' : 'opacity-0'
       }`}
-      onClick={(e) => {
-        if (e.target === e.currentTarget) handleClose();
-      }}
+
     >
       <div
         ref={modalRef}
@@ -200,7 +204,7 @@ const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onClose, onNavigate
           </div>
         </div>
       </div>
-    </div>
+    </dialog>
   );
 };
 

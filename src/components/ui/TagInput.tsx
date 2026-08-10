@@ -74,7 +74,7 @@ export const TagInput: React.FC<TagInputProps> = ({
           <Badge
             key={tag}
             variant='default'
-            className='flex items-center gap-1.5 px-3 py-1.5 text-sm group cursor-default animate-in fade-in zoom-in duration-200 relative overflow-hidden bg-primary/10 text-primary dark:bg-primary/10 dark:text-primary'
+            className='flex items-center gap-1.5 px-3 py-1.5 text-sm group cursor-default animate-in fade-in zoom-in duration-200 transition-[opacity,transform] relative overflow-hidden bg-primary/10 text-primary dark:bg-primary/10 dark:text-primary'
           >
             {tag}
             <button

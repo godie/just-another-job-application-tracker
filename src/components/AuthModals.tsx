@@ -5,6 +5,8 @@ import { useAuthStore } from '../stores/authStore';
 import { Button } from './ui/Button';
 import useFocusTrap from '../hooks/useFocusTrap';
 import useKeyboardEscape from '../hooks/useKeyboardEscape';
+import useDialogBackdropClose from '../hooks/useDialogBackdropClose';
+import useNativeDialog from '../hooks/useNativeDialog';
 
 type AuthMode = 'login' | 'register';
 
@@ -71,9 +73,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMo
 
   const { login, register, loginWithGoogle, isLoading, error } = useAuthStore();
   const modalRef = useRef<HTMLDivElement>(null);
+  const dialogRef = useRef<HTMLDialogElement>(null);
 
   useFocusTrap(modalRef, isOpen);
   useKeyboardEscape(onClose, isOpen);
+  useNativeDialog(dialogRef, isOpen, onClose);
+  useDialogBackdropClose(dialogRef, onClose);
 
   const googleLogin = useGoogleLogin({
     flow: 'auth-code',
@@ -136,14 +141,15 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMo
   if (!isOpen) return null;
 
   return (
-    <div
-      role="dialog"
+    <dialog
+      ref={dialogRef}
       aria-modal="true"
       aria-labelledby="auth-modal-title"
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
-      onClick={(event) => {
+      onPointerDown={(event) => {
         if (event.target === event.currentTarget) onClose();
       }}
+
     >
       <div ref={modalRef} className="w-full max-w-md bg-card rounded-lg shadow-xl border border-border overflow-hidden">
         <div className="p-6">
@@ -309,7 +315,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMo
           </div>
         </div>
       </div>
-    </div>
+    </dialog>
   );
 };
 

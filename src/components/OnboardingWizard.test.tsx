@@ -34,6 +34,14 @@ describe('OnboardingWizard', () => {
     });
   });
 
+  it('renders a native dialog', async () => {
+    render(<OnboardingWizard onClose={vi.fn()} />);
+
+    await waitFor(() => {
+      expect(screen.getByRole('dialog').tagName.toLowerCase()).toBe('dialog');
+    });
+  });
+
   it('advances to the next step when clicking Next', async () => {
     const onClose = vi.fn();
     render(<OnboardingWizard onClose={onClose} />);

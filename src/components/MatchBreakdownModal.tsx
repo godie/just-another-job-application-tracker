@@ -3,6 +3,8 @@ import React, { useRef, useEffect } from 'react';
 import type { JobMatchResult } from '../types/matching';
 import useFocusTrap from '../hooks/useFocusTrap';
 import useKeyboardEscape from '../hooks/useKeyboardEscape';
+import useDialogBackdropClose from '../hooks/useDialogBackdropClose';
+import useNativeDialog from '../hooks/useNativeDialog';
 import { getLocaleDateString } from '../utils/dateHelpers';
 import { Button } from './ui/Button';
 
@@ -41,19 +43,15 @@ function ScoreBar({ label, score, max = 100 }: { label: string; score: number; m
       <div className="flex justify-between text-sm">
         <span className="text-muted-foreground">{label}</span>
         <span className="font-semibold text-foreground">{score}%</span>
-      </div>      <div
-        className="h-2 bg-muted rounded-full overflow-hidden"
-        role="progressbar"
+      </div>      <progress
+        className={`h-2 w-full rounded-full ${barColor}`}
+        value={score}
+        max={max}
         aria-label={label}
         aria-valuenow={score}
         aria-valuemin={0}
         aria-valuemax={max}
-      >
-        <div
-          className={`h-full rounded-full transition-[width] duration-500 ${barColor}`}
-          style={{ width: `${percentage}%` }}
-        />
-      </div>
+      />
     </div>
   );
 }
@@ -66,6 +64,9 @@ export const MatchBreakdownModal: React.FC<MatchBreakdownModalProps> = ({
   opportunityCompany,
 }) => {
   const modalRef = useRef<HTMLDivElement>(null);
+  const dialogRef = useRef<HTMLDialogElement>(null);
+  useNativeDialog(dialogRef, isOpen, onClose);
+  useDialogBackdropClose(dialogRef, onClose);
   useFocusTrap(modalRef, isOpen);
   useKeyboardEscape(onClose, isOpen);
 
@@ -85,15 +86,13 @@ export const MatchBreakdownModal: React.FC<MatchBreakdownModalProps> = ({
   const config = verdictConfig[result.verdict];
 
   return (
-    <div
-      role="dialog"
+    <dialog
+      ref={dialogRef}
       aria-modal="true"
       aria-labelledby="match-breakdown-title"
       className="fixed inset-0 z-50 p-4 bg-black/50 backdrop-blur-sm flex items-center justify-center"
       tabIndex={-1}
-      onClick={(e) => {
-        if (e.target === e.currentTarget) onClose();
-      }}
+
     >
       <div
         ref={modalRef}
@@ -219,6 +218,6 @@ export const MatchBreakdownModal: React.FC<MatchBreakdownModalProps> = ({
           </Button>
         </div>
       </div>
-    </div>
+    </dialog>
   );
 };

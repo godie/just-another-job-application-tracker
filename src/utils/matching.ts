@@ -23,6 +23,8 @@ const POSITIVE_SIGNALS = new Set<InterviewStageType>([
 
 const NEGATIVE_SIGNALS = new Set<InterviewStageType>(['rejected', 'withdrawn']);
 
+const escapeRegExp = (value: string): string => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
 const SENIORITY_KEYWORDS: Record<string, SeniorityLevel> = {
   intern: 'intern',
   internship: 'intern',
@@ -45,6 +47,11 @@ const SENIORITY_KEYWORDS: Record<string, SeniorityLevel> = {
   cto: 'executive',
   ceo: 'executive',
 };
+
+const SENIORITY_MATCHERS = Object.entries(SENIORITY_KEYWORDS).map(([keyword, level]) => ({
+  matcher: new RegExp(escapeRegExp(keyword)),
+  level,
+}));
 
 const COMMON_TECH_SKILLS = [
   'javascript', 'typescript', 'python', 'java', 'go', 'rust', 'c++', 'c#',
@@ -72,9 +79,8 @@ const COMMON_TECH_SKILLS = [
 
 export function extractSeniorityFromTitle(title: string): SeniorityLevel | null {
   const lowerTitle = title.toLowerCase();
-  for (const [keyword, level] of Object.entries(SENIORITY_KEYWORDS)) {
-    // react-doctor-disable-next-line js-set-map-lookups -- String.prototype.includes; SENIORITY_KEYWORDS is a plain object literal (Record), not an array/Set.
-    if (lowerTitle.includes(keyword)) return level;
+  for (const { matcher, level } of SENIORITY_MATCHERS) {
+    if (matcher.test(lowerTitle)) return level;
   }
   return null;
 }
@@ -87,14 +93,16 @@ export function calculateRoleSimilarity(title: string, targetRoles: string[]): n
   if (!title || targetRoles.length === 0) return 0;
   const normalizedTitle = normalizeTitle(title);
   const titleWords = normalizedTitle.split(' ');
+  const normalizedRoles = targetRoles.map((role) => ({
+    title: normalizeTitle(role),
+    words: normalizeTitle(role).split(' '),
+    matcher: new RegExp(escapeRegExp(normalizeTitle(role))),
+  }));
 
   let bestScore = 0;
-  for (const role of targetRoles) {
-    const normalizedRole = normalizeTitle(role);
-    const roleWords = normalizedRole.split(' ');
-
-    // react-doctor-disable-next-line js-set-map-lookups -- String.prototype.includes on normalized titles.
-    if (normalizedTitle.includes(normalizedRole) || normalizedRole.includes(normalizedTitle)) {
+  const reverseMatcher = new RegExp(escapeRegExp(normalizedTitle));
+  for (const { title: normalizedRole, words: roleWords, matcher } of normalizedRoles) {
+    if (matcher.test(normalizedTitle) || reverseMatcher.test(normalizedRole)) {
       bestScore = Math.max(bestScore, 100);
       continue;
     }
@@ -216,12 +224,17 @@ function calculateLocationMatch(
 ): number {
   if (!oppLocation || preferredLocations.length === 0) return 50;
   const lowerOpp = oppLocation.toLowerCase();
-  for (const loc of preferredLocations) {
-    const lowerLoc = loc.toLowerCase();
-    // react-doctor-disable-next-line js-set-map-lookups -- String.prototype.includes on lowercased locations.
-    if (lowerOpp.includes(lowerLoc) || lowerLoc.includes(lowerOpp)) return 100;
-    // react-doctor-disable-next-line js-set-map-lookups -- String.prototype.includes on lowercased locations.
-    if (lowerLoc === 'remote' && lowerOpp.includes('remote')) return 100;
+  const locationMatchers = preferredLocations.map((location) => {
+    const lowerLoc = location.toLowerCase();
+    return {
+      matcher: new RegExp(escapeRegExp(lowerLoc)),
+      reverseMatcher: new RegExp(escapeRegExp(lowerOpp)),
+      lowerLoc,
+    };
+  });
+  for (const { matcher, reverseMatcher, lowerLoc } of locationMatchers) {
+    if (matcher.test(lowerOpp) || reverseMatcher.test(lowerLoc)) return 100;
+    if (lowerLoc === 'remote' && /remote/.test(lowerOpp)) return 100;
   }
   return 0;
 }
