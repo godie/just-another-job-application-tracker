@@ -115,15 +115,16 @@ const EmailScanControls: React.FC<EmailScanControlsProps> = ({
   return (
     <div className="flex flex-wrap items-end gap-4 mb-6">
       <div className="flex flex-col gap-1.5">
-        <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+        <label htmlFor="email-scan-period" className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
           {t('settings.emailScan.scanPeriod')}
         </label>
         <select
+          id="email-scan-period"
           value={scanMonths}
           onChange={(e) => onScanMonthsChange(parseInt(e.target.value))}
           disabled={loading}
           aria-label={t('settings.emailScan.scanPeriod')}
-          className='px-3 py-2 rounded border-border bg-card text-sm font-medium focus:ring-2 focus:ring-ring outline-none disabled:opacity-50 transition-all'
+          className='px-3 py-2 rounded border-border bg-card text-sm font-medium focus:ring-2 focus:ring-ring outline-none disabled:opacity-50 transition-colors'
         >
           <option value={3}>{t('settings.emailScan.months', { count: 3 })}</option>
           <option value={6}>{t('settings.emailScan.months', { count: 6 })}</option>
@@ -140,7 +141,7 @@ const EmailScanControls: React.FC<EmailScanControlsProps> = ({
       >
         {loading ? (
           <>
-            <svg className="animate-spin size-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <svg className="animate-spin size-4 text-primary-foreground" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
@@ -163,7 +164,7 @@ const EmailScanControls: React.FC<EmailScanControlsProps> = ({
             type="button"
             onClick={onApply}
             disabled={applying || selectionCount === 0}
-            className='px-4 py-2 rounded font-medium bg-green-600 text-white hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition'
+            className='px-4 py-2 rounded font-medium bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition'
           >
             {applying
               ? t('settings.emailScan.applying')

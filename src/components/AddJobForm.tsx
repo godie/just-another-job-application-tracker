@@ -110,11 +110,14 @@ const AddJobForm: React.FC<AddJobFormProps> = ({ onSave, onCancel, initialData }
   };
 
   return (
-    <dialog 
-      open
-      className='fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center p-4 z-50'
+    <div
+      role='dialog'
       aria-modal='true'
+      className='fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center p-4 z-50'
       aria-labelledby='add-job-form-title'
+      onClick={(event) => {
+        if (event.target === event.currentTarget) onCancel();
+      }}
     >
       <div ref={modalRef}>
         <Card className='w-full max-w-4xl p-8 overflow-y-auto max-h-[90vh] border border-border'>
@@ -157,7 +160,7 @@ const AddJobForm: React.FC<AddJobFormProps> = ({ onSave, onCancel, initialData }
         </form>
         </Card>
       </div>
-    </dialog>
+    </div>
   );
 };
 

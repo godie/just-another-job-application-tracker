@@ -53,7 +53,7 @@ const InterviewingSettings: React.FC<InterviewingSettingsProps> = ({
               onChange={(e) => setInterviewEventForm({ ...interviewEventForm, label: e.target.value })}
               placeholder='e.g., Phone Screen, Panel Interview'
               aria-label={t('settings.interviewing.label')}
-              className='w-full px-4 py-3 border border-input rounded focus:ring-2 focus:ring-ring focus:border-ring bg-background text-foreground transition-all'
+              className='w-full px-4 py-3 border border-input rounded focus:ring-2 focus:ring-ring focus:border-ring bg-background text-foreground transition-[border-color,box-shadow]'
             />
           </div>
 
@@ -104,15 +104,15 @@ const InterviewingSettings: React.FC<InterviewingSettingsProps> = ({
             {customInterviewEvents.map((event) => (
               <div
                 key={event.id}
-                className='flex items-center justify-between p-4 bg-card border border-border rounded hover:border-primary/30 transition-all group'
+                className='flex items-center justify-between p-4 bg-card border border-border rounded hover:border-primary/30 transition-[border-color,box-shadow] group'
               >
-                <div className='flex items-center gap-3'>
+                <div className='min-w-0 flex flex-1 flex-wrap items-center gap-3'>
                   <div className='size-2 rounded-full bg-primary' />
-                  <span className='font-bold text-foreground'>
+                  <span className='break-words font-bold text-foreground'>
                     {event.label}
                   </span>
                 </div>
-                <div className='flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity'>
+                <div className='flex shrink-0 gap-2 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity'>
                   <Button
                     variant='ghost'
                     size='icon'

@@ -30,6 +30,7 @@ import { useApplicationsStore } from './stores/applicationsStore';
 import { useAuthStore } from './stores/authStore';
 import { useCloudSync } from './hooks/useCloudSync';
 import useKeyboardShortcuts from './hooks/useKeyboardShortcuts';
+import { useTranslation } from 'react-i18next';
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
 
@@ -37,6 +38,20 @@ export type PageType = 'landing' | 'applications' | 'opportunities' | 'settings'
 
 const VALID_PAGES: PageType[] = ['landing', 'applications', 'opportunities', 'settings', 'insights', 'support', 'suggestions', 'login', 'register', 'gmail-scan', 'backup-sync', 'job-details'];
 const PUBLIC_PAGES = new Set<PageType>(['landing', 'login', 'register']);
+const PAGE_ANNOUNCEMENT_KEYS: Record<PageType, string> = {
+  landing: 'nav.home',
+  applications: 'nav.applications',
+  opportunities: 'nav.opportunities',
+  settings: 'nav.settings',
+  insights: 'nav.insights',
+  support: 'nav.support',
+  suggestions: 'support.suggestionsViewer.title',
+  login: 'auth.login',
+  register: 'auth.register',
+  'gmail-scan': 'settings.emailScan.section',
+  'backup-sync': 'nav.backupSync',
+  'job-details': 'jobDetails.details',
+};
 
 /**
  * Wrap a React state change in `document.startViewTransition` so the browser
@@ -75,6 +90,7 @@ const getPageFromUrl = (): PageType | null => {
 };
 
 function App() {
+  const { t } = useTranslation();
   const { fetchMe } = useAuthStore();
   useCloudSync();
 
@@ -132,7 +148,23 @@ function App() {
   }, []);
 
   const currentPageRef = useRef(currentPage);
-  currentPageRef.current = currentPage;
+  const isInitialPageRef = useRef(true);
+  const [routeAnnouncement, setRouteAnnouncement] = useState('');
+
+  useEffect(() => {
+    currentPageRef.current = currentPage;
+  }, [currentPage]);
+
+  useEffect(() => {
+    if (isInitialPageRef.current) {
+      isInitialPageRef.current = false;
+      return;
+    }
+
+    const mainId = PUBLIC_PAGES.has(currentPage) ? 'app-main-landmark' : 'main-content';
+    document.getElementById(mainId)?.focus();
+    setRouteAnnouncement(t(PAGE_ANNOUNCEMENT_KEYS[currentPage]));
+  }, [currentPage, t]);
 
   useEffect(() => {
     const handlePopState = () => {
@@ -235,7 +267,7 @@ function App() {
     <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
       <AlertProvider>
         {['landing', 'login', 'register'].includes(currentPage) ? (
-          <main id="app-main-landmark">
+          <main id="app-main-landmark" tabIndex={-1}>
             <Suspense fallback={
               <div className="flex items-center justify-center h-screen bg-muted dark:bg-muted">
                 <div className="animate-spin rounded-full size-12 border-b-2 border-primary"></div>
@@ -264,6 +296,9 @@ function App() {
           <GDPRCookieBanner onConsentChange={handleConsentChange} />
         )}
         <KeyboardHelp isOpen={showKeyboardHelp} onClose={() => setShowKeyboardHelp(false)} />
+        <div className="sr-only" role="status" aria-live="polite" aria-atomic="true">
+          {routeAnnouncement}
+        </div>
       </AlertProvider>
     </GoogleOAuthProvider>
   );

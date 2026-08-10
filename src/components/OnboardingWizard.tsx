@@ -33,7 +33,7 @@ const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onClose, onNavigate
   const [step, setStep] = useState(0);
   const [direction, setDirection] = useState<'next' | 'prev'>('next');
   const [isVisible, setIsVisible] = useState(false);
-  const modalRef = useRef<HTMLDialogElement>(null);
+  const modalRef = useRef<HTMLDivElement>(null);
   const closeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
@@ -95,7 +95,9 @@ const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onClose, onNavigate
 
   return (
     <div
-      role="none"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="onboarding-title"
       className={`fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm transition-opacity duration-300 flex items-center justify-center ${
         isVisible ? 'opacity-100' : 'opacity-0'
       }`}
@@ -103,19 +105,16 @@ const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onClose, onNavigate
         if (e.target === e.currentTarget) handleClose();
       }}
     >
-      <dialog
-        open
+      <div
         ref={modalRef}
-        aria-modal="true"
-        aria-labelledby="onboarding-title"
-        className={`relative m-0 w-full max-w-lg mx-4 bg-card rounded-2xl shadow-2xl border border-border overflow-hidden transition-all duration-300 ${
+        className={`relative m-0 w-full max-w-lg mx-4 bg-card rounded-2xl shadow-2xl border border-border overflow-hidden transition-[opacity,transform] duration-300 ${
           isVisible ? 'scale-100 translate-y-0' : 'scale-95 translate-y-4'
         }`}
       >
         {/* Progress bar */}
         <div className="absolute top-0 left-0 right-0 h-1 bg-muted">
           <div
-            className="h-full bg-primary transition-all duration-500 ease-out"
+            className="h-full bg-primary transition-[width] duration-500 ease-out"
             style={{ width: `${((step + 1) / STEPS.length) * 100}%` }}
           />
         </div>
@@ -154,7 +153,7 @@ const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onClose, onNavigate
             <button
               key={s.id}
               onClick={() => goToStep(i)}
-              className={`size-2.5 rounded-full transition-all duration-300 ${
+              className={`size-2.5 rounded-full transition-[width,background-color] duration-300 ${
                 i === step
                   ? 'bg-primary w-6'
                   : i < step
@@ -200,7 +199,7 @@ const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onClose, onNavigate
             </Button>
           </div>
         </div>
-      </dialog>
+      </div>
     </div>
   );
 };

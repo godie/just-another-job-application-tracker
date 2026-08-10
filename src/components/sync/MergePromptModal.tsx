@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useMergeStore } from '../../stores/mergeStore';
 import { useApplicationsStore } from '../../stores/applicationsStore';
 import { useOpportunitiesStore } from '../../stores/opportunitiesStore';
 import { resolveMerge, type MergeStrategy, type MergeData } from '../../utils/mergeData';
 import { markInitialLoadDone } from '../../hooks/useCloudSync';
+import useFocusTrap from '../../hooks/useFocusTrap';
+import useKeyboardEscape from '../../hooks/useKeyboardEscape';
 
 interface MergePromptModalProps {
   onClose?: () => void;
@@ -18,6 +20,14 @@ const MergePromptModal: React.FC<MergePromptModalProps> = ({ onClose }) => {
   const { localData, cloudData, clearConflict, resumeSync } = useMergeStore();
   const setApplications = useApplicationsStore((state) => state.setApplications);
   const setOpportunities = useOpportunitiesStore((state) => state.setOpportunities);
+  const modalRef = useRef<HTMLDivElement>(null);
+  const handleCancel = () => {
+    onClose?.();
+    if (!onClose) clearConflict();
+  };
+
+  useFocusTrap(modalRef, Boolean(localData && cloudData));
+  useKeyboardEscape(handleCancel, Boolean(localData && cloudData));
 
   if (!localData || !cloudData) return null;
 
@@ -49,10 +59,6 @@ const MergePromptModal: React.FC<MergePromptModalProps> = ({ onClose }) => {
     }
   };
 
-  const handleCancel = () => {
-    if (onClose) onClose();
-  };
-
   const strategies: { id: MergeStrategy; label: string; desc: string; icon: string }[] = [
     {
       id: 'useCloud',
@@ -75,14 +81,22 @@ const MergePromptModal: React.FC<MergePromptModalProps> = ({ onClose }) => {
   ];
 
   return (
-    <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm'>
-      <div className='bg-card border border-border rounded-xl shadow-2xl max-w-lg w-full mx-4 overflow-hidden'>
+    <div
+      role='dialog'
+      aria-modal='true'
+      aria-labelledby='merge-prompt-title'
+      className='fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm'
+      onClick={(event) => {
+        if (event.target === event.currentTarget) handleCancel();
+      }}
+    >
+      <div ref={modalRef} className='bg-card border border-border rounded-xl shadow-2xl max-w-lg w-full mx-4 overflow-hidden'>
         {/* Header */}
         <div className='bg-destructive/5 dark:bg-destructive/10 border-b border-destructive/30 px-6 py-4'>
           <div className='flex items-center gap-3'>
             <span className='text-2xl'>⚠️</span>
             <div>
-              <h2 className='font-serif text-xl font-semibold text-destructive'>
+              <h2 id='merge-prompt-title' className='font-serif text-xl font-semibold text-destructive'>
                 {t('backupSync.merge.title')}
               </h2>
               <p className='text-sm text-destructive mt-1'>

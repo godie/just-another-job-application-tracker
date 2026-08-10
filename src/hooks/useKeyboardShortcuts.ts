@@ -19,11 +19,13 @@ const useKeyboardShortcuts = ({
     onShowHelp,
   });
 
-  handlersRef.current = {
-    onSearchFocus,
-    onNewEntry,
-    onShowHelp,
-  };
+  useEffect(() => {
+    handlersRef.current = {
+      onSearchFocus,
+      onNewEntry,
+      onShowHelp,
+    };
+  }, [onSearchFocus, onNewEntry, onShowHelp]);
 
   useEffect(() => {
     if (!enabled) return;

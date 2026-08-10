@@ -1,4 +1,4 @@
-import React, { useState, type KeyboardEvent } from 'react';
+import React, { useId, useState, type KeyboardEvent } from 'react';
 import { Badge } from './Badge';
 
 const EMPTY_TAGS: string[] = [];
@@ -19,6 +19,7 @@ export const TagInput: React.FC<TagInputProps> = ({
   className = '',
 }) => {
   const [inputValue, setInputValue] = useState('');
+  const inputId = useId();
 
   const addTag = (tag: string) => {
     const trimmedTag = tag.trim().replace(/^"(.*)"$/, '').replace(/^'(.*)'$/, '');
@@ -52,19 +53,20 @@ export const TagInput: React.FC<TagInputProps> = ({
   return (
     <div className={`flex flex-col gap-2 ${className}`}>
       {label && (
-        <label className='block text-sm font-bold text-muted-foreground'>
+        <label htmlFor={inputId} className='block text-sm font-bold text-muted-foreground'>
           {label}
         </label>
       )}
       <div className="relative">
         <input
+          id={inputId}
           type="text"
           value={inputValue}
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
           aria-label={label || placeholder || 'Tag input'}
-          className='w-full px-4 py-3 border border-border rounded focus:ring-2 focus:ring-ring focus:border-ring bg-card text-foreground transition-all'
+          className='w-full px-4 py-3 border border-border rounded focus:ring-2 focus:ring-ring focus:border-ring bg-card text-foreground transition-[border-color,box-shadow]'
         />
       </div>
       <div className="flex flex-wrap gap-2 min-h-[32px]">
@@ -78,7 +80,7 @@ export const TagInput: React.FC<TagInputProps> = ({
             <button
               type="button"
               onClick={() => removeTag(index)}
-              className="opacity-0 group-hover:opacity-100 ml-1 hover:bg-primary/20 dark:hover:bg-primary/90 rounded-full p-0.5 transition-all focus:outline-none focus:opacity-100"
+              className="opacity-0 group-hover:opacity-100 ml-1 hover:bg-primary/20 dark:hover:bg-primary/90 rounded-full p-1 transition-[opacity,background-color] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus:opacity-100"
               aria-label={`Remove ${tag}`}
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="size-3.5" viewBox="0 0 20 20" fill="currentColor">

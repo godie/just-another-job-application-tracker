@@ -23,7 +23,7 @@ const shortcuts: ShortcutItem[] = [
 ];
 
 const KeyboardHelp: React.FC<KeyboardHelpProps> = ({ isOpen, onClose }) => {
-  const modalRef = useRef<HTMLDialogElement>(null);
+  const modalRef = useRef<HTMLDivElement>(null);
 
   useFocusTrap(modalRef, isOpen);
   useKeyboardEscape(onClose, isOpen);
@@ -32,7 +32,9 @@ const KeyboardHelp: React.FC<KeyboardHelpProps> = ({ isOpen, onClose }) => {
 
   return (
     <div
-      role="none"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="keyboard-help-title"
       className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm"
       onClick={(e) => {
         if (e.target === e.currentTarget) {
@@ -43,11 +45,8 @@ const KeyboardHelp: React.FC<KeyboardHelpProps> = ({ isOpen, onClose }) => {
         if (e.key === 'Escape') onClose();
       }}
     >
-      <dialog
-        open
+      <div
         ref={modalRef}
-        aria-modal="true"
-        aria-labelledby="keyboard-help-title"
         className="bg-card rounded-lg shadow-xl max-w-md w-full mx-4 border border-border"
       >
         <div className="p-6">
@@ -101,7 +100,7 @@ const KeyboardHelp: React.FC<KeyboardHelpProps> = ({ isOpen, onClose }) => {
             </Button>
           </div>
         </div>
-      </dialog>
+      </div>
     </div>
   );
 };

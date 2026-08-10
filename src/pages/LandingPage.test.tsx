@@ -162,9 +162,9 @@ describe('LandingPage', () => {
       expect(blobGradient).not.toBeNull();
     });
 
-    it('CTA section uses brand gradient background', () => {
-      const ctaGradient = container.querySelector('.from-terracotta-500');
-      expect(ctaGradient).not.toBeNull();
+    it('CTA section uses the semantic primary surface and foreground tokens', () => {
+      const cta = container.querySelector('.bg-primary.text-primary-foreground');
+      expect(cta).not.toBeNull();
     });
 
     it('bottom CTA button uses white background with foreground text and stays legible in dark mode', () => {

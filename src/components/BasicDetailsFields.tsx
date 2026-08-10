@@ -51,8 +51,9 @@ export const BasicDetailsFields: React.FC<BasicDetailsFieldsProps> = ({ formData
       />
 
       <div>
-        <label className="block text-xs font-semibold text-muted-foreground mb-1">{t('form.workType')}</label>
+        <label htmlFor="job-form-work-type" className="block text-xs font-semibold text-muted-foreground mb-1">{t('form.workType')}</label>
         <select
+          id="job-form-work-type"
           name="workType"
           value={formData.workType ?? ''}
           onChange={onChange}
@@ -68,10 +69,11 @@ export const BasicDetailsFields: React.FC<BasicDetailsFieldsProps> = ({ formData
 
       {formData.workType === 'hybrid' && (
         <div>
-          <label className="block text-xs font-semibold text-muted-foreground mb-1">
+          <label htmlFor="job-form-hybrid-days" className="block text-xs font-semibold text-muted-foreground mb-1">
             {t('form.hybridDaysInOffice')}
           </label>
           <select
+            id="job-form-hybrid-days"
             name="hybridDaysInOffice"
             value={formData.hybridDaysInOffice ?? ''}
             onChange={onChange}

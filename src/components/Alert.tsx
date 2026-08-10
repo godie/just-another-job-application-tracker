@@ -80,7 +80,7 @@ const Alert: React.FC<AlertProps> = ({ type, message, onClose, duration = 5000 }
         rounded-lg
         shadow-md
         mb-4
-        transition-all
+        transition-[opacity,transform]
         duration-300
         ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'}
       `}

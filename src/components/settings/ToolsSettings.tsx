@@ -101,7 +101,7 @@ const ToolsSettings: React.FC = () => {
         <div className='flex flex-col sm:flex-row gap-4'>
           <button
             onClick={handleExportData}
-            className='px-6 py-3 bg-primary hover:bg-primary text-white text-sm font-semibold transition-colors rounded'
+            className='px-6 py-3 bg-primary hover:bg-primary/90 text-primary-foreground text-sm font-semibold transition-colors rounded'
             type='button'
           >
             {t('tools.backup.exportJson')}

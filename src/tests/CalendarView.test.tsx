@@ -40,6 +40,13 @@ describe('CalendarView', () => {
     expect(screen.getByText(/technical interview/i)).toBeInTheDocument();
   });
 
+  test('uses ordinary layout semantics instead of an incomplete grid widget', () => {
+    render(<CalendarView applications={[]} />);
+
+    expect(screen.queryByRole('grid')).not.toBeInTheDocument();
+    expect(screen.queryByRole('gridcell')).not.toBeInTheDocument();
+  });
+
   test('clicking an event triggers onSelectJob callback', () => {
     const onSelectJob = vi.fn();
     render(<CalendarView applications={[applicationWithEvent]} onSelectJob={onSelectJob} />);

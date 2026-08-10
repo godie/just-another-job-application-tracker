@@ -138,7 +138,7 @@ export const JobSearchResults: React.FC<JobSearchResultsProps> = ({
           return (
             <Card
               key={job.id}
-              className={`p-4 transition-all hover:shadow-md ${isSaved ? 'border-l-2 border-l-primary opacity-70' : ''}`}
+              className={`p-4 transition-[box-shadow,opacity] hover:shadow-md ${isSaved ? 'border-l-2 border-l-primary opacity-70' : ''}`}
             >
               <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
                 {/* Left: job details */}

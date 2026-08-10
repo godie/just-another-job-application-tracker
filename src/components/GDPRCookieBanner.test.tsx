@@ -159,13 +159,13 @@ describe('GDPRCookieBanner', () => {
     expect(hasConsent()).toBe(false);
   });
 
-  it('has correct ARIA attributes', async () => {
+  it('has correct banner semantics', async () => {
     render(<GDPRCookieBanner />);
 
     await waitFor(() => {
-      const dialog = screen.getByRole('dialog');
-      expect(dialog).toHaveAttribute('aria-modal', 'true');
-      expect(dialog).toHaveAttribute('aria-labelledby', 'cookie-banner-title');
+      const banner = screen.getByRole('region', { name: 'gdpr.title' });
+      expect(banner).toHaveAttribute('aria-labelledby', 'cookie-banner-title');
+      expect(banner).not.toHaveAttribute('aria-modal');
     });
   });
 });

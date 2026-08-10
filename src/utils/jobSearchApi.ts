@@ -7,7 +7,7 @@ import type {
   UnifiedJobResult,
 } from '../types/jobSearch';
 
-const API_BASE = import.meta.env.VITE_API_URL ?? '/api';
+import { JOB_SEARCH_API_BASE_URL } from './apiBase';
 
 /* -------------------------------------------------------------------------- */
 /*  Zod schemas — the only point that decides what enters the SPA.            */
@@ -111,7 +111,7 @@ const jobSearchErrorsArraySchema = z
 export async function searchJobs(
   params: JobSearchParams,
 ): Promise<JobSearchResponse> {
-  const url = `${API_BASE}/job-search`;
+  const url = `${JOB_SEARCH_API_BASE_URL}/job-search`;
 
   let response: Response;
 

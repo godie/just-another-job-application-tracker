@@ -31,8 +31,10 @@ const FiltersBar: React.FC<FiltersBarProps> = React.memo(({ filters, onFiltersCh
   const isMountedRef = useRef(false);
   const lastSearchFromPropsRef = useRef(filters.search);
   
-  filtersRef.current = filters;
-  onFiltersChangeRef.current = onFiltersChange;
+  useEffect(() => {
+    filtersRef.current = filters;
+    onFiltersChangeRef.current = onFiltersChange;
+  }, [filters, onFiltersChange]);
 
   const syncSearchTermToCanonicalProp = (canonical: string) => {
     setSearchTerm(canonical);

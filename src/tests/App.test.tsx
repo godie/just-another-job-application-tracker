@@ -1,4 +1,4 @@
-import { render, screen, act, fireEvent } from '@testing-library/react';
+import { render, screen, act, fireEvent, waitFor } from '@testing-library/react';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import App from '../App';
 import type { JobApplication } from '../types/applications';
@@ -40,7 +40,11 @@ const defaultStoreState = () => ({
 );
 
 vi.mock('../layouts/MainLayout', () => ({
-  default: ({ children }: { children: React.ReactNode }) => <div data-testid='main-layout'>{children}</div>,
+  default: ({ children }: { children: React.ReactNode }) => (
+    <div data-testid='main-layout'>
+      <main id="main-content" tabIndex={-1}>{children}</main>
+    </div>
+  ),
 }));
 
 vi.mock('@react-oauth/google', () => ({
@@ -48,6 +52,10 @@ vi.mock('@react-oauth/google', () => ({
 }));
 
 vi.mock('../components/PWAReloadPrompt', () => ({
+  default: () => null,
+}));
+
+vi.mock('../components/OnboardingWizard', () => ({
   default: () => null,
 }));
 
@@ -73,9 +81,6 @@ describe('App Navigation and History', () => {
 
     render(<App />);
 
-    // SettingsPage is lazy-loaded; the default 1s findByRole timeout is too
-    // tight under parallel test load (intermittent flake). Give the lazy
-    // chunk a generous window.
     expect(
       await screen.findByRole('heading', { level: 1, name: /Settings/i }, { timeout: 5000 })
     ).toBeInTheDocument();
@@ -162,9 +167,26 @@ describe('App Navigation and History', () => {
     ).toBeInTheDocument();
   });
 
+  it('focuses main content and announces the destination after a route change', async () => {
+    render(<App />);
+    const focusSpy = vi.spyOn(HTMLElement.prototype, 'focus');
+
+    const url = new URL(window.location.href);
+    url.searchParams.set('page', 'settings');
+    window.history.pushState({ page: 'settings' }, '', url.toString());
+
+    await act(async () => {
+      window.dispatchEvent(new PopStateEvent('popstate', { state: { page: 'settings' } }));
+    });
+
+    await screen.findByRole('heading', { level: 1, name: /Settings/i }, { timeout: 5000 });
+    await waitFor(() => expect(document.activeElement?.id).toBe('main-content'));
+    expect(focusSpy).toHaveBeenCalled();
+    expect(screen.getByRole('status')).toHaveTextContent('Settings');
+    focusSpy.mockRestore();
+  });
+
   it('wraps route swaps in document.startViewTransition when the API is supported', async () => {
-    // Per-call feature detection in App.tsx means we can mock the API
-    // AFTER the module is already loaded — no resetModules gymnastics.
     const startViewTransition = vi.fn((cb: () => void) => cb());
     Object.defineProperty(document, 'startViewTransition', {
       configurable: true,
@@ -185,9 +207,6 @@ describe('App Navigation and History', () => {
         );
       });
 
-      // The popstate handler routes through startViewTransition exactly
-      // once. The synchronous fake fires the callback immediately, so by
-      // the time this assert runs React has already committed the new page.
       expect(startViewTransition).toHaveBeenCalledTimes(1);
       expect(
         await screen.findByRole('heading', { level: 1, name: /Settings/i }, { timeout: 5000 }),

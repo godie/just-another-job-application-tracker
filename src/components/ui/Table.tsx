@@ -5,8 +5,9 @@ const Table = ({
   className, ref, ...props
 }: React.ComponentProps<'table'>) => (
   <section
-    className="relative w-full overflow-auto focus:outline-none"
+    className="relative w-full overflow-auto rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
     aria-label="Data Table"
+    tabIndex={0}
   >
     <table
       ref={ref}
@@ -41,7 +42,7 @@ const TableRow = ({
   <tr
     ref={ref}
     className={cn(
-      'border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted',
+      'border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted focus-within:bg-muted/50',
       className
     )}
     {...props}

@@ -41,11 +41,21 @@ const ApplicationCard: React.FC<ApplicationCardProps> = ({
       <div className="flex justify-between items-start mb-3">
         <div className="flex-1 min-w-0">
           <h3 className="text-base font-semibold text-foreground truncate" title={positionValue}>
-            {positionValue}
+            <button
+              type="button"
+              className="text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded"
+              aria-label={`${positionValue} at ${companyValue}`}
+              onClick={(event) => {
+                event.stopPropagation();
+                onSelectJob(item);
+              }}
+            >
+              <span className="block truncate">{positionValue}</span>
+              <span className="block text-sm font-normal text-muted-foreground truncate mt-0.5" title={companyValue}>
+                {companyValue}
+              </span>
+            </button>
           </h3>
-          <h4 className="text-sm text-muted-foreground truncate mt-0.5" title={companyValue}>
-            {companyValue}
-          </h4>
         </div>
         <div className="ml-3 flex-shrink-0">
           <Badge variant={getBadgeVariantForStatus(item.status)}>

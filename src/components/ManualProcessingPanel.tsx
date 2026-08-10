@@ -92,9 +92,9 @@ const ManualPromptButtons: React.FC<{
 
   return (
     <div className="space-y-2">
-      <label className="block text-sm font-medium text-foreground">
+      <p className="block text-sm font-medium text-foreground">
         {t('settings.emailScan.generatePrompt')}
-      </label>
+      </p>
       <div className="flex flex-wrap gap-2">
         <Button
           type="button"
@@ -137,9 +137,9 @@ const GeminiProcessButton: React.FC<{
   const { t } = useTranslation();
   return (
     <div className="space-y-2">
-      <label className="block text-sm font-medium text-foreground">
+      <p className="block text-sm font-medium text-foreground">
         {t('settings.emailScan.processWithGemini')}
-      </label>
+      </p>
       <Button
         type="button"
         variant="danger"
@@ -220,10 +220,11 @@ const JsonPasteArea: React.FC<{
 
   return (
     <div className="bg-muted/50 rounded p-4 space-y-2 border border-border">
-      <label className="block text-sm font-medium text-foreground">
+      <label htmlFor="manual-processing-json" className="block text-sm font-medium text-foreground">
         {t('settings.emailScan.pasteJson')}
       </label>
       <textarea
+        id="manual-processing-json"
         value={pastedJson}
         onChange={(e) => setPastedJson(e.target.value)}
         aria-label={t('settings.emailScan.pasteJson')}
@@ -262,7 +263,7 @@ export const ManualProcessingPanel: React.FC<ManualProcessingPanelProps> = ({
   const { formatShortDate } = useFormatDate();
 
   return (
-    <div className="space-y-6 animate-in fade-in slide-in-from-top-4 duration-300">
+    <div className="space-y-6 animate-in fade-in slide-in-from-top-4 duration-300 transition-[opacity,transform]">
       <ModeToggle processingMode={processingMode} setProcessingMode={setProcessingMode} />
 
       {preview && (

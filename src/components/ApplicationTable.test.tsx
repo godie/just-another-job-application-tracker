@@ -204,6 +204,23 @@ describe('ApplicationTable', () => {
     });
   });
 
+  it('keeps fallback selection column aligned when position is hidden', () => {
+    render(
+      <ApplicationTable
+        columns={[toColumn('link', 'Link')]}
+        data={[mockApplication]}
+        onSelectJob={mockOnSelectJob}
+        onEdit={mockOnEdit}
+        onDelete={mockOnDelete}
+      />
+    );
+
+    const table = screen.getByTestId('application-table');
+    expect(table.querySelectorAll('thead th').length).toBe(table.querySelectorAll('tbody tr:first-child td').length);
+    expect(screen.getByRole('columnheader', { name: 'Position' })).toBeInTheDocument();
+    expect(screen.getAllByRole('link', { name: 'https://example.com/job' }).length).toBeGreaterThan(0);
+  });
+
   it('renders link as clickable anchor', () => {
     render(
       <ApplicationTable

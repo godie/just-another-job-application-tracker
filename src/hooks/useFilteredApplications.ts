@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { type JobApplication, type ApplicationWithMetadata } from '../types/applications';
 import { type Filters } from '../types/filters';
@@ -17,23 +17,14 @@ import { parseLocalDate } from '../utils/date';
 export const useFilteredApplications = (applications: JobApplication[], filters: Filters) => {
   const { t, i18n } = useTranslation();
 
-  const cacheRef = useRef<Map<JobApplication, ApplicationWithMetadata> | null>(null);
   const [currentTime] = useState(() => new Date());
-
-  const availableStatusesRef = useRef<string[]>([]);
-  const availablePlatformsRef = useRef<string[]>([]);
-  const nonDeletedApplicationsRef = useRef<JobApplication[]>([]);
-  const lastLanguageRef = useRef(i18n.language);
-
-  if (cacheRef.current === null) {
-    cacheRef.current = new Map();
-  }
-  const metadataCache = cacheRef.current;
-
-  if (lastLanguageRef.current !== i18n.language) {
-    cacheRef.current.clear();
-    lastLanguageRef.current = i18n.language;
-  }
+  const metadataCache = useMemo(
+    () => ({
+      language: i18n.language,
+      values: new WeakMap<JobApplication, ApplicationWithMetadata>(),
+    }),
+    [i18n.language],
+  );
 
   const {
     applicationsWithMetadata,
@@ -44,9 +35,16 @@ export const useFilteredApplications = (applications: JobApplication[], filters:
     const statusesSet = new Set<string>();
     const platformsSet = new Set<string>();
     const nonDeleted: JobApplication[] = [];
-    const newCache = new Map<JobApplication, ApplicationWithMetadata>();
-
     const withMetadata: ApplicationWithMetadata[] = applications.map(app => {
+      const cached = metadataCache.values.get(app);
+      if (cached) {
+        const cachedStatus = cached.status;
+        if (cachedStatus) statusesSet.add(cachedStatus);
+        if (cached.platform) platformsSet.add(cached.platform);
+        if (cachedStatus !== 'Deleted') nonDeleted.push(app);
+        return cached;
+      }
+
       let currentStatus = app.status;
       if (currentStatus && /^[a-z]/.test(currentStatus)) {
         currentStatus = currentStatus.charAt(0).toUpperCase() + currentStatus.slice(1);
@@ -57,12 +55,6 @@ export const useFilteredApplications = (applications: JobApplication[], filters:
 
       if (app.status !== 'Deleted') {
         nonDeleted.push(app);
-      }
-
-      const existing = metadataCache.get(app);
-      if (existing) {
-        newCache.set(app, existing);
-        return existing;
       }
 
       const timelineStr = app.timeline?.map(event =>
@@ -122,34 +114,15 @@ export const useFilteredApplications = (applications: JobApplication[], filters:
         nextEvent,
       };
 
-      newCache.set(app, result);
+      metadataCache.values.set(app, result);
       return result;
     });
 
-    cacheRef.current = newCache;
-
-    const sortedStatuses = Array.from(statusesSet).sort((a, b) => a.localeCompare(b));
-    if (sortedStatuses.join('|') !== availableStatusesRef.current.join('|')) {
-      availableStatusesRef.current = sortedStatuses;
-    }
-
-    const sortedPlatforms = Array.from(platformsSet).sort((a, b) => a.localeCompare(b));
-    if (sortedPlatforms.join('|') !== availablePlatformsRef.current.join('|')) {
-      availablePlatformsRef.current = sortedPlatforms;
-    }
-
-    const nonDeletedChanged = nonDeleted.length !== nonDeletedApplicationsRef.current.length ||
-      nonDeleted.some((app, i) => app !== nonDeletedApplicationsRef.current[i]);
-
-    if (nonDeletedChanged) {
-      nonDeletedApplicationsRef.current = nonDeleted;
-    }
-
     return {
       applicationsWithMetadata: withMetadata,
-      availableStatuses: availableStatusesRef.current,
-      availablePlatforms: availablePlatformsRef.current,
-      nonDeletedApplications: nonDeletedApplicationsRef.current,
+      availableStatuses: Array.from(statusesSet).sort((a, b) => a.localeCompare(b)),
+      availablePlatforms: Array.from(platformsSet).sort((a, b) => a.localeCompare(b)),
+      nonDeletedApplications: nonDeleted,
     };
   }, [applications, t, currentTime, metadataCache]);
 
