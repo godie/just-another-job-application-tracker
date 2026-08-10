@@ -1,3 +1,16 @@
+## [2.6.41] - 2026-08-07
+
+### Fixed
+- Improved keyboard accessibility, modal semantics, form labeling, responsive tables, and semantic theme tokens across the audited UI.
+- Preserved filtered-application referential identity while removing render-time ref mutations.
+- Centralized API base URL resolution while honoring explicit environment configuration.
+- Narrowed broad transition utilities to the properties each interaction animates.
+
+### Validation
+- 925 Vitest tests pass.
+- Production build and ESLint pass.
+- React Doctor changed-scope score: 97/100 with one remaining detector warning on an imported badge transition.
+
 ## [2.6.40] - 2026-08-05
 
 ### Security

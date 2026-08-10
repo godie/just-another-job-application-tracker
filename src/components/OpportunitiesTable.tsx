@@ -54,7 +54,10 @@ const OpportunitiesTable: React.FC<OpportunitiesTableProps> = ({
       </div>
 
       <div className='bg-card rounded overflow-hidden'>
-        <div className='overflow-x-auto'>
+        <section
+          className='overflow-x-auto rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2'
+          aria-label={t('opportunities.table.title', 'Opportunities table')}
+        >
           <table className='min-w-full divide-y divide-border'>
             <thead className='bg-muted'>
               <tr>
@@ -156,7 +159,7 @@ const OpportunitiesTable: React.FC<OpportunitiesTableProps> = ({
               })}
             </tbody>
           </table>
-        </div>
+        </section>
       </div>
     </>
   );

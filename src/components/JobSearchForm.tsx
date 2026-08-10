@@ -117,7 +117,7 @@ export const JobSearchForm: React.FC<JobSearchFormProps> = ({
             onChange={(e) => dispatch({ type: 'SET_LOCATION', value: e.target.value })}
             placeholder="remote, London, SF"
             aria-label={t('opportunities.jobSearch.location', 'Location')}
-            className="w-full px-4 py-3 border border-border rounded focus:ring-2 focus:ring-ring focus:border-ring bg-background text-foreground transition-all"
+            className="w-full px-4 py-3 border border-border rounded focus:ring-2 focus:ring-ring focus:border-ring bg-background text-foreground transition-colors"
           />
           <p className="text-xs text-muted-foreground mt-1">
             {t('opportunities.jobSearch.locationHint', 'City, country, or remote')}
@@ -181,14 +181,15 @@ export const JobSearchForm: React.FC<JobSearchFormProps> = ({
         <div className="mt-3 flex flex-col lg:flex-row gap-4 items-end">
           {/* Source selector */}
           <div className="w-full lg:w-48 flex-shrink-0">
-            <label className="block text-sm font-bold text-foreground mb-2">
+            <label htmlFor="job-search-source" className="block text-sm font-bold text-foreground mb-2">
               {t('opportunities.jobSearch.source', 'Source')}
             </label>
             <select
+              id="job-search-source"
               value={source}
               onChange={(e) => dispatch({ type: 'SET_SOURCE', value: e.target.value as JobSearchSource })}
               aria-label={t('opportunities.jobSearch.source', 'Source')}
-              className="w-full p-3 border border-border rounded focus:ring-2 focus:ring-ring focus:border-ring bg-background text-foreground transition-all text-sm"
+              className="w-full p-3 border border-border rounded focus:ring-2 focus:ring-ring focus:border-ring bg-background text-foreground transition-colors text-sm"
             >
               <option value="all">{t('opportunities.jobSearch.sourceAll', 'All (Jooble + TheirStack + Adzuna + Careerjet)')}</option>
               <option value="both">{t('opportunities.jobSearch.sourceBoth', 'Both (Jooble + TheirStack)')}</option>

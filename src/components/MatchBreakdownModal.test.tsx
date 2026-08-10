@@ -95,14 +95,13 @@ describe('MatchBreakdownModal', () => {
 
   it('calls onClose when overlay clicked', () => {
     const handleClose = vi.fn();
-    const { container } = render(
+    render(
       <MatchBreakdownModal isOpen={true} onClose={handleClose} result={makeResult()} />
     );
-    const backdrop = container.querySelector('[role="dialog"]');
-    if (backdrop) {
-      fireEvent.click(backdrop);
-      expect(handleClose).toHaveBeenCalled();
-    }
+    const backdrop = screen.getByRole('dialog');
+    expect(backdrop.tagName.toLowerCase()).toBe('dialog');
+    fireEvent.click(backdrop);
+    expect(handleClose).toHaveBeenCalled();
   });
 
   it('does not render strengths section when empty', () => {

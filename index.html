@@ -132,9 +132,9 @@
       The `img-src 'self' data: https:;` source is required for the OG
       image preloads + the remote SVG favicon fallback
       (`https://godieboy.com/favicon.ico`) in `index.html`. The
-      `connect-src 'self' https://accounts.google.com
-      https://oauth2.googleapis.com https://www.googleapis.com
-      https://gmail.googleapis.com
+      `connect-src 'self' https://jajat.godieboy.com
+      https://accounts.google.com https://oauth2.googleapis.com
+      https://www.googleapis.com https://gmail.googleapis.com
       https://generativelanguage.googleapis.com;` is required for the
       Google sign-in flow + the Google Sheets sync feature (XHR/fetch
       to those endpoints). The directive list stops at
@@ -142,7 +142,7 @@
       (deliberate omission — must come from an HTTP response header, see
       v2.6.30 above).
     -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://accounts.google.com https://*.gstatic.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://accounts.google.com https://oauth2.googleapis.com https://www.googleapis.com https://gmail.googleapis.com https://generativelanguage.googleapis.com; base-uri 'self'; form-action 'self'; object-src 'none'; frame-src https://accounts.google.com; worker-src 'self'; manifest-src 'self';" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://accounts.google.com https://*.gstatic.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://jajat.godieboy.com https://accounts.google.com https://oauth2.googleapis.com https://www.googleapis.com https://gmail.googleapis.com https://generativelanguage.googleapis.com; base-uri 'self'; form-action 'self'; object-src 'none'; frame-src https://accounts.google.com; worker-src 'self'; manifest-src 'self';" />
     <title>JAJAT</title>
     <script>
       // Apply theme before React mounts to prevent flash

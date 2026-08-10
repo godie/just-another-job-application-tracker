@@ -446,12 +446,12 @@ const LandingCTA: React.FC<{ onNavigate: (page: PageType) => void }> = ({ onNavi
     onNavigate('applications');
   };
   return (
-    <section className='relative py-24 bg-gradient-to-br from-terracotta-500 via-terracotta-600 to-sage-600 text-white'>
+    <section className='relative py-24 bg-primary text-primary-foreground'>
       {/* Subtle pattern overlay */}
       <div className='absolute inset-0 opacity-10'>
         <svg className='w-full h-full' viewBox='0 0 100 100' preserveAspectRatio='none'>
           <pattern id='dots' x='0' y='0' width='20' height='20' patternUnits='userSpaceOnUse'>
-            <circle cx='2' cy='2' r='1' fill='white' />
+            <circle cx='2' cy='2' r='1' fill='currentColor' />
           </pattern>
           <rect fill='url(#dots)' width='100%' height='100%' />
         </svg>
@@ -461,7 +461,7 @@ const LandingCTA: React.FC<{ onNavigate: (page: PageType) => void }> = ({ onNavi
         <h2 className='font-serif text-3xl md:text-5xl font-semibold mb-8'>
           {t('landing.ready')}
         </h2>
-        <p className='text-xl text-white/90 mb-12 max-w-2xl mx-auto'>
+        <p className='text-xl text-primary-foreground/90 mb-12 max-w-2xl mx-auto'>
           Join thousands of job seekers who have organized their search and landed their dream roles.
         </p>
         <Button

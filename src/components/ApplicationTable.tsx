@@ -47,6 +47,7 @@ const ApplicationTable: React.FC<ApplicationTableProps> = ({ columns, data, onSe
     const excluded = new Set(PRIMARY_COLUMN_IDS);
     return columns.filter(col => !excluded.has(col.id));
   }, [columns]);
+  const hasPositionColumn = columns.some((column) => column.id === 'position');
 
   const handleDeleteRequest = useCallback((application: JobApplication) => {
     setDeleteConfirm({ isOpen: true, application });
@@ -79,6 +80,11 @@ const ApplicationTable: React.FC<ApplicationTableProps> = ({ columns, data, onSe
         <Table data-testid='application-table'>
           <TableHeader>
             <TableRow className='hover:bg-transparent'>
+              {!hasPositionColumn && (
+                <TableHead className='px-4 sm:px-6 py-3 bg-muted'>
+                  <span className='sr-only'>{t('common.position')}</span>
+                </TableHead>
+              )}
               {columns.map((column) => (
                 <TableHead
                   key={column.id}
@@ -95,7 +101,7 @@ const ApplicationTable: React.FC<ApplicationTableProps> = ({ columns, data, onSe
           <TableBody>
             {paginatedData.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={columns.length + 1} className='px-4 sm:px-6 py-10 text-center text-muted-foreground italic text-sm font-medium' role='status' aria-live='polite'>
+                <TableCell colSpan={columns.length + (hasPositionColumn ? 1 : 2)} className='px-4 sm:px-6 py-10 text-center text-muted-foreground italic text-sm font-medium' aria-live='polite'>
                   {t('home.noApplications')}
                 </TableCell>
               </TableRow>

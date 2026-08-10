@@ -6,11 +6,7 @@ import { Card } from './ui/Card';
 import { Button } from './ui/Button';
 import { Input } from './ui/Input';
 import { type PageType } from '../App';
-
-const SUPPORT_API_BASE_URL =
-  import.meta.env.VITE_SUPPORT_API_BASE_URL ||
-  import.meta.env.VITE_API_BASE_URL ||
-  '/api';
+import { SUPPORT_API_BASE_URL } from '../utils/apiBase';
 
 type VitestAwareImportMeta = ImportMeta & { vitest?: unknown };
 type GlobalWithTestFlag = typeof globalThis & { __TEST__?: boolean };
@@ -259,10 +255,10 @@ const SuggestionForm: React.FC<SuggestionFormProps> = ({ onNavigate }) => {
       </p>
 
       <form onSubmit={handleSubmit} className="space-y-5">
-        <div>
-          <label className="block text-sm font-medium text-foreground mb-2">
+        <fieldset>
+          <legend className="block text-sm font-medium text-foreground mb-2">
             {t('support.suggestionType')}
-          </label>
+          </legend>
           <div className="flex flex-wrap gap-3">
             {suggestionTypes.map((type) => {
               const inputId = `suggestion-type-${type.id}`;
@@ -274,7 +270,7 @@ const SuggestionForm: React.FC<SuggestionFormProps> = ({ onNavigate }) => {
                   htmlFor={inputId}
                   className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium cursor-pointer transition border ${
                     isActive
-                      ? 'bg-primary border-primary text-white'
+                      ? 'bg-primary border-primary text-primary-foreground'
                       : 'bg-muted text-foreground border-transparent hover:bg-accent'
                   }`}
                 >
@@ -291,7 +287,7 @@ const SuggestionForm: React.FC<SuggestionFormProps> = ({ onNavigate }) => {
               );
             })}
           </div>
-        </div>
+        </fieldset>
 
         <div>
           <label htmlFor="explanation" className="block text-sm font-medium text-muted-foreground mb-2">
@@ -304,7 +300,7 @@ const SuggestionForm: React.FC<SuggestionFormProps> = ({ onNavigate }) => {
                 onChange={(event) => dispatch({ type: 'SET_FIELD', field: 'explanation', value: event.target.value })}
             placeholder={t('support.explanationPlaceholder')}
             aria-label={t('support.explanation')}
-            className='w-full px-4 py-2 bg-background border border-border rounded focus:ring-2 focus:ring-ring dark:text-white outline-none'
+            className='w-full px-4 py-2 bg-background border border-border rounded focus:ring-2 focus:ring-ring text-foreground outline-none'
             required
           />
         </div>

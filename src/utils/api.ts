@@ -2,8 +2,7 @@
 
 import { defaultFetchOptions } from './fetchDefaults';
 import { buildTraceparent } from '../lib/traceparent';
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
+import { API_BASE_URL } from './apiBase';
 
 export interface AuthUser {
   id: number;

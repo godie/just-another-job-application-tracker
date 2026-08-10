@@ -15,7 +15,7 @@ const ATSSearchSettings: React.FC<ATSSearchSettingsProps> = ({ atsSearch, onAtsS
     <div className='space-y-8'>
       <div className='bg-primary/5 dark:bg-primary/10 border border-primary/10 dark:border-primary/10 rounded p-6'>
         <div className='flex items-start gap-4'>
-          <div className='p-3 bg-primary rounded text-white'>
+          <div className='p-3 bg-primary rounded text-primary-foreground'>
             <svg xmlns='http://www.w3.org/2000/svg' className='size-6' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
               <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z' />
             </svg>
@@ -58,10 +58,11 @@ const ATSSearchSettings: React.FC<ATSSearchSettingsProps> = ({ atsSearch, onAtsS
         </div>
 
         <div>
-          <label className='block text-sm font-semibold text-muted-foreground mb-2'>
+          <label htmlFor='ats-search-source' className='block text-sm font-semibold text-muted-foreground mb-2'>
             {t('opportunities.atsSearch.source')}
           </label>
           <select
+            id='ats-search-source'
             value={atsSearch?.source ?? 'both'}
             onChange={(e) => onAtsSearchChange('source', e.target.value)}
             className='w-full px-4 py-2.5 text-sm border border-border bg-card text-foreground rounded focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent transition-colors'

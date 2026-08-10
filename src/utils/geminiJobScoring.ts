@@ -201,12 +201,13 @@ async function concurrentMap<T, R>(
   const results: R[] = new Array(items.length);
   let nextIndex = 0;
 
-  async function worker(): Promise<void> {
-    while (nextIndex < items.length) {
-      const i = nextIndex++;
-      // react-doctor-disable-next-line async-await-in-loop -- `concurrentMap` already caps parallelism to `limit`; this worker loop is intentionally sequential within a single worker.
-      results[i] = await fn(items[i], i);
-    }
+  function worker(): Promise<void> {
+    if (nextIndex >= items.length) return Promise.resolve();
+    const index = nextIndex++;
+    return fn(items[index], index).then((result) => {
+      results[index] = result;
+      return worker();
+    });
   }
 
   const workers = Array.from({ length: Math.min(limit, items.length) }, () => worker());

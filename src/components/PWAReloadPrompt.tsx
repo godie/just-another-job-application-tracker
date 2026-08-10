@@ -28,7 +28,7 @@ const PWAReloadPrompt: React.FC = () => {
   if (!offlineReady && !needUpdate) return null;
 
   return (
-    <div className='fixed bottom-20 right-4 z-50 p-4 bg-card rounded-lg border border-border shadow-lg flex flex-col gap-3 max-w-sm animate-in fade-in slide-in-from-bottom-4 duration-300'>
+    <div className='fixed bottom-20 right-4 z-50 p-4 bg-card rounded-lg border border-border shadow-lg flex flex-col gap-3 max-w-sm animate-in fade-in slide-in-from-bottom-4 duration-300 transition-[opacity,transform]'>
       <div className='flex items-start gap-3'>
         <div className='bg-primary/5 dark:bg-primary/10 p-2 rounded-full'>
           <svg className='size-5 text-primary' fill='none' stroke='currentColor' viewBox='0 0 24 24'>

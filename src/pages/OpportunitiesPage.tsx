@@ -303,8 +303,8 @@ const OpportunitiesMetrics: React.FC<OpportunitiesMetricsProps> = ({ total, rece
   const { t } = useTranslation();
   return (
     <section className='mb-10 grid grid-cols-1 gap-4 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)]' data-testid='opportunities-metrics'>
-      <div className='bg-card border-l-2 border-earth-300 px-8 py-7 transition-colors duration-300'>
-        <p className='text-sm font-semibold uppercase tracking-[0.12em] text-earth-500'>
+      <div className='bg-card border-l-2 border-border px-8 py-7 transition-colors duration-300'>
+        <p className='text-sm font-semibold uppercase tracking-[0.12em] text-muted-foreground'>
           {t('opportunities.metrics.total', 'Total Opportunities')}
         </p>
         <p className='mt-4 font-serif text-7xl font-bold leading-none text-foreground sm:text-8xl'>
@@ -312,7 +312,7 @@ const OpportunitiesMetrics: React.FC<OpportunitiesMetricsProps> = ({ total, rece
         </p>
       </div>
 
-      <div className='bg-sage-50 border-l-2 border-primary/50 p-7 transition-colors duration-300'>
+      <div className='bg-primary/5 dark:bg-primary/10 border-l-2 border-primary/50 p-7 transition-colors duration-300'>
         <p className='text-sm font-semibold uppercase tracking-[0.12em] text-primary'>
           {t('opportunities.metrics.thisWeek', 'This Week')}
         </p>
@@ -321,8 +321,8 @@ const OpportunitiesMetrics: React.FC<OpportunitiesMetricsProps> = ({ total, rece
         </p>
       </div>
 
-      <div className='bg-card border-l-2 border-earth-300 p-7 transition-colors duration-300'>
-        <p className='text-sm font-semibold uppercase tracking-[0.12em] text-earth-500'>
+      <div className='bg-card border-l-2 border-border p-7 transition-colors duration-300'>
+        <p className='text-sm font-semibold uppercase tracking-[0.12em] text-muted-foreground'>
           {t('opportunities.metrics.remote', 'Remote')}
         </p>
         <p className='mt-4 font-serif text-5xl font-bold leading-none text-foreground sm:text-6xl'>

@@ -19,7 +19,7 @@ export const ProposedUpdateItem: React.FC<ProposedUpdateItemProps> = ({
 
   return (
     <li
-      className="group flex items-start gap-4 p-4 rounded-xl border border-border bg-card hover:border-green-300 dark:hover:border-green-500/50 transition-all duration-200"
+      className="group flex items-start gap-4 p-4 rounded-xl border border-border bg-card hover:border-green-300 dark:hover:border-green-500/50 transition-[border-color,box-shadow] duration-200"
     >
       <input
         type="checkbox"

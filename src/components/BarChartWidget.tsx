@@ -105,9 +105,9 @@ const BarChartWidget: React.FC<BarChartWidgetProps> = ({ title, data, accentColo
       accentColor={accentColor}
     >
       <Suspense fallback={
-        <div className='h-[300px] flex items-center justify-center text-muted-foreground' role='status' aria-label={t('common.loading')}>
+        <output className='h-[300px] flex items-center justify-center text-muted-foreground' aria-label={t('common.loading')}>
           <span className='text-sm'>{t('common.loading')}</span>
-        </div>
+        </output>
       }>
         <LazyBarChart
           data={chartData}

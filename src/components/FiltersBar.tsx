@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Input } from './ui/Input';
 import { Select } from './ui/Select';
@@ -23,50 +23,29 @@ interface FiltersBarProps {
 
 const FiltersBar: React.FC<FiltersBarProps> = React.memo(({ filters, onFiltersChange, availableStatuses, availablePlatforms, onClear }) => {
   const { t } = useTranslation();
-  const initialSearchRef = useRef(filters.search);
-  const [searchTerm, setSearchTerm] = useState(initialSearchRef.current);
-  
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const searchDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   const filtersRef = useRef(filters);
   const onFiltersChangeRef = useRef(onFiltersChange);
-  const isMountedRef = useRef(false);
   const lastSearchFromPropsRef = useRef(filters.search);
   
-  filtersRef.current = filters;
-  onFiltersChangeRef.current = onFiltersChange;
-
-  const syncSearchTermToCanonicalProp = (canonical: string) => {
-    setSearchTerm(canonical);
-    lastSearchFromPropsRef.current = canonical;
-  };
+  useEffect(() => {
+    filtersRef.current = filters;
+    onFiltersChangeRef.current = onFiltersChange;
+  }, [filters, onFiltersChange]);
 
   useEffect(() => {
-    const currentSearchTerm = searchTerm;
-    if (!isMountedRef.current) {
-      isMountedRef.current = true;
+    if (filters.search !== lastSearchFromPropsRef.current) {
+      if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current);
+      if (searchInputRef.current) searchInputRef.current.value = filters.search;
       lastSearchFromPropsRef.current = filters.search;
-      return;
     }
+  }, [filters.search]);
 
-    if (filters.search !== lastSearchFromPropsRef.current && filters.search !== currentSearchTerm) {
-      // react-doctor-disable-next-line no-derived-state,no-chain-state-updates
-      syncSearchTermToCanonicalProp(filters.search);
-    }
-  }, [filters.search, searchTerm]);
-
-  useEffect(() => {
-    if (!isMountedRef.current) {
-      return;
-    }
-
-    const currentSearchTerm = searchTerm;
-
-    const timerId = setTimeout(() => {
-      onFiltersChangeRef.current({ ...filtersRef.current, search: currentSearchTerm });
-      lastSearchFromPropsRef.current = currentSearchTerm;
-    }, 300);
-
-    return () => clearTimeout(timerId);
-  }, [searchTerm]);
+  useEffect(() => () => {
+    if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current);
+  }, []);
 
   const createFilterChangeHandler = (key: keyof Filters) => (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     onFiltersChange({ ...filters, [key]: event.target.value });
@@ -108,8 +87,16 @@ const FiltersBar: React.FC<FiltersBarProps> = React.memo(({ filters, onFiltersCh
           id='search'
           label={t('filters.search')}
           type='text'
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          ref={searchInputRef}
+          defaultValue={filters.search}
+          onChange={(e) => {
+            if (searchDebounceRef.current) clearTimeout(searchDebounceRef.current);
+            const nextSearch = e.target.value;
+            searchDebounceRef.current = setTimeout(() => {
+              onFiltersChangeRef.current({ ...filtersRef.current, search: nextSearch });
+              lastSearchFromPropsRef.current = nextSearch;
+            }, 300);
+          }}
           placeholder={t('filters.searchPlaceholder')}
         />
       </div>

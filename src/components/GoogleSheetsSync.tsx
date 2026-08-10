@@ -56,7 +56,9 @@ const googleSheetsSyncReducer = (state: GoogleSheetsSyncState, action: GoogleShe
 const GoogleSheetsSync: React.FC<GoogleSheetsSyncProps> = ({ applications, onSyncComplete }) => {
   const { t } = useTranslation();
   const applicationsRef = useRef(applications);
-  applicationsRef.current = applications;
+  useEffect(() => {
+    applicationsRef.current = applications;
+  }, [applications]);
   const { showSuccess, showError } = useAlert();
 
   const currentUser = useAuthStore((state) => state.currentUser);

@@ -26,7 +26,7 @@ export const ProposedAdditionItem: React.FC<ProposedAdditionItemProps> = ({
 
   return (
     <li
-      className={`group flex items-start gap-4 p-4 rounded-xl border transition-all duration-200 ${
+      className={`group flex items-start gap-4 p-4 rounded-xl border transition-[border-color,background-color] duration-200 ${
         duplicate
           ? 'bg-amber-50/50 border-amber-200 dark:bg-amber-900/10 dark:border-amber-900/30'
           : 'bg-card border-border dark:border-border hover:border-primary/20 dark:hover:border-primary/50'

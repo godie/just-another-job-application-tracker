@@ -1,8 +1,7 @@
 import { onLCP, onINP, onCLS, onFCP, type Metric } from 'web-vitals';
+import { API_BASE_URL } from '../utils/apiBase';
 
 export type Reporter = (metric: Metric) => void;
-
-const API_BASE = import.meta.env.VITE_API_BASE_URL || '/api';
 
 /**
  * Send web-vitals metrics to the backend as span events.
@@ -31,7 +30,7 @@ const logfireReporter: Reporter = (metric) => {
     // backend's `PerfController::vitals()` (which `json_decode`s raw input)
     // sees the same JSON it always has, while the WAF stops kvetching.
     const blob = new Blob([payload], { type: 'application/json' });
-    navigator.sendBeacon(`${API_BASE}/perf/vitals`, blob);
+    navigator.sendBeacon(`${API_BASE_URL}/perf/vitals`, blob);
   } catch {
     // Swallow beacon errors — telemetry must never break the app.
   }

@@ -48,11 +48,11 @@ export const SettingsSidebar: React.FC<SettingsSidebarProps> = ({
                     onClick={() => onSelectSection(sectionId as SettingsSection)}
                     className={`group flex items-center px-4 py-3 text-sm font-semibold w-full transition-colors ${
                       isActive
-                        ? 'bg-primary text-white'
+                        ? 'bg-primary text-primary-foreground'
                         : 'text-muted-foreground hover:bg-muted hover:text-foreground dark:hover:text-muted-foreground'
                     }`}
                   >
-                    <span className={`mr-3 text-xl ${isActive ? 'text-white' : 'text-muted-foreground group-hover:text-muted-foreground'}`}>
+                    <span className={`mr-3 text-xl ${isActive ? 'text-primary-foreground' : 'text-muted-foreground group-hover:text-muted-foreground'}`}>
                       {section.icon}
                     </span>
                     <span className="truncate">{section.label}</span>

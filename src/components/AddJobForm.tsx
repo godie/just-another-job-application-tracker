@@ -5,6 +5,8 @@ import type { JobApplication } from '../types/applications';
 import { toWorkType, buildInitialTimeline } from '../utils/applications';
 import useKeyboardEscape from '../hooks/useKeyboardEscape';
 import useFocusTrap from '../hooks/useFocusTrap';
+import useDialogBackdropClose from '../hooks/useDialogBackdropClose';
+import useNativeDialog from '../hooks/useNativeDialog';
 import TimelineEditor from './TimelineEditor';
 import { Button } from './ui/Button';
 import { Card } from './ui/Card';
@@ -65,7 +67,10 @@ const AddJobForm: React.FC<AddJobFormProps> = ({ onSave, onCancel, initialData }
   useKeyboardEscape(onCancel, true);
 
   const modalRef = useRef<HTMLDivElement>(null);
+  const dialogRef = useRef<HTMLDialogElement>(null);
   useFocusTrap(modalRef);
+  useNativeDialog(dialogRef, true, onCancel);
+  useDialogBackdropClose(dialogRef, onCancel);
 
   const updateFormField = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -110,11 +115,15 @@ const AddJobForm: React.FC<AddJobFormProps> = ({ onSave, onCancel, initialData }
   };
 
   return (
-    <dialog 
-      open
-      className='fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center p-4 z-50'
+    <dialog
+      ref={dialogRef}
       aria-modal='true'
+      className='fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center p-4 z-50'
       aria-labelledby='add-job-form-title'
+      onPointerDown={(event) => {
+        if (event.target === event.currentTarget) onCancel();
+      }}
+
     >
       <div ref={modalRef}>
         <Card className='w-full max-w-4xl p-8 overflow-y-auto max-h-[90vh] border border-border'>

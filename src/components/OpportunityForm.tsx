@@ -2,6 +2,8 @@ import React, { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { type JobOpportunity } from '../types/opportunities';
 import useFocusTrap from '../hooks/useFocusTrap';
+import useDialogBackdropClose from '../hooks/useDialogBackdropClose';
+import useNativeDialog from '../hooks/useNativeDialog';
 import { Button } from './ui/Button';
 import { Input } from './ui/Input';
 import { Card } from './ui/Card';
@@ -28,7 +30,10 @@ const OpportunityForm: React.FC<OpportunityFormProps> = ({ isOpen, onClose, onSa
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   const modalRef = useRef<HTMLDivElement>(null);
+  const dialogRef = useRef<HTMLDialogElement>(null);
   useFocusTrap(modalRef, isOpen);
+  useNativeDialog(dialogRef, isOpen, onClose);
+  useDialogBackdropClose(dialogRef, onClose);
 
   if (!isOpen) return null;
 
@@ -105,11 +110,15 @@ const OpportunityForm: React.FC<OpportunityFormProps> = ({ isOpen, onClose, onSa
   };
 
   return (
-    <dialog 
-      open
-      className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+    <dialog
+      ref={dialogRef}
       aria-modal="true"
       aria-labelledby="opportunity-form-title"
+      className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+      onPointerDown={(event) => {
+        if (event.target === event.currentTarget) onClose();
+      }}
+
     >
       <div ref={modalRef}>
         <Card className="max-w-2xl w-full max-h-[90vh] overflow-y-auto p-0">

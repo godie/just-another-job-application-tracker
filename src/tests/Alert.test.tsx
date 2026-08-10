@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, act } from '@testing-library/react';
 import { expect, test, describe, beforeEach, vi } from 'vitest';
 import Alert from '../components/Alert';
 import type { AlertType } from '../components/Alert';
@@ -21,6 +21,18 @@ describe('Alert Component', () => {
   test('should display the correct icon for each alert type', () => {
     const { container: successContainer } = render(<Alert type="success" message="Success!" />);
     expect(successContainer.querySelector('svg')).toBeInTheDocument();
+  });
+
+  test('cleans up auto-close timers when unmounted', async () => {
+    vi.useFakeTimers();
+    const onClose = vi.fn();
+    const { unmount } = render(<Alert type="info" message="Auto closing" duration={100} onClose={onClose} />);
+
+    unmount();
+    vi.advanceTimersByTime(500);
+
+    expect(onClose).not.toHaveBeenCalled();
+    vi.useRealTimers();
   });
 
   test('should auto-close after duration', async () => {
@@ -46,15 +58,18 @@ describe('Alert Component', () => {
   });
 
   test('should call onClose when close button is clicked', () => {
+    vi.useFakeTimers();
     const onClose = vi.fn();
     render(<Alert type="warning" message="Click to close" onClose={onClose} />);
     
     const closeButton = screen.getByLabelText('Close alert');
-    closeButton.click();
-    
-    setTimeout(() => {
-      expect(onClose).toHaveBeenCalledTimes(1);
-    }, 400);
+    act(() => {
+      closeButton.click();
+      vi.advanceTimersByTime(300);
+    });
+
+    expect(onClose).toHaveBeenCalledTimes(1);
+    vi.useRealTimers();
   });
 
   test('should not show close button when onClose is not provided', () => {

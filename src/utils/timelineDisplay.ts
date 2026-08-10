@@ -1,4 +1,9 @@
 const formatterCache = new Map<string, Intl.DateTimeFormat>();
+const DEFAULT_DATE_FORMAT_OPTIONS: Intl.DateTimeFormatOptions = {
+  year: 'numeric',
+  month: 'short',
+  day: 'numeric',
+};
 
 function getDateFormatter(locale?: string): Intl.DateTimeFormat {
   const resolvedLocale =
@@ -9,11 +14,7 @@ function getDateFormatter(locale?: string): Intl.DateTimeFormat {
 
   let formatter = formatterCache.get(resolvedLocale);
   if (!formatter) {
-    formatter = new Intl.DateTimeFormat(resolvedLocale, {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    });
+    formatter = Intl.DateTimeFormat(resolvedLocale, DEFAULT_DATE_FORMAT_OPTIONS);
     formatterCache.set(resolvedLocale, formatter);
   }
 

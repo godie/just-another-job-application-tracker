@@ -53,7 +53,7 @@ const CustomFieldsSettings: React.FC<CustomFieldsSettingsProps> = ({
               onChange={(e) => setCustomFieldForm({ ...customFieldForm, label: e.target.value })}
               placeholder='e.g., Recruiter Phone'
               aria-label={t('settings.custom.label')}
-              className='w-full px-4 py-3 border border-input rounded focus:ring-2 focus:ring-ring focus:border-ring bg-background text-foreground transition-all'
+              className='w-full px-4 py-3 border border-input rounded focus:ring-2 focus:ring-ring focus:border-ring bg-background text-foreground transition-[border-color,box-shadow]'
             />
           </div>
 
@@ -72,7 +72,7 @@ const CustomFieldsSettings: React.FC<CustomFieldsSettingsProps> = ({
                 })
               }
               aria-label={t('settings.custom.type')}
-              className='w-full px-4 py-3 border border-input rounded focus:ring-2 focus:ring-ring focus:border-ring bg-background text-foreground transition-all'
+              className='w-full px-4 py-3 border border-input rounded focus:ring-2 focus:ring-ring focus:border-ring bg-background text-foreground transition-[border-color,box-shadow]'
             >
               <option value='text'>{t('settings.custom.types.text')}</option>
               <option value='date'>{t('settings.custom.types.date')}</option>
@@ -100,7 +100,7 @@ const CustomFieldsSettings: React.FC<CustomFieldsSettingsProps> = ({
                 placeholder='Remote&#10;Hybrid&#10;On-site'
                 rows={4}
                 aria-label={t('settings.custom.options')}
-                className='w-full px-4 py-3 border border-input rounded focus:ring-2 focus:ring-ring focus:border-ring bg-background text-foreground transition-all'
+                className='w-full px-4 py-3 border border-input rounded focus:ring-2 focus:ring-ring focus:border-ring bg-background text-foreground transition-[border-color,box-shadow]'
               />
               <p className='text-xs text-muted-foreground mt-2 italic'>
                 {t('settings.custom.optionsDesc')}
@@ -119,7 +119,7 @@ const CustomFieldsSettings: React.FC<CustomFieldsSettingsProps> = ({
                   setCustomFieldForm({ ...customFieldForm, required: e.target.checked })
                 }
                 aria-label={t('settings.custom.required')}
-                className='size-5 text-primary border-input rounded focus:ring-ring transition-all cursor-pointer'
+                className='size-5 text-primary border-input rounded focus:ring-ring transition-[box-shadow] cursor-pointer'
               />
               <span className='text-sm font-bold text-muted-foreground group-hover:text-foreground transition-colors'>
                 {t('settings.custom.required')}
@@ -174,11 +174,11 @@ const CustomFieldsSettings: React.FC<CustomFieldsSettingsProps> = ({
             {customFields.map((field) => (
               <div
                 key={field.id}
-                className='flex items-center justify-between p-5 bg-card border border-border rounded hover:border-primary/30 transition-all group'
+                className='flex items-center justify-between p-5 bg-card border border-border rounded hover:border-primary/30 transition-[border-color,box-shadow] group'
               >
-                <div className='flex flex-col'>
-                  <div className='flex items-center gap-2'>
-                    <span className='font-bold text-foreground'>{field.label}</span>
+                <div className='min-w-0 flex flex-col'>
+                  <div className='min-w-0 flex flex-wrap items-center gap-2'>
+                    <span className='break-words font-bold text-foreground'>{field.label}</span>
                     <span className='inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-primary/5 text-primary dark:bg-primary/10 dark:text-primary/80 border border-primary/20'>
                       {field.type}
                     </span>
@@ -198,7 +198,7 @@ const CustomFieldsSettings: React.FC<CustomFieldsSettingsProps> = ({
                     </div>
                   )}
                 </div>
-                <div className='flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity'>
+                <div className='flex shrink-0 gap-2 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity'>
                   <Button
                     variant='ghost'
                     size='icon'

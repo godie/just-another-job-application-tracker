@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef, lazy, Suspense } from 'react';
+// react-doctor-disable-next-line no-flush-sync,react-doctor/no-flush-sync -- preserve the synchronous commit required to capture the post-navigation DOM in the browser View Transitions callback.
 import { flushSync } from 'react-dom';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { AlertProvider } from './components/AlertProvider';
@@ -30,6 +31,7 @@ import { useApplicationsStore } from './stores/applicationsStore';
 import { useAuthStore } from './stores/authStore';
 import { useCloudSync } from './hooks/useCloudSync';
 import useKeyboardShortcuts from './hooks/useKeyboardShortcuts';
+import { useTranslation } from 'react-i18next';
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
 
@@ -37,25 +39,27 @@ export type PageType = 'landing' | 'applications' | 'opportunities' | 'settings'
 
 const VALID_PAGES: PageType[] = ['landing', 'applications', 'opportunities', 'settings', 'insights', 'support', 'suggestions', 'login', 'register', 'gmail-scan', 'backup-sync', 'job-details'];
 const PUBLIC_PAGES = new Set<PageType>(['landing', 'login', 'register']);
+const PAGE_ANNOUNCEMENT_KEYS: Record<PageType, string> = {
+  landing: 'nav.home',
+  applications: 'nav.applications',
+  opportunities: 'nav.opportunities',
+  settings: 'nav.settings',
+  insights: 'nav.insights',
+  support: 'nav.support',
+  suggestions: 'support.suggestionsViewer.title',
+  login: 'auth.login',
+  register: 'auth.register',
+  'gmail-scan': 'settings.emailScan.section',
+  'backup-sync': 'nav.backupSync',
+  'job-details': 'jobDetails.details',
+};
 
-/**
- * Wrap a React state change in `document.startViewTransition` so the browser
- * cross-fades the old and new DOM states. `flushSync` forces React to commit
- * the state change synchronously inside the view-transition callback, which
- * guarantees the DOM snapshot AFTER the callback reflects the new value
- * rather than the previous one.
- *
- * Feature-detected per call (cheap property lookup). This makes the API
- * testable without module-cache reset tricks and correctly handles a
- * polyfill that may arrive mid-session.
- *
- * Without the API, fall through to the original async state update.
- */
 function swapWithTransition(swap: () => void): void {
   if (
     typeof document !== 'undefined' &&
     typeof document.startViewTransition === 'function'
   ) {
+    // react-doctor-disable-next-line no-document-start-view-transition,react-doctor/no-document-start-view-transition -- preserve the browser View Transitions API for route changes; React 19 has no stable cross-browser replacement for this integration yet.
     document.startViewTransition(() => {
       flushSync(swap);
     });
@@ -75,6 +79,7 @@ const getPageFromUrl = (): PageType | null => {
 };
 
 function App() {
+  const { t } = useTranslation();
   const { fetchMe } = useAuthStore();
   useCloudSync();
 
@@ -132,13 +137,25 @@ function App() {
   }, []);
 
   const currentPageRef = useRef(currentPage);
-  currentPageRef.current = currentPage;
+  const initialPageRef = useRef(currentPage);
+  const routeAnnouncement = currentPage === initialPageRef.current
+    ? ''
+    : t(PAGE_ANNOUNCEMENT_KEYS[currentPage]);
+
+  useEffect(() => {
+    currentPageRef.current = currentPage;
+  }, [currentPage]);
+
+  useEffect(() => {
+    const mainId = PUBLIC_PAGES.has(currentPage) ? 'app-main-landmark' : 'main-content';
+    document.getElementById(mainId)?.focus();
+  }, [currentPage, t]);
 
   useEffect(() => {
     const handlePopState = () => {
       const pageFromUrl = getPageFromUrl();
       if (pageFromUrl && pageFromUrl !== currentPageRef.current) {
-        // Bookkeeping first, then commit. Side effect outside flushSync.
+        // Bookkeeping first, then commit.
         if (!PUBLIC_PAGES.has(pageFromUrl)) {
           localStorage.setItem('currentPage', pageFromUrl);
         }
@@ -235,7 +252,7 @@ function App() {
     <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
       <AlertProvider>
         {['landing', 'login', 'register'].includes(currentPage) ? (
-          <main id="app-main-landmark">
+          <main id="app-main-landmark" tabIndex={-1}>
             <Suspense fallback={
               <div className="flex items-center justify-center h-screen bg-muted dark:bg-muted">
                 <div className="animate-spin rounded-full size-12 border-b-2 border-primary"></div>
@@ -264,6 +281,9 @@ function App() {
           <GDPRCookieBanner onConsentChange={handleConsentChange} />
         )}
         <KeyboardHelp isOpen={showKeyboardHelp} onClose={() => setShowKeyboardHelp(false)} />
+        <output className="sr-only" aria-live="polite" aria-atomic="true">
+          {routeAnnouncement}
+        </output>
       </AlertProvider>
     </GoogleOAuthProvider>
   );

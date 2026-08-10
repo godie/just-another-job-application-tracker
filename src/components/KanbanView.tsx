@@ -102,7 +102,10 @@ const KanbanView: React.FC<KanbanViewProps> = ({ applications, onSelectJob, onEd
   }
 
   return (
-    <div className='flex overflow-x-auto gap-x-4'>
+    <section
+      className='flex overflow-x-auto gap-x-4 snap-x snap-mandatory focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2'
+      aria-label={t('kanban.board', 'Application board')}
+    >
       {grouped.map(({ status, items }) => {
         let displayStatus = status;
         if (status.startsWith('Interviewing - ')) {
@@ -117,7 +120,7 @@ const KanbanView: React.FC<KanbanViewProps> = ({ applications, onSelectJob, onEd
         return (
         <section
           key={status}
-          className='bg-muted border border-border rounded flex flex-col w-80 flex-shrink-0'
+          className='bg-muted border border-border rounded flex flex-col w-[min(20rem,calc(100vw-2rem))] flex-shrink-0 snap-start'
           aria-label={`${displayStatus} column`}
         >
           <header className='px-4 py-3 border-b border-border bg-card rounded-t'>
@@ -182,7 +185,7 @@ const KanbanView: React.FC<KanbanViewProps> = ({ applications, onSelectJob, onEd
                   </button>
                   <footer className='px-4 py-2 border-t border-border bg-muted rounded-b flex flex-col gap-2'>
                     {/* Keyboard accessible status change buttons */}
-                    <menu className='flex flex-wrap gap-1' aria-label={t('kanban.moveToStatus')}>
+                    <div className='flex flex-wrap gap-1' aria-label={t('kanban.moveToStatus')}>
                       {statusOptions.slice(0, 3).map((targetStatus) => (
                         <Button
                           key={targetStatus}
@@ -198,7 +201,7 @@ const KanbanView: React.FC<KanbanViewProps> = ({ applications, onSelectJob, onEd
                           → {targetStatus}
                         </Button>
                       ))}
-                    </menu>
+                    </div>
                     <div className='flex justify-end'>
                       <Button
                         type='button'
@@ -240,7 +243,7 @@ const KanbanView: React.FC<KanbanViewProps> = ({ applications, onSelectJob, onEd
         }}
         onCancel={() => setDeleteConfirm({ isOpen: false, application: null })}
       />
-    </div>
+    </section>
   );
 };
 

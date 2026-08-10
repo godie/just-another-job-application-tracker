@@ -95,7 +95,7 @@ describe('ApplicationTableRow', () => {
     }
   });
 
-  it('has delete button in the document (visible on hover via CSS)', () => {
+  it('reveals the delete action when the row receives keyboard focus', () => {
     render(
       <table>
         <tbody>
@@ -110,7 +110,9 @@ describe('ApplicationTableRow', () => {
       </table>
     );
 
-    expect(screen.getByTestId('delete-btn-1')).toBeInTheDocument();
+    const row = screen.getByTestId('row-1');
+    expect(row).toHaveClass('group');
+    expect(screen.getByTestId('delete-btn-1').parentElement).toHaveClass('group-focus-within:opacity-100');
   });
 
   it('calls onDeleteRequest when delete button is clicked', () => {

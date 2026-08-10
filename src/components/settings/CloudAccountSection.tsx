@@ -18,7 +18,7 @@ export const CloudAccountSection: React.FC<CloudAccountSectionProps> = ({ onNavi
       <div className="bg-primary/5 dark:bg-primary/10 border border-primary/20 p-8">
         {isAuthenticated ? (
           <div className="flex flex-col sm:flex-row items-center gap-6">
-            <div className="size-16 bg-primary rounded flex items-center justify-center text-white text-2xl font-bold">
+            <div className="size-16 bg-primary rounded flex items-center justify-center text-primary-foreground text-2xl font-bold">
               {currentUser?.email?.charAt(0).toUpperCase()}
             </div>
             <div className="flex-1 text-center sm:text-left">
@@ -46,7 +46,7 @@ export const CloudAccountSection: React.FC<CloudAccountSectionProps> = ({ onNavi
             <button
               type="button"
               onClick={() => onNavigate?.('backup-sync')}
-              className="px-6 py-2.5 bg-primary text-white text-sm font-semibold hover:bg-primary transition-colors"
+              className="px-6 py-2.5 bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary transition-colors"
             >
               {t('nav.backupSync')} →
             </button>
@@ -68,7 +68,7 @@ export const CloudAccountSection: React.FC<CloudAccountSectionProps> = ({ onNavi
               <button
                 type="button"
                 onClick={() => onNavigate?.('backup-sync')}
-                className="px-6 py-2.5 bg-primary text-white text-sm font-semibold hover:bg-primary transition-colors"
+                className="px-6 py-2.5 bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary transition-colors"
               >
                 {t('nav.backupSync')} →
               </button>

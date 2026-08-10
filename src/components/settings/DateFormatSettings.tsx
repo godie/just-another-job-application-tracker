@@ -30,7 +30,7 @@ const DateFormatSettings: React.FC<DateFormatSettingsProps> = ({ currentFormat, 
               type='button'
               key={format}
               onClick={() => onDateFormatChange(format)}
-              className={`flex items-center justify-between p-5 rounded border-2 transition-all text-left ${
+              className={`flex items-center justify-between p-5 rounded border-2 transition-[border-color,background-color,box-shadow] text-left ${
                 isActive
                   ? 'border-primary bg-primary/5 dark:bg-primary/10'
                   : 'border-border hover:border-border bg-card'

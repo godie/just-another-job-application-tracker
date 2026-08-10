@@ -33,7 +33,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, currentPage, onNaviga
       {/* Skip navigation link for keyboard users */}
       <a
         href="#main-content"
-        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] bg-primary text-primary-foreground px-4 py-2 rounded shadow-lg transition-all"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] bg-primary text-primary-foreground px-4 py-2 rounded shadow-lg transition-colors"
       >
         Skip to main content
       </a>
@@ -59,7 +59,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, currentPage, onNaviga
           />
         )}
         <div
-          className={`flex-1 overflow-hidden transition-all duration-300 ${
+          className={`flex-1 overflow-hidden transition-[margin] duration-300 ${
             isSidebarOpen ? 'md:ml-64' : 'ml-0'
           }`}
         >

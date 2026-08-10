@@ -1,8 +1,12 @@
-import React, { useReducer, useState } from 'react';
+import React, { useReducer, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useGoogleLogin } from '@react-oauth/google';
 import { useAuthStore } from '../stores/authStore';
 import { Button } from './ui/Button';
+import useFocusTrap from '../hooks/useFocusTrap';
+import useKeyboardEscape from '../hooks/useKeyboardEscape';
+import useDialogBackdropClose from '../hooks/useDialogBackdropClose';
+import useNativeDialog from '../hooks/useNativeDialog';
 
 type AuthMode = 'login' | 'register';
 
@@ -68,6 +72,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMo
   const { mode, email, password, confirmPassword, displayName, localError } = state;
 
   const { login, register, loginWithGoogle, isLoading, error } = useAuthStore();
+  const modalRef = useRef<HTMLDivElement>(null);
+  const dialogRef = useRef<HTMLDialogElement>(null);
+
+  useFocusTrap(modalRef, isOpen);
+  useKeyboardEscape(onClose, isOpen);
+  useNativeDialog(dialogRef, isOpen, onClose);
+  useDialogBackdropClose(dialogRef, onClose);
 
   const googleLogin = useGoogleLogin({
     flow: 'auth-code',
@@ -130,11 +141,20 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMo
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="w-full max-w-md bg-card rounded-lg shadow-xl border border-border overflow-hidden">
+    <dialog
+      ref={dialogRef}
+      aria-modal="true"
+      aria-labelledby="auth-modal-title"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+      onPointerDown={(event) => {
+        if (event.target === event.currentTarget) onClose();
+      }}
+
+    >
+      <div ref={modalRef} className="w-full max-w-md bg-card rounded-lg shadow-xl border border-border overflow-hidden">
         <div className="p-6">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-semibold text-foreground">
+            <h2 id="auth-modal-title" className="text-2xl font-semibold text-foreground">
               {mode === 'login' ? t('auth.login') : t('auth.register')}
             </h2>
             <button
@@ -295,7 +315,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMo
           </div>
         </div>
       </div>
-    </div>
+    </dialog>
   );
 };
 

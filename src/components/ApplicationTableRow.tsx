@@ -27,7 +27,7 @@ const ApplicationTableRow: React.FC<ApplicationTableRowProps> = ({
   onDeleteRequest,
 }) => {
   const { t } = useTranslation();
-
+  const hasPositionColumn = columns.some((column) => column.id === 'position');
 
   return (
     <TableRow
@@ -35,6 +35,21 @@ const ApplicationTableRow: React.FC<ApplicationTableRowProps> = ({
       data-testid={`row-${item.id}`}
       onClick={() => onSelectJob(item)}
     >
+      {!hasPositionColumn && (
+        <TableCell className="px-4 sm:px-6 py-3 whitespace-nowrap text-foreground border-r border-border group-hover:bg-muted">
+          <button
+            type="button"
+            className="text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded"
+            aria-label={`${item.position} at ${item.company}`}
+            onClick={(event) => {
+              event.stopPropagation();
+              onSelectJob(item);
+            }}
+          >
+            <span className="block truncate max-w-[180px] sm:max-w-none">{item.position}</span>
+          </button>
+        </TableCell>
+      )}
       {columns.map((column) => {
         const cellContent = getCellValue(item, column.id);
         const isNotes = column.id === 'notes';
@@ -86,7 +101,19 @@ const ApplicationTableRow: React.FC<ApplicationTableRowProps> = ({
             key={column.id}
             className="px-4 sm:px-6 py-3 whitespace-nowrap text-foreground border-r border-border group-hover:bg-muted"
           >
-            {isLink ? (
+            {column.id === 'position' ? (
+              <button
+                type="button"
+                className="text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded"
+                aria-label={`${item.position} at ${item.company}`}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  onSelectJob(item);
+                }}
+              >
+                <span className="block truncate max-w-[180px] sm:max-w-none">{cellContent}</span>
+              </button>
+            ) : isLink ? (
               <a
                 href={sanitizeUrl(cellContent)}
                 target="_blank"
@@ -110,7 +137,7 @@ const ApplicationTableRow: React.FC<ApplicationTableRowProps> = ({
             Using Tailwind's group-hover classes avoids triggering React re-renders
             for the entire table during mouse movements, significantly improving
             performance for large lists. */}
-        <div className="opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-opacity duration-200">
+        <div className="opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 pointer-events-none group-hover:pointer-events-auto group-focus-within:pointer-events-auto transition-opacity duration-200">
           <Button
             variant='danger'
             size='sm'

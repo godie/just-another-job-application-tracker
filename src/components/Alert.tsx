@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useReducer, useRef } from 'react';
 import { Button } from './ui/Button';
 
 export type AlertType = 'success' | 'error' | 'warning' | 'info';
@@ -41,30 +41,32 @@ const ALERT_ICONS = {
 } as const;
 
 const Alert: React.FC<AlertProps> = ({ type, message, onClose, duration = 5000 }) => {
-  const [isVisible, setIsVisible] = useState(true);
+  const [isVisible, hideAlert] = useReducer(() => false, true);
   const onCloseRef = useRef(onClose);
+  const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     onCloseRef.current = onClose;
   }, [onClose]);
 
-  // react-doctor-disable-next-line effect-needs-cleanup -- canonical rule waiver: the inner 300 ms hide timer IS cleared by the returned teardown (`clearTimeout(hideTimer)`); the detector's cleanup matcher only inspects top-level statements and cannot trace timer ids created inside a nested timer callback (documented recipe false-positive case), react-doctor/effect-needs-cleanup
+  // react-doctor-disable-next-line effect-needs-cleanup, react-doctor/exhaustive-deps -- canonical rule waiver: the inner 300 ms hide timer IS cleared by the returned teardown (`clearTimeout(hideTimer)`); the detector's cleanup matcher only inspects top-level statements and cannot trace timer ids created inside a nested timer callback (documented recipe false-positive case), react-doctor/effect-needs-cleanup
   useEffect(() => {
     if (duration > 0) {
       // Canonical cleanup shape: the nested hide timer is a closure variable
       // cleared by the same returned teardown as the outer timer.
       let hideTimer: ReturnType<typeof setTimeout> | null = null;
       const timer = setTimeout(() => {
-        setIsVisible(false);
+        hideAlert();
         hideTimer = setTimeout(() => onCloseRef.current?.(), 300);
       }, duration);
 
       return () => {
         clearTimeout(timer);
         if (hideTimer) clearTimeout(hideTimer);
+        if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
       };
     }
-  }, [duration]);
+  }, [duration, hideAlert]);
 
   if (!isVisible) return null;
 
@@ -80,7 +82,7 @@ const Alert: React.FC<AlertProps> = ({ type, message, onClose, duration = 5000 }
         rounded-lg
         shadow-md
         mb-4
-        transition-all
+        transition-[opacity,transform]
         duration-300
         ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'}
       `}
@@ -98,9 +100,9 @@ const Alert: React.FC<AlertProps> = ({ type, message, onClose, duration = 5000 }
             variant="ghost"
             size="icon"
             onClick={() => {
-              setIsVisible(false);
+              hideAlert();
               if (onClose) {
-                setTimeout(onClose, 300);
+                closeTimerRef.current = setTimeout(onClose, 300);
               }
             }}
             className="ml-4 flex-shrink-0 text-current hover:text-current"

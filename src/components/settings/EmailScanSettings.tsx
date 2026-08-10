@@ -118,7 +118,7 @@ const EmailScanSettings: React.FC<EmailScanSettingsProps> = ({
               type='button'
               key={months}
               onClick={() => onEmailScanMonthsChange(months)}
-              className={`flex flex-col items-center justify-center p-4 rounded border-2 transition-all ${
+              className={`flex flex-col items-center justify-center p-4 rounded border-2 transition-[border-color,background-color,box-shadow] ${
                 emailScanMonths === months
                   ? 'border-primary bg-primary/5 dark:bg-primary/10 text-primary'
                   : 'border-border text-muted-foreground hover:border-border'
@@ -152,7 +152,7 @@ const EmailScanSettings: React.FC<EmailScanSettingsProps> = ({
             return (
               <label
                 key={chatbot.id}
-                className={`flex items-center gap-4 p-4 rounded border-2 cursor-pointer transition-all ${
+                className={`flex items-center gap-4 p-4 rounded border-2 cursor-pointer transition-[border-color,background-color,box-shadow] ${
                   isEnabled
                     ? 'border-primary bg-primary/5 dark:bg-primary/10'
                     : 'border-border hover:border-border'

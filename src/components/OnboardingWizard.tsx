@@ -2,6 +2,8 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import useKeyboardEscape from '../hooks/useKeyboardEscape';
 import useFocusTrap from '../hooks/useFocusTrap';
+import useDialogBackdropClose from '../hooks/useDialogBackdropClose';
+import useNativeDialog from '../hooks/useNativeDialog';
 import { Button } from './ui/Button';
 import { markOnboardingComplete } from './OnboardingWizard.utils';
 
@@ -33,7 +35,8 @@ const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onClose, onNavigate
   const [step, setStep] = useState(0);
   const [direction, setDirection] = useState<'next' | 'prev'>('next');
   const [isVisible, setIsVisible] = useState(false);
-  const modalRef = useRef<HTMLDialogElement>(null);
+  const modalRef = useRef<HTMLDivElement>(null);
+  const dialogRef = useRef<HTMLDialogElement>(null);
   const closeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
@@ -52,6 +55,9 @@ const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onClose, onNavigate
     }, 300);
   }, [onClose]);
 
+  useNativeDialog(dialogRef, true, handleClose);
+  useDialogBackdropClose(dialogRef, handleClose);
+
   useEffect(() => {
     const timeout = closeTimeoutRef.current;
     return () => {
@@ -64,7 +70,7 @@ const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onClose, onNavigate
   const goNext = useCallback(() => {
     if (step < STEPS.length - 1) {
       setDirection('next');
-      setStep(step + 1);
+      setStep((currentStep) => currentStep + 1);
       return;
     }
     if (onNavigate) {
@@ -76,7 +82,7 @@ const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onClose, onNavigate
   const goPrev = useCallback(() => {
     if (step > 0) {
       setDirection('prev');
-      setStep(step - 1);
+      setStep((currentStep) => currentStep - 1);
     }
   }, [step]);
 
@@ -94,28 +100,25 @@ const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onClose, onNavigate
     : 'animate-in slide-in-from-left-8 fade-in duration-300';
 
   return (
-    <div
-      role="none"
+    <dialog
+      ref={dialogRef}
+      aria-modal="true"
+      aria-labelledby="onboarding-title"
       className={`fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm transition-opacity duration-300 flex items-center justify-center ${
         isVisible ? 'opacity-100' : 'opacity-0'
       }`}
-      onClick={(e) => {
-        if (e.target === e.currentTarget) handleClose();
-      }}
+
     >
-      <dialog
-        open
+      <div
         ref={modalRef}
-        aria-modal="true"
-        aria-labelledby="onboarding-title"
-        className={`relative m-0 w-full max-w-lg mx-4 bg-card rounded-2xl shadow-2xl border border-border overflow-hidden transition-all duration-300 ${
+        className={`relative m-0 w-full max-w-lg mx-4 bg-card rounded-2xl shadow-2xl border border-border overflow-hidden transition-[opacity,transform] duration-300 ${
           isVisible ? 'scale-100 translate-y-0' : 'scale-95 translate-y-4'
         }`}
       >
         {/* Progress bar */}
         <div className="absolute top-0 left-0 right-0 h-1 bg-muted">
           <div
-            className="h-full bg-primary transition-all duration-500 ease-out"
+            className="h-full bg-primary transition-[width] duration-500 ease-out"
             style={{ width: `${((step + 1) / STEPS.length) * 100}%` }}
           />
         </div>
@@ -154,7 +157,7 @@ const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onClose, onNavigate
             <button
               key={s.id}
               onClick={() => goToStep(i)}
-              className={`size-2.5 rounded-full transition-all duration-300 ${
+              className={`size-2.5 rounded-full transition-[width,background-color] duration-300 ${
                 i === step
                   ? 'bg-primary w-6'
                   : i < step
@@ -200,8 +203,8 @@ const OnboardingWizard: React.FC<OnboardingWizardProps> = ({ onClose, onNavigate
             </Button>
           </div>
         </div>
-      </dialog>
-    </div>
+      </div>
+    </dialog>
   );
 };
 

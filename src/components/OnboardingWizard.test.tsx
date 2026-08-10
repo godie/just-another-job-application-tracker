@@ -34,6 +34,14 @@ describe('OnboardingWizard', () => {
     });
   });
 
+  it('renders a native dialog', async () => {
+    render(<OnboardingWizard onClose={vi.fn()} />);
+
+    await waitFor(() => {
+      expect(screen.getByRole('dialog').tagName.toLowerCase()).toBe('dialog');
+    });
+  });
+
   it('advances to the next step when clicking Next', async () => {
     const onClose = vi.fn();
     render(<OnboardingWizard onClose={onClose} />);
@@ -115,9 +123,8 @@ describe('OnboardingWizard', () => {
       expect(screen.getByRole('dialog')).toBeInTheDocument();
     });
 
-    const backdrop = screen.getByRole('dialog').parentElement;
-    expect(backdrop).not.toBeNull();
-    fireEvent.click(backdrop!);
+    const backdrop = screen.getByRole('dialog');
+    fireEvent.click(backdrop);
 
     await waitFor(() => {
       expect(onClose).toHaveBeenCalledTimes(1);

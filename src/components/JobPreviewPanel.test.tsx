@@ -1,6 +1,7 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { act, render, screen, fireEvent } from '@testing-library/react';
+import { useState } from 'react';
 import JobPreviewPanel from './JobPreviewPanel';
 import type { JobApplication } from '../types/applications';
 
@@ -83,6 +84,17 @@ describe('JobPreviewPanel', () => {
     expect(titleBtn).toBeInTheDocument();
     expect(titleBtn).toHaveTextContent('Frontend Developer');
     expect(titleBtn.getAttribute('aria-label')).toBe('Open full job details');
+  });
+
+  it('allows long position and company names to wrap inside the preview', () => {
+    renderPanel('app-1', {
+      position: '工程师 👩🏽‍💻 '.repeat(20),
+      company: 'شركة توظيف دولية '.repeat(20),
+    });
+
+    expect(screen.getByTestId('preview-title-button')).toHaveClass('min-w-0');
+    expect(screen.getByTestId('preview-title-button').querySelector('h3')).toHaveClass('break-words');
+    expect(screen.getByTestId('preview-title-button').querySelector('p')).toHaveClass('break-words');
   });
 
   it('renders location, workType, salary, platform when present', () => {
@@ -226,7 +238,7 @@ describe('JobPreviewPanel', () => {
   });
 
 
-  it('renders not-found message when application does not exist', () => {
+  it('renders the not-found state inside the accessible dialog', () => {
     (useApplicationsStore as ReturnType<typeof vi.fn>).mockImplementation(
       (selector: (state: { applications: JobApplication[] }) => unknown) => selector({ applications: [] })
     );
@@ -238,7 +250,33 @@ describe('JobPreviewPanel', () => {
         onDelete={onDelete}
       />
     );
+
+    expect(screen.getByRole('dialog', { name: 'Job Preview' })).toBeInTheDocument();
     expect(screen.getByText('Application not found.')).toBeInTheDocument();
+  });
+
+  it('traps focus inside the not-found dialog', async () => {
+    (useApplicationsStore as ReturnType<typeof vi.fn>).mockImplementation(
+      (selector: (state: { applications: JobApplication[] }) => unknown) => selector({ applications: [] })
+    );
+    render(
+      <JobPreviewPanel
+        jobId="nonexistent"
+        onClose={onClose}
+        onNavigate={onNavigate}
+        onDelete={onDelete}
+      />
+    );
+
+    const panel = screen.getByRole('dialog', { name: 'Job Preview' });
+    const closeButton = screen.getByTestId('preview-close');
+    await act(async () => {
+      await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+    });
+
+    expect(document.activeElement).toBe(closeButton);
+    fireEvent.keyDown(panel, { key: 'Tab' });
+    expect(document.activeElement).toBe(closeButton);
   });
 
   it('calls onClose when close button is clicked in not-found state', () => {
@@ -253,16 +291,93 @@ describe('JobPreviewPanel', () => {
         onDelete={onDelete}
       />
     );
-    fireEvent.click(screen.getByText('Close'));
+    fireEvent.click(screen.getByTestId('preview-close'));
     expect(onClose).toHaveBeenCalledTimes(1);
   });
 
 
-  it('has accessible panel title', () => {
+  it('has native dialog semantics and an accessible title', () => {
     renderPanel('app-1');
     const panel = screen.getByTestId('preview-panel');
-    expect(panel.getAttribute('aria-label')).toBe('Job Preview');
-    expect(screen.getByRole('complementary')).toBe(panel);
+    expect(panel.tagName.toLowerCase()).toBe('dialog');
+    expect(panel).toHaveAttribute('aria-labelledby', 'job-preview-title');
+    expect(screen.getByRole('dialog', { name: 'Job Preview' })).toBe(panel);
+  });
+
+  it('restores focus to the trigger when the preview closes', () => {
+    const trigger = document.createElement('button');
+    trigger.type = 'button';
+    document.body.appendChild(trigger);
+    act(() => trigger.focus());
+
+    const { unmount } = renderPanel('app-1');
+    unmount();
+
+    expect(document.activeElement).toBe(trigger);
+    trigger.remove();
+  });
+
+  it('restores focus through the real close path', () => {
+    const trigger = document.createElement('button');
+    trigger.type = 'button';
+    document.body.appendChild(trigger);
+    act(() => trigger.focus());
+
+    (useApplicationsStore as ReturnType<typeof vi.fn>).mockImplementation(
+      (selector: (state: { applications: JobApplication[] }) => unknown) => selector({ applications: [makeApp()] })
+    );
+
+    const ClosablePreview = () => {
+      const [isOpen, setIsOpen] = useState(true);
+      return isOpen ? (
+        <JobPreviewPanel jobId="app-1" onClose={() => setIsOpen(false)} />
+      ) : null;
+    };
+
+    render(<ClosablePreview />);
+    fireEvent.click(screen.getByTestId('preview-close'));
+
+    expect(screen.queryByTestId('preview-panel')).not.toBeInTheDocument();
+    expect(document.activeElement).toBe(trigger);
+    trigger.remove();
+  });
+
+  it('preserves the original trigger when the application disappears while open', async () => {
+    const trigger = document.createElement('button');
+    trigger.type = 'button';
+    document.body.appendChild(trigger);
+    act(() => trigger.focus());
+
+    let currentApplications: JobApplication[] = [makeApp()];
+    (useApplicationsStore as ReturnType<typeof vi.fn>).mockImplementation(
+      (selector: (state: { applications: JobApplication[] }) => unknown) => selector({ applications: currentApplications })
+    );
+
+    let removeApplication!: () => void;
+    const TransitioningPreview = () => {
+      const [isOpen, setIsOpen] = useState(true);
+      const [, setVersion] = useState(0);
+      removeApplication = () => {
+        currentApplications = [];
+        setVersion((version) => version + 1);
+      };
+      return isOpen ? (
+        <JobPreviewPanel jobId="app-1" onClose={() => setIsOpen(false)} />
+      ) : null;
+    };
+
+    render(<TransitioningPreview />);
+    act(() => removeApplication());
+    expect(screen.getByRole('dialog', { name: 'Job Preview' })).toBeInTheDocument();
+    await act(async () => {
+      await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+    });
+    expect(document.activeElement).toBe(screen.getByTestId('preview-close'));
+
+    fireEvent.click(screen.getByTestId('preview-close'));
+    expect(screen.queryByTestId('preview-panel')).not.toBeInTheDocument();
+    expect(document.activeElement).toBe(trigger);
+    trigger.remove();
   });
 
   it('close button has accessible label', () => {

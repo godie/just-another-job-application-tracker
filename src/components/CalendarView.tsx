@@ -39,7 +39,7 @@ const formatDateKey = (date: Date): string =>
 
 const getEventStyles = (status: string, isPast: boolean) => {
   const s = status.toLowerCase();
-  const baseClasses = 'w-full text-left text-[10px] sm:text-[11px] px-1.5 sm:px-2 py-1 sm:py-1.5 min-h-[44px] rounded-sm border-l-2 transition';
+  const baseClasses = 'w-full text-left text-[10px] sm:text-[11px] px-1.5 sm:px-2 py-1 sm:py-1.5 min-h-[44px] rounded-sm border-l-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1';
 
   const statusStyles: Record<string, { button: string; time: string; borderPast: string }> = {
     applied: {

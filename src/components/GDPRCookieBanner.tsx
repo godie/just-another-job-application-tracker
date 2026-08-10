@@ -40,11 +40,9 @@ const GDPRCookieBanner: React.FC<GDPRCookieBannerProps> = ({ onConsentChange }) 
   if (!isVisible) return null;
 
   return (
-    <dialog
-      open
-      className="fixed bottom-0 left-0 right-0 z-[55] animate-in slide-in-from-bottom-4 fade-in duration-500"
-      aria-modal="true"
+    <section
       aria-labelledby="cookie-banner-title"
+      className="fixed bottom-0 left-0 right-0 z-[55] animate-in slide-in-from-bottom-4 fade-in duration-500 transition-[opacity,transform]"
     >
       <div className="mx-4 mb-4 md:mx-auto md:max-w-4xl bg-card border border-border rounded-xl shadow-2xl overflow-hidden">
         {/* Main banner */}
@@ -119,7 +117,7 @@ const GDPRCookieBanner: React.FC<GDPRCookieBannerProps> = ({ onConsentChange }) 
 
         {/* Details panel */}
         {showDetails && (
-          <div className="border-t border-border px-5 md:px-6 py-4 bg-muted/50 animate-in slide-in-from-top-2 fade-in duration-200">
+          <div className="border-t border-border px-5 md:px-6 py-4 bg-muted/50 animate-in slide-in-from-top-2 fade-in duration-200 transition-[opacity,transform]">
             <div className="grid md:grid-cols-2 gap-4">
               <div className="rounded-lg border border-border bg-card p-4">
                 <div className="flex items-center gap-2 mb-2">
@@ -180,7 +178,7 @@ const GDPRCookieBanner: React.FC<GDPRCookieBannerProps> = ({ onConsentChange }) 
           </div>
         )}
       </div>
-    </dialog>
+    </section>
   );
 };
 

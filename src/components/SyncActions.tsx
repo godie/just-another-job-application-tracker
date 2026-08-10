@@ -31,7 +31,7 @@ const SyncActions: React.FC<SyncActionsProps> = ({
             className={`px-4 py-2 rounded font-medium transition-colors ${
               isLoading
                 ? 'bg-muted text-muted-foreground dark:bg-muted dark:text-muted-foreground cursor-not-allowed'
-                : 'bg-primary hover:bg-primary text-white'
+                : 'bg-primary hover:bg-primary/90 text-primary-foreground'
             }`}
             type="button"
           >
@@ -57,7 +57,7 @@ const SyncActions: React.FC<SyncActionsProps> = ({
           className={`px-4 py-2 rounded font-medium transition-colors ${
             isLoading
               ? 'bg-muted text-muted-foreground dark:bg-muted dark:text-muted-foreground cursor-not-allowed'
-              : 'bg-primary hover:bg-primary text-white'
+              : 'bg-primary hover:bg-primary/90 text-primary-foreground'
           }`}
           type="button"
         >

@@ -6,11 +6,7 @@ import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { useAlert } from '../components/AlertProvider';
 import { type PageType } from '../App';
-
-const API_BASE_URL =
-  import.meta.env.VITE_SUPPORT_API_BASE_URL ||
-  import.meta.env.VITE_API_BASE_URL ||
-  '/api';
+import { SUPPORT_API_BASE_URL } from '../utils/apiBase';
 
 interface Suggestion {
   id: number;
@@ -34,7 +30,7 @@ const SuggestionsViewerPage: React.FC<SuggestionsViewerPageProps> = ({ onNavigat
   const fetchSuggestions = useCallback(async () => {
     setIsLoading(true);
     try {
-      const response = await fetch(`${API_BASE_URL}/suggestions`, {
+      const response = await fetch(`${SUPPORT_API_BASE_URL}/suggestions`, {
         method: 'GET',
         credentials: 'include',
       });

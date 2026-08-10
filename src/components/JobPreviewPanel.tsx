@@ -24,8 +24,11 @@ const NOTES_EXCERPT_MAX_LENGTH = 150;
 const PreviewHeader: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const { t } = useTranslation();
   return (
-    <div className="flex items-center justify-between px-6 py-4 border-b border-border bg-primary/10 flex-shrink-0">
-      <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+    <div className="flex min-w-0 items-center justify-between gap-3 px-6 py-4 border-b border-border bg-primary/10 flex-shrink-0">
+      <h2
+        id="job-preview-title"
+        className="text-sm font-semibold uppercase tracking-wide text-muted-foreground"
+      >
         {t('jobPreview.preview', 'Job Preview')}
       </h2>
       <Button
@@ -142,14 +145,14 @@ const PreviewBody: React.FC<{
       <button
         type="button"
         onClick={onOpenFullDetails}
-        className="group block w-full text-left -mx-1 px-1 py-0.5 rounded transition-colors hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+        className="group block w-full min-w-0 text-left -mx-1 px-1 py-0.5 rounded transition-colors hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
         aria-label={t('jobPreview.openFullDetails', 'Open full job details')}
         data-testid="preview-title-button"
       >
         <h3 className="text-xl font-bold text-foreground leading-tight break-words group-hover:text-primary transition-colors">
           {application.position}
         </h3>
-        <p className="text-base text-muted-foreground mt-1 group-hover:text-primary/80 transition-colors">
+        <p className="text-base text-muted-foreground mt-1 break-words group-hover:text-primary/80 transition-colors">
           {application.company}
         </p>
       </button>
@@ -253,31 +256,22 @@ const PreviewFooter: React.FC<{
   );
 };
 
-const PreviewEmptyState: React.FC<{ onClose: () => void }> = ({ onClose }) => {
+const PreviewEmptyContent: React.FC<{ onClose: () => void }> = ({ onClose }) => {
   const { t } = useTranslation();
   return (
     <>
-      {/* Backdrop */}
-      <div
-        className="fixed inset-0 bg-black/30 z-40 transition-opacity duration-300"
-        onClick={onClose}
-        aria-hidden="true"
-      />
-      {/* Empty Panel */}
-      <div className="fixed right-0 top-0 bottom-0 w-full sm:w-[480px] bg-card shadow-2xl z-50 flex flex-col">
-        <div className="flex-1 flex items-center justify-center p-6 text-center">
-          <div>
-            <div className="text-4xl mb-3">🔍</div>
-            <p className="text-muted-foreground text-sm">
-              {t('jobPreview.notFound', 'Application not found.')}
-            </p>
-          </div>
+      <div className="flex-1 flex items-center justify-center p-6 text-center">
+        <div>
+          <div className="text-4xl mb-3" aria-hidden="true">🔍</div>
+          <p className="text-muted-foreground text-sm">
+            {t('jobPreview.notFound', 'Application not found.')}
+          </p>
         </div>
-        <div className="p-4 border-t border-border">
-          <Button variant="ghost" onClick={onClose} className="w-full">
-            {t('common.close', 'Close')}
-          </Button>
-        </div>
+      </div>
+      <div className="p-4 border-t border-border">
+        <Button variant="ghost" onClick={onClose} className="w-full">
+          {t('common.close', 'Close')}
+        </Button>
       </div>
     </>
   );
@@ -291,11 +285,27 @@ const JobPreviewPanel: React.FC<JobPreviewPanelProps> = ({
 }) => {
   const { t } = useTranslation();
   const applications = useApplicationsStore((state) => state.applications);
-  const panelRef = useRef<HTMLElement>(null);
+  const application = applications.find((app) => app.id === jobId);
+  const panelRef = useRef<HTMLDialogElement>(null);
+  const wasApplicationAvailable = useRef(Boolean(application));
 
   useFocusTrap(panelRef);
 
-  const application = applications.find((app) => app.id === jobId);
+  useEffect(() => {
+    if (!wasApplicationAvailable.current || application) {
+      wasApplicationAvailable.current = Boolean(application);
+      return;
+    }
+
+    const frameId = requestAnimationFrame(() => {
+      if (!application) {
+        panelRef.current?.querySelector<HTMLElement>('[data-testid="preview-close"]')?.focus();
+      }
+    });
+    wasApplicationAvailable.current = false;
+
+    return () => cancelAnimationFrame(frameId);
+  }, [application]);
 
   const handleOpenFullDetails = useCallback(() => {
     if (!application) return;
@@ -326,10 +336,6 @@ const JobPreviewPanel: React.FC<JobPreviewPanelProps> = ({
     };
   }, []);
 
-  if (!application) {
-    return <PreviewEmptyState onClose={onClose} />;
-  }
-
   const handleEdit = () => {
     if (!application) return;
     // Inline editing lives on JobDetailsPage now — navigate there (App.tsx syncs URL
@@ -339,6 +345,7 @@ const JobPreviewPanel: React.FC<JobPreviewPanelProps> = ({
   };
 
   const handleDelete = () => {
+    if (!application) return;
     onDelete?.(application);
   };
 
@@ -353,16 +360,25 @@ const JobPreviewPanel: React.FC<JobPreviewPanelProps> = ({
       />
 
       {/* Panel */}
-      <aside
+      <dialog
         ref={panelRef}
+        open
+        aria-modal="true"
+        aria-labelledby="job-preview-title"
         className="fixed right-0 top-0 bottom-0 w-full sm:w-[480px] bg-card shadow-2xl z-50 flex flex-col animate-slide-in-right"
         aria-label={t('jobPreview.panelTitle', 'Job Preview')}
         data-testid="preview-panel"
       >
         <PreviewHeader onClose={onClose} />
-        <PreviewBody application={application} onOpenFullDetails={handleOpenFullDetails} />
-        <PreviewFooter onEdit={handleEdit} onDelete={handleDelete} />
-      </aside>
+        {application ? (
+          <>
+            <PreviewBody application={application} onOpenFullDetails={handleOpenFullDetails} />
+            <PreviewFooter onEdit={handleEdit} onDelete={handleDelete} />
+          </>
+        ) : (
+          <PreviewEmptyContent onClose={onClose} />
+        )}
+      </dialog>
     </>
   );
 };

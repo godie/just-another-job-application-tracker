@@ -32,7 +32,7 @@ const ViewSettings: React.FC<ViewSettingsProps> = ({ defaultView, onDefaultViewC
               type='button'
               key={view}
               onClick={() => onDefaultViewChange(view)}
-              className={`flex flex-col p-5 rounded border-2 transition-all text-left group ${
+              className={`flex flex-col p-5 rounded border-2 transition-[border-color,background-color,box-shadow] text-left group ${
                 isActive
                   ? 'border-primary bg-primary/5 dark:bg-primary/10'
                   : 'border-border hover:border-primary/20 dark:hover:border-primary/10 bg-card'
