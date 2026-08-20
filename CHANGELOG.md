@@ -1,21 +1,13 @@
-## [2.6.44] - 2026-08-31
+## [2.7.0] - 2026-08-20
 
-### Changed
-- **Refactored application status badge lookup** (`src/utils/status.ts`) by replacing conditional chains with an allowlisted `STATUS_VARIANT_MAP`, preserving case-insensitive matching and the existing fallback behavior.
-- **Added focused status mapping tests** (`src/utils/status.test.ts`) covering exact matches, case-insensitivity, and unknown-status fallback.
-- **Synchronized project version metadata** in `package.json`, `package-lock.json`, and `api/src/Telemetry/LogfireTelemetry.php` for this standalone PR. Version `2.6.43` is already used by PR 249, so this independent PR uses `2.6.44` to avoid a cross-PR version race.
-
-### Validation
-- `npm test`, `npm run lint`, and `npm run build` pass.
-
-## [2.6.43] - 2026-08-31
-
-### Changed
-- **Centralized filter types and defaults** (`src/types/filters.ts`, `src/components/FiltersBar.tsx`, `src/pages/HomePage.tsx`, and related tests) so the shared `Filters` contract and `defaultFilters` value have one source of truth instead of being duplicated across the page, component, and test layers.
-- **Synchronized project version metadata** in `package.json`, `package-lock.json`, and `api/src/Telemetry/LogfireTelemetry.php` for this rebased standalone PR.
+### Added
+- **Networking CRM local data model, storage, and store** (`src/types/networking.ts`, `src/storage/networking.ts`, `src/stores/networkingStore.ts`) — introduces the versioned local workspace (`schemaVersion: 1`) for contacts, interactions, follow-up tasks, contact links, and referrals, plus the relationship/channel/status enums. Persistence follows the existing applications/opportunities pattern: `sanitizeObject` on read and write, a same-tab `jobNetworkingUpdated` custom event, and legacy migration to version 1 for stored workspaces without a `schemaVersion`. The Zustand store exposes `load`, `addContact`, `addFollowUpTask`, `completeFollowUp` (marks `completedAt` without deleting the record), and `getDueTasks(now)` (incomplete tasks due on or before `now`, ordered by `dueAt`).
+- **`NETWORKING_STORAGE_KEY = 'jobNetworking'`** (`src/utils/constants.ts`) — new storage key for the anonymous, local-first CRM workspace.
+- **`knip.config.ts` `types` exemption for `src/types/networking.ts`** — the interaction, link, referral, and enum contract types are part of the Task 1 data model but only consumed by later CRM tasks (UI, sync, and collaboration). Documented inline so the exemption is not mistaken for masked drift.
 
 ### Validation
-- `npm test`, `npm run lint`, and `npm run build` pass.
+- 936 Vitest tests pass (7 new: 4 storage + 3 store).
+- `npm run lint`, `npm run knip`, and `npm run build` all pass.
 
 ## [2.6.41] - 2026-08-07
 
