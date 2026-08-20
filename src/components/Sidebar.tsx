@@ -9,6 +9,7 @@ import {
   BarChart3,
   HelpCircle,
   Home,
+  Users,
 } from 'lucide-react';
 import { type PageType } from '../App';
 import { useIsLoggedIn } from '../hooks/useIsLoggedIn';
@@ -83,6 +84,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentPage = 'applications', onNavig
   const navItems: { page: PageType; label: string; showBadge?: boolean; icon: React.ReactNode }[] = [
     { page: 'applications', label: t('nav.applications'), icon: <Briefcase aria-hidden="true" /> },
     { page: 'opportunities', label: t('nav.opportunities'), icon: <Sparkles aria-hidden="true" />, showBadge: true },
+    { page: 'networking', label: t('nav.networking'), icon: <Users aria-hidden="true" /> },
     { page: 'backup-sync', label: t('nav.backupSync'), icon: <SyncIcon aria-hidden="true" /> },
     { page: 'settings', label: t('nav.settings'), icon: <Settings aria-hidden="true" /> },
     { page: 'insights', label: t('nav.insights'), icon: <BarChart3 aria-hidden="true" /> },

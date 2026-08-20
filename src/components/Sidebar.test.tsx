@@ -50,8 +50,9 @@ describe('Sidebar', () => {
       const mockNavigate = vi.fn();
       const { container } = render(<Sidebar currentPage="applications" onNavigate={mockNavigate} />);
       const navButtons = container.querySelectorAll('nav button');
-      // 7 nav items defined in the component.
-      expect(navButtons.length).toBe(7);
+      // 8 nav items defined in the component: applications, opportunities,
+      // networking, backup-sync, settings, insights, support, home.
+      expect(navButtons.length).toBe(8);
       navButtons.forEach((btn) => {
         const svgs = btn.querySelectorAll('svg');
         expect(svgs.length).toBe(1);

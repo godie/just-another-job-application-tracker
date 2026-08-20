@@ -16,6 +16,7 @@ const BackupSyncPage = lazy(() => import('./pages/BackupSyncPage'));
 const LoginPage = lazy(() => import('./pages/LoginPage'));
 const RegisterPage = lazy(() => import('./pages/RegisterPage'));
 const JobDetailsPage = lazy(() => import('./pages/JobDetailsPage'));
+const NetworkingPage = lazy(() => import('./pages/NetworkingPage'));
 
 import PWAReloadPrompt from './components/PWAReloadPrompt';
 import MergePromptHandler from './components/sync/MergePromptHandler';
@@ -35,9 +36,9 @@ import { useTranslation } from 'react-i18next';
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
 
-export type PageType = 'landing' | 'applications' | 'opportunities' | 'settings' | 'insights' | 'support' | 'suggestions' | 'login' | 'register' | 'gmail-scan' | 'backup-sync' | 'job-details';
+export type PageType = 'landing' | 'applications' | 'opportunities' | 'settings' | 'insights' | 'support' | 'suggestions' | 'login' | 'register' | 'gmail-scan' | 'backup-sync' | 'job-details' | 'networking';
 
-const VALID_PAGES: PageType[] = ['landing', 'applications', 'opportunities', 'settings', 'insights', 'support', 'suggestions', 'login', 'register', 'gmail-scan', 'backup-sync', 'job-details'];
+const VALID_PAGES: PageType[] = ['landing', 'applications', 'opportunities', 'settings', 'insights', 'support', 'suggestions', 'login', 'register', 'gmail-scan', 'backup-sync', 'job-details', 'networking'];
 const PUBLIC_PAGES = new Set<PageType>(['landing', 'login', 'register']);
 const PAGE_ANNOUNCEMENT_KEYS: Record<PageType, string> = {
   landing: 'nav.home',
@@ -52,6 +53,7 @@ const PAGE_ANNOUNCEMENT_KEYS: Record<PageType, string> = {
   'gmail-scan': 'settings.emailScan.section',
   'backup-sync': 'nav.backupSync',
   'job-details': 'jobDetails.details',
+  networking: 'nav.networking',
 };
 
 function swapWithTransition(swap: () => void): void {
@@ -234,6 +236,8 @@ function App() {
         return <BackupSyncPage onNavigate={navigateToPage} />;
       case 'job-details':
         return <JobDetailsPage onNavigate={navigateToPage} />;
+      case 'networking':
+        return <NetworkingPage onNavigate={navigateToPage} />;
 
       case 'landing':
         return <LandingPage onNavigate={navigateToPage} />;
