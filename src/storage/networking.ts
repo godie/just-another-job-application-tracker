@@ -22,6 +22,19 @@ const isRecord = (value: unknown): value is Record<string, unknown> => (
   typeof value === 'object' && value !== null && !Array.isArray(value)
 );
 
+const fromWorkspace = (workspace: NetworkingWorkspace): NetworkingWorkspace => {
+  if (workspace.schemaVersion !== 1) return createEmptyNetworkingWorkspace();
+
+  return {
+    schemaVersion: 1,
+    contacts: parseContacts(workspace.contacts),
+    interactions: parseInteractions(workspace.interactions),
+    followUpTasks: parseFollowUpTasks(workspace.followUpTasks),
+    contactLinks: parseContactLinks(workspace.contactLinks),
+    referrals: parseReferrals(workspace.referrals),
+  };
+};
+
 const toWorkspace = (value: unknown): NetworkingWorkspace => {
   if (!isRecord(value)) return createEmptyNetworkingWorkspace();
 
@@ -30,14 +43,7 @@ const toWorkspace = (value: unknown): NetworkingWorkspace => {
     return createEmptyNetworkingWorkspace();
   }
 
-  return {
-    schemaVersion: 1,
-    contacts: parseContacts(sanitized.contacts),
-    interactions: parseInteractions(sanitized.interactions),
-    followUpTasks: parseFollowUpTasks(sanitized.followUpTasks),
-    contactLinks: parseContactLinks(sanitized.contactLinks),
-    referrals: parseReferrals(sanitized.referrals),
-  };
+  return fromWorkspace({ ...createEmptyNetworkingWorkspace(), ...sanitized } as NetworkingWorkspace);
 };
 
 export const getNetworkingWorkspace = (): NetworkingWorkspace => {
@@ -54,7 +60,13 @@ export const getNetworkingWorkspace = (): NetworkingWorkspace => {
 
 export const saveNetworkingWorkspace = (workspace: NetworkingWorkspace): void => {
   try {
-    const sanitized = sanitizeObject(workspace as unknown as Record<string, unknown>);
+    // Parse-then-sanitize ensures the persisted payload is symmetric with the
+    // read path: invalid entities never reach localStorage, only round-trippable
+    // ones do. Storage is a defensive boundary (store mutations, content-script
+    // bypass writes, future migration scripts, cloud-sync merges) — every
+    // writer is filtered through the same Zod schemas as the reader.
+    const parsed = fromWorkspace(workspace);
+    const sanitized = sanitizeObject(parsed as unknown as Record<string, unknown>);
     localStorage.setItem(NETWORKING_STORAGE_KEY, JSON.stringify(sanitized));
 
     if (typeof window !== 'undefined') {
