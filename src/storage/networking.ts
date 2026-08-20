@@ -1,5 +1,12 @@
 import type { NetworkingWorkspace } from '../types/networking';
 import { NETWORKING_STORAGE_KEY } from '../utils/constants';
+import {
+  parseContactLinks,
+  parseContacts,
+  parseFollowUpTasks,
+  parseInteractions,
+  parseReferrals,
+} from '../utils/networkingSchemas';
 import { sanitizeObject } from '../utils/url';
 
 export const createEmptyNetworkingWorkspace = (): NetworkingWorkspace => ({
@@ -25,12 +32,12 @@ const toWorkspace = (value: unknown): NetworkingWorkspace => {
 
   return {
     schemaVersion: 1,
-    contacts: Array.isArray(sanitized.contacts) ? sanitized.contacts : [],
-    interactions: Array.isArray(sanitized.interactions) ? sanitized.interactions : [],
-    followUpTasks: Array.isArray(sanitized.followUpTasks) ? sanitized.followUpTasks : [],
-    contactLinks: Array.isArray(sanitized.contactLinks) ? sanitized.contactLinks : [],
-    referrals: Array.isArray(sanitized.referrals) ? sanitized.referrals : [],
-  } as NetworkingWorkspace;
+    contacts: parseContacts(sanitized.contacts),
+    interactions: parseInteractions(sanitized.interactions),
+    followUpTasks: parseFollowUpTasks(sanitized.followUpTasks),
+    contactLinks: parseContactLinks(sanitized.contactLinks),
+    referrals: parseReferrals(sanitized.referrals),
+  };
 };
 
 export const getNetworkingWorkspace = (): NetworkingWorkspace => {

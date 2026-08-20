@@ -74,6 +74,9 @@ describe('networking storage', () => {
       contacts: [{
         id: 'contact-1',
         name: '<img src=x onerror=alert(1)>Ada',
+        relationshipType: 'other',
+        tags: [],
+        notes: '',
         createdAt: '2026-08-20T10:00:00.000Z',
         updatedAt: '2026-08-20T10:00:00.000Z',
       }],
@@ -86,5 +89,39 @@ describe('networking storage', () => {
     );
 
     dispatchSpy.mockRestore();
+  });
+
+  it('drops invalid entities and keeps valid siblings when reading', () => {
+    localStorage.setItem(
+      NETWORKING_STORAGE_KEY,
+      JSON.stringify({
+        contacts: [
+          {
+            id: 'good',
+            name: 'Grace Hopper',
+            relationshipType: 'peer',
+            tags: [],
+            notes: '',
+            createdAt: '2026-08-20T10:00:00.000Z',
+            updatedAt: '2026-08-20T10:00:00.000Z',
+          },
+          {
+            id: 'bad',
+            name: '',
+            relationshipType: 'martian',
+            tags: [],
+            notes: '',
+            createdAt: '2026-08-20T10:00:00.000Z',
+            updatedAt: '2026-08-20T10:00:00.000Z',
+          },
+        ],
+        interactions: [],
+        followUpTasks: [],
+        contactLinks: [],
+        referrals: [],
+      }),
+    );
+
+    expect(getNetworkingWorkspace().contacts.map((c) => c.id)).toEqual(['good']);
   });
 });

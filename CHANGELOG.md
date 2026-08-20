@@ -3,10 +3,11 @@
 ### Added
 - **Networking CRM local data model, storage, and store** (`src/types/networking.ts`, `src/storage/networking.ts`, `src/stores/networkingStore.ts`) — introduces the versioned local workspace (`schemaVersion: 1`) for contacts, interactions, follow-up tasks, contact links, and referrals, plus the relationship/channel/status enums. Persistence follows the existing applications/opportunities pattern: `sanitizeObject` on read and write, a same-tab `jobNetworkingUpdated` custom event, and legacy migration to version 1 for stored workspaces without a `schemaVersion`. The Zustand store exposes `load`, `addContact`, `addFollowUpTask`, `completeFollowUp` (marks `completedAt` without deleting the record), and `getDueTasks(now)` (incomplete tasks due on or before `now`, ordered by `dueAt`).
 - **`NETWORKING_STORAGE_KEY = 'jobNetworking'`** (`src/utils/constants.ts`) — new storage key for the anonymous, local-first CRM workspace.
+- **Per-entity Zod validation on the Networking read path** (`src/utils/networkingSchemas.ts`) — strict id regex, enum allow-lists, ISO timestamps, and length caps for every CRM entity. Invalid rows are dropped while valid siblings survive, mirroring the `syncSchemas.ts` threat model for tampered or stale `jobNetworking` storage.
 - **`knip.config.ts` `types` exemption for `src/types/networking.ts`** — the interaction, link, referral, and enum contract types are part of the Task 1 data model but only consumed by later CRM tasks (UI, sync, and collaboration). Documented inline so the exemption is not mistaken for masked drift.
 
 ### Validation
-- 936 Vitest tests pass (7 new: 4 storage + 3 store).
+- 946 Vitest tests pass (17 networking tests: 9 schemas + 5 storage + 3 store).
 - `npm run lint`, `npm run knip`, and `npm run build` all pass.
 
 ## [2.6.41] - 2026-08-07
