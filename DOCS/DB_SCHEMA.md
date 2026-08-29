@@ -285,3 +285,141 @@ Dependencies:
 
 - foreign key to `users(id)`
 - foreign key to `organizations(id)`
+
+## Networking CRM Tables (Networking CRM Plan — Task 3+)
+
+Five owner-scoped tables back the local networking workspace. Every row
+carries `owner_user_id` and is read/written only in the context of the
+authenticated session; the controller's Runtime contract is
+"owner comes from the session, never from the request body". Cross-user
+visibility lands later in Tasks 5–6 via separate `collaboration_invitations`
+and `candidate_coach_relationships` tables.
+
+### 10. `network_contacts`
+
+Contains:
+
+- `id` (string primary key, app-generated)
+- `owner_user_id`
+- `name`
+- `company`
+- `role`
+- `email`
+- `phone`
+- `linkedin_url`
+- `location`
+- `relationship_type` — allow-list: `recruiter`, `hiring_manager`, `referrer`, `former_colleague`, `mentor`, `peer`, `other`
+- `tags_json` — JSON array stored as TEXT
+- `notes`
+- `created_at`
+- `updated_at`
+
+Indexes:
+
+- `idx_network_contacts_owner` (`owner_user_id`)
+- `idx_network_contacts_owner_rel` (`owner_user_id`, `relationship_type`)
+
+Dependencies:
+
+- foreign key to `users(id)` (RESTRICT on delete)
+
+### 11. `network_interactions`
+
+Contains:
+
+- `id`
+- `owner_user_id`
+- `contact_id`
+- `occurred_at`
+- `channel` — allow-list: `email`, `linkedin`, `phone`, `video`, `in_person`, `event`, `other`
+- `summary`
+- `notes`
+- `status` — `planned` or `completed`
+- `created_at`
+- `updated_at`
+
+Indexes:
+
+- `idx_network_interactions_owner`
+- `idx_network_interactions_owner_contact` (`owner_user_id`, `contact_id`)
+- `idx_network_interactions_owner_occurred` (`owner_user_id`, `occurred_at`)
+
+Dependencies:
+
+- foreign key to `users(id)` (RESTRICT)
+- foreign key to `network_contacts(id)` (CASCADE — removing a contact cleans up its interactions)
+
+### 12. `network_follow_up_tasks`
+
+Contains:
+
+- `id`
+- `owner_user_id`
+- `contact_id`
+- `title`
+- `due_at`
+- `completed_at` (nullable)
+- `created_at`
+- `updated_at`
+
+Indexes:
+
+- `idx_network_tasks_owner`
+- `idx_network_tasks_owner_due` (`owner_user_id`, `due_at`) — powers the Overdue/Today/Upcoming dashboard partitioning.
+- `idx_network_tasks_owner_contact`
+
+Dependencies:
+
+- foreign key to `users(id)` (RESTRICT)
+- foreign key to `network_contacts(id)` (CASCADE)
+
+### 13. `network_contact_links`
+
+Contains:
+
+- `id`
+- `owner_user_id`
+- `contact_id`
+- `resource_type` — `application` or `opportunity`
+- `resource_id` — the application's or opportunity's string record id
+- `created_at`
+
+Indexes:
+
+- `idx_network_links_owner`
+- `idx_network_links_owner_dedup` (`owner_user_id`, `contact_id`, `resource_type`, `resource_id`)
+
+Dependencies:
+
+- foreign key to `users(id)` (RESTRICT)
+- foreign key to `network_contacts(id)` (CASCADE)
+
+### 14. `network_referrals`
+
+Contains:
+
+- `id`
+- `owner_user_id`
+- `contact_id`
+- `resource_type` — `application` or `opportunity`
+- `resource_id`
+- `status` — `planned`, `requested`, `introduced`, `submitted`, `declined`, `completed`
+- `requested_at`
+- `notes`
+- `created_at`
+- `updated_at`
+
+Indexes:
+
+- `idx_network_referrals_owner`
+- `idx_network_referrals_owner_dedup` (`owner_user_id`, `contact_id`, `resource_type`, `resource_id`)
+
+Dependencies:
+
+- foreign key to `users(id)` (RESTRICT)
+- foreign key to `network_contacts(id)` (CASCADE)
+
+## Endpoints (Task 3)
+
+- `GET /sync/networking` — returns the caller's workspace; 401 without session.
+- `POST /sync/networking` — replaces the caller's workspace; 401 / 400 / 422 / 200 as documented in `NetworkingController`.
