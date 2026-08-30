@@ -254,8 +254,11 @@ const ContactRow: React.FC<ContactRowProps> = ({
   const addInteraction = useNetworkingStore((s) => s.addInteraction);
   const completeFollowUp = useNetworkingStore((s) => s.completeFollowUp);
   const followUpTasks = useNetworkingStore((s) => s.followUpTasks);
+  const updateContact = useNetworkingStore((s) => s.updateContact);
+  const deleteContact = useNetworkingStore((s) => s.deleteContact);
 
   const [interactionOpen, setInteractionOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
   const [linkOpen, setLinkOpen] = useState(false);
   const [referralOpen, setReferralOpen] = useState(false);
 
@@ -263,6 +266,19 @@ const ContactRow: React.FC<ContactRowProps> = ({
     const list = resourceType === 'application' ? applications : opportunities;
     const resource = list.find((r) => r.id === resourceId);
     return resource ? `${resource.position} · ${resource.company}` : resourceId;
+  };
+
+  const handleEdit: React.ComponentProps<typeof ContactForm>['onSave'] = (input) => {
+    const error = updateContact(contact.id, input);
+    if (error) {
+      showError(t('networking.contacts.invalid') + ' : ' + error);
+    }
+  };
+
+  const handleDelete = () => {
+    if (window.confirm(t('networking.contacts.confirmDelete'))) {
+      deleteContact(contact.id);
+    }
   };
 
   const handleLogInteraction: React.ComponentProps<typeof InteractionForm>['onSave'] = (input) => {
@@ -288,6 +304,14 @@ const ContactRow: React.FC<ContactRowProps> = ({
           <Badge variant='secondary' className='mt-1'>
             {RELATIONSHIP_LABEL[contact.relationshipType]}
           </Badge>
+        </div>
+        <div className='flex shrink-0 gap-2'>
+          <Button variant='outline' size='sm' onClick={() => setEditOpen(true)}>
+            {t('networking.contacts.edit')}
+          </Button>
+          <Button variant='danger' size='sm' onClick={handleDelete}>
+            {t('networking.contacts.delete')}
+          </Button>
         </div>
       </header>
 
@@ -407,6 +431,12 @@ const ContactRow: React.FC<ContactRowProps> = ({
         </section>
       )}
 
+      <ContactForm
+        isOpen={editOpen}
+        initial={contact}
+        onClose={() => setEditOpen(false)}
+        onSave={handleEdit}
+      />
       <InteractionForm
         isOpen={interactionOpen}
         onClose={() => setInteractionOpen(false)}

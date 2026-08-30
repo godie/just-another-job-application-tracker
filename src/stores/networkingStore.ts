@@ -44,6 +44,10 @@ interface NetworkingState extends NetworkingWorkspace {
     task: Omit<FollowUpTask, 'id' | 'createdAt' | 'updatedAt' | 'completedAt'>
   ) => string | undefined;
   completeFollowUp: (id: string) => void;
+  /** Partial update; returns an error message on invalid input, undefined on success. */
+  updateContact: (id: string, patch: Partial<Omit<NetworkContact, 'id' | 'createdAt' | 'updatedAt'>>) => string | undefined;
+  /** Cascades: removes the contact plus its interactions, tasks, links, and referrals. */
+  deleteContact: (id: string) => void;
   addContactLink: (input: AddContactLinkInput) => boolean;
   addReferral: (input: AddReferralInput) => boolean;
   getDueTasks: (now: string) => FollowUpTask[];
@@ -225,6 +229,52 @@ export const useNetworkingStore = create<NetworkingState>()((set, get) => ({
       return workspace;
     });
     return true;
+  },
+
+  updateContact: (id, patch) => {
+    const timestamp = new Date().toISOString();
+    const updated = get().contacts.find((c) => c.id === id);
+    if (!updated) return `Kontak tidak ditemukan`;
+
+    const updatedContact: NetworkContact = {
+      ...updated,
+      ...patch,
+      id: updated.id,
+      createdAt: updated.createdAt,
+      updatedAt: timestamp,
+    };
+    const check = validateContactInput(updatedContact);
+    if (!check.ok) {
+      console.warn('[networkingStore] rejecting contact update:', check.error);
+      return check.error;
+    }
+
+    set((state) => {
+      const workspace = {
+        ...state,
+        contacts: state.contacts.map((c) => (c.id === id ? updatedContact : c)),
+      };
+      persist(workspace);
+      return workspace;
+    });
+    return undefined;
+  },
+
+  deleteContact: (id) => {
+    set((state) => {
+      // Cascade matches the DB contract: children (interactions, tasks,
+      // links, referrals) die with their contact.
+      const workspace: NetworkingWorkspace = {
+        schemaVersion: 1,
+        contacts: state.contacts.filter((c) => c.id !== id),
+        interactions: state.interactions.filter((i) => i.contactId !== id),
+        followUpTasks: state.followUpTasks.filter((t) => t.contactId !== id),
+        contactLinks: state.contactLinks.filter((l) => l.contactId !== id),
+        referrals: state.referrals.filter((r) => r.contactId !== id),
+      };
+      persist(workspace);
+      return workspace;
+    });
   },
 
   getDueTasks: (now) => {

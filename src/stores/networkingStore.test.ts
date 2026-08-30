@@ -31,6 +31,50 @@ describe('networkingStore', () => {
     expect(useNetworkingStore.getState().contacts).toHaveLength(1);
   });
 
+  it('updates and persists a contact', () => {
+    useNetworkingStore.getState().addContact(contactInput());
+    const contactId = useNetworkingStore.getState().contacts[0]!.id;
+
+    expect(useNetworkingStore.getState().updateContact(contactId, { name: 'Grace Hopper' })).toBeUndefined();
+    expect(useNetworkingStore.getState().contacts[0]?.name).toBe('Grace Hopper');
+
+    useNetworkingStore.getState().load();
+    expect(useNetworkingStore.getState().contacts[0]?.name).toBe('Grace Hopper');
+  });
+
+  it('rejects invalid contact updates without changing state', () => {
+    useNetworkingStore.getState().addContact(contactInput());
+    const contactId = useNetworkingStore.getState().contacts[0]!.id;
+    const result = useNetworkingStore.getState().updateContact(contactId, { name: '' });
+
+    expect(result).toBeTruthy();
+    expect(useNetworkingStore.getState().contacts[0]?.name).toBe('Ada Lovelace');
+  });
+
+  it('deletes a contact and cascades related records', () => {
+    useNetworkingStore.getState().addContact(contactInput());
+    const contactId = useNetworkingStore.getState().contacts[0]!.id;
+    useNetworkingStore.getState().addInteraction({
+      contactId,
+      channel: 'email',
+      occurredAt: now,
+      summary: 'Hello',
+      status: 'completed',
+    });
+    useNetworkingStore.getState().addFollowUpTask({ contactId, title: 'Follow up', dueAt: now });
+    useNetworkingStore.getState().addContactLink({ contactId, resourceType: 'application', resourceId: 'app-1' });
+    useNetworkingStore.getState().addReferral({ contactId, resourceType: 'application', resourceId: 'app-2' });
+
+    useNetworkingStore.getState().deleteContact(contactId);
+
+    const state = useNetworkingStore.getState();
+    expect(state.contacts).toHaveLength(0);
+    expect(state.interactions).toHaveLength(0);
+    expect(state.followUpTasks).toHaveLength(0);
+    expect(state.contactLinks).toHaveLength(0);
+    expect(state.referrals).toHaveLength(0);
+  });
+
   it('marks a follow-up complete without deleting it', () => {
     useNetworkingStore.getState().addContact(contactInput());
     const contactId = useNetworkingStore.getState().contacts[0]!.id;

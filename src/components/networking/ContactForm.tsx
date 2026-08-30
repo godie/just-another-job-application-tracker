@@ -14,18 +14,22 @@ import { Select } from '../ui/Select';
 import { Textarea } from '../ui/Textarea';
 import type { NetworkRelationshipType } from '../../types/networking';
 
+export interface ContactInput {
+  name: string;
+  company?: string;
+  role?: string;
+  email?: string;
+  relationshipType: NetworkRelationshipType;
+  tags: string[];
+  notes: string;
+}
+
 interface ContactFormProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (input: {
-    name: string;
-    company?: string;
-    role?: string;
-    email?: string;
-    relationshipType: NetworkRelationshipType;
-    tags: string[];
-    notes: string;
-  }) => void;
+  /** Prefill values for edit mode; omit for create mode. */
+  initial?: Partial<ContactInput>;
+  onSave: (input: ContactInput) => void;
 }
 
 const RELATIONSHIP_TYPES: Array<{ value: NetworkRelationshipType; key: string }> = [
@@ -38,29 +42,32 @@ const RELATIONSHIP_TYPES: Array<{ value: NetworkRelationshipType; key: string }>
   { value: 'other', key: 'other' },
 ];
 
-export const ContactForm: React.FC<ContactFormProps> = ({ isOpen, onClose, onSave }) => {
+export const ContactForm: React.FC<ContactFormProps> = ({ isOpen, onClose, onSave, initial }) => {
   const { t } = useTranslation();
-  const [name, setName] = useState('');
-  const [company, setCompany] = useState('');
-  const [role, setRole] = useState('');
-  const [email, setEmail] = useState('');
-  const [relationshipType, setRelationshipType] = useState<NetworkRelationshipType>('peer');
-  const [tagsCsv, setTagsCsv] = useState('');
-  const [notes, setNotes] = useState('');
+  const [name, setName] = useState(initial?.name ?? '');
+  const [company, setCompany] = useState(initial?.company ?? '');
+  const [role, setRole] = useState(initial?.role ?? '');
+  const [email, setEmail] = useState(initial?.email ?? '');
+  const [relationshipType, setRelationshipType] = useState<NetworkRelationshipType>(
+    initial?.relationshipType ?? 'peer',
+  );
+  const [tagsCsv, setTagsCsv] = useState((initial?.tags ?? []).join(', '));
+  const [notes, setNotes] = useState(initial?.notes ?? '');
   const [nameError, setNameError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!isOpen) {
-      setName('');
-      setCompany('');
-      setRole('');
-      setEmail('');
-      setRelationshipType('peer');
-      setTagsCsv('');
-      setNotes('');
+    if (isOpen) {
+      // Prefill for edit mode; blank for create mode.
+      setName(initial?.name ?? '');
+      setCompany(initial?.company ?? '');
+      setRole(initial?.role ?? '');
+      setEmail(initial?.email ?? '');
+      setRelationshipType(initial?.relationshipType ?? 'peer');
+      setTagsCsv((initial?.tags ?? []).join(', '));
+      setNotes(initial?.notes ?? '');
       setNameError(null);
     }
-  }, [isOpen]);
+  }, [isOpen, initial]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
