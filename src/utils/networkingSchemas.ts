@@ -133,6 +133,52 @@ const referralSchema = z.object({
   updatedAt: isoDate,
 });
 
+/* -------------------------------------------------------------------------- */
+/*  Write-path input validators.                                              */
+/*                                                                           */
+/*  The store mutators call these before an entity enters memory so a        */
+/*  malformed row is rejected at the UI boundary with a user-facing error,   */
+/*  instead of being persisted and then silently dropped on the next read.   */
+/*  They reuse the exact same schemas as the read path, so the cloud and     */
+/*  local storage can never be more permissive than the write path.          */
+/* -------------------------------------------------------------------------- */
+
+export interface ValidationResult<T> {
+  ok: boolean;
+  data?: T;
+  error?: string;
+}
+
+function validateEntity<T>(schema: z.ZodType<T>, raw: unknown, context: string): ValidationResult<T> {
+  const result = schema.safeParse(raw);
+  if (result.success) {
+    return { ok: true, data: result.data };
+  }
+  const issue = result.error.issues[0];
+  const where = issue.path.length > 0 ? `${context}.${issue.path.join('.')}` : context;
+  return { ok: false, error: `${where}: ${issue.message}` };
+}
+
+export function validateContactInput(raw: unknown): ValidationResult<NetworkContact> {
+  return validateEntity(networkContactSchema, raw, 'contact');
+}
+
+export function validateInteractionInput(raw: unknown): ValidationResult<NetworkInteraction> {
+  return validateEntity(networkInteractionSchema, raw, 'interaction');
+}
+
+export function validateFollowUpTaskInput(raw: unknown): ValidationResult<FollowUpTask> {
+  return validateEntity(followUpTaskSchema, raw, 'followUpTask');
+}
+
+export function validateContactLinkInput(raw: unknown): ValidationResult<ContactLink> {
+  return validateEntity(contactLinkSchema, raw, 'contactLink');
+}
+
+export function validateReferralInput(raw: unknown): ValidationResult<Referral> {
+  return validateEntity(referralSchema, raw, 'referral');
+}
+
 function parseEntityList<T>(raw: unknown, schema: z.ZodType<T>, context: string): T[] {
   if (!Array.isArray(raw)) return [];
 

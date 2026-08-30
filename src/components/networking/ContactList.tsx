@@ -250,6 +250,7 @@ const ContactRow: React.FC<ContactRowProps> = ({
   opportunities,
 }) => {
   const { t } = useTranslation();
+  const { showError } = useAlert();
   const addInteraction = useNetworkingStore((s) => s.addInteraction);
   const completeFollowUp = useNetworkingStore((s) => s.completeFollowUp);
   const followUpTasks = useNetworkingStore((s) => s.followUpTasks);
@@ -265,7 +266,10 @@ const ContactRow: React.FC<ContactRowProps> = ({
   };
 
   const handleLogInteraction: React.ComponentProps<typeof InteractionForm>['onSave'] = (input) => {
-    addInteraction({ ...input, contactId: contact.id, status: 'completed' });
+    const error = addInteraction({ ...input, contactId: contact.id, status: 'completed' });
+    if (error) {
+      showError(error);
+    }
   };
 
   const myTasks = followUpTasks
@@ -424,6 +428,7 @@ const ContactRow: React.FC<ContactRowProps> = ({
 
 export const ContactList: React.FC = () => {
   const { t } = useTranslation();
+  const { showError } = useAlert();
   const contacts = useNetworkingStore((s) => s.contacts);
   const interactions = useNetworkingStore((s) => s.interactions);
   const links = useNetworkingStore((s) => s.contactLinks);
@@ -433,7 +438,10 @@ export const ContactList: React.FC = () => {
   const [createOpen, setCreateOpen] = useState(false);
 
   const handleCreate: React.ComponentProps<typeof ContactForm>['onSave'] = (input) => {
-    useNetworkingStore.getState().addContact({ ...input });
+    const error = useNetworkingStore.getState().addContact({ ...input });
+    if (error) {
+      showError(t('networking.contacts.invalid') + ' : ' + error);
+    }
   };
 
   return (

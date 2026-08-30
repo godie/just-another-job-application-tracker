@@ -25,6 +25,32 @@ const NetworkingPage: React.FC<NetworkingPageProps> = () => {
     load();
   }, [load]);
 
+  // Reactive state sync per AGENTS.md: the native `storage` event covers
+  // cross-tab writes (and the `null` key covers storage.clear()), while the
+  // same-tab `jobNetworkingUpdated` custom event — dispatched by the write
+  // funnel `saveNetworkingWorkspace` — covers bypass writes (extension
+  // content scripts, manual localStorage writes) that never fire `storage`
+  // in the writing tab. Together they keep this page fresh without polling.
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'jobNetworking' || e.key === null) {
+        load();
+      }
+    };
+
+    const handleNetworkingUpdate = () => {
+      load();
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('jobNetworkingUpdated', handleNetworkingUpdate);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('jobNetworkingUpdated', handleNetworkingUpdate as EventListener);
+    };
+  }, [load]);
+
   useEffect(() => {
     const id = window.setInterval(() => setNow(new Date()), 60_000);
     return () => window.clearInterval(id);

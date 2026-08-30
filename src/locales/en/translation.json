@@ -865,6 +865,7 @@
       "formTitle": "New contact",
       "name": "Name",
       "nameRequired": "Name is required",
+      "invalid": "Invalid contact: rejected by validation",
       "company": "Company",
       "role": "Role",
       "email": "Email",

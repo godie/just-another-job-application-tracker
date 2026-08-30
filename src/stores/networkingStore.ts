@@ -11,6 +11,13 @@ import type {
 } from '../types/networking';
 import { generateId } from '../utils/id';
 import {
+  validateContactInput,
+  validateInteractionInput,
+  validateFollowUpTaskInput,
+  validateContactLinkInput,
+  validateReferralInput,
+} from '../utils/networkingSchemas';
+import {
   createEmptyNetworkingWorkspace,
   getNetworkingWorkspace,
   saveNetworkingWorkspace,
@@ -28,11 +35,14 @@ interface AddReferralInput extends AddContactLinkInput {
 
 interface NetworkingState extends NetworkingWorkspace {
   load: () => void;
-  addContact: (contact: Omit<NetworkContact, 'id' | 'createdAt' | 'updatedAt'>) => void;
-  addInteraction: (interaction: Omit<NetworkInteraction, 'id' | 'createdAt' | 'updatedAt'>) => void;
+  workspaceSnapshot: () => NetworkingWorkspace;
+  setWorkspace: (workspace: NetworkingWorkspace) => void;
+  /** Returns an error message on invalid input, undefined on success. */
+  addContact: (contact: Omit<NetworkContact, 'id' | 'createdAt' | 'updatedAt'>) => string | undefined;
+  addInteraction: (interaction: Omit<NetworkInteraction, 'id' | 'createdAt' | 'updatedAt'>) => string | undefined;
   addFollowUpTask: (
     task: Omit<FollowUpTask, 'id' | 'createdAt' | 'updatedAt' | 'completedAt'>
-  ) => void;
+  ) => string | undefined;
   completeFollowUp: (id: string) => void;
   addContactLink: (input: AddContactLinkInput) => boolean;
   addReferral: (input: AddReferralInput) => boolean;
@@ -52,6 +62,25 @@ export const useNetworkingStore = create<NetworkingState>()((set, get) => ({
     set(getNetworkingWorkspace());
   },
 
+  // Snapshot of the full workspace for the cloud push — mirrors the shape
+  // the server expects (Task 1 envelope, schemaVersion included).
+  workspaceSnapshot: () => ({
+    schemaVersion: 1,
+    contacts: get().contacts,
+    interactions: get().interactions,
+    followUpTasks: get().followUpTasks,
+    contactLinks: get().contactLinks,
+    referrals: get().referrals,
+  }),
+
+  // Replace the whole workspace from a trusted source (cloud pull). Persists
+  // like setApplications does — the pulled data becomes the local state —
+  // which also dispatches `jobNetworkingUpdated` so open listeners refresh.
+  setWorkspace: (workspace) => {
+    set(workspace);
+    saveNetworkingWorkspace(workspace);
+  },
+
   addContact: (contact) => {
     const timestamp = new Date().toISOString();
     const newContact: NetworkContact = {
@@ -60,12 +89,18 @@ export const useNetworkingStore = create<NetworkingState>()((set, get) => ({
       createdAt: timestamp,
       updatedAt: timestamp,
     };
+    const check = validateContactInput(newContact);
+    if (!check.ok) {
+      console.warn('[networkingStore] rejecting contact:', check.error);
+      return check.error;
+    }
 
     set((state) => {
       const workspace = { ...state, contacts: [...state.contacts, newContact] };
       persist(workspace);
       return workspace;
     });
+    return undefined;
   },
 
   addFollowUpTask: (task) => {
@@ -76,12 +111,18 @@ export const useNetworkingStore = create<NetworkingState>()((set, get) => ({
       createdAt: timestamp,
       updatedAt: timestamp,
     };
+    const check = validateFollowUpTaskInput(newTask);
+    if (!check.ok) {
+      console.warn('[networkingStore] rejecting followUpTask:', check.error);
+      return check.error;
+    }
 
     set((state) => {
       const workspace = { ...state, followUpTasks: [...state.followUpTasks, newTask] };
       persist(workspace);
       return workspace;
     });
+    return undefined;
   },
 
   addInteraction: (interaction) => {
@@ -92,12 +133,18 @@ export const useNetworkingStore = create<NetworkingState>()((set, get) => ({
       createdAt: timestamp,
       updatedAt: timestamp,
     };
+    const check = validateInteractionInput(newInteraction);
+    if (!check.ok) {
+      console.warn('[networkingStore] rejecting interaction:', check.error);
+      return check.error;
+    }
 
     set((state) => {
       const workspace = { ...state, interactions: [...state.interactions, newInteraction] };
       persist(workspace);
       return workspace;
     });
+    return undefined;
   },
 
   completeFollowUp: (id) => {
@@ -132,6 +179,11 @@ export const useNetworkingStore = create<NetworkingState>()((set, get) => ({
       resourceId,
       createdAt: timestamp,
     };
+    const check = validateContactLinkInput(newLink);
+    if (!check.ok) {
+      console.warn('[networkingStore] rejecting contactLink:', check.error);
+      return false;
+    }
     set((state) => {
       const workspace = { ...state, contactLinks: [...state.contactLinks, newLink] };
       persist(workspace);
@@ -162,6 +214,11 @@ export const useNetworkingStore = create<NetworkingState>()((set, get) => ({
       createdAt: timestamp,
       updatedAt: timestamp,
     };
+    const check = validateReferralInput(newReferral);
+    if (!check.ok) {
+      console.warn('[networkingStore] rejecting referral:', check.error);
+      return false;
+    }
     set((state) => {
       const workspace = { ...state, referrals: [...state.referrals, newReferral] };
       persist(workspace);

@@ -276,4 +276,66 @@ describe('NetworkingPage', () => {
     });
     expect(within(row).getByText('Completed')).toBeInTheDocument();
   });
+
+  it('reloads the workspace when storage changes in another tab or a bypass write fires', () => {
+    // Regression guard for the reactive-sync listener pair: the page must
+    // react to (1) the native `storage` event from another tab and (2) the
+    // same-tab `jobNetworkingUpdated` custom event dispatched by the write
+    // funnel (`saveNetworkingWorkspace`). Without these, cross-tab and
+    // bypass writes to `jobNetworking` never appear in an open tab.
+    useNetworkingStore.getState().addContact({ name: 'Seed', relationshipType: 'peer', tags: [], notes: '' });
+
+    renderNetworking();
+    expect(screen.getByText('Seed')).toBeInTheDocument();
+
+    // (1) Cross-tab write: another tab wrote a second contact to storage.
+    // The page must reload so the new contact appears.
+    const stored = JSON.parse(localStorage.getItem('jobNetworking')!);
+    stored.contacts.push({
+      id: 'cross-tab-contact',
+      name: 'Cross Tab',
+      relationshipType: 'peer',
+      tags: [],
+      notes: '',
+      createdAt: '2026-01-01T00:00:00.000Z',
+      updatedAt: '2026-01-01T00:00:00.000Z',
+    });
+    localStorage.setItem('jobNetworking', JSON.stringify(stored));
+
+    fireEvent(window, new StorageEvent('storage', { key: 'jobNetworking' }));
+
+    expect(screen.getByText('Cross Tab')).toBeInTheDocument();
+
+    // (2) Same-tab bypass write: content script wrote directly to storage
+    // and dispatched the write-funnel event (the `storage` event does not
+    // fire in the writing tab). The page must reload again.
+    const bypass = JSON.parse(localStorage.getItem('jobNetworking')!);
+    bypass.contacts.push({
+      id: 'bypass-contact',
+      name: 'Bypass Write',
+      relationshipType: 'peer',
+      tags: [],
+      notes: '',
+      createdAt: '2026-01-01T00:00:00.000Z',
+      updatedAt: '2026-01-01T00:00:00.000Z',
+    });
+    localStorage.setItem('jobNetworking', JSON.stringify(bypass));
+
+    fireEvent(window, new Event('jobNetworkingUpdated'));
+
+    expect(screen.getByText('Bypass Write')).toBeInTheDocument();
+  });
+
+  it('ignores storage events for unrelated keys', () => {
+    useNetworkingStore.getState().addContact({ name: 'Seed', relationshipType: 'peer', tags: [], notes: '' });
+
+    renderNetworking();
+
+    // A write to a different key (e.g. jobApplications) must NOT trigger a
+    // reload of the networking workspace.
+    fireEvent(window, new StorageEvent('storage', { key: 'jobApplications' }));
+
+    expect(screen.getByText('Seed')).toBeInTheDocument();
+    expect(screen.queryByText('Cross Tab')).not.toBeInTheDocument();
+  });
 });
