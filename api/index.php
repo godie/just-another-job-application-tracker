@@ -12,14 +12,17 @@ use OverPHP\Middleware\RequireAuth;
 use OverPHP\Telemetry\LogfireTelemetry;
 use function OverPHP\Helpers\corsSendHeaders;
 
-error_reporting(~E_ALL);
-ini_set('display_errors', '1');
-ini_set('display_startup_errors', '1');
-ini_set('log_errors', '1');
-
 $config = file_exists(__DIR__ . '/config.php')
     ? require __DIR__ . '/config.php'
     : require __DIR__ . '/config.example.php';
+
+// Never expose PHP notices, warnings, stack traces, or filesystem paths in
+// API responses. Enable display_errors only for an explicitly configured
+// local debug environment.
+error_reporting(E_ALL);
+ini_set('display_errors', ($config['debug'] ?? false) ? '1' : '0');
+ini_set('display_startup_errors', ($config['debug'] ?? false) ? '1' : '0');
+ini_set('log_errors', '1');
 
 if (file_exists(__DIR__ . '/vendor/autoload.php')) {
     require_once __DIR__ . '/vendor/autoload.php';
@@ -96,7 +99,8 @@ $container->singleton(Database::class, function () use ($config) {
 
 Benchmark::start((bool) ($config['benchmark']['enabled'] ?? false));
 Security::sendSecurityHeaders();
-Security::setCsrfEnabled((bool) ($config['security']['csrf_enabled'] ?? false));
+Security::setAllowedOrigins($config['allowed_origins'] ?? []);
+Security::setCsrfEnabled((bool) ($config['security']['csrf_enabled'] ?? true));
 
 if (corsSendHeaders($config['allowed_origins'] ?? [])) {
     return;
@@ -192,29 +196,16 @@ $router->add('GET', '/agent/job-applications', function () {
     return (new AgentJobApplicationController())->index();
 });
 
-// ── Diagnostic health check (only when DEBUG=true, bypasses auth) ──
-if (!empty(getenv('DEBUG')) && ($requestMethod === 'GET') && ($requestUri === '/api/health' || $requestUri === '/health')) {
+// ── Minimal diagnostic health check (only when DEBUG=true) ──
+// Deliberately omits PHP/version/configuration/token metadata; health probes
+// should not become an infrastructure fingerprinting endpoint.
+if (($config['debug'] ?? false) && $requestMethod === 'GET' && ($requestUri === '/api/health' || $requestUri === '/health')) {
     header('Content-Type: application/json; charset=utf-8');
-    echo json_encode([
+    echo Security::jsonEncode([
         'success' => true,
         'service' => 'overphp-api',
-        'version' => '2.6.36',
-        'php' => PHP_VERSION,
         'time' => gmdate('Y-m-d\TH:i:s\Z'),
-        'config' => [
-            'config_file' => file_exists(__DIR__ . '/config.php') ? 'config.php' : 'config.example.php',
-            'env_loaded' => file_exists(__DIR__ . '/.env'),
-            'vendor_exists' => file_exists(__DIR__ . '/vendor/autoload.php'),
-        ],
-        'logfire' => [
-            'token_set' => !empty(getenv('LOGFIRE_TOKEN')),
-            'token_source' => !empty(getenv('LOGFIRE_TOKEN')) ? 'env' : 'missing',
-            'base_url' => getenv('LOGFIRE_BASE_URL') ?: 'https://logfire-us.pydantic.dev',
-        ],
-        'logging' => [
-            'enabled' => Logger::isEnabled(),
-        ],
-    ], JSON_PRETTY_PRINT);
+    ]);
     return;
 }
 

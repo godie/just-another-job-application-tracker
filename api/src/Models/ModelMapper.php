@@ -100,13 +100,18 @@ class ModelMapper
      */
     public function updateUser(int $id, array $data): bool
     {
-        if (empty($data)) {
+        $data = $this->restrictColumns($data, [
+            'email', 'organization_id', 'password_hash', 'linkedin_id', 'google_id',
+            'username', 'display_name', 'avatar_url', 'is_public', 'bio', 'role',
+            'is_active', 'updated_at', 'last_login_at',
+        ]);
+        if ($data === null || $data === []) {
             return false;
         }
 
         $sets = implode(
             ", ",
-            array_map(fn($k): string => "$k = :$k", array_keys($data)),
+            array_map(fn(string $column): string => "$column = :$column", array_keys($data)),
         );
 
         $stmt = $this->pdo->prepare("UPDATE users SET $sets WHERE id = :id");
@@ -263,13 +268,24 @@ class ModelMapper
      */
     public function updateApplication(string $id, array $data): bool
     {
-        // Convert camelCase keys to snake_case
-        $mappedData = $this->mapTypeScriptToDatabase($data);
+        // Convert camelCase keys to snake_case, then keep only known columns.
+        $mappedData = $this->restrictColumns(
+            $this->mapTypeScriptToDatabase($data),
+            [
+                'user_id', 'organization_id', 'company', 'position', 'status', 'platform',
+                'location', 'work_type', 'hybrid_days', 'salary', 'link', 'notes',
+                'application_date', 'interview_date', 'contact_name', 'follow_up_date',
+                'custom_fields', 'is_deleted', 'last_update',
+            ],
+        );
+        if ($mappedData === null) {
+            return false;
+        }
         $mappedData["last_update"] = date("Y-m-d H:i:s");
 
         $sets = implode(
             ", ",
-            array_map(fn($k): string => "$k = :$k", array_keys($mappedData)),
+            array_map(fn(string $column): string => "$column = :$column", array_keys($mappedData)),
         );
 
         $stmt = $this->pdo->prepare(
@@ -382,11 +398,20 @@ class ModelMapper
      */
     public function updateTimelineEvent(string $id, array $data): bool
     {
-        $mappedData = $this->mapTypeScriptToDatabase($data);
+        $mappedData = $this->restrictColumns(
+            $this->mapTypeScriptToDatabase($data),
+            [
+                'application_id', 'user_id', 'organization_id', 'type', 'custom_type_name',
+                'date', 'status', 'notes', 'interviewer_name', 'created_at',
+            ],
+        );
+        if ($mappedData === null || $mappedData === []) {
+            return false;
+        }
 
         $sets = implode(
             ", ",
-            array_map(fn(int|string $k): string => "$k = :$k", array_keys($mappedData)),
+            array_map(fn(string $column): string => "$column = :$column", array_keys($mappedData)),
         );
 
         $stmt = $this->pdo->prepare(
@@ -512,12 +537,22 @@ class ModelMapper
      */
     public function updateOpportunity(string $id, array $data): bool
     {
-        $mappedData = $this->mapTypeScriptToDatabase($data);
+        $mappedData = $this->restrictColumns(
+            $this->mapTypeScriptToDatabase($data),
+            [
+                'user_id', 'organization_id', 'company', 'position', 'link', 'description',
+                'salary', 'location', 'work_type', 'platform', 'posted_date', 'notes',
+                'status', 'captured_date', 'updated_at', 'is_deleted',
+            ],
+        );
+        if ($mappedData === null) {
+            return false;
+        }
         $mappedData["updated_at"] = date("Y-m-d H:i:s");
 
         $sets = implode(
             ", ",
-            array_map(fn($k): string => "$k = :$k", array_keys($mappedData)),
+            array_map(fn(string $column): string => "$column = :$column", array_keys($mappedData)),
         );
 
         $stmt = $this->pdo->prepare(
@@ -597,6 +632,10 @@ class ModelMapper
                     $mapped[$dbKey] = $value;
                 }
             }
+        }
+
+        if ($mapped === []) {
+            return false;
         }
 
         // Check if preferences exist
@@ -697,6 +736,29 @@ class ModelMapper
     private function generateId(string $prefix): string
     {
         return $prefix . "_" . bin2hex(random_bytes(8));
+    }
+
+    /**
+     * Reject unknown SQL identifiers before they can reach an interpolated
+     * UPDATE statement. PDO can bind values, but it cannot bind identifiers.
+     *
+     * @param string[] $allowedColumns
+     * @return array<string, mixed>|null Null means at least one unknown key.
+     */
+    private function restrictColumns(array $data, array $allowedColumns): ?array
+    {
+        if ($data === []) {
+            return [];
+        }
+
+        $allowed = array_fill_keys($allowedColumns, true);
+        foreach (array_keys($data) as $column) {
+            if (!is_string($column) || !isset($allowed[$column])) {
+                return null;
+            }
+        }
+
+        return $data;
     }
 
     /**

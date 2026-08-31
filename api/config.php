@@ -24,6 +24,8 @@ $allowedOrigins = array_values(array_filter(array_map(
 
 return [
     'allowed_origins' => $allowedOrigins,
+    'frontend_url' => rtrim(getenv('FRONTEND_URL') ?: ($allowedOrigins[0] ?? 'http://localhost:5173'), '/'),
+    'debug' => filter_var(getenv('DEBUG') ?: 'false', FILTER_VALIDATE_BOOLEAN),
     'route_prefix' => getenv('API_PREFIX') ?: '/api',
     'controller_namespace' => getenv('CONTROLLER_NAMESPACE') ?: 'OverPHP\\Controllers',
     'benchmark' => [
@@ -35,7 +37,7 @@ return [
         'fallback_index' => 'index.html',
     ],
     'security' => [
-        'csrf_enabled' => filter_var(getenv('CSRF_ENABLED') ?: 'false', FILTER_VALIDATE_BOOLEAN),
+        'csrf_enabled' => filter_var(getenv('CSRF_ENABLED') ?: 'true', FILTER_VALIDATE_BOOLEAN),
     ],
     'logging' => [
         'enabled' => filter_var(getenv('LOGGING_ENABLED') ?: 'false', FILTER_VALIDATE_BOOLEAN),

@@ -1,11 +1,17 @@
 <?php
 class UserController {
     public function profile(): array {
-        // Imagina que aquí consultas la DB
-        return[
-            "username" => "godieboy",
+        \OverPHP\Helpers\app_session_start();
+        $userId = \OverPHP\Helpers\app_session_get_user_id();
+        if ($userId === null) {
+            http_response_code(401);
+            return ["success" => false, "error" => "Authentication required"];
+        }
+
+        return [
+            "success" => true,
+            "user_id" => $userId,
             "status" => "online",
-            "role" => "admin"
         ];
     }
 

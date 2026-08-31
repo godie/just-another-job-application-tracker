@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace OverPHP\Tests\Core;
 
 use OverPHP\Core\Router;
+use OverPHP\Core\Security;
 use OverPHP\Telemetry\LogfireTelemetry;
 use PHPUnit\Framework\TestCase;
 

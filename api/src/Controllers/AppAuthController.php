@@ -92,6 +92,7 @@ class AppAuthController
         $this->userRepo->createDefaultPreferences($userId);
 
         app_session_start();
+        Security::regenerateSessionId();
         app_session_set_user($userId, null, 'member');
 
         $createdUser = $this->userRepo->findById($userId);
@@ -156,8 +157,18 @@ class AppAuthController
 
     protected function getInputJson(): array
     {
-        $json = file_get_contents('php://input') ?: '{}';
-        return json_decode($json, true) ?? [];
+        $json = file_get_contents('php://input', false, null, 0, 1_000_001);
+        if ($json === false || $json === '' || strlen($json) > 1_000_000) {
+            return [];
+        }
+
+        try {
+            $decoded = json_decode($json, true, 16, JSON_THROW_ON_ERROR);
+        } catch (\Throwable) {
+            return [];
+        }
+
+        return is_array($decoded) ? $decoded : [];
     }
 
     public function google(): array
@@ -266,6 +277,16 @@ class AppAuthController
             http_response_code(401);
             return ['success' => false, 'error' => $linkedinUser['error']];
         }
+        if (!is_string($linkedinUser['sub'] ?? null) || $linkedinUser['sub'] === '' ||
+            !is_string($linkedinUser['email'] ?? null) ||
+            filter_var($linkedinUser['email'], FILTER_VALIDATE_EMAIL) === false) {
+            http_response_code(401);
+            return ['success' => false, 'error' => 'LinkedIn account identity is incomplete'];
+        }
+        if (($linkedinUser['email_verified'] ?? false) !== true && ($linkedinUser['email_verified'] ?? '') !== 'true') {
+            http_response_code(401);
+            return ['success' => false, 'error' => 'LinkedIn account email is not verified'];
+        }
 
         return $this->handleOAuthLogin(
             existingUser: $this->userRepo->findByLinkedInId($linkedinUser['sub']),
@@ -319,8 +340,8 @@ class AppAuthController
 
         $this->userRepo->updateLastLogin($user->id);
 
-        Security::regenerateSessionId();
         app_session_start();
+        Security::regenerateSessionId();
         app_session_set_user($user->id, $user->organizationId, $user->role);
 
         return [
@@ -406,9 +427,12 @@ class AppAuthController
 
     private function buildResetLink(string $token): string
     {
-        $origin = $_SERVER['HTTP_ORIGIN'] ?? $_SERVER['ORIGIN'] ?? 'http://localhost:5173';
-        $frontendUrl = rtrim($origin, '/');
-        return $frontendUrl . '/reset-password?token=' . $token;
+        $frontendUrl = rtrim((string) ($this->config['frontend_url'] ?? ''), '/');
+        if ($frontendUrl === '') {
+            $allowedOrigins = $this->config['allowed_origins'] ?? [];
+            $frontendUrl = rtrim((string) ($allowedOrigins[0] ?? 'http://localhost:5173'), '/');
+        }
+        return $frontendUrl . '/reset-password?token=' . rawurlencode($token);
     }
 
     private function sendPasswordResetEmail(string $email, string $resetLink): void
@@ -511,9 +535,15 @@ class AppAuthController
             return ['error' => 'Token was not intended for this application'];
         }
 
+        if (!is_string($decoded['sub'] ?? null) || $decoded['sub'] === '' ||
+            !is_string($decoded['email'] ?? null) || $decoded['email'] === '' ||
+            (($decoded['email_verified'] ?? 'false') !== 'true' && ($decoded['email_verified'] ?? false) !== true)) {
+            return ['error' => 'Google account email is not verified'];
+        }
+
         return [
-            'sub' => $decoded['sub'] ?? '',
-            'email' => $decoded['email'] ?? '',
+            'sub' => $decoded['sub'],
+            'email' => $decoded['email'],
             'name' => $decoded['name'] ?? null,
             'picture' => $decoded['picture'] ?? null,
         ];
@@ -592,10 +622,20 @@ class AppAuthController
             return ['error' => $decoded['message'] ?? 'Failed to get LinkedIn profile'];
         }
 
+        $sub = $decoded['sub'] ?? null;
+        $email = $decoded['email'] ?? null;
+        if (!is_string($sub) || $sub === '' || !is_string($email) || filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
+            return ['error' => 'LinkedIn account identity is incomplete'];
+        }
+        if (($decoded['email_verified'] ?? false) !== true && ($decoded['email_verified'] ?? '') !== 'true') {
+            return ['error' => 'LinkedIn account email is not verified'];
+        }
+
         return [
-            'sub' => $decoded['sub'] ?? '',
-            'email' => $decoded['email'] ?? '',
-            'name' => $decoded['name'] ?? ($decoded['firstName'] . ' ' . ($decoded['lastName'] ?? '')),
+            'sub' => $sub,
+            'email' => $email,
+            'email_verified' => true,
+            'name' => $decoded['name'] ?? ($decoded['firstName'] ?? '') . ' ' . ($decoded['lastName'] ?? ''),
             'picture' => $decoded['picture'] ?? null,
         ];
     }

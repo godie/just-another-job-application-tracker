@@ -17,7 +17,7 @@ function corsSendHeaders(array $allowedOrigins): bool
 
     header('Content-Type: application/json; charset=utf-8');
     header('Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE, OPTIONS');
-    header('Access-Control-Allow-Headers: Content-Type, Authorization');
+    header('Access-Control-Allow-Headers: Content-Type, Authorization, X-CSRF-Token, X-XSRF-Token');
     header('Vary: Origin');
 
     if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'OPTIONS') {

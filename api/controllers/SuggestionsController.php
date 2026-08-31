@@ -5,6 +5,11 @@
  */
 class SuggestionsController
 {
+    private const MAX_BODY_BYTES = 1_000_000;
+    private const MAX_TYPES = 20;
+    private const MAX_TYPE_LENGTH = 100;
+    private const MAX_CAPTCHA_ATTEMPTS = 5;
+
     private array $config;
 
     public function __construct()
@@ -15,6 +20,11 @@ class SuggestionsController
     /** GET /suggestions - List all suggestions */
     public function index(): array
     {
+        $authError = $this->requireAdmin();
+        if ($authError !== null) {
+            return $authError;
+        }
+
         $dbPath = $this->getSuggestionsDbPath();
         if (!file_exists($dbPath)) {
             return ['success' => true, 'suggestions' => []];
@@ -52,8 +62,7 @@ class SuggestionsController
             $_SESSION['captchas'] = [];
         }
 
-        $rawInput = file_get_contents('php://input') ?: '{}';
-        $payload = json_decode($rawInput, true);
+        $payload = $this->getInputJson();
 
         if (!is_array($payload)) {
             http_response_code(400);
@@ -61,19 +70,19 @@ class SuggestionsController
         }
 
         $types = $payload['types'] ?? [];
-        if (!is_array($types)) {
-            $types = [];
+        if (!is_array($types) || count($types) > self::MAX_TYPES) {
+            http_response_code(400);
+            return ['success' => false, 'error' => 'Types must contain at most 20 items.'];
         }
         $types = array_values(array_filter(array_map(function ($item) {
             if (!is_string($item)) {
                 return null;
             }
-            // Slicer: Never trust user input. Use strict sanitization.
-            $s = trim($item);
-            // We use htmlspecialchars on output, but for storage we keep it clean.
-            // strip_tags is okay for basic removal, but not for security.
-            $s = strip_tags($s);
-            return $s !== '' ? $s : null;
+            $s = trim(strip_tags($item));
+            if ($s === '' || mb_strlen($s) > self::MAX_TYPE_LENGTH) {
+                return null;
+            }
+            return $s;
         }, $types)));
 
         $explanation = isset($payload['explanation']) ? trim((string) $payload['explanation']) : '';
@@ -101,6 +110,13 @@ class SuggestionsController
         $captchaData = $_SESSION['captchas'][$captchaId];
         $expiresAt = $captchaData['expiresAt'] ?? 0;
         $expectedAnswer = $captchaData['answer'] ?? '';
+        $attempts = (int) ($captchaData['attempts'] ?? 0);
+
+        if ($attempts >= self::MAX_CAPTCHA_ATTEMPTS) {
+            unset($_SESSION['captchas'][$captchaId]);
+            http_response_code(429);
+            return ['success' => false, 'error' => 'Too many captcha attempts. Please request a new challenge.'];
+        }
 
         if ($expiresAt < time()) {
             unset($_SESSION['captchas'][$captchaId]);
@@ -109,6 +125,14 @@ class SuggestionsController
         }
 
         if ($captchaAnswer !== (string) $expectedAnswer) {
+            $attempts++;
+            if ($attempts >= self::MAX_CAPTCHA_ATTEMPTS) {
+                unset($_SESSION['captchas'][$captchaId]);
+                http_response_code(429);
+                return ['success' => false, 'error' => 'Too many captcha attempts. Please request a new challenge.'];
+            }
+
+            $_SESSION['captchas'][$captchaId]['attempts'] = $attempts;
             http_response_code(400);
             return ['success' => false, 'error' => 'Incorrect captcha answer.'];
         }
@@ -187,21 +211,53 @@ class SuggestionsController
         $to = 'godie.mendoza@gmail.com';
         $subject = 'New JAJAT - Sugerencia';
 
-        $protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ? 'https' : 'http';
-        $host = $_SERVER['HTTP_HOST'] ?? 'jajat.godieboy.com';
-        // Direct link to the suggestions page using the ?page=suggestions parameter we will add to App.tsx
-        $appUrl = "$protocol://$host?page=suggestions";
+        // Never derive links or mail headers from HTTP_HOST: it is request
+        // input and can be poisoned to send administrators attacker-controlled
+        // links or inject header content. Use deployment configuration only.
+        $appUrl = rtrim((string) ($this->config['frontend_url'] ?? 'http://localhost:5173'), '/') . '?page=suggestions';
+        $from = (string) ($this->config['smtp_from'] ?? 'noreply@jajat.godieboy.com');
+        if (filter_var($from, FILTER_VALIDATE_EMAIL) === false) {
+            $from = 'noreply@jajat.godieboy.com';
+        }
 
         $message = "Has recibido una nueva sugerencia en JAJAT.\n\n";
         $message .= "Explicación:\n$explanation\n\n";
         $message .= "Puedes ver todas las sugerencias aquí: $appUrl\n";
 
-        $headers = "From: JAJAT <no-reply@$host>\r\n";
-        $headers .= "Reply-To: no-reply@$host\r\n";
+        $headers = "From: JAJAT <{$from}>\r\n";
+        $headers .= "Reply-To: {$from}\r\n";
         $headers .= "X-Mailer: PHP/" . phpversion();
 
         // Use @ to suppress potential errors if mail() is not configured
         @mail($to, $subject, $message, $headers);
+    }
+
+    private function requireAdmin(): ?array
+    {
+        \OverPHP\Helpers\app_session_start();
+        if (\OverPHP\Helpers\app_session_get_user_id() === null) {
+            http_response_code(401);
+            return ['success' => false, 'error' => 'Authentication required'];
+        }
+        if (!in_array(\OverPHP\Helpers\app_session_get_role(), ['owner', 'admin'], true)) {
+            http_response_code(403);
+            return ['success' => false, 'error' => 'Administrator access required'];
+        }
+        return null;
+    }
+
+    protected function getInputJson(): mixed
+    {
+        $rawInput = file_get_contents('php://input', false, null, 0, self::MAX_BODY_BYTES + 1);
+        if ($rawInput === false || $rawInput === '' || strlen($rawInput) > self::MAX_BODY_BYTES) {
+            return null;
+        }
+
+        try {
+            return json_decode($rawInput, true, 16, JSON_THROW_ON_ERROR);
+        } catch (Throwable) {
+            return null;
+        }
     }
 
     private function getSuggestionsDbPath(): string

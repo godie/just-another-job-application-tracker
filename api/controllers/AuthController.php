@@ -8,6 +8,7 @@
 class AuthController
 {
     private const TOKEN_URL = 'https://oauth2.googleapis.com/token';
+    private const MAX_BODY_BYTES = 100_000;
 
     private array $config;
 
@@ -19,8 +20,16 @@ class AuthController
     /** POST /auth/cookie - Store token: body is { access_token } or { code, redirect_uri } */
     public function store(): array
     {
-        $json = file_get_contents('php://input') ?: '{}';
-        $data = json_decode($json, true);
+        $json = file_get_contents('php://input', false, null, 0, self::MAX_BODY_BYTES + 1);
+        if ($json === false || $json === '' || strlen($json) > self::MAX_BODY_BYTES) {
+            $data = null;
+        } else {
+            try {
+                $data = json_decode($json, true, 16, JSON_THROW_ON_ERROR);
+            } catch (Throwable) {
+                $data = null;
+            }
+        }
 
         if (!is_array($data)) {
             http_response_code(400);
