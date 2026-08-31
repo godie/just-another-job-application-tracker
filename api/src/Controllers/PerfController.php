@@ -12,14 +12,25 @@ use OverPHP\Telemetry\LogfireTelemetry;
  */
 final class PerfController
 {
+    private const MAX_BODY_BYTES = 32_000;
+
     public function vitals(): array
     {
         $tracer = LogfireTelemetry::tracer();
         $span = $tracer->spanBuilder('web-vitals.receive')
             ->startSpan();
 
-        $raw = file_get_contents('php://input');
-        $data = json_decode($raw, true) ?? [];
+        $raw = file_get_contents('php://input', false, null, 0, self::MAX_BODY_BYTES + 1);
+        if ($raw === false || $raw === '' || strlen($raw) > self::MAX_BODY_BYTES) {
+            $data = [];
+        } else {
+            try {
+                $decoded = json_decode($raw, true, 8, JSON_THROW_ON_ERROR);
+                $data = is_array($decoded) ? $decoded : [];
+            } catch (\Throwable) {
+                $data = [];
+            }
+        }
 
         if (!empty($data)) {
             $span->addEvent('web-vital', [

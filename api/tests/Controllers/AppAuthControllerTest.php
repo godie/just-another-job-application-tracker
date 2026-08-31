@@ -259,6 +259,7 @@ class AppAuthControllerTest extends TestCase
         $this->controller->mockLinkedInUser = [
             'sub' => 'linkedin-user-789',
             'email' => 'newlinkedinuser@example.com',
+            'email_verified' => true,
             'name' => 'New LinkedIn User',
             'picture' => 'https://example.com/photo.jpg',
         ];
@@ -292,6 +293,7 @@ class AppAuthControllerTest extends TestCase
         $this->controller->mockLinkedInUser = [
             'sub' => 'linkedin-linked-012',
             'email' => 'existing-linkedin@example.com',
+            'email_verified' => true,
             'name' => 'Existing LinkedIn User',
             'picture' => 'https://example.com/photo.jpg',
         ];
@@ -312,6 +314,7 @@ class AppAuthControllerTest extends TestCase
         $this->controller->mockLinkedInUser = [
             'sub' => 'linkedin-linked-012',
             'email' => 'existing-linkedin@example.com',
+            'email_verified' => true,
             'name' => 'Existing LinkedIn User',
         ];
         $result2 = $this->controller->linkedin();
@@ -331,6 +334,66 @@ class AppAuthControllerTest extends TestCase
 
         $this->assertFalse($result['success']);
         $this->assertEquals('Invalid authorization code', $result['error']);
+    }
+
+    public function testLinkedInLoginRejectsIncompleteProviderIdentity(): void
+    {
+        $this->controller->mockInput = [
+            'code' => 'valid-code',
+            'redirectUri' => 'http://localhost:5173',
+        ];
+        $this->controller->mockLinkedInToken = ['access_token' => 'mock-access-token'];
+        $this->controller->mockLinkedInUser = [
+            'sub' => '',
+            'email' => '',
+        ];
+
+        $result = $this->controller->linkedin();
+
+        $this->assertFalse($result['success']);
+        $this->assertSame('LinkedIn account identity is incomplete', $result['error']);
+        $this->assertSame(401, http_response_code());
+        $this->assertSame(0, (int) $this->db->query('SELECT COUNT(*) FROM users')->fetchColumn());
+    }
+
+    public function testLinkedInLoginRejectsUnverifiedProviderEmail(): void
+    {
+        $this->controller->mockInput = [
+            'code' => 'valid-code',
+            'redirectUri' => 'http://localhost:5173',
+        ];
+        $this->controller->mockLinkedInToken = ['access_token' => 'mock-access-token'];
+        $this->controller->mockLinkedInUser = [
+            'sub' => 'linkedin-unverified-123',
+            'email' => 'unverified@example.com',
+            'email_verified' => false,
+        ];
+
+        $result = $this->controller->linkedin();
+
+        $this->assertFalse($result['success']);
+        $this->assertSame('LinkedIn account email is not verified', $result['error']);
+        $this->assertSame(401, http_response_code());
+        $this->assertSame(0, (int) $this->db->query('SELECT COUNT(*) FROM users')->fetchColumn());
+    }
+
+    public function testResetLinkIgnoresUntrustedHostHeader(): void
+    {
+        $reflection = new \ReflectionClass(AppAuthController::class);
+        $configProp = $reflection->getProperty('config');
+        $configProp->setAccessible(true);
+        $testConfig = $configProp->getValue($this->controller) ?? [];
+        $testConfig['frontend_url'] = 'https://jajat.godieboy.com';
+        $configProp->setValue($this->controller, $testConfig);
+
+        $_SERVER['HTTP_HOST'] = 'evil.example';
+        $method = $reflection->getMethod('buildResetLink');
+        $method->setAccessible(true);
+        $link = $method->invoke($this->controller, 'reset-token');
+
+        $this->assertStringStartsWith('https://jajat.godieboy.com/', $link);
+        $this->assertStringNotContainsString('evil.example', $link);
+        unset($_SERVER['HTTP_HOST']);
     }
 
     public function testGoogleLoginRegeneratesSessionId(): void
@@ -362,6 +425,7 @@ class AppAuthControllerTest extends TestCase
         $this->controller->mockLinkedInUser = [
             'sub' => 'linkedin-session-test',
             'email' => 'session-linkedin@example.com',
+            'email_verified' => true,
             'name' => 'Session Test',
         ];
 
@@ -427,6 +491,7 @@ class AppAuthControllerTest extends TestCase
         $this->controller->mockLinkedInUser = [
             'sub' => 'linkedin-direct-321',
             'email' => 'linkedin-existing@example.com',
+            'email_verified' => true,
             'name' => 'Updated Name',
             'picture' => 'https://example.com/new.jpg',
         ];
@@ -761,6 +826,27 @@ class AppAuthControllerTest extends TestCase
      * redirectUri is not in allowed_origins (mirrors LinkedIn behavior).
      * Requirements: 3.5
      */
+    public function testResetLinkUsesConfiguredFrontendUrlInsteadOfRequestOrigin(): void
+    {
+        $reflection = new \ReflectionClass(AppAuthController::class);
+        $configProp = $reflection->getProperty('config');
+        $configProp->setAccessible(true);
+        $testConfig = $configProp->getValue($this->controller) ?? [];
+        $testConfig['frontend_url'] = 'https://jajat.godieboy.com';
+        $configProp->setValue($this->controller, $testConfig);
+
+        $_SERVER['HTTP_ORIGIN'] = 'https://evil.example';
+        $method = $reflection->getMethod('buildResetLink');
+        $method->setAccessible(true);
+        $link = $method->invoke($this->controller, 'reset-token');
+
+        $this->assertSame(
+            'https://jajat.godieboy.com/reset-password?token=reset-token',
+            $link,
+        );
+        unset($_SERVER['HTTP_ORIGIN']);
+    }
+
     public function testExchangeGoogleCodeRejectsRedirectUriNotInAllowedOrigins(): void
     {
         // Inject a limited allowed_origins config via reflection so we

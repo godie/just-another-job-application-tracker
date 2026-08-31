@@ -14,6 +14,9 @@ final class Security
 
     private static bool $csrfEnabled = true;
 
+    /** @var array<int, string> Exact origins allowed to satisfy CSRF checks. */
+    private static array $allowedOrigins = [];
+
     private static ?bool $isSecureCache = null;
 
     /** @var string Default Content Security Policy
@@ -44,6 +47,35 @@ final class Security
     public static function isCsrfEnabled(): bool
     {
         return self::$csrfEnabled;
+    }
+
+    /**
+     * Configure the exact origins accepted for origin-based CSRF validation.
+     *
+     * @param array<int, string> $origins
+     */
+    public static function setAllowedOrigins(array $origins): void
+    {
+        self::$allowedOrigins = array_values(array_filter(
+            array_map(static fn (mixed $origin): string => trim((string) $origin), $origins),
+            static fn (string $origin): bool => $origin !== '',
+        ));
+    }
+
+    /**
+     * Check an Origin against an exact allow-list; no prefix or substring
+     * matching is permitted because attacker-controlled subdomains must not
+     * be treated as trusted applications.
+     *
+     * @param array<int, string>|null $origins
+     */
+    public static function isAllowedOrigin(?string $origin, ?array $origins = null): bool
+    {
+        if ($origin === null || $origin === '') {
+            return false;
+        }
+
+        return in_array($origin, $origins ?? self::$allowedOrigins, true);
     }
 
     /**

@@ -44,7 +44,7 @@ name: Quality Gate
 #     cache, phpstan 5-10 s, phpunit 5-15 s, so 10 min is generous
 #     ceiling with cold-cache headroom.
 #
-#   - `shivammathur/setup-php@2.37.2` — exact pin matches deploy.yml +
+#   - `shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2` — exact pin matches deploy.yml +
 #     composer-validate.yml + pull-request.yml's phpunit job. Dependabot
 #     opens a weekly PR to renew this pin (`.github/dependabot.yml`
 #     "github-actions-patches" group, `pull-request-batch-size: 5`).
@@ -92,7 +92,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
 
       - name: Setup PHP 8.4
         # Pin in lock-step with deploy.yml + composer-validate.yml +
@@ -102,7 +102,7 @@ jobs:
         # mismatch class as the v2.6.0 symfony/options-resolver 8.1.0
         # failure mode documented in composer-validate.yml's header
         # comment.
-        uses: shivammathur/setup-php@2.37.2
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
         with:
           php-version: '8.4'
           tools: composer:v2

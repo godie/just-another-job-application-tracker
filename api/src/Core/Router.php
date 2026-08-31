@@ -218,7 +218,8 @@ final class Router
             in_array($method, ['POST', 'PUT', 'PATCH', 'DELETE'], true)) {
 
             $token = $_SERVER['HTTP_X_CSRF_TOKEN'] ?? $_SERVER['HTTP_X_XSRF_TOKEN'] ?? $_POST['_csrf_token'] ?? null;
-            if (!Security::validateCsrfToken($token)) {
+            $origin = $_SERVER['HTTP_ORIGIN'] ?? null;
+            if (!Security::validateCsrfToken($token) && !Security::isAllowedOrigin($origin)) {
                 Logger::warning('router.csrf_failed', [
                     'method' => $method,
                     'path' => $_SERVER['REQUEST_URI'] ?? '/',

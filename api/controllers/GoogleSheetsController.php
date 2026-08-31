@@ -6,6 +6,10 @@
  */
 class GoogleSheetsController
 {
+    private const MAX_BODY_BYTES = 5_000_000;
+    private const MAX_APPLICATIONS = 1_000;
+    private const MAX_TIMELINE_EVENTS = 100;
+
     private array $config;
 
     public function __construct()
@@ -25,8 +29,11 @@ class GoogleSheetsController
             ];
         }
 
-        $json = file_get_contents('php://input') ?: '{}';
-        $data = json_decode($json, true) ?? [];
+        $data = $this->getInputJson();
+        if (!is_array($data)) {
+            http_response_code(400);
+            return ['success' => false, 'error' => 'Invalid JSON body.'];
+        }
         $data = $this->sanitizeInput($data);
         $action = $data['action'] ?? '';
 
@@ -46,10 +53,11 @@ class GoogleSheetsController
                     ];
             }
         } catch (Exception $e) {
+            error_log('[GoogleSheetsController] request failed: ' . $e->getMessage());
             http_response_code(500);
             return [
                 'success' => false,
-                'error' => $e->getMessage(),
+                'error' => 'Unable to process Google Sheets request.',
             ];
         }
     }
@@ -58,6 +66,20 @@ class GoogleSheetsController
     {
         require_once __DIR__ . '/../helpers/auth.php';
         return get_valid_access_token($this->config);
+    }
+
+    private function getInputJson(): mixed
+    {
+        $json = file_get_contents('php://input', false, null, 0, self::MAX_BODY_BYTES + 1);
+        if ($json === false || $json === '' || strlen($json) > self::MAX_BODY_BYTES) {
+            return null;
+        }
+
+        try {
+            return json_decode($json, true, 32, JSON_THROW_ON_ERROR);
+        } catch (Throwable) {
+            return null;
+        }
     }
 
     private function sanitizeInput(array $data): array
@@ -137,14 +159,22 @@ class GoogleSheetsController
         if (!$spreadsheetId || !is_string($spreadsheetId) || !preg_match('/^[a-zA-Z0-9\-_]+$/', $spreadsheetId)) {
             throw new Exception('Valid Spreadsheet ID is required.');
         }
-        if (!is_array($applications)) {
-            throw new Exception('Applications must be an array.');
+        if (!is_array($applications) || count($applications) > self::MAX_APPLICATIONS) {
+            throw new Exception('Applications must contain at most 1000 items.');
+        }
+        foreach ($applications as $app) {
+            if (!is_array($app)) {
+                throw new Exception('Applications must contain objects.');
+            }
+            if (isset($app['timeline']) && (!is_array($app['timeline']) || count($app['timeline']) > self::MAX_TIMELINE_EVENTS)) {
+                throw new Exception('Timeline must contain at most 100 items.');
+            }
         }
 
-        $values = array_map(function ($app) {
+        $values = array_map(function (array $app): array {
             $timelineStr = '';
             if (isset($app['timeline']) && is_array($app['timeline'])) {
-                $events = array_map(function ($event) {
+                $events = array_map(function (array $event): string {
                     $type = $event['type'] ?? 'unknown';
                     $date = $event['date'] ?? '';
                     $status = $event['status'] ?? '';
@@ -276,12 +306,10 @@ class GoogleSheetsController
         curl_close($ch);
 
         if ($error !== '') {
-            throw new Exception("cURL error: {$error}");
+            throw new Exception('Google API request failed.');
         }
         if ($httpCode >= 400) {
-            $errorData = json_decode($response, true);
-            $errorMessage = $errorData['error']['message'] ?? "HTTP {$httpCode} error";
-            throw new Exception("Google API Error: {$errorMessage}");
+            throw new Exception("Google API request failed with HTTP {$httpCode}.");
         }
 
         return json_decode($response, true);

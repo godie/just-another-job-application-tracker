@@ -6,7 +6,6 @@ namespace OverPHP\Tests\Models;
 
 use OverPHP\Models\ModelMapper;
 use PDO;
-use PDOException;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -35,15 +34,15 @@ use PHPUnit\Framework\TestCase;
  * What this test locks in:
  *
  *   1. With string keys: updateUser works as expected.
- *   2. With integer keys (e.g. a JSON-array payload mistakenly
- *      passed as the request body): PDO raises PDOException
- *      (`fail loud`, not `silently write wrong data`).
+ *   2. With integer or hostile keys (e.g. a JSON-array payload or an
+ *      injected SQL fragment): the update is rejected before PDO prepares
+ *      any SQL.
  *   3. With an empty array: updateUser short-circuits to `false`
  *      without building SQL.
  *
- * If the production code is ever refactored to (a) silently coerce
- * integer keys to strings, or (b) detect integer keys and throw a
- * clearer domain exception, the third assertion may need adjustment.
+ * If the production code is ever refactored to silently coerce or
+ * normalize unknown keys, the rejection assertions must remain in place
+ * or be replaced with an equivalent proof that SQL identifiers are trusted.
  *
  * @group smoke
  */
@@ -66,6 +65,38 @@ class ModelMapperSmokeTest extends TestCase
         $this->db->exec(
             "INSERT INTO users (id, email) VALUES (1, 'smoke@example.com')"
         );
+        $this->db->exec(
+            'CREATE TABLE applications (
+                id VARCHAR(100) PRIMARY KEY,
+                company VARCHAR(255),
+                position VARCHAR(255),
+                last_update DATETIME
+            )'
+        );
+        $this->db->exec(
+            "INSERT INTO applications (id, company, position) VALUES ('app-1', 'Acme', 'Engineer')"
+        );
+        $this->db->exec(
+            'CREATE TABLE timeline_events (
+                id VARCHAR(100) PRIMARY KEY,
+                type VARCHAR(100),
+                notes TEXT
+            )'
+        );
+        $this->db->exec(
+            "INSERT INTO timeline_events (id, type, notes) VALUES ('event-1', 'screening', 'Initial')"
+        );
+        $this->db->exec(
+            'CREATE TABLE opportunities (
+                id VARCHAR(100) PRIMARY KEY,
+                company VARCHAR(255),
+                position VARCHAR(255),
+                updated_at DATETIME
+            )'
+        );
+        $this->db->exec(
+            "INSERT INTO opportunities (id, company, position) VALUES ('opp-1', 'Acme', 'Engineer')"
+        );
         $this->mapper = new ModelMapper($this->db);
     }
 
@@ -84,20 +115,42 @@ class ModelMapperSmokeTest extends TestCase
         $this->assertSame('Smoke', $row['display_name']);
     }
 
-    public function testUpdateUserWithIntegerKeysThrowsPDOException(): void
+    public function testUpdateUserWithIntegerKeysIsRejectedBeforeSqlExecution(): void
     {
         // Simulates a JSON-array request body e.g. `json_decode('["x"]', true)`
-        // which produces an integer-keyed array: `[0 => 'x']`. The
-        // SQL builder will emit `UPDATE users SET 0 = :0 ...` which is
-        // invalid SQL on every supported driver.
-        $this->expectException(PDOException::class);
-        $this->mapper->updateUser(1, ['x']);
+        // which produces an integer-keyed array: `[0 => 'x']`. Unknown
+        // identifiers are rejected before PDO prepares any SQL.
+        $this->assertFalse($this->mapper->updateUser(1, ['x']));
     }
 
     public function testUpdateUserWithEmptyArrayReturnsFalse(): void
     {
         // Edge case: empty data short-circuits before any SQL is built.
         $this->assertFalse($this->mapper->updateUser(1, []));
+    }
+
+    public function testUpdateMethodsRejectUntrustedColumnNames(): void
+    {
+        $injectionKey = "company = 'pwned', email = 'attacker@example.com' --";
+
+        $this->assertFalse($this->mapper->updateUser(1, [$injectionKey => 'ignored']));
+        $this->assertFalse($this->mapper->updateApplication('app-1', [$injectionKey => 'ignored']));
+        $this->assertFalse($this->mapper->updateTimelineEvent('event-1', [$injectionKey => 'ignored']));
+        $this->assertFalse($this->mapper->updateOpportunity('opp-1', [$injectionKey => 'ignored']));
+
+        $user = $this->fetchUser(1);
+        $this->assertNotNull($user);
+        $this->assertSame('smoke@example.com', $user['email']);
+        $this->assertSame('Acme', $this->fetchValue('applications', 'company', 'app-1'));
+        $this->assertSame('Initial', $this->fetchValue('timeline_events', 'notes', 'event-1'));
+        $this->assertSame('Acme', $this->fetchValue('opportunities', 'company', 'opp-1'));
+    }
+
+    private function fetchValue(string $table, string $column, string $id): mixed
+    {
+        $stmt = $this->db->prepare("SELECT {$column} FROM {$table} WHERE id = :id");
+        $stmt->execute(['id' => $id]);
+        return $stmt->fetchColumn();
     }
 
     private function fetchUser(int $id): ?array

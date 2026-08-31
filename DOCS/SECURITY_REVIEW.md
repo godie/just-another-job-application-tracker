@@ -1,4 +1,49 @@
-> **Note:** This document is a historical security review from an early branch (`docs-security-documentation`). The architecture has evolved significantly since then — the PHP backend is now a framework (`api/index.php` with `OverPHP\Core\Router`) rather than individual script files, and state management uses Zustand instead of direct localStorage. For current security practices, see `DOCS/SECURITY.md`.
+> **Note:** This document began as a historical review from `docs-security-documentation`. The current audit below reflects the framework-based PHP API, the Networking CRM, cloud sync, and the current frontend. For the standing security policy, see `DOCS/SECURITY.md`.
+
+## Auditoria actual - 2026-08-31
+
+### Hallazgo critico corregido: SQL injection en `ModelMapper` UPDATE
+
+**Superficie afectada:** `api/src/Models/ModelMapper.php`
+
+The four update methods (`updateUser`, `updateApplication`, `updateTimelineEvent`, and `updateOpportunity`) previously built the `SET` clause from `array_keys($data)`. Although values were bound as PDO parameters, SQL identifiers cannot be parameterized; a caller-controlled key could therefore be interpolated into the statement and alter its structure.
+
+The reported statements were:
+
+- `UPDATE users SET $sets WHERE id = :id`
+- `UPDATE applications SET $sets WHERE id = :id`
+- `UPDATE timeline_events SET $sets WHERE id = :id`
+- `UPDATE opportunities SET $sets WHERE id = :id`
+
+**Correction:** each update now maps TypeScript keys where applicable and rejects every key not present in a table-specific allowlist before constructing or preparing SQL. Empty updates also return `false` without issuing a query. Valid values remain bound parameters. The existing `user_preferences` update already derives its identifiers from a fixed internal mapping and now also short-circuits empty input.
+
+**Regression coverage:** `api/tests/Models/ModelMapperSmokeTest.php` verifies valid partial updates, rejects integer keys and an injected identifier fragment, and confirms that the original rows remain unchanged across all four affected tables.
+
+**Status: CORREGIDO.** The SAST findings for the four UPDATE statements are addressed. The INSERT statements reported as ignored findings continue to derive their column lists from model/repository serialization contracts, not raw request keys; their values are still parameterized.
+
+### Otros hallazgos actuales corregidos en esta auditoria
+
+- CSRF is enabled by default, exact CORS origins are enforced, and the preflight allows the CSRF headers used by the client.
+- PHP error display and the debug health response no longer disclose filesystem, runtime, token, or configuration metadata.
+- Password-reset links and suggestion notification links use configured frontend URLs instead of request-controlled `Origin` or `HTTP_HOST` values.
+- Suggestions listing requires an authenticated owner/admin session; CAPTCHA answers remain server-side, with bounded challenges and failed attempts.
+- LinkedIn login requires a non-empty provider subject, a valid email, and a verified email claim before linking or creating an account.
+- Networking CRM references are owner-scoped, and malformed cross-owner references are rejected before persistence.
+- Cloud sync request/response handling uses bounded validation and avoids wiping local Networking data on empty or invalid envelopes.
+- Legacy JSON readers in auth-cookie, job-search, web-vitals, sync, Google Sheets, and agent-application controllers now enforce body-size/depth limits; sync/proxy failures return generic errors while server logs retain diagnostics.
+
+### Verificacion de esta auditoria
+
+- PHPUnit: 103 tests, 321 assertions, passing; 2 PHPUnit deprecations remain in pre-existing test infrastructure.
+- Vitest: 982 tests across 96 files, passing.
+- `npm run lint` and `npm run build` pass.
+- `npm run knip` passes with no unused exports reported.
+- `npm audit --audit-level=low` reports 0 vulnerabilities after updating the transitive `nanoid` package from 3.3.17 to 3.3.18 in `package-lock.json`.
+- `composer validate --strict`, `composer audit --locked`, and PHPStan level 6 pass.
+- PHP syntax checks pass for all modified API files.
+- The focused `ModelMapperSmokeTest` SQL identifier regression passes.
+- `cve-lite` was not installed in this environment, so its mandated scan could not run locally; CI remains the authoritative check for that tool.
+
 
 # Revisión de Seguridad - Branch docs-security-documentation
 

@@ -44,16 +44,16 @@ jobs:
 
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v5
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
 
       - name: Setup Node
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
         with:
           node-version: "22"
           cache: "npm"
 
       - name: Setup PHP
-        uses: shivammathur/setup-php@2.37.2
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
         with:
           php-version: "8.4"
           tools: composer:v2
@@ -98,7 +98,7 @@ jobs:
         run: tar -czf dist.tar.gz -C dist .
 
       - name: Upload production-ready build files
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: production-files
           path: dist.tar.gz
@@ -117,7 +117,7 @@ jobs:
 
     steps:
       - name: Download artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           name: production-files
           path: ./
@@ -362,7 +362,7 @@ jobs:
     # Race Playbook".
     with:
       # php-version MUST stay in lock-step with the deploy workflow's main
-      # job (line ~29: shivammathur/setup-php@2.37.2 php-version: "8.4").
+      # job (line ~29: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2 php-version: "8.4").
       # composer-validate.yml's own comment enforces the same invariant.
       # Drift here produces a lockfile-mismatch failure mode identical to
       # the v2.6.0 release cycle's symfony/options-resolver 8.1.0 episode,

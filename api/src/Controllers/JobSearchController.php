@@ -11,6 +11,7 @@ use function OverPHP\Helpers\app_session_get_user_id;
 
 class JobSearchController
 {
+    private const MAX_BODY_BYTES = 100_000;
     private array $config;
     private string $joobleApiKey;
     private string $theirstackApiKey;
@@ -930,7 +931,17 @@ class JobSearchController
      */
     private function getInputJson(): array
     {
-        $json = file_get_contents('php://input') ?: '{}';
-        return json_decode($json, true) ?? [];
+        $json = file_get_contents('php://input', false, null, 0, self::MAX_BODY_BYTES + 1);
+        if ($json === false || $json === '' || strlen($json) > self::MAX_BODY_BYTES) {
+            return [];
+        }
+
+        try {
+            $decoded = json_decode($json, true, 16, JSON_THROW_ON_ERROR);
+        } catch (\Throwable) {
+            return [];
+        }
+
+        return is_array($decoded) ? $decoded : [];
     }
 }

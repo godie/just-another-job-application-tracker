@@ -3,6 +3,11 @@
  * SyncController handles synchronization of applications and opportunities.
  */
 class SyncController {
+    private const MAX_BODY_BYTES = 5_000_000;
+    private const MAX_APPLICATIONS = 1_000;
+    private const MAX_OPPORTUNITIES = 1_000;
+    private const MAX_TIMELINE_EVENTS = 100;
+
     private array $config;
 
     public function __construct() {
@@ -49,19 +54,28 @@ class SyncController {
 
             return ['success' => true, 'applications' => $apps];
         } catch (\PDOException $e) {
+            error_log('[SyncController] application fetch failed: ' . $e->getMessage());
             http_response_code(500);
-            return ['success' => false, 'error' => 'Database error during fetch: ' . $e->getMessage()];
+            return ['success' => false, 'error' => 'Unable to fetch applications.'];
         }
     }
 
     public function saveApplications(): array {
         $userId = $this->checkAuth();
-        $json = file_get_contents('php://input') ?: '[]';
-        $apps = json_decode($json, true);
+        $apps = $this->getInputJson();
 
-        if (!is_array($apps)) {
+        if (!is_array($apps) || count($apps) > self::MAX_APPLICATIONS ||
+            array_any($apps, static fn (mixed $app): bool => !is_array($app))) {
             http_response_code(400);
-            return ['success' => false, 'error' => 'Invalid data format'];
+            return ['success' => false, 'error' => 'Invalid data format or too many applications.'];
+        }
+        foreach ($apps as $app) {
+            if (isset($app['timeline']) && (!is_array($app['timeline']) ||
+                count($app['timeline']) > self::MAX_TIMELINE_EVENTS ||
+                array_any($app['timeline'], static fn (mixed $event): bool => !is_array($event)))) {
+                http_response_code(400);
+                return ['success' => false, 'error' => 'Invalid timeline data or too many events.'];
+            }
         }
 
         try {
@@ -100,6 +114,9 @@ class SyncController {
                 ]);
 
                 if (isset($app['timeline']) && is_array($app['timeline'])) {
+                    if (count($app['timeline']) > self::MAX_TIMELINE_EVENTS) {
+                        throw new \InvalidArgumentException('Too many timeline events');
+                    }
                     foreach ($app['timeline'] as $ev) {
                         $stmtInsEv->execute([
                             $ev['id'] ?? uniqid('ev_', true),
@@ -117,10 +134,11 @@ class SyncController {
 
             $db->commit();
             return ['success' => true, 'message' => 'Applications synced successfully'];
-        } catch (\PDOException $e) {
-            if ($db->inTransaction()) $db->rollBack();
+        } catch (\Throwable $e) {
+            if (isset($db) && $db->inTransaction()) $db->rollBack();
+            error_log('[SyncController] application sync failed: ' . $e->getMessage());
             http_response_code(500);
-            return ['success' => false, 'error' => 'Database error during sync: ' . $e->getMessage()];
+            return ['success' => false, 'error' => 'Unable to sync applications.'];
         }
     }
 
@@ -138,19 +156,20 @@ class SyncController {
 
             return ['success' => true, 'opportunities' => $opps];
         } catch (\PDOException $e) {
+            error_log('[SyncController] opportunity fetch failed: ' . $e->getMessage());
             http_response_code(500);
-            return ['success' => false, 'error' => 'Database error during fetch opportunities: ' . $e->getMessage()];
+            return ['success' => false, 'error' => 'Unable to fetch opportunities.'];
         }
     }
 
     public function saveOpportunities(): array {
         $userId = $this->checkAuth();
-        $json = file_get_contents('php://input') ?: '[]';
-        $opps = json_decode($json, true);
+        $opps = $this->getInputJson();
 
-        if (!is_array($opps)) {
+        if (!is_array($opps) || count($opps) > self::MAX_OPPORTUNITIES ||
+            array_any($opps, static fn (mixed $opp): bool => !is_array($opp))) {
             http_response_code(400);
-            return ['success' => false, 'error' => 'Invalid data format'];
+            return ['success' => false, 'error' => 'Invalid data format or too many opportunities.'];
         }
 
         try {
@@ -180,10 +199,25 @@ class SyncController {
 
             $db->commit();
             return ['success' => true, 'message' => 'Opportunities synced successfully'];
-        } catch (\PDOException $e) {
-            if ($db->inTransaction()) $db->rollBack();
+        } catch (\Throwable $e) {
+            if (isset($db) && $db->inTransaction()) $db->rollBack();
+            error_log('[SyncController] opportunity sync failed: ' . $e->getMessage());
             http_response_code(500);
-            return ['success' => false, 'error' => 'Database error during sync opportunities: ' . $e->getMessage()];
+            return ['success' => false, 'error' => 'Unable to sync opportunities.'];
+        }
+    }
+
+    private function getInputJson(): mixed
+    {
+        $json = file_get_contents('php://input', false, null, 0, self::MAX_BODY_BYTES + 1);
+        if ($json === false || $json === '' || strlen($json) > self::MAX_BODY_BYTES) {
+            return null;
+        }
+
+        try {
+            return json_decode($json, true, 32, JSON_THROW_ON_ERROR);
+        } catch (\Throwable) {
+            return null;
         }
     }
 }

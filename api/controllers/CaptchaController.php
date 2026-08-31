@@ -6,6 +6,8 @@
 class CaptchaController
 {
     private const TTL = 300; // 5 minutes
+    private const MAX_ACTIVE_CAPTCHAS = 10;
+    private const MAX_ATTEMPTS = 5;
 
     /** GET /captcha - Generate new captcha */
     public function index(): array
@@ -21,8 +23,14 @@ class CaptchaController
             }
         }
 
+        if (count($_SESSION['captchas']) >= self::MAX_ACTIVE_CAPTCHAS) {
+            array_shift($_SESSION['captchas']);
+        }
+
         try {
-            $captchaValue = (string) random_int(10000, 99999);
+            $left = random_int(100, 999);
+            $right = random_int(1, 99);
+            $captchaValue = (string) ($left + $right);
             $captchaId = bin2hex(random_bytes(16));
         } catch (Exception $e) {
             http_response_code(500);
@@ -37,7 +45,9 @@ class CaptchaController
         return [
             'success' => true,
             'captchaId' => $captchaId,
-            'challenge' => $captchaValue,
+            // The answer stays in the server-side session; the client only
+            // receives the question, not the value it must submit.
+            'challenge' => "{$left} + {$right} = ?",
             'expiresIn' => self::TTL,
         ];
     }

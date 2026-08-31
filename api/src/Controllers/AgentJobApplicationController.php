@@ -21,6 +21,8 @@ use function OverPHP\Helpers\app_session_get_user_id;
  */
 class AgentJobApplicationController
 {
+    private const MAX_BODY_BYTES = 1_000_000;
+
     private AgentJobApplicationRepository $repo;
 
     public function __construct(?Database $db = null)
@@ -179,8 +181,16 @@ class AgentJobApplicationController
 
     protected function getInputJson(): mixed
     {
-        $json = file_get_contents('php://input') ?: '{}';
-        return json_decode($json, true);
+        $json = file_get_contents('php://input', false, null, 0, self::MAX_BODY_BYTES + 1);
+        if ($json === false || $json === '' || strlen($json) > self::MAX_BODY_BYTES) {
+            return null;
+        }
+
+        try {
+            return json_decode($json, true, 32, JSON_THROW_ON_ERROR);
+        } catch (\Throwable) {
+            return null;
+        }
     }
 
     /**
