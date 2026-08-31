@@ -1,3 +1,13 @@
+## [2.6.44] - 2026-08-31
+
+### Changed
+- **Refactored application status badge lookup** (`src/utils/status.ts`) by replacing conditional chains with an allowlisted `STATUS_VARIANT_MAP`, preserving case-insensitive matching and the existing fallback behavior.
+- **Added focused status mapping tests** (`src/utils/status.test.ts`) covering exact matches, case-insensitivity, and unknown-status fallback.
+- **Synchronized project version metadata** in `package.json`, `package-lock.json`, and `api/src/Telemetry/LogfireTelemetry.php` for this standalone PR. Version `2.6.43` is already used by PR 249, so this independent PR uses `2.6.44` to avoid a cross-PR version race.
+
+### Validation
+- `npm test`, `npm run lint`, and `npm run build` pass.
+
 ## [2.6.43] - 2026-08-31
 
 ### Changed
