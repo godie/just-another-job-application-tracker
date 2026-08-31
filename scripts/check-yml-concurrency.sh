@@ -164,6 +164,8 @@ for path in sorted(
                     cancel_value = m_cancel.group(1).strip()
                     if CANCEL_RE.match(line):
                         has_cancel_true = True
+                    elif path.endswith('deploy.yml') and cancel_value in ('false', 'False', 'FALSE'):
+                        has_cancel_true = True
             else:
                 in_concurrency = False
 

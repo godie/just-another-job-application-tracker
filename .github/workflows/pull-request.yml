@@ -4,6 +4,12 @@ on:
   pull_request:
     branches:
       - main
+    paths-ignore:
+      - '**.md'
+      - 'DOCS/**'
+      - 'LICENSE'
+      - '.gitignore'
+      - '.gitattributes'
 
 # Cancel in-progress runs of the same workflow on the same ref. Without this,
 # pushing a new commit to a PR strings stale jobs back-to-back, exhausting

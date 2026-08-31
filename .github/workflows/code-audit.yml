@@ -2,9 +2,21 @@ name: Code Audit
 
 on:
   push:
-    branches: [main, master]
+    branches: [main]
+    paths-ignore:
+      - '**.md'
+      - 'DOCS/**'
+      - 'LICENSE'
+      - '.gitignore'
+      - '.gitattributes'
   pull_request:
-    branches: [main, master]
+    branches: [main]
+    paths-ignore:
+      - '**.md'
+      - 'DOCS/**'
+      - 'LICENSE'
+      - '.gitignore'
+      - '.gitattributes'
   schedule:
     # Run weekly on Sunday at 2am UTC
     - cron: '0 2 * * 0'
