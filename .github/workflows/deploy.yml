@@ -5,7 +5,7 @@ on:
     branches:
       - main
 
-# v2.6.33 CI RACE: extend the v2.6.29 `concurrency.cancel-in-progress: true`
+# v2.6.33 CI RACE: extend the v2.6.29 `concurrency.cancel-in-progress: false`
 # hardening to the deploy workflow. The v2.6.29 fix landed only on
 # `pull-request.yml` (line 11) and `orphan-sweep.yml` (line 23), leaving
 # the deploy workflow's 3 jobs (build + deploy + composer-validate) able
@@ -283,6 +283,68 @@ jobs:
             attempt=$((attempt + 1))
             sleep $((attempt * 5))
           done
+
+      - name: Generate deployment summary
+        if: always()
+        run: |
+          status="${{ job.status }}"
+          if [ "$status" = "success" ]; then
+            icon="🚀"
+            title="Deployment Succeeded"
+          else
+            icon="❌"
+            title="Deployment Failed"
+          fi
+
+          cat << EOF >> $GITHUB_STEP_SUMMARY
+          ### $icon $title
+
+          | Attribute | Value |
+          | --- | --- |
+          | **Repository** | `${{ github.repository }}` |
+          | **Branch** | `${{ github.ref_name }}` |
+          | **Commit** | [`${{ github.sha }}`](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}) |
+          | **Actor** | `${{ github.actor }}` |
+          | **Status** | `$status` |
+          | **Timestamp** | `$(date -u '+%Y-%m-%d %H:%M:%S UTC')` |
+
+          #### Deployed Artifacts:
+          - React Frontend Build (`dist/`)
+          - PHP Backend Code (`dist/api/`)
+
+          EOF
+
+      - name: Send Telegram notification (optional)
+        if: always()
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          if [ -z "$TELEGRAM_BOT_TOKEN" ] || [ -z "$TELEGRAM_CHAT_ID" ]; then
+            echo "Telegram credentials not configured. Skipping notification."
+            exit 0
+          fi
+
+          status="${{ job.status }}"
+          if [ "$status" = "success" ]; then
+            icon="🚀"
+            title="Deployment Succeeded"
+          else
+            icon="❌"
+            title="Deployment Failed"
+          fi
+
+          message="$icon *$title*
+          *Repo:* `${{ github.repository }}`
+          *Branch:* `${{ github.ref_name }}`
+          *Commit:* `${{ github.sha }}`
+          *Actor:* `${{ github.actor }}`
+          *Status:* `$status`"
+
+          curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+            -d "chat_id=${TELEGRAM_CHAT_ID}" \
+            -d "parse_mode=Markdown" \
+            -d "text=${message}" || echo "Failed to send Telegram notification"
 
       - name: Clean up SSH key
         if: always()
