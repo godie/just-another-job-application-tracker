@@ -45,6 +45,9 @@ CHECKED_COUNT=0
 #                file-scope env; per-job env is sufficient. Listed as a soft
 #                consideration in scripts/check-workflow-shape.sh's CHANGELOG
 #                entry but not yet a hard gate.
+#   pull_request paths: - the pull-request workflow intentionally has no
+#                path filter because its required status checks, including
+#                Composer validate, must be reported for every PR.
 #   permissions: - reusable-workflow style (composer-validate.yml) declares
 #                 `permissions: contents: read`; heritage files (code-audit.yml,
 #                 cve-lite.yml) rely on repo defaults. Listed as a soft

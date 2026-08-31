@@ -4,12 +4,10 @@ on:
   pull_request:
     branches:
       - main
-    paths-ignore:
-      - '**.md'
-      - 'DOCS/**'
-      - 'LICENSE'
-      - '.gitignore'
-      - '.gitattributes'
+    # Every pull request must run this workflow. `Composer validate` is a
+    # required branch-protection check, so path filters here would leave the
+    # check in `Expected — Waiting for status to be reported` whenever a PR
+    # changed only documentation or other ignored files.
 
 # Cancel in-progress runs of the same workflow on the same ref. Without this,
 # pushing a new commit to a PR strings stale jobs back-to-back, exhausting
