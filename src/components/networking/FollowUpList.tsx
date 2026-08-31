@@ -35,7 +35,9 @@ const partition = (tasks: FollowUpTask[], now: Date) => {
   overdue.sort(compare);
   today.sort(compare);
   upcoming.sort(compare);
-  return { overdue, today, upcoming };
+  return { overdue, today, upcoming};
+
+
 };
 
 const startOfDay = (d: Date): Date => {
@@ -98,4 +100,3 @@ export const FollowUpList: React.FC<FollowUpListProps> = ({ now }) => {
     </div>
   );
 };
-
