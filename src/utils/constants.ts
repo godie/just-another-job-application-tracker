@@ -3,6 +3,7 @@ import type { InterviewStageType } from "../types/applications";
 
 export const STORAGE_KEY = 'jobTrackerData';
 export const OPPORTUNITIES_STORAGE_KEY = 'jobOpportunities';
+export const NETWORKING_STORAGE_KEY = 'jobNetworking';
 export const PREFERENCES_STORAGE_KEY = 'jobTrackerPreferences';
 
 export const DEFAULT_FIELDS: FieldDefinition[] = [

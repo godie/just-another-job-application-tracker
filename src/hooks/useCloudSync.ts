@@ -2,15 +2,20 @@ import { useEffect, useRef } from 'react';
 import { useAuthStore } from '../stores/authStore';
 import { useApplicationsStore } from '../stores/applicationsStore';
 import { useOpportunitiesStore } from '../stores/opportunitiesStore';
+import { useNetworkingStore } from '../stores/networkingStore';
 import { useMergeStore } from '../stores/mergeStore';
 import type { JobApplication } from '../types/applications';
 import type { JobOpportunity } from '../types/opportunities';
 import type { MergeData } from '../utils/mergeData';
+import type { NetworkingWorkspace } from '../types/networking';
 import {
   parseApplicationsSyncResponse,
   parseOpportunitiesSyncResponse,
   safeJson,
 } from '../utils/syncSchemas';
+import {
+  parseNetworkingSyncResponse,
+} from '../utils/networkingSyncSchemas';
 
 let _initialLoadDone = false;
 export function markInitialLoadDone() {
@@ -63,6 +68,38 @@ async function pullCloudData(
       );
     }
 
+    // Networking CRM pull: same trust model as the other legs — the response
+    // is attacker-influenced, so it is validated with the same per-entity
+    // schemas as the local read path before it touches the store. An
+    // empty/invalid envelope must NOT wipe local data: only a valid envelope
+    // with at least one row replaces the local workspace.
+    try {
+      const netRes = await fetch('/api/sync/networking', { credentials: 'include', signal });
+      const netParsed = netRes.ok
+        ? parseNetworkingSyncResponse(await safeJson(netRes))
+        : { workspace: null, envelopeError: `http ${netRes.status}`, dropped: 0 };
+      if (netParsed.envelopeError) {
+        console.warn('[useCloudSync] networking envelope error:', netParsed.envelopeError);
+      }
+      if (netParsed.dropped > 0) {
+        console.warn(`[useCloudSync] dropped ${netParsed.dropped} networking row(s) failed validation`);
+      }
+      const net = netParsed.workspace;
+      const netHasRows =
+        net !== null &&
+        (net.contacts.length > 0 ||
+          net.interactions.length > 0 ||
+          net.followUpTasks.length > 0 ||
+          net.contactLinks.length > 0 ||
+          net.referrals.length > 0);
+      if (net !== null && netHasRows) {
+        useNetworkingStore.getState().setWorkspace(net);
+      }
+    } catch (err) {
+      if ((err as Error)?.name === 'AbortError') return 'done';
+      console.error('Failed to pull networking data from cloud', err);
+    }
+
     const cloudApps = appParsed.items;
     const cloudOpps = oppParsed.items;
 
@@ -89,6 +126,38 @@ async function pullCloudData(
 
     if (cloudAppsOk) setApplications(cloudApps);
     if (cloudOppsOk) setOpportunities(cloudOpps);
+
+    // Networking CRM pull: same trust model as the other legs — the response
+    // is attacker-influenced, so it is validated before it touches the store.
+    // An empty/invalid envelope must NOT wipe local data: only a valid
+    // envelope with at least one row replaces the local workspace.
+    try {
+      const netRes = await fetch('/api/sync/networking', { credentials: 'include', signal });
+      const netParsed = netRes.ok
+        ? parseNetworkingSyncResponse(await safeJson(netRes))
+        : { workspace: null, envelopeError: `http ${netRes.status}`, dropped: 0 };
+      if (netParsed.envelopeError) {
+        console.warn('[useCloudSync] networking envelope error:', netParsed.envelopeError);
+      }
+      if (netParsed.dropped > 0) {
+        console.warn(`[useCloudSync] dropped ${netParsed.dropped} networking row(s) failed validation`);
+      }
+      const net = netParsed.workspace;
+      const netHasRows =
+        net !== null &&
+        (net.contacts.length > 0 ||
+          net.interactions.length > 0 ||
+          net.followUpTasks.length > 0 ||
+          net.contactLinks.length > 0 ||
+          net.referrals.length > 0);
+      if (net !== null && netHasRows) {
+        useNetworkingStore.getState().setWorkspace(net);
+      }
+    } catch (err) {
+      if ((err as Error)?.name === 'AbortError') return 'done';
+      console.error('Failed to pull networking data from cloud', err);
+    }
+
     return 'done';
   } catch (err) {
     if (signal?.aborted) return 'done';
@@ -100,6 +169,7 @@ async function pullCloudData(
 async function pushCloudData(
   applications: JobApplication[],
   opportunities: JobOpportunity[],
+  networking: NetworkingWorkspace,
   signal?: AbortSignal,
 ): Promise<void> {
   try {
@@ -116,6 +186,17 @@ async function pushCloudData(
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
       body: JSON.stringify(opportunities),
+      signal,
+    });
+
+    // Networking CRM leg: same owner-scoped replace contract as the other
+    // sync legs. The backend derives the owner from the session — the body
+    // carries only the workspace payload.
+    await fetch('/api/sync/networking', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify(networking),
       signal,
     });
   } catch (err) {
@@ -180,28 +261,37 @@ export function useCloudSync() {
 
   // react-doctor-disable-next-line no-fetch-in-effect -- canonical rule waiver: debounced event-driven sync push with AbortController cleanup, in a project that has not adopted a data-fetching library (react-query/SWR), react-doctor/no-fetch-in-effect
   useEffect(() => {
-    if (!isAuthenticated || !_initialLoadDone || isSyncPaused) return;
+    if (!isAuthenticated || isSyncPaused) return;
 
     // M5-style event-driven push: instead of subscribing to store state
     // (which misses bypass writes that don't go through the Zustand
     // store), we listen to the same CustomEvents the write funnel
-    // (`saveApplications` / `saveOpportunities`) dispatches. The 2s
-    // debounce is preserved: rapid events reset the timer so only the
-    // last one fires the network push (batch imports, form updates).
+    // (`saveApplications` / `saveOpportunities` / `saveNetworkingWorkspace`)
+    // dispatches. The 2s debounce is preserved: rapid events reset the timer
+    // so only the last one fires the network push (batch imports, form
+    // updates). Listeners subscribe unconditionally — the `_initialLoadDone`
+    // guard is checked at FIRE time, because that module flag flips
+    // asynchronously after the one-shot pull completes and an effect-level
+    // guard would never re-run to pick it up.
     let debounceTimer: ReturnType<typeof setTimeout> | null = null;
     const controller = new AbortController();
 
     const schedulePush = () => {
       if (debounceTimer) clearTimeout(debounceTimer);
       debounceTimer = setTimeout(() => {
-        if (syncInProgress.current) return;
+        if (!_initialLoadDone || syncInProgress.current) return;
         syncInProgress.current = true;
         // Read latest store state at push time (not at effect time) so the
         // push payload reflects any writes that happened during the 2s
         // debounce window, including the event that triggered this push.
         const apps = useApplicationsStore.getState().applications;
         const opps = useOpportunitiesStore.getState().opportunities;
-        void pushCloudData(apps, opps, controller.signal).finally(() => {
+        // Read the networking workspace at push time too — same rationale:
+        // the payload must reflect writes that happened during the debounce
+        // window, including the `jobNetworkingUpdated` event that may have
+        // triggered this push.
+        const networking = useNetworkingStore.getState().workspaceSnapshot();
+        void pushCloudData(apps, opps, networking, controller.signal).finally(() => {
           syncInProgress.current = false;
         });
       }, 2000);
@@ -209,10 +299,16 @@ export function useCloudSync() {
 
     window.addEventListener('jobApplicationsUpdated', schedulePush);
     window.addEventListener('jobOpportunitiesUpdated', schedulePush);
+    // Networking CRM leg of the M5-style event-driven push: the write funnel
+    // (`saveNetworkingWorkspace`) dispatches this same-tab custom event on
+    // every workspace write, so bypass writes (extension content scripts,
+    // manual localStorage writes) are covered automatically.
+    window.addEventListener('jobNetworkingUpdated', schedulePush);
 
     return () => {
       window.removeEventListener('jobApplicationsUpdated', schedulePush);
       window.removeEventListener('jobOpportunitiesUpdated', schedulePush);
+      window.removeEventListener('jobNetworkingUpdated', schedulePush);
       if (debounceTimer) clearTimeout(debounceTimer);
       // Aborting an in-flight push on cleanup (e.g. logout mid-debounce) drops
       // that queued write rather than delivering it — deliberate: the session

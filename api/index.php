@@ -175,6 +175,25 @@ $router->add('POST', '/sync/opportunities', function() {
     return (new \OverPHP\Controllers\SyncController())->saveOpportunities();
 });
 
+// Networking CRM (Task 3 of the Networking CRM plan). Owner is derived
+// from the session inside NetworkingController — never from the body.
+$router->add('GET', '/sync/networking', function () {
+    $result = RequireAuth::handle();
+    if ($result !== null) {
+        echo json_encode($result);
+        return;
+    }
+    return (new \OverPHP\Controllers\NetworkingController())->get();
+});
+$router->add('POST', '/sync/networking', function () {
+    $result = RequireAuth::handle();
+    if ($result !== null) {
+        echo json_encode($result);
+        return;
+    }
+    return (new \OverPHP\Controllers\NetworkingController())->save();
+});
+
 $router->add('GET', '/user/profile', 'UserController@profile');
 $router->add('GET', '/hello', 'HelloController@index');
 $router->add('POST', '/perf/vitals', 'PerfController@vitals');

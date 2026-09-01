@@ -85,8 +85,8 @@
       "keepLocalDesc": "Mantén lo que está en este dispositivo. Los datos de la nube se sobrescribirán en la próxima sincronización.",
       "mergeBoth": "Fusionar Ambos (Recomendado)",
       "mergeBothDesc": "Combina datos de ambas fuentes. Los duplicados se resuelven automáticamente.",
-    "cancel": "Cancelar",
-    "close": "Cerrar",
+      "cancel": "Cancelar",
+      "close": "Cerrar",
       "notSyncedBanner": "Datos no sincronizados — elige cómo manejar tus datos",
       "cloudLabel": "Nube",
       "localLabel": "Local",
@@ -174,7 +174,8 @@
     "insights": "Análisis",
     "support": "Soporte",
     "home": "Inicio",
-    "backupSync": "Respaldo y Sync"
+    "backupSync": "Respaldo y Sync",
+    "networking": "Red de contactos"
   },
   "home": {
     "pipeline": "Pipeline de Aplicaciones",
@@ -845,5 +846,76 @@
     "customFieldsCount_one": "{{count}} campo personalizado",
     "customFieldsCount_other": "{{count}} campos personalizados",
     "viewPosting": "Ver publicación →"
+  },
+  "networking": {
+    "title": "Red de contactos",
+    "intro": "Registra a las personas que conoces, anota conversaciones y haz seguimiento con intención. Todo permanece en este dispositivo hasta que actives la sincronización en la nube.",
+    "empty": {
+      "title": "Aún no tienes contactos",
+      "description": "Un contacto representa a alguien con quien quieres mantener el vínculo durante tu búsqueda de empleo: reclutadores, mentores, colegas y antiguos compañeros.",
+      "cta": "Añadir contacto"
+    },
+    "sections": {
+      "due": "Vencidos",
+      "today": "Hoy",
+      "upcoming": "Próximos",
+      "none": "Sin seguimientos"
+    },
+    "contacts": {
+      "formTitle": "Nuevo contacto",
+      "name": "Nombre",
+      "nameRequired": "El nombre es obligatorio",
+      "edit": "Editar",
+      "delete": "Eliminar",
+      "confirmDelete": "¿Eliminar este contacto y toda su actividad relacionada?",
+      "invalid": "Contacto inválido: rechazado por la validación",
+      "company": "Empresa",
+      "role": "Cargo",
+      "email": "Correo electrónico",
+      "relationshipType": "Relación",
+      "tags": "Etiquetas (separadas por comas)",
+      "notes": "Notas",
+      "submit": "Guardar contacto",
+      "cancel": "Cancelar",
+      "interactionsFor": "Interacciones con {{name}}",
+      "logInteraction": "Registrar interacción",
+      "noInteractions": "Aún no hay interacciones."
+    },
+    "interactions": {
+      "formTitle": "Nueva interacción",
+      "channel": "Canal",
+      "summary": "Resumen",
+      "notes": "Notas",
+      "submit": "Guardar interacción",
+      "cancel": "Cancelar"
+    },
+    "followUps": {
+      "addTitle": "Añadir seguimiento",
+      "complete": "Marcar como hecho",
+      "completed": "Completado",
+      "dueLabel": "Vence el {{date}}"
+    },
+    "links": {
+      "title": "Recursos vinculados",
+      "add": "Vincular a solicitud u oportunidad",
+      "selectResource": "Selecciona recurso",
+      "application": "Solicitud",
+      "opportunity": "Oportunidad",
+      "submit": "Guardar vínculo",
+      "cancel": "Cancelar",
+      "addCta": "Añadir vínculo",
+      "empty": "Aún no hay recursos vinculados.",
+      "duplicate": "Este contacto ya está vinculado a ese recurso."
+    },
+    "referrals": {
+      "title": "Referencias",
+      "add": "Solicitar referencia",
+      "addCta": "Añadir referencia",
+      "selectResource": "Selecciona recurso",
+      "submit": "Guardar referencia",
+      "cancel": "Cancelar",
+      "empty": "Aún no hay referencias.",
+      "statusLabel": "Estado"
+    }
   }
 }

@@ -31,6 +31,11 @@ const config: KnipConfig = {
     'src/components/ui/DropdownMenu.tsx': ['exports'],
     'src/components/AuthModals.tsx': ['exports'],
     'src/storage/matching.ts': ['exports'],
+    // Networking CRM contract types (interactions, links, referrals, enums) are
+    // part of the Task 1 data model but only consumed by Task 2+ mutations/UI.
+    // Kept exported so later tasks can import them without reshaping the
+    // workspace contract.
+    'src/types/networking.ts': ['types'],
     'src/components/ui/Input.tsx': ['types'],
     'src/components/ui/Separator.tsx': ['types'],
     'src/components/profileSetupReducer.ts': ['types'],

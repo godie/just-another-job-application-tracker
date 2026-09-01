@@ -85,8 +85,8 @@
       "keepLocalDesc": "Keep what's on this device. Cloud data will be overwritten on next sync.",
       "mergeBoth": "Merge Both (Recommended)",
       "mergeBothDesc": "Combine data from both sources. Duplicates are resolved automatically.",
-    "cancel": "Cancel",
-    "close": "Close",
+      "cancel": "Cancel",
+      "close": "Close",
       "notSyncedBanner": "Data not synced — choose how to handle your data",
       "cloudLabel": "Cloud",
       "localLabel": "Local",
@@ -174,7 +174,8 @@
     "insights": "Insights",
     "support": "Support",
     "home": "Home",
-    "backupSync": "Backup & Sync"
+    "backupSync": "Backup & Sync",
+    "networking": "Networking"
   },
   "home": {
     "pipeline": "Application Pipeline",
@@ -845,5 +846,76 @@
     "customFieldsCount_one": "{{count}} custom field",
     "customFieldsCount_other": "{{count}} custom fields",
     "viewPosting": "View posting →"
+  },
+  "networking": {
+    "title": "Networking",
+    "intro": "Track people you meet, log conversations, and follow up with intention. Everything stays on this device until you opt in to cloud sync.",
+    "empty": {
+      "title": "No contacts yet",
+      "description": "A contact represents a person you want to stay in touch with during your job search — recruiters, mentors, peers, and former colleagues.",
+      "cta": "Add contact"
+    },
+    "sections": {
+      "due": "Overdue",
+      "today": "Today",
+      "upcoming": "Upcoming",
+      "none": "No follow-ups"
+    },
+    "contacts": {
+      "formTitle": "New contact",
+      "name": "Name",
+      "nameRequired": "Name is required",
+      "edit": "Edit",
+      "delete": "Delete",
+      "confirmDelete": "Delete this contact and all related activity?",
+      "invalid": "Invalid contact: rejected by validation",
+      "company": "Company",
+      "role": "Role",
+      "email": "Email",
+      "relationshipType": "Relationship",
+      "tags": "Tags (comma separated)",
+      "notes": "Notes",
+      "submit": "Save contact",
+      "cancel": "Cancel",
+      "interactionsFor": "Interactions with {{name}}",
+      "logInteraction": "Log interaction",
+      "noInteractions": "No interactions yet."
+    },
+    "interactions": {
+      "formTitle": "New interaction",
+      "channel": "Channel",
+      "summary": "Summary",
+      "notes": "Notes",
+      "submit": "Save interaction",
+      "cancel": "Cancel"
+    },
+    "followUps": {
+      "addTitle": "Add follow-up",
+      "complete": "Mark complete",
+      "completed": "Completed",
+      "dueLabel": "Due {{date}}"
+    },
+    "links": {
+      "title": "Linked resources",
+      "add": "Link to application or opportunity",
+      "selectResource": "Select resource",
+      "application": "Application",
+      "opportunity": "Opportunity",
+      "submit": "Save link",
+      "cancel": "Cancel",
+      "addCta": "Add link",
+      "empty": "No linked resources yet.",
+      "duplicate": "This contact is already linked to that resource."
+    },
+    "referrals": {
+      "title": "Referrals",
+      "add": "Request referral",
+      "addCta": "Add referral",
+      "selectResource": "Select resource",
+      "submit": "Save referral",
+      "cancel": "Cancel",
+      "empty": "No referrals yet.",
+      "statusLabel": "Status"
+    }
   }
 }
