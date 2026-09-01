@@ -1,3 +1,11 @@
+## [2.7.1] - 2026-09-01
+
+### Security
+- Hardened the production frontend CSP by removing `unsafe-inline` from script policies and explicitly restricting script/style element and attribute sources.
+
+### Dependencies
+- Updated `dompurify` to `3.4.14`, `i18next` to `25.8.1`, and `enhanced-resolve` to `5.24.5`.
+
 ## [2.7.0] - 2026-08-20
 
 ### Added
