@@ -14,7 +14,7 @@ import { Select } from '../ui/Select';
 import { Textarea } from '../ui/Textarea';
 import type { NetworkRelationshipType } from '../../types/networking';
 
-export interface ContactInput {
+interface ContactInput {
   name: string;
   company?: string;
   role?: string;
