@@ -27,6 +27,53 @@ use PDO;
  */
 class ModelMapper
 {
+    /** @var array<string, true> */
+    private const USER_INSERT_COLUMNS = [
+        'email' => true, 'organization_id' => true, 'password_hash' => true,
+        'linkedin_id' => true, 'google_id' => true, 'username' => true,
+        'display_name' => true, 'avatar_url' => true, 'is_public' => true,
+        'bio' => true, 'role' => true, 'is_active' => true,
+    ];
+
+    /** @var array<string, true> */
+    private const APPLICATION_INSERT_COLUMNS = [
+        'id' => true, 'user_id' => true, 'organization_id' => true, 'company' => true,
+        'position' => true, 'status' => true, 'platform' => true, 'location' => true,
+        'work_type' => true, 'hybrid_days' => true, 'salary' => true, 'link' => true,
+        'notes' => true, 'application_date' => true, 'interview_date' => true,
+        'contact_name' => true, 'follow_up_date' => true, 'custom_fields' => true,
+        'is_deleted' => true,
+    ];
+
+    /** @var array<string, true> */
+    private const TIMELINE_INSERT_COLUMNS = [
+        'application_id' => true, 'user_id' => true, 'organization_id' => true,
+        'type' => true, 'custom_type_name' => true, 'date' => true, 'status' => true,
+        'notes' => true, 'interviewer_name' => true,
+    ];
+
+    /** @var array<string, true> */
+    private const OPPORTUNITY_INSERT_COLUMNS = [
+        'id' => true, 'user_id' => true, 'organization_id' => true, 'company' => true,
+        'position' => true, 'link' => true, 'description' => true, 'salary' => true,
+        'location' => true, 'work_type' => true, 'platform' => true, 'posted_date' => true,
+        'notes' => true, 'status' => true, 'is_deleted' => true,
+    ];
+
+    /** @var array<string, true> */
+    private const PREFERENCE_COLUMNS = [
+        'theme' => true, 'language' => true, 'preferred_view' => true, 'page_size' => true,
+        'date_format' => true, 'enabled_fields' => true, 'column_order' => true,
+        'custom_fields' => true, 'custom_interview_events' => true, 'ats_search' => true,
+        'email_scan_months' => true, 'enabled_chatbots' => true,
+    ];
+
+    /** @var array<string, true> */
+    private const ORGANIZATION_INSERT_COLUMNS = [
+        'name' => true, 'slug' => true, 'description' => true, 'settings' => true,
+        'is_active' => true,
+    ];
+
     public function __construct(private readonly PDO $pdo) {}
 
     // ============================================================
@@ -80,7 +127,10 @@ class ModelMapper
      */
     public function createUser(User $user): int
     {
-        $data = $user->toDatabase();
+        $data = $this->restrictColumns($user->toDatabase(), array_keys(self::USER_INSERT_COLUMNS));
+        if ($data === null || $data === []) {
+            throw new \InvalidArgumentException('Invalid user columns.');
+        }
         $columns = implode(", ", array_keys($data));
         $placeholders = implode(
             ", ",
@@ -254,7 +304,10 @@ class ModelMapper
             );
         }
 
-        $data = $application->toDatabase();
+        $data = $this->restrictColumns($application->toDatabase(), array_keys(self::APPLICATION_INSERT_COLUMNS));
+        if ($data === null || $data === []) {
+            throw new \InvalidArgumentException('Invalid application columns.');
+        }
         $columns = implode(", ", array_keys($data));
         $placeholders = implode(
             ", ",
@@ -384,7 +437,10 @@ class ModelMapper
             );
         }
 
-        $data = $event->toDatabase();
+        $data = $this->restrictColumns($event->toDatabase(), array_keys(self::TIMELINE_INSERT_COLUMNS));
+        if ($data === null || $data === []) {
+            throw new \InvalidArgumentException('Invalid timeline event columns.');
+        }
         $columns = implode(", ", array_keys($data));
         $placeholders = implode(
             ", ",
@@ -523,7 +579,10 @@ class ModelMapper
             );
         }
 
-        $data = $opportunity->toArray();
+        $data = $this->restrictColumns($opportunity->toArray(), array_keys(self::OPPORTUNITY_INSERT_COLUMNS));
+        if ($data === null || $data === []) {
+            throw new \InvalidArgumentException('Invalid opportunity columns.');
+        }
         $columns = implode(", ", array_keys($data));
         $placeholders = implode(
             ", ",
@@ -652,9 +711,13 @@ class ModelMapper
 
         if ($stmt->fetch(PDO::FETCH_ASSOC)) {
             // Update
+            $mapped = $this->restrictColumns($mapped, array_keys(self::PREFERENCE_COLUMNS));
+            if ($mapped === null || $mapped === []) {
+                return false;
+            }
             $sets = implode(
                 ", ",
-                array_map(fn($k): string => "$k = :$k", array_keys($mapped)),
+                array_map(fn(string $k): string => "$k = :$k", array_keys($mapped)),
             );
             $mapped["user_id"] = $userId;
 
@@ -666,6 +729,10 @@ class ModelMapper
             $mapped["user_id"] = $userId;
             $mapped["created_at"] = date("Y-m-d H:i:s");
 
+            $mapped = $this->restrictColumns($mapped, array_merge(array_keys(self::PREFERENCE_COLUMNS), ['user_id', 'created_at']));
+            if ($mapped === null) {
+                return false;
+            }
             $columns = implode(", ", array_keys($mapped));
             $placeholders = implode(
                 ", ",
@@ -717,7 +784,10 @@ class ModelMapper
      */
     public function createOrganization(Organization $organization): int
     {
-        $data = $organization->toDatabase();
+        $data = $this->restrictColumns($organization->toDatabase(), array_keys(self::ORGANIZATION_INSERT_COLUMNS));
+        if ($data === null || $data === []) {
+            throw new \InvalidArgumentException('Invalid organization columns.');
+        }
         $columns = implode(", ", array_keys($data));
         $placeholders = implode(
             ", ",
