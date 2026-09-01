@@ -38,3 +38,5 @@ EXPOSE 80
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
     CMD curl -fsS http://localhost/api/hello >/dev/null || exit 1
+
+USER www-data

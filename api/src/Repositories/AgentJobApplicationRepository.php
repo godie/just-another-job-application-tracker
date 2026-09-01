@@ -9,6 +9,35 @@ use PDO;
 
 class AgentJobApplicationRepository
 {
+    /** @var array<string, true> */
+    private const INSERT_COLUMNS = [
+        'user_id' => true,
+        'idempotency_hash' => true,
+        'application_status' => true,
+        'job_title' => true,
+        'company_name' => true,
+        'salary_text' => true,
+        'technologies' => true,
+        'applied_at' => true,
+        'source_url' => true,
+        'location_text' => true,
+        'work_mode' => true,
+        'province' => true,
+        'country' => true,
+        'notes' => true,
+        'external_job_id' => true,
+        'raw_payload' => true,
+        'agent_name' => true,
+    ];
+
+    /** @var array<string, true> */
+    private const SORT_COLUMNS = [
+        'applied_at' => true,
+        'created_at' => true,
+        'company_name' => true,
+        'job_title' => true,
+    ];
+
     private PDO $db;
 
     public function __construct(PDO $db)
@@ -45,6 +74,11 @@ class AgentJobApplicationRepository
     public function create(AgentJobApplication $application): int
     {
         $data = $application->toDatabase();
+        foreach (array_keys($data) as $column) {
+            if (!is_string($column) || !isset(self::INSERT_COLUMNS[$column])) {
+                throw new \InvalidArgumentException('Invalid agent application column.');
+            }
+        }
         $columns = implode(', ', array_keys($data));
         $placeholders = implode(', ', array_map(fn (int|string $k): string => ":$k", array_keys($data)));
 
@@ -121,11 +155,12 @@ class AgentJobApplicationRepository
         $limit = max(1, min(100, (int) ($filters['limit'] ?? 50)));
         $offset = max(0, (int) ($filters['offset'] ?? 0));
 
-        $allowedSortColumns = ['applied_at', 'created_at', 'company_name', 'job_title'];
-        $sortColumn = in_array($filters['sort_by'] ?? '', $allowedSortColumns, true)
-            ? $filters['sort_by']
+        $requestedSort = $filters['sort_by'] ?? '';
+        $sortColumn = is_string($requestedSort) && isset(self::SORT_COLUMNS[$requestedSort])
+            ? $requestedSort
             : 'created_at';
-        $sortOrder = strtoupper($filters['sort_order'] ?? 'DESC') === 'ASC' ? 'ASC' : 'DESC';
+        $requestedSortOrder = $filters['sort_order'] ?? 'DESC';
+        $sortOrder = is_string($requestedSortOrder) && strtoupper($requestedSortOrder) === 'ASC' ? 'ASC' : 'DESC';
 
         $sql = "SELECT * FROM agent_job_applications {$whereSql} ORDER BY {$sortColumn} {$sortOrder} LIMIT :limit OFFSET :offset";
         $stmt = $this->db->prepare($sql);

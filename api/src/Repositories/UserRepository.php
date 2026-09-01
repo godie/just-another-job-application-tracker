@@ -9,6 +9,22 @@ use PDO;
 
 class UserRepository
 {
+    /** @var array<string, true> */
+    private const INSERT_COLUMNS = [
+        'email' => true,
+        'organization_id' => true,
+        'password_hash' => true,
+        'linkedin_id' => true,
+        'google_id' => true,
+        'username' => true,
+        'display_name' => true,
+        'avatar_url' => true,
+        'is_public' => true,
+        'bio' => true,
+        'role' => true,
+        'is_active' => true,
+    ];
+
     private PDO $db;
 
     public function __construct(PDO $db)
@@ -51,6 +67,11 @@ class UserRepository
     public function create(User $user): int
     {
         $data = $user->toDatabase();
+        foreach (array_keys($data) as $column) {
+            if (!is_string($column) || !isset(self::INSERT_COLUMNS[$column])) {
+                throw new \InvalidArgumentException('Invalid user column.');
+            }
+        }
         $columns = implode(', ', array_keys($data));
         $placeholders = implode(', ', array_map(fn(int|string $k): string => ":$k", array_keys($data)));
 

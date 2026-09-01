@@ -17,6 +17,15 @@ use PDO;
  */
 final class NetworkingRepository
 {
+    /** @var array<string, true> */
+    private const TABLES = [
+        'network_referrals' => true,
+        'network_contact_links' => true,
+        'network_follow_up_tasks' => true,
+        'network_interactions' => true,
+        'network_contacts' => true,
+    ];
+
     public function __construct(private readonly PDO $db)
     {
     }
@@ -123,6 +132,10 @@ final class NetworkingRepository
 
     private function deleteByOwner(string $table, int $ownerUserId): void
     {
+        if (!isset(self::TABLES[$table])) {
+            throw new \InvalidArgumentException('Unknown networking table.');
+        }
+
         $stmt = $this->db->prepare("DELETE FROM {$table} WHERE owner_user_id = :owner");
         $stmt->execute(['owner' => $ownerUserId]);
     }
