@@ -105,21 +105,10 @@
       `document.documentElement.dataset.cspNonce` and add it to the
       dynamically-injected JSON-LD script tag.
 
-      Why a HYBRID (nonce in meta tag + `'unsafe-inline'` in `.htaccess`):
-      Per W3C CSP3, when MULTIPLE policies are present (HTTP header +
-      `<meta>` tag), the browser enforces the INTERSECTION (AND-logic) —
-      a script must pass ALL policies to execute. If `.htaccess` had
-      hash-only `script-src` (no `'unsafe-inline'`, no `'nonce-*'`), the
-      runtime JSON-LD injection in `SEOManager.ts` would pass the meta
-      tag (has nonce) but FAIL `.htaccess` (no hash match for dynamic
-      content) — the JSON-LD would be BLOCKED, silently breaking Google
-      rich results (a real SEO regression). The hybrid keeps
-      `'unsafe-inline'` in `.htaccess` as a permissive fallback; the
-      meta tag's nonce requirement is the binding constraint because
-      it's the more restrictive policy in the intersection. An XSS
-      payload without the per-build nonce is BLOCKED by the meta tag
-      regardless of `'unsafe-inline'` in the HTTP header. Net effect:
-      strict nonce-based effective policy + no JSON-LD regression.
+      The production Apache policy uses the same nonce-based script
+      requirement as this meta tag and does not allow inline JavaScript.
+      The Vite dev-server policy is intentionally more permissive for
+      HMR/React Refresh and is never shipped as the production policy.
 
       Why the Vite dev server still uses `'unsafe-inline'` (in
       `vite.config.ts` `securityHeaders`): Vite HMR + React Refresh
@@ -137,12 +126,17 @@
       https://www.googleapis.com https://gmail.googleapis.com
       https://generativelanguage.googleapis.com;` is required for the
       Google sign-in flow + the Google Sheets sync feature (XHR/fetch
-      to those endpoints). The directive list stops at
+      to those endpoints).
+
+      Explicit `script-src-elem`, `script-src-attr`, `style-src-elem`, and
+      `style-src-attr` directives prevent newer directive types from falling
+      back to an unexpectedly permissive policy. The directive list stops at
       `manifest-src 'self';`; no `frame-ancestors` directive is set here
       (deliberate omission — must come from an HTTP response header, see
       v2.6.30 above).
+
     -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://accounts.google.com https://*.gstatic.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://jajat.godieboy.com https://accounts.google.com https://oauth2.googleapis.com https://www.googleapis.com https://gmail.googleapis.com https://generativelanguage.googleapis.com; base-uri 'self'; form-action 'self'; object-src 'none'; frame-src https://accounts.google.com; worker-src 'self'; manifest-src 'self';" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://accounts.google.com https://*.gstatic.com; script-src-elem 'self' 'unsafe-inline' https://accounts.google.com https://*.gstatic.com; script-src-attr 'none'; style-src 'self' 'unsafe-inline'; style-src-elem 'self' 'unsafe-inline'; style-src-attr 'none'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://jajat.godieboy.com https://accounts.google.com https://oauth2.googleapis.com https://www.googleapis.com https://gmail.googleapis.com https://generativelanguage.googleapis.com; base-uri 'self'; form-action 'self'; object-src 'none'; frame-src https://accounts.google.com; worker-src 'self'; manifest-src 'self';" />
     <title>JAJAT</title>
     <script>
       // Apply theme before React mounts to prevent flash
