@@ -109,6 +109,12 @@ class ModelMapper
             return false;
         }
 
+        foreach (array_keys($data) as $column) {
+            if (!preg_match('/^[a-zA-Z0-9_]+$/', $column)) {
+                return false;
+            }
+        }
+
         $sets = implode(
             ", ",
             array_map(fn(string $column): string => "$column = :$column", array_keys($data)),
