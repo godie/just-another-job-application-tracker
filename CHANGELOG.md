@@ -1,3 +1,12 @@
+## [2.7.2] - 2026-09-02
+
+### Fixed
+- Fixed the application preview modal's Edit action so it preserves the selected `jobId` when opening the full job details page instead of showing "Job Not Found".
+
+### Validation
+- Added a regression test covering the modal Edit navigation URL.
+- Full frontend test suite, ESLint, production build, and React Doctor pass.
+
 ## [2.7.1] - 2026-09-01
 
 ### Security
