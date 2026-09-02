@@ -307,16 +307,19 @@ const JobPreviewPanel: React.FC<JobPreviewPanelProps> = ({
     return () => cancelAnimationFrame(frameId);
   }, [application]);
 
+  const updateFullDetailsUrl = useCallback(() => {
+    if (!application || typeof window === 'undefined') return;
+    const url = new URL(window.location.href);
+    url.searchParams.set('page', 'job-details');
+    url.searchParams.set('jobId', application.id);
+    window.history.pushState({ page: 'job-details' }, '', url.toString());
+  }, [application]);
+
   const handleOpenFullDetails = useCallback(() => {
     if (!application) return;
-    if (typeof window !== 'undefined') {
-      const url = new URL(window.location.href);
-      url.searchParams.set('page', 'job-details');
-      url.searchParams.set('jobId', application.id);
-      window.history.pushState({ page: 'job-details' }, '', url.toString());
-    }
+    updateFullDetailsUrl();
     onNavigate?.('job-details');
-  }, [application, onNavigate]);
+  }, [application, onNavigate, updateFullDetailsUrl]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -338,8 +341,9 @@ const JobPreviewPanel: React.FC<JobPreviewPanelProps> = ({
 
   const handleEdit = () => {
     if (!application) return;
-    // Inline editing lives on JobDetailsPage now — navigate there (App.tsx syncs URL
-    // from currentPage via its own useEffect, so we don't pushState here).
+    // Inline editing lives on JobDetailsPage now; preserve the selected application
+    // ID so the destination can load the record instead of rendering not-found.
+    updateFullDetailsUrl();
     onClose();
     onNavigate?.('job-details');
   };

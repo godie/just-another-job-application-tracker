@@ -224,9 +224,14 @@ describe('JobPreviewPanel', () => {
     // JobPreviewPanel's unit contract is just to call onNavigate.
   });
 
-  it('clicking Edit navigates to full details and closes the preview', () => {
+  it('clicking Edit preserves the application ID while navigating to full details', () => {
+    window.history.replaceState({}, '', '/?page=applications');
     renderPanel('app-1');
+
     fireEvent.click(screen.getByTestId('preview-edit'));
+
+    expect(window.location.search).toContain('page=job-details');
+    expect(window.location.search).toContain('jobId=app-1');
     expect(onNavigate).toHaveBeenCalledWith('job-details');
     expect(onClose).toHaveBeenCalledTimes(1);
   });
