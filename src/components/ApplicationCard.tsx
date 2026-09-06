@@ -14,7 +14,6 @@ interface ApplicationCardProps {
   item: ApplicationWithMetadata;
   otherColumns: TableColumn[];
   onSelectJob: (application: JobApplication) => void;
-  onEdit: (application: JobApplication) => void;
   onDeleteRequest: (application: JobApplication) => void;
 }
 

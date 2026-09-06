@@ -42,7 +42,6 @@ describe('application keyboard access', () => {
         item={application}
         otherColumns={[]}
         onSelectJob={onSelectJob}
-        onEdit={vi.fn()}
         onDeleteRequest={vi.fn()}
       />,
     );
