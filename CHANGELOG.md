@@ -3,6 +3,9 @@
 ### Changed
 - Removed unused `onEdit` prop from `ApplicationCardProps` in `ApplicationCard.tsx`, updating callsites in `ApplicationTable.tsx` and test suites to simplify component contracts.
 
+### Dependencies
+- Pinned transitive `toml` to `5.0.0` through npm overrides to clear the CVE Scan and NPM Audit vulnerability findings.
+
 ## [2.7.2] - 2026-09-02
 
 ### Fixed
