@@ -68,7 +68,6 @@ const ApplicationTable: React.FC<ApplicationTableProps> = ({ columns, data, onSe
               item={item}
               otherColumns={otherColumns}
               onSelectJob={onSelectJob}
-              onEdit={onEdit}
               onDeleteRequest={handleDeleteRequest}
             />
           ))

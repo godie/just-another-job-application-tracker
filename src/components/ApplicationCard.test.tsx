@@ -36,7 +36,6 @@ const mockApplication: ApplicationWithMetadata = {
 
 describe('ApplicationCard', () => {
   const mockOnSelectJob = vi.fn();
-  const mockOnEdit = vi.fn();
   const mockOnDeleteRequest = vi.fn();
   const otherColumns: TableColumn[] = [
     { id: 'salary', label: 'Salary' },
@@ -54,7 +53,6 @@ describe('ApplicationCard', () => {
         item={mockApplication}
         otherColumns={otherColumns}
         onSelectJob={mockOnSelectJob}
-        onEdit={mockOnEdit}
         onDeleteRequest={mockOnDeleteRequest}
       />
     );
@@ -69,7 +67,6 @@ describe('ApplicationCard', () => {
         item={mockApplication}
         otherColumns={otherColumns}
         onSelectJob={mockOnSelectJob}
-        onEdit={mockOnEdit}
         onDeleteRequest={mockOnDeleteRequest}
       />
     );
@@ -83,7 +80,6 @@ describe('ApplicationCard', () => {
         item={mockApplication}
         otherColumns={otherColumns}
         onSelectJob={mockOnSelectJob}
-        onEdit={mockOnEdit}
         onDeleteRequest={mockOnDeleteRequest}
       />
     );
@@ -101,7 +97,6 @@ describe('ApplicationCard', () => {
         item={mockApplication}
         otherColumns={otherColumns}
         onSelectJob={mockOnSelectJob}
-        onEdit={mockOnEdit}
         onDeleteRequest={mockOnDeleteRequest}
       />
     );
@@ -119,7 +114,6 @@ describe('ApplicationCard', () => {
         item={mockApplication}
         otherColumns={otherColumns}
         onSelectJob={mockOnSelectJob}
-        onEdit={mockOnEdit}
         onDeleteRequest={mockOnDeleteRequest}
       />
     );
@@ -146,7 +140,6 @@ describe('ApplicationCard', () => {
         item={emptyApp}
         otherColumns={otherColumns}
         onSelectJob={mockOnSelectJob}
-        onEdit={mockOnEdit}
         onDeleteRequest={mockOnDeleteRequest}
       />
     );
@@ -162,7 +155,6 @@ describe('ApplicationCard', () => {
         item={mockApplication}
         otherColumns={otherColumns}
         onSelectJob={mockOnSelectJob}
-        onEdit={mockOnEdit}
         onDeleteRequest={mockOnDeleteRequest}
       />
     );

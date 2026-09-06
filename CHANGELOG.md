@@ -1,3 +1,8 @@
+## [2.7.3] - 2026-09-03
+
+### Changed
+- Removed unused `onEdit` prop from `ApplicationCardProps` in `ApplicationCard.tsx`, updating callsites in `ApplicationTable.tsx` and test suites to simplify component contracts.
+
 ## [2.7.2] - 2026-09-02
 
 ### Fixed
