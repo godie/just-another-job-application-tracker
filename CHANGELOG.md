@@ -1,3 +1,8 @@
+## [2.7.3] - 2026-09-02
+
+### Changed
+- Refactored `InsightsPage.tsx` by extracting the metrics summary UI section into a dedicated `InsightsMetricsSummary` component.
+
 ## [2.7.2] - 2026-09-02
 
 ### Fixed
