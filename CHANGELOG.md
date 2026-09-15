@@ -1,3 +1,19 @@
+## [2.7.3] - 2026-09-15
+
+### Security
+- Hardened Google ID-token handling in `api/src/Controllers/AppAuthController.php` by requiring a well-formed RS256 JWT with a non-empty signature, rejecting `none` and attacker-controlled `jwk`/`jku`/`x5u` headers, and validating Google's issuer, audience, expiration, subject, and verified-email claims after Google's remote signature verification.
+
+### Fixed
+- Synced the `LogfireTelemetry` `SERVICE_VERSION` / `INSTRUMENTATION_VERSION` constants from `2.7.0` to `2.7.3` (missed by the 2.7.1 / 2.7.2 version bumps).
+
+### Validation
+- Added API regression coverage for unsigned, malformed, self-keyed, key-locator, missing-signature, issuer, audience, expiry, and unverified-email token cases.
+- Full PHP API suite passes: 108 tests and 330 assertions (31 tests / 127 assertions in `AppAuthControllerTest`); PHPStan level 6 clean.
+- Frontend suite passes on the refreshed dependencies below: 986 Vitest tests, ESLint, production build, and knip.
+
+### Dependencies
+- Cleared the registry advisories that were failing this PR's `NPM Audit` and `CVE Scan` checks: bumped `vitest` / `@vitest/coverage-v8` (and their transitive `@vitest/mocker`) from `4.1.9` to `4.1.11`, and refresh-resolved `js-yaml` `4.3.1 → 4.3.2`, `smol-toml` `1.7.0 → 1.8.0`, and `toml` `4.1.2 → 4.3.0` in-range. `npm audit` and `cve-lite . --json --usage --fail-on low` now both report 0 findings.
+
 ## [2.7.2] - 2026-09-02
 
 ### Fixed
