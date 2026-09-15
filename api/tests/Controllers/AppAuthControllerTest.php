@@ -45,6 +45,16 @@ class TestableAppAuthController extends AppAuthController
     {
         return $this->mockLinkedInUser;
     }
+
+    public function validateGoogleTokenEnvelopeForTest(string $token): array
+    {
+        return $this->validateGoogleTokenEnvelope($token);
+    }
+
+    public function validateGoogleTokenClaimsForTest(array $claims, string $clientId): array
+    {
+        return $this->validateGoogleTokenClaims($claims, $clientId);
+    }
 }
 
 class AppAuthControllerTest extends TestCase
@@ -236,6 +246,73 @@ class AppAuthControllerTest extends TestCase
         $result2 = $this->controller->google();
         $this->assertTrue($result2['success']);
         $this->assertEquals($existingUser->id, $result2['user']['id']);
+    }
+
+    public function testGoogleTokenRejectsUnsignedNoneAlgorithm(): void
+    {
+        $header = rtrim(strtr(base64_encode(json_encode(['alg' => 'none', 'typ' => 'JWT'], JSON_THROW_ON_ERROR)), '+/', '-_'), '=');
+        $payload = rtrim(strtr(base64_encode(json_encode(['sub' => 'attacker'], JSON_THROW_ON_ERROR)), '+/', '-_'), '=');
+
+        $result = $this->controller->validateGoogleTokenEnvelopeForTest($header . '.' . $payload . '.');
+
+        $this->assertSame('Unsupported Google token algorithm', $result['error']);
+    }
+
+    public function testGoogleTokenRejectsSelfSignedJwkHeader(): void
+    {
+        $header = rtrim(strtr(base64_encode(json_encode(['alg' => 'RS256', 'typ' => 'JWT', 'jwk' => ['kty' => 'RSA', 'n' => 'attacker', 'e' => 'AQAB']], JSON_THROW_ON_ERROR)), '+/', '-_'), '=');
+        $payload = rtrim(strtr(base64_encode(json_encode(['sub' => 'attacker'], JSON_THROW_ON_ERROR)), '+/', '-_'), '=');
+
+        $result = $this->controller->validateGoogleTokenEnvelopeForTest($header . '.' . $payload . '.signature');
+
+        $this->assertSame('Untrusted Google token key header', $result['error']);
+    }
+
+    public function testGoogleTokenRejectsMalformedEnvelope(): void
+    {
+        $result = $this->controller->validateGoogleTokenEnvelopeForTest('not-a-jwt');
+
+        $this->assertSame('Malformed Google ID token', $result['error']);
+    }
+
+    public function testGoogleTokenRejectsMissingRs256Signature(): void
+    {
+        $header = rtrim(strtr(base64_encode(json_encode(['alg' => 'RS256', 'typ' => 'JWT'], JSON_THROW_ON_ERROR)), '+/', '-_'), '=');
+        $payload = rtrim(strtr(base64_encode(json_encode(['sub' => 'attacker'], JSON_THROW_ON_ERROR)), '+/', '-_'), '=');
+
+        $result = $this->controller->validateGoogleTokenEnvelopeForTest($header . '.' . $payload . '.');
+
+        $this->assertSame('Malformed Google ID token', $result['error']);
+    }
+
+    public function testGoogleTokenRejectsUntrustedKeyLocatorHeaders(): void
+    {
+        foreach (['jku' => 'https://attacker.example/jwks.json', 'x5u' => 'https://attacker.example/cert.pem'] as $key => $value) {
+            $header = rtrim(strtr(base64_encode(json_encode(['alg' => 'RS256', 'typ' => 'JWT', $key => $value], JSON_THROW_ON_ERROR)), '+/', '-_'), '=');
+            $payload = rtrim(strtr(base64_encode(json_encode(['sub' => 'attacker'], JSON_THROW_ON_ERROR)), '+/', '-_'), '=');
+
+            $result = $this->controller->validateGoogleTokenEnvelopeForTest($header . '.' . $payload . '.signature');
+
+            $this->assertSame('Untrusted Google token key header', $result['error']);
+        }
+    }
+
+    public function testGoogleTokenClaimsRequireGoogleIssuerAndUnexpiredAudienceBoundToken(): void
+    {
+        $validClaims = [
+            'iss' => 'https://accounts.google.com',
+            'aud' => 'test-client-id',
+            'exp' => time() + 300,
+            'sub' => 'google-user',
+            'email' => 'user@example.com',
+            'email_verified' => true,
+        ];
+
+        $this->assertSame('google-user', $this->controller->validateGoogleTokenClaimsForTest($validClaims, 'test-client-id')['sub']);
+        $this->assertSame('Token was not issued by Google', $this->controller->validateGoogleTokenClaimsForTest([...$validClaims, 'iss' => 'https://attacker.example'], 'test-client-id')['error']);
+        $this->assertSame('Token was not intended for this application', $this->controller->validateGoogleTokenClaimsForTest([...$validClaims, 'aud' => 'another-client-id'], 'test-client-id')['error']);
+        $this->assertSame('Google token has expired', $this->controller->validateGoogleTokenClaimsForTest([...$validClaims, 'exp' => time() - 1], 'test-client-id')['error']);
+        $this->assertSame('Google account email is not verified', $this->controller->validateGoogleTokenClaimsForTest([...$validClaims, 'email_verified' => false], 'test-client-id')['error']);
     }
 
     public function testGoogleLoginReturnsErrorForInvalidToken(): void

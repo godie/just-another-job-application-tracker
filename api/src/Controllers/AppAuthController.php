@@ -504,6 +504,11 @@ class AppAuthController
 
     protected function verifyGoogleToken(string $token): array
     {
+        $envelope = $this->validateGoogleTokenEnvelope($token);
+        if (isset($envelope['error'])) {
+            return $envelope;
+        }
+
         $clientId = $this->config['google_client_id'] ?? '';
         if ($clientId === '') {
             return ['error' => 'Google OAuth not configured'];
@@ -531,13 +536,78 @@ class AppAuthController
             return ['error' => $decoded['error_description'] ?? 'Invalid Google token'];
         }
 
+        return $this->validateGoogleTokenClaims($decoded, $clientId);
+    }
+
+    /**
+     * Validate the untrusted JWT envelope before sending it to Google's verifier.
+     * Google ID tokens must use RS256 and must not provide their own verification key.
+     *
+     * @return array{header?: array<string, mixed>, payload?: array<string, mixed>, error?: string}
+     */
+    protected function validateGoogleTokenEnvelope(string $token): array
+    {
+        $parts = explode('.', trim($token));
+        if (count($parts) !== 3 || $parts[0] === '' || $parts[1] === '') {
+            return ['error' => 'Malformed Google ID token'];
+        }
+
+        $header = $this->decodeJwtJsonPart($parts[0]);
+        $payload = $this->decodeJwtJsonPart($parts[1]);
+        if ($header === null || $payload === null) {
+            return ['error' => 'Malformed Google ID token'];
+        }
+
+        if (($header['alg'] ?? null) !== 'RS256') {
+            return ['error' => 'Unsupported Google token algorithm'];
+        }
+
+        foreach (['jwk', 'jku', 'x5u'] as $keySource) {
+            if (array_key_exists($keySource, $header)) {
+                return ['error' => 'Untrusted Google token key header'];
+            }
+        }
+
+        if ($parts[2] === '' || $this->decodeJwtPart($parts[2]) === null) {
+            return ['error' => 'Malformed Google ID token'];
+        }
+
+        return [
+            'header' => $header,
+            'payload' => $payload,
+        ];
+    }
+
+    /**
+     * Validate identity claims returned by Google's tokeninfo verifier.
+     * The remote verifier is the signature authority; these checks bind the
+     * verified token to this client, Google, a live session, and a verified email.
+     */
+    protected function validateGoogleTokenClaims(array $decoded, string $clientId): array
+    {
+        $issuer = $decoded['iss'] ?? null;
+        if ($issuer !== 'https://accounts.google.com' && $issuer !== 'accounts.google.com') {
+            return ['error' => 'Token was not issued by Google'];
+        }
+
         if (($decoded['aud'] ?? '') !== $clientId) {
             return ['error' => 'Token was not intended for this application'];
         }
 
+        $expiration = $decoded['exp'] ?? null;
+        $expirationIsInteger = is_int($expiration) ||
+            (is_string($expiration) && ctype_digit($expiration));
+        if (!$expirationIsInteger || (int) $expiration <= time()) {
+            return ['error' => 'Google token has expired'];
+        }
+
+        $emailVerified = ($decoded['email_verified'] ?? null) === true ||
+            ($decoded['email_verified'] ?? null) === 'true' ||
+            ($decoded['verified_email'] ?? null) === true ||
+            ($decoded['verified_email'] ?? null) === 'true';
         if (!is_string($decoded['sub'] ?? null) || $decoded['sub'] === '' ||
             !is_string($decoded['email'] ?? null) || $decoded['email'] === '' ||
-            (($decoded['email_verified'] ?? 'false') !== 'true' && ($decoded['email_verified'] ?? false) !== true)) {
+            !$emailVerified) {
             return ['error' => 'Google account email is not verified'];
         }
 
@@ -547,6 +617,43 @@ class AppAuthController
             'name' => $decoded['name'] ?? null,
             'picture' => $decoded['picture'] ?? null,
         ];
+    }
+
+    /**
+     * @return array<string, mixed>|null
+     */
+    private function decodeJwtJsonPart(string $part): ?array
+    {
+        $decoded = $this->decodeJwtPart($part);
+        if ($decoded === null) {
+            return null;
+        }
+
+        try {
+            $json = json_decode($decoded, true, 16, JSON_THROW_ON_ERROR);
+        } catch (\JsonException) {
+            return null;
+        }
+
+        return is_array($json) ? $json : null;
+    }
+
+    private function decodeJwtPart(string $part): ?string
+    {
+        if ($part === '' || !preg_match('/^[A-Za-z0-9_-]+$/', $part)) {
+            return null;
+        }
+
+        $padding = strlen($part) % 4;
+        if ($padding === 1) {
+            return null;
+        }
+        if ($padding > 0) {
+            $part .= str_repeat('=', 4 - $padding);
+        }
+
+        $decoded = base64_decode(strtr($part, '-_', '+/'), true);
+        return $decoded === false ? null : $decoded;
     }
 
     protected function exchangeLinkedInCodeForToken(string $code, string $redirectUri): array
