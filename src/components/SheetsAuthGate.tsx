@@ -51,9 +51,10 @@ export const SheetsAuthGate: React.FC<SheetsAuthGateProps> = ({
         <GoogleAuthCard
           title={t('sheets.googleSessionExpired')}
           description={t('sheets.googleSessionExpiredDesc')}
-          buttonLabel={t('settings.cloud.linkGoogle')}
+          buttonLabel={t('settings.cloud.reconnectGoogle')}
           onAction={onTokenCheck}
           variant="warning"
+          purpose="data"
           className="mb-4"
         />
       );

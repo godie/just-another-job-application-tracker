@@ -4,13 +4,19 @@ import { useGoogleLogin } from '@react-oauth/google';
 
 import { useAuthStore } from '../stores/authStore';
 import { useAlert } from './AlertProvider';
-import { linkGoogleAccount } from '../utils/api';
+import { linkGoogleAccount, setAuthCookieWithCode } from '../utils/api';
+
+const GOOGLE_DATA_SCOPES =
+  'https://www.googleapis.com/auth/gmail.readonly https://www.googleapis.com/auth/spreadsheets';
+
+export type GoogleConnectPurpose = 'identity' | 'data';
 
 interface ConnectGoogleButtonProps {
   label?: string;
   className?: string;
   onSuccess?: () => void;
   onError?: (error: string) => void;
+  purpose?: GoogleConnectPurpose;
 }
 
 export const ConnectGoogleButton: React.FC<ConnectGoogleButtonProps> = ({
@@ -18,21 +24,35 @@ export const ConnectGoogleButton: React.FC<ConnectGoogleButtonProps> = ({
   className,
   onSuccess,
   onError,
+  purpose = 'identity',
 }) => {
   const { t } = useTranslation();
   const { fetchMe } = useAuthStore();
   const { showSuccess, showError } = useAlert();
   const [isLinking, setIsLinking] = useState(false);
+  const isDataAccess = purpose === 'data';
 
   const googleLogin = useGoogleLogin({
     flow: 'auth-code',
+    scope: isDataAccess ? GOOGLE_DATA_SCOPES : '',
     onSuccess: async (codeResponse) => {
       setIsLinking(true);
       try {
-        const data = await linkGoogleAccount(codeResponse.code, window.location.origin);
+        const data = isDataAccess
+          ? await setAuthCookieWithCode(codeResponse.code, window.location.origin)
+          : await linkGoogleAccount(codeResponse.code, window.location.origin);
+
         if (data.success) {
-          await fetchMe();
-          showSuccess(t('settings.cloud.googleLinkedSuccess'));
+          if (!isDataAccess) {
+            await fetchMe();
+          }
+          showSuccess(
+            t(
+              isDataAccess
+                ? 'settings.cloud.googleAccessGranted'
+                : 'settings.cloud.googleLinkedSuccess'
+            )
+          );
           onSuccess?.();
         } else {
           const errorMsg = data.error || t('settings.cloud.googleLinkFailed');

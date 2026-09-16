@@ -67,8 +67,8 @@ return [
     'cookie_expiry_seconds' => 3600,
     'refresh_cookie_name' => 'google_refresh_token',
     'refresh_cookie_days' => 30,
-    'google_client_id' => getenv('GOOGLE_CLIENT_ID') ?: '__VITE_GOOGLE_CLIENT_ID__',
-    'google_client_secret' => getenv('GOOGLE_CLIENT_SECRET') ?: '__VITE_GOOGLE_CLIENT_SECRET__',
+    'google_client_id' => getenv('GOOGLE_CLIENT_ID') ?: '',
+    'google_client_secret' => getenv('GOOGLE_CLIENT_SECRET') ?: '',
     'logfire' => [
         'token' => getenv('LOGFIRE_TOKEN') ?: '',
         'service_name' => getenv('OTEL_SERVICE_NAME') ?: 'overphp-api',
