@@ -1,5 +1,13 @@
+# CSP: `cspNoncePlugin()` (vite.config.ts) injects the per-build
+# `'nonce-<build>'` into `script-src`/`script-src-elem` when it writes
+# `dist/.htaccess` — the same nonce the meta tag uses. Both policies must
+# allow the app's inline scripts, because they are enforced as an
+# intersection; without the nonce this header blocked them (theme
+# pre-mount IIFE + runtime JSON-LD). Style directives keep
+# `'unsafe-inline'` on purpose: Google's GSI client and Radix both inject
+# inline stylesheets without a nonce we can control (see index.html).
 <IfModule mod_headers.c>
-    Header set Content-Security-Policy "default-src 'self'; script-src 'self' https://accounts.google.com https://*.gstatic.com; script-src-elem 'self' https://accounts.google.com https://*.gstatic.com; script-src-attr 'none'; style-src 'self' 'unsafe-inline'; style-src-elem 'self' 'unsafe-inline'; style-src-attr 'none'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://jajat.godieboy.com https://accounts.google.com https://oauth2.googleapis.com https://www.googleapis.com https://gmail.googleapis.com https://generativelanguage.googleapis.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'; frame-src https://accounts.google.com; worker-src 'self'; manifest-src 'self';"
+    Header set Content-Security-Policy "default-src 'self'; script-src 'self' https://accounts.google.com https://*.gstatic.com; script-src-elem 'self' https://accounts.google.com https://*.gstatic.com; script-src-attr 'none'; style-src 'self' 'unsafe-inline'; style-src-elem 'self' 'unsafe-inline'; style-src-attr 'none'; img-src 'self' data: https://godieboy.com; font-src 'self' data:; connect-src 'self' https://jajat.godieboy.com https://accounts.google.com https://oauth2.googleapis.com https://www.googleapis.com https://gmail.googleapis.com https://generativelanguage.googleapis.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'; frame-src https://accounts.google.com; worker-src 'self'; manifest-src 'self';"
     Header set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
     Header set X-Content-Type-Options "nosniff"
     Header set X-Frame-Options "DENY"

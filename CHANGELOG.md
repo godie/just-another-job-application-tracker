@@ -1,3 +1,20 @@
+## [2.7.6] - 2026-09-16
+
+### Security
+- Tightened the production CSP so no policy allows inline JavaScript. `cspNoncePlugin()` now resolves `script-src-elem` as well (it only handled `script-src`, and `script-src-elem` overrides it for `<script>` elements, so the nonce tightening was effectively bypassed) and injects the same per-build nonce into the generated `dist/.htaccess`. Both policies are enforced as an intersection, so a policy carrying the nonce without the other carrying it blocks inline scripts — it already did, which is why the pre-mount theme IIFE and the runtime JSON-LD injected by `SEOManager` were being blocked in production.
+- Narrowed `img-src` from `'self' data: https:` to `'self' data: https://godieboy.com` in both the meta tag and the Apache header. The app renders no external `<img>`; the previous wildcard allowed images from any origin.
+- Dropped `'unsafe-inline'` from the API's `style-src` (`api/src/Core/Security.php`). The API serves JSON, never stylesheets, so the allowance had no legitimate consumer.
+- Frontend `style-src`/`style-src-elem` keep `'unsafe-inline'` **deliberately** (risk accepted, documented in `index.html`, `public/.htaccess` and the plugin): Google's GSI client injects an inline stylesheet with no nonce, and Radix injects scroll-lock styles through `react-style-singleton`/`get-nonce`, which only understands webpack's `__webpack_nonce__`. Neither is patchable from this repo, and pinning a SHA-256 of GSI's CSS would break on Google's next release. `style-src-attr 'none'` still blocks `style=""` attributes, which is the vector that matters for injected markup.
+
+### Fixed
+- `/assets/` no longer exposes an Apache directory listing: the build writes a sentinel `dist/assets/index.html`, which Apache serves instead of the autoindex. Chosen over `Options -Indexes` because that directive returns 500 for the whole site on a vhost that does not grant `AllowOverride Options`.
+- Production inline scripts work again (see Security): the header layer now carries the same nonce as the meta tag, so the theme pre-mount IIFE applies the theme before React mounts and the JSON-LD structured data reaches crawlers.
+
+### Validation
+- Verified in a real browser (Playwright chromium) serving `dist/` with the CSP parsed out of `dist/.htaccess` (i.e. the same intersection a browser sees in production): zero CSP console violations, the theme script runs, and the JSON-LD script is injected with the policy nonce.
+- `src/utils/cspConfig.test.ts` guard still passes — the tracked `public/.htaccess` keeps no `'unsafe-inline'` in its script directives (the plugin injects the nonce into the build output).
+- Full frontend suite passes: 991 Vitest tests / 97 files (`LANG=en_US.UTF-8`), ESLint, production build and `knip` clean. PHP: 108 tests / 330 assertions and PHPStan clean; secret scan and the 2.7.6 orphan sweep clean.
+
 ## [2.7.5] - 2026-09-16
 
 ### Fixed

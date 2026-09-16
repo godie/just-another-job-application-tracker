@@ -5,6 +5,7 @@ import tailwindcss from '@tailwindcss/vite'
 import { VitePWA } from 'vite-plugin-pwa'
 import path from 'path'
 import crypto from 'node:crypto'
+import fs from 'node:fs'
 
 /**
  * v2.6.35 CSP nonce plugin.
@@ -13,9 +14,15 @@ import crypto from 'node:crypto'
  *   1. Adds `data-csp-nonce="<value>"` to `<html>` so runtime code
  *      (`SEOManager.ts`) can read it and add it to dynamically-injected
  *      inline scripts (e.g. JSON-LD).
- *   2. Replaces `'unsafe-inline'` in the meta tag's `script-src` with
- *      `'nonce-<value>'`, removing the loose source for production.
- *   3. Adds `nonce="<value>"` to the 2 static inline scripts in
+ *   2. Production only: resolves the CSP markers in the meta tag —
+ *      `'unsafe-inline'` → `'nonce-<value>'` for `script-src` and
+ *      `script-src-elem`, dropped from `style-src`/`style-src-elem`.
+ *   3. Production only: applies the same resolution to `dist/.htaccess`
+ *      so the HTTP-header policy carries the same nonce (otherwise the
+ *      two policies intersect to "block" for the nonce'd inline scripts).
+ *   4. Production only: writes a sentinel `dist/assets/index.html` so
+ *      `/assets/` cannot be directory-listed.
+ *   5. Adds `nonce="<value>"` to the 2 static inline scripts in
  *      `index.html` (theme-pre-mount IIFE + Speculation Rules JSON).
  *
  * Why this exists: the runtime JSON-LD injection in `SEOManager.ts`
@@ -37,12 +44,25 @@ import crypto from 'node:crypto'
  * for HMR compatibility.
  */
 function cspNoncePlugin(): import('vite').Plugin {
+  let isBuild = false
+  let buildNonce = ''
+
   return {
     name: 'csp-nonce',
+    configResolved(config) {
+      isBuild = config.command === 'build'
+    },
+    buildStart() {
+      if (isBuild) {
+        buildNonce = crypto.randomBytes(16).toString('base64')
+      }
+    },
     transformIndexHtml: {
       order: 'pre',
       handler(html) {
-        const nonce = crypto.randomBytes(16).toString('base64')
+        const nonce = isBuild
+          ? buildNonce
+          : crypto.randomBytes(16).toString('base64')
 
         // 1. Add nonce to <html> as data-csp-nonce (so runtime can read it).
         //    Inject right after `<html ` so the attribute is on the same
@@ -52,29 +72,16 @@ function cspNoncePlugin(): import('vite').Plugin {
           `<html data-csp-nonce="${nonce}" `,
         )
 
-        // 2. Replace 'unsafe-inline' in the meta tag's script-src with the
-        //    nonce. The meta tag's script-src value is parsed as a single
-        //    regex match on the full content attribute, then the
-        //    script-src portion is rewritten to swap 'unsafe-inline' for
-        //    'nonce-<value>'. Other directives are preserved verbatim.
+        // 2. Production only: resolve the CSP markers in the meta tag.
+        //    Dev keeps them so Vite HMR / React Refresh inline scripts
+        //    keep working (`'unsafe-inline'` is only effective when the
+        //    directive has no nonce).
         updated = updated.replace(
           /<meta http-equiv="Content-Security-Policy" content="([^"]*)"/,
-          (_match, content) => {
-            const newContent = content.replace(
-              /(script-src )([^;]+)/,
-              (_scriptMatch: string, prefix: string, sources: string) => {
-                // Replace 'unsafe-inline' with 'nonce-<value>' in the
-                // script-src source list. Other sources (e.g. 'self',
-                // https://accounts.google.com) are preserved.
-                const newSources = sources.replace(
-                  /'unsafe-inline'/,
-                  `'nonce-${nonce}'`,
-                )
-                return prefix + newSources
-              },
-            )
-            return `<meta http-equiv="Content-Security-Policy" content="${newContent}"`
-          },
+          (_match, content) =>
+            `<meta http-equiv="Content-Security-Policy" content="${
+              isBuild ? resolveCspScripts(content, nonce) : content
+            }"`,
         )
 
         // 3. Add nonce to the 2 static inline scripts. Two regex passes
@@ -92,7 +99,63 @@ function cspNoncePlugin(): import('vite').Plugin {
         return updated
       },
     },
+    // Production only: keep the HTTP-header layer in step with the meta tag
+    // (same nonce, same tightening) and drop a sentinel `index.html` into
+    // `/assets/` so Apache serves that instead of an autoindex listing —
+    // no reliance on `AllowOverride Options`, which would 500 the site if
+    // the vhost does not grant it.
+    closeBundle() {
+      if (!isBuild) return
+
+      const htaccessPath = path.resolve(__dirname, 'dist/.htaccess')
+      if (fs.existsSync(htaccessPath)) {
+        fs.writeFileSync(
+          htaccessPath,
+          resolveCspScripts(fs.readFileSync(htaccessPath, 'utf8'), buildNonce),
+        )
+      }
+
+      const assetsDir = path.resolve(__dirname, 'dist/assets')
+      if (fs.existsSync(assetsDir)) {
+        fs.writeFileSync(
+          path.join(assetsDir, 'index.html'),
+          '<!doctype html><meta charset="utf-8"><title>Not found</title>',
+        )
+      }
+    },
   }
+}
+
+/**
+ * Put the per-build nonce into the CSP script directives:
+ *   - `index.html` carries `'unsafe-inline'` as a build marker → swapped.
+ *   - `public/.htaccess` carries no marker (the tracked policy stays strict)
+ *     → the nonce is injected ahead of the existing sources.
+ *
+ * Both policies must carry the SAME nonce because they are enforced as an
+ * intersection: without it the Apache policy blocks the app's own inline
+ * scripts (theme pre-mount IIFE + runtime JSON-LD from `SEOManager.ts`),
+ * which is what happened before this change.
+ *
+ * Style directives are deliberately NOT touched: Google's GSI client
+ * (`accounts.google.com/gsi/client`) injects an inline stylesheet with no
+ * nonce, and Radix injects scroll-lock styles through
+ * `react-style-singleton`/`get-nonce`, which only understands webpack's
+ * `__webpack_nonce__`. Neither is patchable from this repo, so
+ * `style-src`/`style-src-elem` keep `'unsafe-inline'` — `style-src-attr`
+ * stays `'none'`, which is the directive that matters for injected markup.
+ */
+function resolveCspScripts(csp: string, nonce: string): string {
+  return csp.replace(
+    /(script-src(?:-elem)? )([^;]+)/g,
+    (_match, prefix: string, sources: string) => {
+      if (sources.includes('nonce-')) return prefix + sources
+      if (sources.includes("'unsafe-inline'")) {
+        return prefix + sources.replace(/'unsafe-inline'/, `'nonce-${nonce}'`)
+      }
+      return `${prefix}'nonce-${nonce}' ${sources.trimStart()}`
+    },
+  )
 }
 
 const apiProxyTarget = process.env.VITE_API_PROXY_TARGET || 'http://localhost:8080'
