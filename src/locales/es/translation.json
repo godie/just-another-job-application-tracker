@@ -391,6 +391,8 @@
       "linkGoogle": "Vincular cuenta de Google",
       "linking": "Vinculando...",
       "googleLinkedSuccess": "¡Cuenta de Google vinculada correctamente!",
+      "googleAccessGranted": "¡Acceso a Google concedido!",
+      "reconnectGoogle": "Reconectar Google",
       "googleLinkFailed": "No se pudo vincular la cuenta de Google",
       "googleLinkNetworkError": "Error de conexión. Intenta de nuevo.",
       "googleOAuthError": "Error al conectar con Google. Intenta de nuevo.",

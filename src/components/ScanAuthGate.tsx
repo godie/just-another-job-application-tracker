@@ -37,9 +37,10 @@ export const ScanAuthGate: React.FC<ScanAuthGateProps> = ({
         <GoogleAuthCard
           title={t('settings.emailScan.googleSessionExpired')}
           description={t('settings.emailScan.googleSessionExpiredDesc')}
-          buttonLabel={t('settings.cloud.linkGoogle')}
+          buttonLabel={t('settings.cloud.reconnectGoogle')}
           onAction={onTokenCheck}
           variant="warning"
+          purpose="data"
           className="mb-6"
         />
       );

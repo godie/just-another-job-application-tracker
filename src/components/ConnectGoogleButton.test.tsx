@@ -7,6 +7,7 @@ import { ConnectGoogleButton } from './ConnectGoogleButton';
 
 vi.mock('../utils/api', () => ({
   linkGoogleAccount: vi.fn(),
+  setAuthCookieWithCode: vi.fn(),
 }));
 
 const mockFetchMe = vi.fn();
@@ -25,10 +26,11 @@ vi.mock('./AlertProvider', () => ({
   }),
 }));
 
-import { linkGoogleAccount } from '../utils/api';
+import { linkGoogleAccount, setAuthCookieWithCode } from '../utils/api';
 import { useAuthStore } from '../stores/authStore';
 
 const mockedLinkGoogleAccount = vi.mocked(linkGoogleAccount);
+const mockedSetAuthCookieWithCode = vi.mocked(setAuthCookieWithCode);
 const mockedUseAuthStore = vi.mocked(useAuthStore);
 const mockedUseGoogleLogin = vi.mocked(useGoogleLogin);
 
@@ -38,7 +40,7 @@ describe('ConnectGoogleButton', () => {
   const getOAuthConfig = () => {
     const calls = mockedUseGoogleLogin.mock.calls;
     return calls[calls.length - 1]?.[0] as
-      | { onSuccess?: (cr: { code: string }) => void; onError?: () => void }
+      | { onSuccess?: (cr: { code: string }) => void; onError?: () => void; scope?: string }
       | undefined;
   };
 
@@ -291,5 +293,69 @@ describe('ConnectGoogleButton', () => {
     expect(onError).toHaveBeenCalledWith(
       'Error connecting to Google. Please try again.'
     );
+  });
+
+  describe('purpose="data"', () => {
+    it('requests only the basic scopes in identity mode', () => {
+      render(<ConnectGoogleButton />);
+
+      expect(getOAuthConfig()?.scope).toBe('');
+    });
+
+    it('requests Gmail and Sheets scopes', () => {
+      render(<ConnectGoogleButton purpose="data" />);
+
+      const scope = getOAuthConfig()?.scope ?? '';
+      expect(scope).toContain('https://www.googleapis.com/auth/gmail.readonly');
+      expect(scope).toContain('https://www.googleapis.com/auth/spreadsheets');
+    });
+
+    it('stores the auth cookie and calls onSuccess without linking identity', async () => {
+      const onSuccess = vi.fn();
+      mockedSetAuthCookieWithCode.mockResolvedValue({ success: true });
+
+      render(<ConnectGoogleButton purpose="data" onSuccess={onSuccess} />);
+
+      const config = getOAuthConfig();
+      if (config?.onSuccess) {
+        await config.onSuccess({ code: 'data-auth-code' });
+      }
+
+      expect(mockedSetAuthCookieWithCode).toHaveBeenCalledWith(
+        'data-auth-code',
+        expect.any(String)
+      );
+      expect(mockedLinkGoogleAccount).not.toHaveBeenCalled();
+      expect(mockFetchMe).not.toHaveBeenCalled();
+
+      await waitFor(() => {
+        expect(onSuccess).toHaveBeenCalledTimes(1);
+        expect(mockShowSuccess).toHaveBeenCalledWith('Google access granted!');
+      });
+    });
+
+    it('reports the backend error without calling onSuccess', async () => {
+      const onSuccess = vi.fn();
+      const onError = vi.fn();
+      mockedSetAuthCookieWithCode.mockResolvedValue({
+        success: false,
+        error: 'Google OAuth not configured',
+      });
+
+      render(
+        <ConnectGoogleButton purpose="data" onSuccess={onSuccess} onError={onError} />
+      );
+
+      const config = getOAuthConfig();
+      if (config?.onSuccess) {
+        await config.onSuccess({ code: 'data-auth-code' });
+      }
+
+      await waitFor(() => {
+        expect(mockShowError).toHaveBeenCalledWith('Google OAuth not configured');
+        expect(onError).toHaveBeenCalledWith('Google OAuth not configured');
+      });
+      expect(onSuccess).not.toHaveBeenCalled();
+    });
   });
 });

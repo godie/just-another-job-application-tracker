@@ -391,6 +391,8 @@
       "linkGoogle": "Link Google account",
       "linking": "Linking...",
       "googleLinkedSuccess": "Google account linked successfully!",
+      "googleAccessGranted": "Google access granted!",
+      "reconnectGoogle": "Reconnect Google",
       "googleLinkFailed": "Could not link Google account",
       "googleLinkNetworkError": "Connection error. Please try again.",
       "googleOAuthError": "Error connecting to Google. Please try again.",

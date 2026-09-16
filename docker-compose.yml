@@ -52,6 +52,8 @@ services:
       - DB_SQLITE_PATH=${DB_SQLITE_PATH:-/var/www/html/data/jajat.sqlite}
       - SUGGESTIONS_DB_PATH=${SUGGESTIONS_DB_PATH:-/var/www/html/data/suggestions.db}
       - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-http://localhost:5173}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET:-}
       - CLIENT_ENABLED=false
       - LOGGING_ENABLED=${LOGGING_ENABLED:-false}
       - LOGFIRE_TOKEN=${LOGFIRE_TOKEN:-}

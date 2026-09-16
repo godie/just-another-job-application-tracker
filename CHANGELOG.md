@@ -1,3 +1,19 @@
+## [2.7.4] - 2026-09-16
+
+### Fixed
+- Wired the Google data scopes into the frontend so the Gmail scan and Sheets sync can actually request them: `ConnectGoogleButton` now supports `purpose="data"`, asks for `gmail.readonly` + `spreadsheets` at consent time, and exchanges the code against `POST /api/auth/cookie` (the endpoint that persists Google access + refresh tokens) instead of the identity-only `POST /api/auth/google`.
+- Fixed the auth-gate dead-end: the "Google session expired" cards in `ScanAuthGate` and `SheetsAuthGate` rendered the identity-link button, whose `/api/auth/google` flow discards the Google tokens — the gates could never flip from `expired` to `ready`. Both now run the scoped data connect (relabelled "Reconnect Google") and re-check the token after consent.
+- Added `traceparent` to the API's `Access-Control-Allow-Headers` list. The frontend's `fetchWithTrace` sends that W3C trace header on every request, so browser preflights from any split-origin setup (e.g. `localhost:5173` → deployed API) were rejected before the request reached the API.
+- `api/config.php` no longer falls back to the literal `__VITE_GOOGLE_CLIENT_ID__` / `__VITE_GOOGLE_CLIENT_SECRET__` deploy placeholders; a missing local `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` now reports "Google OAuth not configured" instead of forwarding placeholder credentials to Google and surfacing its misleading `invalid_client` error.
+
+### Security
+- Documented `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` as server-side variables in `api/.env.example` (no `VITE_` prefix) and stopped carrying the client secret in a `VITE_`-prefixed local variable that Vite would inline into the client bundle. `docker-compose.yml` now forwards both variables to the API container.
+
+### Validation
+- Added data-mode regression coverage for `ConnectGoogleButton`: scope contents (`gmail.readonly` + `spreadsheets`), the cookie flow (`setAuthCookieWithCode`, no identity link, no `fetchMe`), success callback, and backend error propagation; identity mode asserts the default empty scope so the two flows cannot silently converge.
+- Frontend: full Vitest suite passes (990 tests / 97 files with `LANG=en_US.UTF-8`), ESLint, production build, and `knip` clean. PHP: 108 tests / 330 assertions and PHPStan level 6 clean.
+- Verified against the live deployment (`jajat.godieboy.com`): the CORS preflight now advertises `traceparent`, Google's token endpoint accepts both registered redirect URIs (`https://jajat.godieboy.com`, `http://localhost:5173`) for the production client, and the deployed bundle carries the expected public client id.
+
 ## [2.7.3] - 2026-09-15
 
 ### Security
