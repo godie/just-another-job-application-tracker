@@ -1,3 +1,12 @@
+## [2.7.5] - 2026-09-16
+
+### Fixed
+- Restored timeline editing in the job-details inline edit form: `JobEditForm` never rendered a timeline editor and the page's Timeline block is gated to view mode (`!isEditing`), so entering edit mode removed the timeline entirely and there was no way to add or edit interview events. `JobDetailsPage` now renders the existing `TimelineEditor` in edit mode, wired to `editFormData.timeline` and persisted through the same Save action (`updateApplication`).
+
+### Validation
+- Added a `JobDetailsPage` regression test that enters edit mode, adds an interview event via the editor and saves: it asserts `updateApplication` receives the new timeline. Verified the test fails without the fix ("Unable to find an element with the text: Interview Timeline") and passes with it.
+- Full frontend suite passes: 991 Vitest tests, ESLint, production build, and `knip`.
+
 ## [2.7.4] - 2026-09-16
 
 ### Fixed
