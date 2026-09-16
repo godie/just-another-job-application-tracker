@@ -1,3 +1,14 @@
+## [2.7.7] - 2026-09-16
+
+### Security
+- The API no longer serves its own infrastructure files. `api/.htaccess` previously rewrote only *non-existent* paths to the front controller, so every real file in the tree was downloadable: `/api/composer.lock` (196 KB, the full dependency tree), `composer.json`, `phpunit.xml`, `phpstan.neon`, `README.md`, `.env.example`, `config.example.php`, `rector.php` and everything under `vendor/`. Only `index.php` may now be executed; dotfiles, any other `.php`, and static infra extensions (`.json`, `.lock`, `.neon`, `.xml`, `.md`, `.map`, `.yml`/`.yaml`, `.sqlite`, `.db`, `.sh`, `.dist`) are denied outright.
+- Plain HTTP no longer serves content. `http://jajat.godieboy.com/` returned `200 OK`, so HSTS (which is only delivered over TLS) could not protect a first visit and the connection could be downgraded. `public/.htaccess` now issues a `301` to `https://jajat.godieboy.com` with the canonical host hardcoded — deriving it from `%{HTTP_HOST}` would have made the rule an open redirect — and exempts `/.well-known/` so ACME certificate renewal keeps working.
+- `X-Powered-By` is unset on every response. The `Server:` banner cannot be removed with mod_headers (verified against Apache 2.4 in a local container); it needs `ServerTokens Prod` / `ServerSignature Off` in the vhost, which are server-config-only directives. Production already returns `ServerSignature Off`-style 404s (no `Apache ... Server at <host>` signature line).
+
+### Validation
+- Verified against a real Apache 2.4 container (`php:8.4.1-apache`, `AllowOverride All`, the production directory layout with the frontend at the docroot and `api/` nested): the HTTPS redirect returns `301` with the canonical `Location`, `/.well-known/acme-challenge/*` is *not* redirected, all 10 probed infra paths return `403` (`composer.json`, `composer.lock`, `phpunit.xml`, `phpstan.neon`, `README.md`, `.env.example`, `vendor/autoload.php`, `config.example.php`, `rector.php`, `data/`), and the real surface still works (`/api/hello` → `200`, `/api/index.php` → router `404` JSON, `/api/auth/me` → JSON).
+- Full frontend suite 991 tests / 97 files (`LANG=en_US.UTF-8`), ESLint and `knip` clean; `scan-secrets` and the 2.7.7 orphan sweep clean.
+
 ## [2.7.6] - 2026-09-16
 
 ### Security
