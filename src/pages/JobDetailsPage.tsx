@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useSEO } from '../seo/useSEO';
 import { useApplicationsStore } from '../stores/applicationsStore';
 import { type PageType } from '../App';
-import { type JobApplication } from '../types/applications';
+import { type JobApplication, type InterviewEvent } from '../types/applications';
 import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
 import { JobHeaderCard } from '../components/JobHeaderCard';
@@ -15,6 +15,7 @@ import { toWorkType } from '../utils/applications';
 import { formatDate, getStageDisplayName, getEventStatusColor } from '../utils/timelineDisplay';
 import Footer from '../components/Footer';
 import TimelineEventList from '../components/TimelineEventList';
+import TimelineEditor from '../components/TimelineEditor';
 import packageJson from '../../package.json';
 
 interface JobDetailsPageProps {
@@ -129,6 +130,10 @@ const JobDetailsPage: React.FC<JobDetailsPageProps> = ({ onNavigate }) => {
     });
   };
 
+  const updateEditTimeline = (events: InterviewEvent[]) => {
+    setEditFormData((prev) => (prev ? { ...prev, timeline: events } : prev));
+  };
+
   return (
     <div className="max-w-5xl mx-auto px-4 md:px-6 lg:px-8 py-8">
       {/* Top Back Navigation */}
@@ -173,6 +178,18 @@ const JobDetailsPage: React.FC<JobDetailsPageProps> = ({ onNavigate }) => {
           )}
         </div>
       </Card>
+
+      {/* Timeline editor (edit mode; the view-only block below renders when not editing) */}
+      {isEditing && editFormData && (
+        <Card className="mb-6">
+          <div className="p-6">
+            <TimelineEditor
+              events={editFormData.timeline || []}
+              onChange={updateEditTimeline}
+            />
+          </div>
+        </Card>
+      )}
 
       {/* Notes (view-only — edit mode captures notes inside the form above) */}
       {!isEditing && application.notes && (

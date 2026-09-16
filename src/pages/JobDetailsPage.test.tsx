@@ -1,6 +1,6 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, within } from '@testing-library/react';
 import JobDetailsPage from './JobDetailsPage';
 import type { JobApplication } from '../types/applications';
 
@@ -303,6 +303,33 @@ describe('JobDetailsPage', () => {
     );
     expect(screen.queryByTestId('details-edit-form')).toBeNull();
     expect(onNavigate).not.toHaveBeenCalled();
+  });
+
+  it('edits the interview timeline in edit mode and persists new events', () => {
+    setUrlJobId('app-1');
+    setupStore([makeApp()]);
+    renderPage();
+
+    fireEvent.click(screen.getAllByText('Edit')[0]);
+    expect(screen.getByText('Interview Timeline')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: '+ Add Event' }));
+    const eventForm = screen.getByRole('group', { name: 'Timeline event form' });
+    fireEvent.change(within(eventForm).getByLabelText('Date'), {
+      target: { value: '2025-05-05' },
+    });
+    fireEvent.click(within(eventForm).getByRole('button', { name: 'Save' }));
+
+    fireEvent.click(screen.getByTestId('details-save'));
+
+    expect(updateApplication).toHaveBeenCalledWith(
+      'app-1',
+      expect.objectContaining({
+        timeline: expect.arrayContaining([
+          expect.objectContaining({ date: '2025-05-05', type: 'application_submitted' }),
+        ]),
+      }),
+    );
   });
 
   it('Cancel exits edit mode without calling updateApplication', () => {
