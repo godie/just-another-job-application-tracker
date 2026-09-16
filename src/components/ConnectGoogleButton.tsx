@@ -6,10 +6,8 @@ import { useAuthStore } from '../stores/authStore';
 import { useAlert } from './AlertProvider';
 import { linkGoogleAccount, setAuthCookieWithCode } from '../utils/api';
 
-const GOOGLE_DATA_SCOPES = [
-  'https://www.googleapis.com/auth/gmail.readonly',
-  'https://www.googleapis.com/auth/spreadsheets',
-].join(' ');
+const GOOGLE_DATA_SCOPES =
+  'https://www.googleapis.com/auth/gmail.readonly https://www.googleapis.com/auth/spreadsheets';
 
 export type GoogleConnectPurpose = 'identity' | 'data';
 
@@ -40,27 +38,26 @@ export const ConnectGoogleButton: React.FC<ConnectGoogleButtonProps> = ({
     onSuccess: async (codeResponse) => {
       setIsLinking(true);
       try {
-        if (isDataAccess) {
-          const data = await setAuthCookieWithCode(codeResponse.code, window.location.origin);
-          if (data.success) {
-            showSuccess(t('settings.cloud.googleAccessGranted'));
-            onSuccess?.();
-          } else {
-            const errorMsg = data.error || t('settings.cloud.googleLinkFailed');
-            showError(errorMsg);
-            onError?.(errorMsg);
-          }
-        } else {
-          const data = await linkGoogleAccount(codeResponse.code, window.location.origin);
-          if (data.success) {
+        const data = isDataAccess
+          ? await setAuthCookieWithCode(codeResponse.code, window.location.origin)
+          : await linkGoogleAccount(codeResponse.code, window.location.origin);
+
+        if (data.success) {
+          if (!isDataAccess) {
             await fetchMe();
-            showSuccess(t('settings.cloud.googleLinkedSuccess'));
-            onSuccess?.();
-          } else {
-            const errorMsg = data.error || t('settings.cloud.googleLinkFailed');
-            showError(errorMsg);
-            onError?.(errorMsg);
           }
+          showSuccess(
+            t(
+              isDataAccess
+                ? 'settings.cloud.googleAccessGranted'
+                : 'settings.cloud.googleLinkedSuccess'
+            )
+          );
+          onSuccess?.();
+        } else {
+          const errorMsg = data.error || t('settings.cloud.googleLinkFailed');
+          showError(errorMsg);
+          onError?.(errorMsg);
         }
       } catch {
         const errorMsg = t('settings.cloud.googleLinkNetworkError');
