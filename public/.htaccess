@@ -1,3 +1,15 @@
+# Force HTTPS before anything else is served. HSTS is only delivered over
+# TLS, so a first plain-HTTP visit would otherwise be served (and can be
+# downgraded/MITM'd). The canonical host is hardcoded on purpose — deriving
+# it from %{HTTP_HOST} would make this an open redirect. The ACME challenge
+# path is excluded so certificate renewal keeps working.
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteCond %{HTTPS} !=on
+    RewriteCond %{REQUEST_URI} !^/\.well-known/
+    RewriteRule ^ https://jajat.godieboy.com%{REQUEST_URI} [L,R=301]
+</IfModule>
+
 # CSP: `cspNoncePlugin()` (vite.config.ts) injects the per-build
 # `'nonce-<build>'` into `script-src`/`script-src-elem` when it writes
 # `dist/.htaccess` — the same nonce the meta tag uses. Both policies must
@@ -13,4 +25,10 @@
     Header set X-Frame-Options "DENY"
     Header set X-XSS-Protection "1; mode=block"
     Header set Referrer-Policy "strict-origin-when-cross-origin"
+    # `Header always unset X-Powered-By` covers the PHP banner if the host
+    # ever enables expose_php. The `Server:` banner cannot be removed with
+    # mod_headers (verified against Apache 2.4 in a local container) — it
+    # needs `ServerTokens Prod` (and `ServerSignature Off`) in the vhost,
+    # which are server-config-only directives.
+    Header always unset X-Powered-By
 </IfModule>

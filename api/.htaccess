@@ -13,6 +13,16 @@ RewriteEngine On
     Deny from all
 </Files>
 
+# Nothing in this tree is public except the front controller. Static infra
+# files were being served verbatim: /api/composer.lock (196 KB, full
+# dependency tree), composer.json, phpunit.xml, phpstan.neon, README.md,
+# .env.example and vendor/*. Only index.php may run; everything else is
+# denied.
+<FilesMatch "(^\.|^(?!index\.php$).*\.php$|\.(json|lock|neon|xml|md|map|ya?ml|sqlite|db|sh|dist)$)">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
 # Evita que se apliquen reglas si el archivo o carpeta real existe
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
