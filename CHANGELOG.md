@@ -1,3 +1,20 @@
+## [2.11.0] - 2026-09-17
+
+### Added
+- Position/company extraction through TypeSafe (`src/utils/emailExtraction.ts`): recall-tuned regexes gather candidates — subject segments, `at`/`to`/`en`/`for` phrases, English and Spanish title words, sender display name and domain; deduped case-insensitively, ATS and mailbox domains excluded, capped at 30 — and one batched request per scan asks two `Choice` questions per email (`company`, `position`) over that email's own candidates (10 emails / 20 questions per request). Code copies the picked candidate **verbatim**, so a name can never be transposed or invented, and `none` is always an option.
+- The gatherer emits the clean role span before the full phrase ("Senior Engineer" before "Interview invitation for Senior Engineer") and trims dangling connectors ("Ingeniero de Software Senior en" → "Ingeniero de Software Senior", "Backend Engineer en Globex" → "Backend Engineer"). The first live measurement is what showed those two defects: with the clean span missing the model answered the only candidate at confidence 0.14 (rejected by the gate, keeping the regex value), and a dangling-connector candidate was answered at 0.86.
+
+### Changed
+- `scanService` applies the picked company/position over the adapter's regex extraction before deciding additions and updates, and reports a review-band extraction as `needsReview` (the audit table's badge). The shared gates apply (≥ 0.7 auto, 0.5-0.7 review, below that ignored) and anything the model cannot pick keeps the regex result, so the previous behaviour remains the floor.
+
+### Validation
+- Candidate defects are covered by tests: 15 for the extraction module (candidate sources, connector trimming, clean span first, case-insensitive dedupe, excluded domains, verbatim copy, gates, batching shape, unavailable service → empty map) plus a scan-level test asserting the extracted values reach the addition and the audit row.
+- Full frontend suite 1,082 tests / 105 files (`LANG=en_US.UTF-8`), ESLint, production build and `knip` clean. PHP: 115 tests / 352 assertions and PHPStan clean; secret scan and the 2.11.0 orphan sweep clean.
+- The follow-up live measurement could not be completed at PR time: the upstream answered `model_unavailable` (transient). The client treats it like any other failure — the scan falls back to the regex extraction and no user-visible behaviour changes.
+
+### Docs
+- `DOCS/TYPESAFE_OPPORTUNITIES.md` marks the company/position span extraction as implemented; work-type and date normalisation (§6) remain.
+
 ## [2.10.0] - 2026-09-17
 
 ### Added
