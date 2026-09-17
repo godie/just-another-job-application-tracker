@@ -1,3 +1,15 @@
+## [2.13.0] - 2026-09-17
+
+> Version note: this branch was cut while PR #275 (2.12.0) was still open and claimed 2.13.0
+> to avoid the version race; #275 merged first, so 2.13.0 follows 2.12.0 with no gap.
+
+### Added
+- **Copy labels (JSON)** button in the email scan audit table: copies the same dataset the JSON export writes — per email the pipeline result, the human label and the stats — to the clipboard, so a labelling session can be handed over without downloading a file. It uses `navigator.clipboard` with a selection-copy fallback for non-secure contexts and reports success or failure through the alert system (en/es).
+
+### Validation
+- Test: the copy flow writes the dataset (labels included) through the clipboard API and reports success; the empty state still renders no buttons.
+- Full frontend suite 1,096 tests / 106 files (`LANG=en_US.UTF-8`), ESLint, production build and `knip` clean. PHP untouched except the version constant.
+
 ## [2.12.0] - 2026-09-17
 
 ### Added

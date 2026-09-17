@@ -12,6 +12,7 @@ import {
   type AuditLabels,
 } from '../utils/scanAudit';
 import { Button } from './ui/Button';
+import { useAlert } from './AlertProvider';
 
 interface EmailScanAuditTableProps {
   rows: ScanAuditRow[];
@@ -44,6 +45,7 @@ function download(filename: string, content: string, mime: string): void {
  */
 export const EmailScanAuditTable: React.FC<EmailScanAuditTableProps> = ({ rows }) => {
   const { t } = useTranslation();
+  const { showSuccess, showError } = useAlert();
   const [labels, setLabels] = useState<AuditLabels>(() => loadAuditLabels());
 
   useEffect(() => {
@@ -57,6 +59,34 @@ export const EmailScanAuditTable: React.FC<EmailScanAuditTableProps> = ({ rows }
   };
 
   const stamp = new Date().toISOString().split('T')[0];
+
+  const handleCopy = async () => {
+    const payload = toAuditJson(rows, labels);
+    try {
+      await navigator.clipboard.writeText(payload);
+      showSuccess(t('settings.emailScan.audit.copySuccess'));
+      return;
+    } catch {
+      // Clipboard API needs a secure context; fall back to a selection copy.
+      try {
+        const textarea = document.createElement('textarea');
+        textarea.value = payload;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+        const copied = document.execCommand('copy');
+        document.body.removeChild(textarea);
+        if (copied) {
+          showSuccess(t('settings.emailScan.audit.copySuccess'));
+          return;
+        }
+      } catch {
+        // fall through to the error alert
+      }
+      showError(t('settings.emailScan.audit.copyError'));
+    }
+  };
 
   if (rows.length === 0) {
     return (
@@ -85,6 +115,16 @@ export const EmailScanAuditTable: React.FC<EmailScanAuditTableProps> = ({ rows }
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={handleCopy}
+            data-testid="audit-copy"
+            title={t('settings.emailScan.audit.copyHint')}
+          >
+            {t('settings.emailScan.audit.copyJson')}
+          </Button>
           <Button
             type="button"
             variant="outline"
