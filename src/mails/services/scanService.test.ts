@@ -22,16 +22,23 @@ vi.mock('../../utils/emailClassification', () => ({
   classifyEmailsWithJudgment: vi.fn(),
 }));
 
+vi.mock('../../utils/emailExtraction', () => ({
+  extractWithJudgment: vi.fn(),
+}));
+
 import { matchEmailToApplication } from '../../utils/applicationMatch';
 import { classifyEmailsWithJudgment } from '../../utils/emailClassification';
+import { extractWithJudgment } from '../../utils/emailExtraction';
 
 const mockedMatchEmailToApplication = vi.mocked(matchEmailToApplication);
 const mockedClassifyEmails = vi.mocked(classifyEmailsWithJudgment);
+const mockedExtractWithJudgment = vi.mocked(extractWithJudgment);
 
 describe('scanService', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockedClassifyEmails.mockResolvedValue(new Map());
+    mockedExtractWithJudgment.mockResolvedValue(new Map());
     mockGetState.mockReturnValue({
       applications: [],
       addApplication: mockAddApplication,
@@ -330,6 +337,48 @@ describe('scanService', () => {
       const preview = await scanEmails(new FakeEmailProvider([interviewEmail]));
 
       expect(preview.proposedUpdates).toHaveLength(0);
+    });
+  });
+
+  describe('AI position/company extraction', () => {
+    it('overrides the regex extraction with the picked candidates', async () => {
+      mockGetState.mockReturnValue({
+        applications: [],
+        addApplication: mockAddApplication,
+        updateApplication: mockUpdateApplication,
+      });
+      mockedExtractWithJudgment.mockResolvedValue(
+        new Map([
+          [
+            0,
+            {
+              emailId: 'm-extract',
+              company: 'Acme Corp',
+              position: 'Senior Engineer II',
+              verdict: 'review',
+              confidence: 0.61,
+            },
+          ],
+        ]),
+      );
+
+      const preview = await scanEmails(
+        new FakeEmailProvider([
+          {
+            id: 'm-extract',
+            subject: 'Thank you for applying to Senior Engineer II',
+            from: 'careers@acme.com',
+            body: 'We received your application for the Senior Engineer II role at Acme Corp.',
+            internalDate: String(Date.now() - 1000 * 60 * 60 * 24),
+          },
+        ]),
+      );
+
+      expect(mockedExtractWithJudgment).toHaveBeenCalledTimes(1);
+      expect(preview.proposedAdditions).toHaveLength(1);
+      expect(preview.proposedAdditions[0].data.company).toBe('Acme Corp');
+      expect(preview.proposedAdditions[0].data.position).toBe('Senior Engineer II');
+      expect(preview.audit?.[0].extraction).toEqual({ company: 'Acme Corp', position: 'Senior Engineer II' });
     });
   });
 

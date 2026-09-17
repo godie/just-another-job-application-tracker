@@ -8,6 +8,7 @@ import { QUERIES, QUERIES_ES } from '../types';
 import { useApplicationsStore } from '../../stores/applicationsStore';
 import { matchEmailToApplication } from '../../utils/applicationMatch';
 import { classifyEmailsWithJudgment } from '../../utils/emailClassification';
+import { extractWithJudgment } from '../../utils/emailExtraction';
 
 const GMAIL_CHUNK_SIZE = 5;
 const GMAIL_CHUNK_DELAY_MS = 150;
@@ -98,6 +99,11 @@ export async function scanEmails(provider: EmailProvider, daysBack: number = 30)
   // unavailable, no key) leaves the keyword result in place.
   const classifications = await classifyEmailsWithJudgment(emails);
 
+  // Position/company extraction: the regex gatherer finds candidates, the
+  // judgment picks the span, code copies it verbatim. A wrong candidate or a
+  // low-confidence answer falls back to what the adapter extracted.
+  const extractions = await extractWithJudgment(emails);
+
   for (let i = 0; i < emails.length; i++) {
     const email = emails[i];
     const classification = classifications.get(i);
@@ -146,7 +152,11 @@ export async function scanEmails(provider: EmailProvider, daysBack: number = 30)
     } else if (classification?.type) {
       event.type = classification.type;
     }
-    const needsReview = classification?.verdict === 'review';
+    const picked = extractions.get(i);
+    if (picked?.company) event.company = picked.company;
+    if (picked?.position) event.position = picked.position;
+    const needsReview =
+      classification?.verdict === 'review' || picked?.verdict === 'review';
     const extraction = { position: event.position, company: event.company };
 
     if (event.type === 'application_submitted') {
