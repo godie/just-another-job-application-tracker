@@ -8,7 +8,7 @@
 
 ### Validation
 - Test: the copy flow writes the dataset (labels included) through the clipboard API and reports success; the empty state still renders no buttons.
-- Full frontend suite 1,094 tests / 106 files (`LANG=en_US.UTF-8`), ESLint, production build and `knip` clean. PHP untouched except the version constant.
+- Full frontend suite 1,096 tests / 106 files (`LANG=en_US.UTF-8`), ESLint, production build and `knip` clean. PHP untouched except the version constant.
 
 ## [2.12.0] - 2026-09-17
 
