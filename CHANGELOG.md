@@ -1,3 +1,26 @@
+## [2.7.9] - 2026-09-17
+
+### Added
+- Server-side TypeSafe judgment proxy: `POST /api/ai/judgments` (`AiJudgmentController`) forwards a `state` plus typed questions (`choice` / `score` / `noul`) to `api.typesafe.ai/v1/systemone` and returns the typed answers with their probabilities, confidence and token usage. It requires an authenticated session (401 otherwise), answers 503 when `TYPESAFE_API_KEY` is unset, 400 on invalid payloads (unknown question type, more than 25 questions, state above 100 KB) and 502 when the upstream fails. The key never reaches the browser.
+- Email classification through a TypeSafe `Choice`: one batched request per scan classifies every email as `application_submitted`, `next_steps`, `rejected`, `offer` or `other`, with contrastive criteria per option (what belongs in each, what belongs in a neighbouring one). Measured against six representative emails in a single request: 6/6 correct at confidence 1.0 — including two rejections worded outside the keyword cascade, which previously returned `null` and were dropped.
+- Email → application matching through a TypeSafe `Choice` over candidates built in code (non-deleted, newest first, capped at 200): when a company name is not an exact match ("ACME, Inc." vs "Acme") the scan attaches the update to the right application instead of dropping it. Confidence gates: ≥ 0.7 applies directly, 0.5–0.7 applies and flags the proposal for review, below that (or `none`) keeps the deterministic behaviour.
+- "Review match" badge on proposed updates whose classification or application match landed in the review band (en/es).
+
+### Changed
+- `scanService.scanEmails` consults both judgments before falling back to the keyword path: a confident classification overrides the cascade's verdict, emails confidently classified `other` are skipped, and an email the cascade cannot classify at all (`classify()` returns `null`) becomes a proposed update when the judgment knows its type. The keyword cascade remains the fallback for every failure mode (no key, offline, low confidence, unknown option).
+- `src/utils/api.ts` exports `fetchWithTrace` so the judgment client reuses the same credentials and trace wiring as the rest of the API calls.
+
+### Security
+- The TypeSafe API key is server-side only: `api/config.php` reads `TYPESAFE_API_KEY`, the deploy injects it from the `TYPESAFE_API_KEY` GitHub secret into `dist/api/config.php`, `docker-compose.yml` forwards it and `api/.env.example` documents it. The endpoint is session-gated and bounds body size, question count and state size so it cannot be used as an open proxy for the account's quota.
+
+### Docs
+- `DOCS/TYPESAFE_OPPORTUNITIES.md` marks the email → application match and the email event classification as implemented, and lists what remains (composite scoring, field spans, CSV header mapping, work-type/date normalisation).
+
+### Validation
+- Live API measurements: application matching 3/3 (the fuzzy "ACME, Inc." / "Senior Engineer II" case answered `app-1` at confidence 0.66 → review gate; a non-job email answered `none` at 1.0); email classification 6/6 at confidence 1.0 in one batched request (2,498 input / 353 output tokens); the PHP proxy returned the same answer through the real controller (521 ms round trip).
+- New tests: 7 for `AiJudgmentController` (session gate, missing key, payload validation, question cap, answer/usage passthrough, upstream error → 502), 13 for the matching module and 10 for the classifier, plus three scan-level cases (classification-driven update, unrelated email skipped, keyword behaviour preserved when the judgment is unavailable).
+- Full frontend suite 1,020 tests / 99 files (`LANG=en_US.UTF-8`), ESLint, production build and `knip` clean. PHP: 115 tests / 352 assertions and PHPStan clean. Secret scan and the 2.7.9 orphan sweep clean.
+
 ## [2.7.8] - 2026-09-16
 
 ### Security

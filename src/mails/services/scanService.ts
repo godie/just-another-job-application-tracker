@@ -6,9 +6,19 @@ import type { JobApplication } from '../../types/applications';
 import { EmailAdapter } from '../adapter/emailAdapter';
 import { QUERIES, QUERIES_ES } from '../types';
 import { useApplicationsStore } from '../../stores/applicationsStore';
+import { matchEmailToApplication } from '../../utils/applicationMatch';
+import { classifyEmailsWithJudgment } from '../../utils/emailClassification';
 
 const GMAIL_CHUNK_SIZE = 5;
 const GMAIL_CHUNK_DELAY_MS = 150;
+
+/**
+ * Upper bound on AI judgments per scan. Only emails whose company is not
+ * already matched reach the judgment, and each one costs a request; the cap
+ * keeps a mailbox full of odd senders from turning one scan into dozens of
+ * calls. Emails past the cap keep the deterministic behaviour (dropped).
+ */
+const MAX_JUDGMENTS_PER_SCAN = 10;
 
 function delay(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -73,6 +83,7 @@ export async function scanEmails(provider: EmailProvider, daysBack: number = 30)
 
   const proposedAdditions: ProposedAddition[] = [];
   const proposedUpdates: ProposedUpdate[] = [];
+  let judgmentsUsed = 0;
 
   const appByCompany = new Map<string, JobApplication>();
   for (const a of applications) {
@@ -80,10 +91,44 @@ export async function scanEmails(provider: EmailProvider, daysBack: number = 30)
     if (key) appByCompany.set(key, a);
   }
 
+  // One batched classification request for the whole scan: the keyword
+  // cascade in `classify()` misses wording it has no rule for, and the
+  // judgment answers what the email actually is. An empty map (service
+  // unavailable, no key) leaves the keyword result in place.
+  const classifications = await classifyEmailsWithJudgment(emails);
+
   for (let i = 0; i < emails.length; i++) {
     const email = emails[i];
-    const event = adapter.classify(email);
-    if (!event) continue;
+    const classification = classifications.get(i);
+
+    if (classification?.type === 'other' && classification.verdict === 'auto') {
+      continue; // confidently not about an application (job alert, newsletter)
+    }
+
+    let event = adapter.classify(email);
+    if (!event) {
+      // The keyword cascade found no rule; a confident judgment can still say
+      // what the email is. Only the type is known here — `company`/`position`
+      // stay undefined and the application match below resolves the target.
+      // A confirmation without an extractable company would only produce an
+      // "Unknown" addition, so it keeps the previous behaviour (dropped).
+      if (
+        !classification?.type ||
+        classification.type === 'other' ||
+        classification.type === 'application_submitted'
+      ) {
+        continue;
+      }
+      event = {
+        id: crypto.randomUUID(),
+        type: classification.type,
+        date: email.date,
+        notes: email.subject,
+      };
+    } else if (classification?.type) {
+      event.type = classification.type;
+    }
+    const needsReview = classification?.verdict === 'review';
 
     if (event.type === 'application_submitted') {
       const company = event.company?.toLowerCase();
@@ -106,7 +151,32 @@ export async function scanEmails(provider: EmailProvider, daysBack: number = 30)
           position: app.position,
           newEvent: adapter.eventToInterviewEvent(event),
           source: { subject: email.subject, date: email.date },
+          needsReview: needsReview || undefined,
         });
+      } else if (judgmentsUsed < MAX_JUDGMENTS_PER_SCAN) {
+        // Company names vary ("ACME, Inc." vs "Acme") and a classified email
+        // may carry no company at all; ask a judgment instead of dropping the
+        // update. `null` (service unavailable) and low confidence keep the
+        // previous behaviour.
+        judgmentsUsed++;
+        const decision = await matchEmailToApplication(
+          { subject: email.subject, from: email.from, body: email.body },
+          applications,
+        );
+        const matched = decision?.applicationId
+          ? applications.find((candidate) => candidate.id === decision.applicationId)
+          : undefined;
+        if (matched) {
+          proposedUpdates.push({
+            id: `update-${matched.id}-${event.id}`,
+            applicationId: matched.id,
+            company: matched.company,
+            position: matched.position,
+            newEvent: adapter.eventToInterviewEvent(event),
+            source: { subject: email.subject, date: email.date },
+            needsReview: needsReview || (decision?.verdict === 'review'),
+          });
+        }
       }
     }
   }

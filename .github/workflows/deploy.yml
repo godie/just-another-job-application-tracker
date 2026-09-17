@@ -163,6 +163,7 @@ jobs:
           ADZUNA_API_KEY: ${{ secrets.ADZUNA_API_KEY }}
           CAREERJET_API_KEY: ${{ secrets.CAREERJET_API_KEY }}
           CAREERJET_AFFID: ${{ secrets.CAREERJET_AFFID }}
+          TYPESAFE_API_KEY: ${{ secrets.TYPESAFE_API_KEY }}
         run: |
           python3 -c "
           import os
@@ -180,6 +181,7 @@ jobs:
             '__ADZUNA_API_KEY__': os.environ.get('ADZUNA_API_KEY', ''),
             '__CAREERJET_API_KEY__': os.environ.get('CAREERJET_API_KEY', ''),
             '__CAREERJET_AFFID__': os.environ.get('CAREERJET_AFFID', ''),
+            '__TYPESAFE_API_KEY__': os.environ.get('TYPESAFE_API_KEY', ''),
           }
           path = 'dist/api/config.php'
           with open(path) as f:

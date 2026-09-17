@@ -162,6 +162,8 @@ export interface ProposedUpdate {
   position: string;
   newEvent: InterviewEvent;
   source: { subject: string; date: string };
+  /** Set when the application match came from an AI judgment with review-level confidence. */
+  needsReview?: boolean;
 }
 
 export interface ScanPreview {
