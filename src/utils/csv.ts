@@ -38,11 +38,29 @@ export const exportToCSV = (applications: JobApplication[]): string => {
   return csvRows.join('\n');
 };
 
-export const parseCSV = (csvText: string): JobApplication[] => {
+/** Header row of a CSV export/import, in column order. */
+export const parseCsvHeaders = (csvText: string): string[] => {
+  const firstLine = csvText.split(/\r?\n/)[0] ?? '';
+  return firstLine.split(',').map((header) => header.replace(/^"|"$/g, '').trim());
+};
+
+/**
+ * Parse a CSV export.
+ *
+ * `fields` maps a column index to the application field it holds (or `null`
+ * to skip the column), which is how imported files whose headers are not the
+ * canonical names are handled. Without it, the header names are used as-is —
+ * the behaviour an export of ours round-trips with.
+ */
+export const parseCSV = (
+  csvText: string,
+  fields?: (string | null)[],
+): JobApplication[] => {
   const lines = csvText.split(/\r?\n/);
   if (lines.length < 2) return [];
 
-  const headers = lines[0].split(',').map(h => h.replace(/^"|"$/g, '').trim());
+  const headers = parseCsvHeaders(csvText);
+  const columnFields: (string | null)[] = fields ?? headers;
   const applications: JobApplication[] = [];
 
   for (let i = 1; i < lines.length; i++) {
@@ -72,7 +90,8 @@ export const parseCSV = (csvText: string): JobApplication[] => {
     values.push(current);
 
     const app: Record<string, unknown> = {};
-    headers.forEach((header, index) => {
+    columnFields.forEach((header, index) => {
+      if (!header) return; // column resolved to "ignore" (or unmapped)
       const value = values[index] || '';
 
       if (header === 'timeline' || header === 'customFields') {

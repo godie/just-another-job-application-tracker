@@ -639,7 +639,9 @@
     "exportSuccess": "Data exported successfully",
     "importSuccess": "Imported {{count}} applications successfully",
     "importError": "Error importing CSV file",
-    "noData": "No data to export"
+    "noData": "No data to export",
+    "columnsReview": "Imported, but check these columns: {{columns}}",
+    "columnsIgnored": "Columns not imported (no matching field): {{columns}}"
   },
   "sheets": {
     "title": "Google Sheets Integration",

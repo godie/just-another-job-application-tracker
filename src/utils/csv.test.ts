@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { exportToCSV, parseCSV } from './csv';
+import { exportToCSV, parseCSV, parseCsvHeaders } from './csv';
 import { JobApplication } from '../types/applications';
 
 describe('CSV Utility', () => {
@@ -35,5 +35,27 @@ describe('CSV Utility', () => {
     expect(parsed[0].position).toBe('Developer');
     expect(parsed[0].company).toBe('Tech Corp');
     expect(parsed[0].notes).toBe('Some notes with "quotes"');
+  });
+
+  it('should read headers from the first row', () => {
+    expect(parseCsvHeaders('"Job Title","Empresa"\n"Dev","Acme"')).toEqual(['Job Title', 'Empresa']);
+  });
+
+  it('should map foreign headers through an explicit field list', () => {
+    const csv = '"Job Title","Empresa","Estado"\n"Senior Engineer","Acme","applied"';
+    const parsed = parseCSV(csv, ['position', 'company', 'status']);
+
+    expect(parsed.length).toBe(1);
+    expect(parsed[0].position).toBe('Senior Engineer');
+    expect(parsed[0].company).toBe('Acme');
+    expect(parsed[0].status).toBe('applied');
+  });
+
+  it('should skip columns mapped to null', () => {
+    const csv = '"Position","Company","Internal Id"\n"Dev","Acme","xyz"';
+    const parsed = parseCSV(csv, ['position', 'company', null]);
+
+    expect(parsed[0].position).toBe('Dev');
+    expect(parsed[0]).not.toHaveProperty('Internal Id');
   });
 });

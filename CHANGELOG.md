@@ -1,3 +1,23 @@
+## [2.9.0] - 2026-09-17
+
+### Added
+- CSV / Sheets import maps foreign headers onto application fields through TypeSafe: `src/utils/csvHeaderMapping.ts` resolves canonical header names deterministically and sends the rest in ONE batched request with a `Choice` per column (17 fields with hints plus `ignore`). Measured on a mixed English/Spanish header row (`Job Title`, `Empresa`, `Estado`, `Fecha de postulación`, `Notas`, `_id interno`, `✅`): 7/7 correct in a single request, 414 ms, 2,834 input / 1,098 output tokens.
+- The import now reports what it could not map: columns answered below the review gate and columns answered `ignore` surface as warnings in the UI (en/es) instead of being dropped silently. The two columns that must not be imported (`_id interno`, `✅`) came back as `ignore` at 0.95 and 0.74 confidence.
+- The record `id` is deliberately excluded from the judgment's options: adopting a foreign id would collide with the import's de-duplication by id and silently drop rows. An exact `id` header (our own export) still round-trips.
+
+### Changed
+- `parseCSV(text, fields?)` accepts an index → field mapping (`null` skips the column) and `parseCsvHeaders(text)` exposes the header row. Without a mapping the parser behaves exactly as before, so exports of ours round-trip untouched.
+- `CSVActions` resolves the headers before parsing (async) and keeps the previous de-duplication/append behaviour.
+
+### Docs
+- `README.md` documents the AI judgments: a table of the four features with their judgment and fallback, the confidence gates, the `POST /api/ai/judgments` endpoint, the `TYPESAFE_API_KEY` setup (local `api/.env` and the GitHub secret) and the behaviour with no key configured. Test counts refreshed.
+- `DOCS/TYPESAFE_OPPORTUNITIES.md` marks the CSV header mapping opportunity as implemented, leaving field extraction (§3) and work-type/date normalisation (§6) open.
+
+### Validation
+- Live API measurement: 7/7 header mapping in one request; the columns that should not be imported were answered `ignore` and therefore routed to the UI warning rather than a silent drop.
+- New tests: 11 for the mapping module (exact matching, judgment only for unresolved headers, single-request shape, review band, `ignore`/unknown/low-confidence → unmapped, id never adopted, unavailable service → canonical only) and 4 for the parser (`parseCsvHeaders`, explicit field list, `null` skip, existing round-trip preserved).
+- Full frontend suite 1,051 tests / 102 files (`LANG=en_US.UTF-8`), ESLint, production build and `knip` clean. PHP untouched.
+
 ## [2.8.0] - 2026-09-17
 
 ### Added
