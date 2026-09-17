@@ -51,6 +51,26 @@ describe('CSV Utility', () => {
     expect(parsed[0].status).toBe('applied');
   });
 
+  it('should apply the injected work-type and date normalizers', () => {
+    const csv = '"Position","Company","Work type","Applied on"\n"Dev","Acme","Remote (EU)","12 de marzo de 2026"';
+    const parsed = parseCSV(csv, ['position', 'company', 'workType', 'applicationDate'], {
+      workType: () => 'remote',
+      date: () => '2026-03-12',
+    });
+
+    expect(parsed[0].workType).toBe('remote');
+    expect(parsed[0].applicationDate).toBe('2026-03-12');
+  });
+
+  it('should fall back to the file value when a normalizer cannot read it', () => {
+    const csv = '"Position","Company","Applied on"\n"Dev","Acme","not a date"';
+    const parsed = parseCSV(csv, ['position', 'company', 'applicationDate'], {
+      date: () => undefined,
+    });
+
+    expect(parsed[0].applicationDate).toBe('not a date');
+  });
+
   it('should skip columns mapped to null', () => {
     const csv = '"Position","Company","Internal Id"\n"Dev","Acme","xyz"';
     const parsed = parseCSV(csv, ['position', 'company', null]);
