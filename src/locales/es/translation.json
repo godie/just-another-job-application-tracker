@@ -503,7 +503,8 @@
       "rejected": "Rechazado",
       "withdrawn": "Retirado",
       "custom": "Personalizado"
-    }
+    },
+    "statsHeading": "Estadísticas de postulaciones"
   },
   "opportunities": {
     "title": "Oportunidades Interesantes",

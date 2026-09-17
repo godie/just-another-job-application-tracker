@@ -503,7 +503,8 @@
       "rejected": "Rejected",
       "withdrawn": "Withdrawn",
       "custom": "Custom"
-    }
+    },
+    "statsHeading": "Application Statistics"
   },
   "opportunities": {
     "title": "Interesting Opportunities",
