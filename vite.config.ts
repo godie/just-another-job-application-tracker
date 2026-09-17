@@ -80,7 +80,7 @@ function cspNoncePlugin(): import('vite').Plugin {
           /<meta http-equiv="Content-Security-Policy" content="([^"]*)"/,
           (_match, content) =>
             `<meta http-equiv="Content-Security-Policy" content="${
-              isBuild ? resolveCspScripts(content, nonce) : content
+              isBuild ? resolveCspNonces(content, nonce) : content
             }"`,
         )
 
@@ -111,7 +111,7 @@ function cspNoncePlugin(): import('vite').Plugin {
       if (fs.existsSync(htaccessPath)) {
         fs.writeFileSync(
           htaccessPath,
-          resolveCspScripts(fs.readFileSync(htaccessPath, 'utf8'), buildNonce),
+          resolveCspNonces(fs.readFileSync(htaccessPath, 'utf8'), buildNonce),
         )
       }
 
@@ -127,27 +127,26 @@ function cspNoncePlugin(): import('vite').Plugin {
 }
 
 /**
- * Put the per-build nonce into the CSP script directives:
+ * Put the per-build nonce into the CSP script and style directives:
  *   - `index.html` carries `'unsafe-inline'` as a build marker → swapped.
  *   - `public/.htaccess` carries no marker (the tracked policy stays strict)
  *     → the nonce is injected ahead of the existing sources.
  *
  * Both policies must carry the SAME nonce because they are enforced as an
  * intersection: without it the Apache policy blocks the app's own inline
- * scripts (theme pre-mount IIFE + runtime JSON-LD from `SEOManager.ts`),
- * which is what happened before this change.
+ * scripts (theme pre-mount IIFE + runtime JSON-LD from `SEOManager.ts`).
  *
- * Style directives are deliberately NOT touched: Google's GSI client
- * (`accounts.google.com/gsi/client`) injects an inline stylesheet with no
- * nonce, and Radix injects scroll-lock styles through
- * `react-style-singleton`/`get-nonce`, which only understands webpack's
- * `__webpack_nonce__`. Neither is patchable from this repo, so
- * `style-src`/`style-src-elem` keep `'unsafe-inline'` — `style-src-attr`
- * stays `'none'`, which is the directive that matters for injected markup.
+ * Styles need the nonce for Radix's runtime `<style>` injection
+ * (`react-style-singleton` reads `window.__webpack_nonce__` via `get-nonce`;
+ * the pre-mount script in `index.html` sets it) and the SHA-256 hash of
+ * Google GSI's injected stylesheet (`accounts.google.com/gsi/client` — its
+ * CSS content is what `style-src` in the source files pins). If Google ships
+ * a different stylesheet the hash stops matching and only GSI's own styles
+ * are dropped, which was verified to leave the app fully functional.
  */
-function resolveCspScripts(csp: string, nonce: string): string {
+function resolveCspNonces(csp: string, nonce: string): string {
   return csp.replace(
-    /(script-src(?:-elem)? )([^;]+)/g,
+    /((?:script|style)-src(?:-elem)? )([^;]+)/g,
     (_match, prefix: string, sources: string) => {
       if (sources.includes('nonce-')) return prefix + sources
       if (sources.includes("'unsafe-inline'")) {

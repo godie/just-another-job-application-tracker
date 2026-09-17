@@ -42,6 +42,14 @@ describe('frontend CSP configuration', () => {
       expect(scriptElementSource).toContain("script-src-elem 'self'");
       expect(scriptSource).not.toContain("'unsafe-inline'");
       expect(scriptElementSource).not.toContain("'unsafe-inline'");
+
+      // Inline CSS is allowed only by the pinned GSI hash (plus the per-build
+      // nonce injected at build time), never by 'unsafe-inline'.
+      const styleSource = csp.match(/(?:^|[;])\s*style-src\s+[^;]*/)?.[0] ?? '';
+      const styleElementSource = csp.match(/(?:^|[;])\s*style-src-elem\s+[^;]*/)?.[0] ?? '';
+      expect(styleSource).not.toContain("'unsafe-inline'");
+      expect(styleElementSource).not.toContain("'unsafe-inline'");
+      expect(styleElementSource).toContain('sha256-');
     }
   });
 

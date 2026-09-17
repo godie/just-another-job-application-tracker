@@ -1,3 +1,19 @@
+## [2.7.8] - 2026-09-16
+
+### Security
+- Removed the last `'unsafe-inline'` from the production CSP: `style-src` / `style-src-elem` no longer allow arbitrary inline CSS (the Aikido "CSP config allows inline CSS" finding, previously accepted as a residual). Inline styles are now limited to two explicit sources:
+  - the SHA-256 hash of the stylesheet Google GSI injects (`accounts.google.com/gsi/client`), whose CSS content is static. If Google ships a different bundle the hash stops matching and only GSI's own styles are dropped — a state verified in a browser to leave the app fully functional (theme script, runtime JSON-LD, rendered UI).
+  - the per-build nonce, used by Radix's `react-style-singleton` for the scroll-lock `<style>` it injects at runtime. That CSS carries a runtime-measured scrollbar width, so it cannot be hashed; `get-nonce` reads `window.__webpack_nonce__`, which the pre-mount script in `index.html` now sets to the policy nonce (the minified library in the shipped bundle was inspected to confirm this exact path).
+- `cspNoncePlugin()` now resolves the style directives as well, injecting the same per-build nonce into the meta tag and the generated `dist/.htaccess` (previously only `script-src` / `script-src-elem` were handled).
+
+### Docs
+- Added `DOCS/TYPESAFE_OPPORTUNITIES.md`: a ranked review of where this codebase does fragile parsing (prompt-and-parse in `geminiJobScoring`, exact company/position matching in `manualScan`, regex extraction in `emailAdapter`, keyword dictionaries in `matching`, CSV header matching, work-type and date normalisation) with the TypeSafe judgment design that would replace each, plus integration notes (server-side key, one batched request per unit of work, Choice/token limits) and a suggested spike order.
+
+### Validation
+- Verified in a real browser (Playwright chromium) serving `dist/` with the CSP parsed out of `dist/.htaccess`, so the meta/header intersection is exercised as in production: the served policy contains no `'unsafe-inline'`, `window.__webpack_nonce__` equals the policy nonce, zero CSP console violations, the theme script runs and the JSON-LD script is injected with the nonce.
+- `src/utils/cspConfig.test.ts` now also asserts that both tracked production policies carry no `'unsafe-inline'` in their style directives and that the GSI hash stays pinned.
+- Full frontend suite 991 tests / 97 files (`LANG=en_US.UTF-8`), ESLint, production build and `knip` clean. PHP: 108 tests / 330 assertions and PHPStan clean; secret scan and the 2.7.8 orphan sweep clean.
+
 ## [2.7.7] - 2026-09-16
 
 ### Security
