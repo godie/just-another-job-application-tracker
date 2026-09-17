@@ -1,3 +1,13 @@
+## [2.13.1] - 2026-09-17
+
+### Changed
+- Unified two pending refactor branches into one: `ApplicationCard` no longer declares the unused `onEdit` prop (its call sites and tests stop passing it), and the metrics summary of `InsightsPage` moved into a memoised `InsightsMetricsSummary` component.
+- Dropped two pieces of churn the original branches carried: an unrelated `"toml": "5.0.0"` npm override plus its `package-lock.json` diff, which had been added to the prop-removal refactor, and a stale `2.7.3` version bump from both branches (this branch claims `2.13.1` once).
+- The extracted summary's screen-reader heading now comes from `insights.statsHeading` (en/es) instead of the hardcoded English string it had inline.
+
+### Validation
+- Full frontend suite 1,096 tests / 106 files (`LANG=en_US.UTF-8`), ESLint, production build and `knip` clean. PHP untouched except the version constant.
+
 ## [2.13.0] - 2026-09-17
 
 > Version note: this branch was cut while PR #275 (2.12.0) was still open and claimed 2.13.0
