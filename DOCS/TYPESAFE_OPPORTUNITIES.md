@@ -16,14 +16,16 @@ The rule this document follows, from
 semantic judgments.** Nothing here asks a model to generate text or choose its own next
 step.
 
-> Status: **partly implemented as of 2.11.0**. Opportunity match scoring (§1), the email →
-> application match (§2), the email event classification (§3), the company/position span
-> extraction (§3) and the CSV/Sheets header mapping (§5) run through
-> `POST /api/ai/judgments`; each keeps its existing deterministic behaviour whenever the
-> service is unavailable or the answer falls below the confidence gates, and the scoring
-> path escalates to Gemini only when a judgment is unsure and the user supplied a key.
-> Still open: work-type and date normalisation (§6). Before extending the integration,
-> read [the HTTP API](https://docs.typesafe.ai/api.md) or
+> Status: **all six opportunities implemented as of 2.12.0**. Opportunity match scoring (§1),
+> the email → application match (§2), the email event classification and company/position
+> span extraction (§3), the CSV/Sheets header mapping (§5) and the work-type/date
+> normalisation (§6) run through `POST /api/ai/judgments`. Each keeps its existing
+> deterministic behaviour whenever the service is unavailable or the answer falls below the
+> confidence gates, the scoring path escalates to Gemini only when a judgment is unsure and
+> the user supplied a key, and the date normalisation deliberately stayed deterministic
+> after a judgment was measured at 1/2 on ambiguous Spanish dates (§6 below).
+> Before extending the integration, read
+> [the HTTP API](https://docs.typesafe.ai/api.md) or
 > [JavaScript SDK](https://docs.typesafe.ai/sdk/javascript.md) for the current contracts.
 
 ## Ranked opportunities

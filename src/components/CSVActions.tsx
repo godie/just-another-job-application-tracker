@@ -1,8 +1,10 @@
 import React, { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useApplicationsStore } from '../stores/applicationsStore';
-import { exportToCSV, parseCSV, parseCsvHeaders } from '../utils/csv';
+import { exportToCSV, parseCSV, parseCsvHeaders, parseCsvRows } from '../utils/csv';
 import { resolveCsvColumns } from '../utils/csvHeaderMapping';
+import { normalizeDate, normalizeWorkTypes } from '../utils/fieldNormalization';
+import { usePreferencesStore } from '../stores/preferencesStore';
 import { getCurrentDateKey } from '../utils/dateHelpers';
 import { useAlert } from './AlertProvider';
 import { HiDownload, HiUpload } from 'react-icons/hi';
@@ -13,6 +15,7 @@ const CSVActions: React.FC = () => {
   const { showSuccess, showError, showWarning } = useAlert();
   const applications = useApplicationsStore((state) => state.applications);
   const setApplications = useApplicationsStore((state) => state.setApplications);
+  const dateFormat = usePreferencesStore((state) => state.preferences.dateFormat);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleExport = () => {
@@ -51,7 +54,30 @@ const CSVActions: React.FC = () => {
         // the rest goes through one judgment request, and anything left over
         // is reported instead of being dropped silently.
         const { fields, review, unmapped } = await resolveCsvColumns(parseCsvHeaders(text));
-        const importedApps = parseCSV(text, fields);
+
+        // Free-text columns are normalised before parsing: aliases and date
+        // formats resolve in code, and only what is left (odd work types,
+        // ambiguous numeric dates) goes into one judgment request.
+        const dataRows = parseCsvRows(text).slice(1);
+        const valuesFor = (indexes: number[]): string[] =>
+          [...new Set(indexes.flatMap((index) => dataRows.map((row) => row[index] ?? '')).filter(Boolean))];
+        const workTypeIndex = fields.indexOf('workType');
+        const dateIndexes = ['applicationDate', 'interviewDate', 'followUpDate']
+          .map((field) => fields.indexOf(field as never))
+          .filter((index) => index >= 0);
+        const preferredOrder = dateFormat === 'MM/DD/YYYY' ? 'MDY' : 'DMY';
+
+        const workTypes = await normalizeWorkTypes(workTypeIndex >= 0 ? valuesFor([workTypeIndex]) : []);
+
+        const importedApps = parseCSV(text, fields, {
+          workType: (raw) => workTypes.get(raw)?.workType,
+          date: (raw) => normalizeDate(raw, preferredOrder),
+        });
+
+        const unresolvedValues = [
+          ...(workTypeIndex >= 0 ? valuesFor([workTypeIndex]).filter((value) => !workTypes.get(value)) : []),
+          ...valuesFor(dateIndexes).filter((value) => !normalizeDate(value, preferredOrder)),
+        ];
 
         if (importedApps.length > 0) {
           const existingIds = new Set(applications.map(app => app.id));
@@ -72,6 +98,9 @@ const CSVActions: React.FC = () => {
         }
         if (unmapped.length > 0) {
           showWarning(t('csv.columnsIgnored', { columns: unmapped.join(', ') }));
+        }
+        if (unresolvedValues.length > 0) {
+          showWarning(t('csv.valuesNotNormalized', { values: unresolvedValues.join(', ') }));
         }
       } catch (error) {
         console.error('Error importing CSV:', error);
