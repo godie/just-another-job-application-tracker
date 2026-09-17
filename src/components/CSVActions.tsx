@@ -1,7 +1,8 @@
 import React, { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useApplicationsStore } from '../stores/applicationsStore';
-import { exportToCSV, parseCSV } from '../utils/csv';
+import { exportToCSV, parseCSV, parseCsvHeaders } from '../utils/csv';
+import { resolveCsvColumns } from '../utils/csvHeaderMapping';
 import { getCurrentDateKey } from '../utils/dateHelpers';
 import { useAlert } from './AlertProvider';
 import { HiDownload, HiUpload } from 'react-icons/hi';
@@ -9,7 +10,7 @@ import { Button } from './ui/Button';
 
 const CSVActions: React.FC = () => {
   const { t } = useTranslation();
-  const { showSuccess, showError } = useAlert();
+  const { showSuccess, showError, showWarning } = useAlert();
   const applications = useApplicationsStore((state) => state.applications);
   const setApplications = useApplicationsStore((state) => state.setApplications);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -43,10 +44,14 @@ const CSVActions: React.FC = () => {
     if (!file) return;
 
     const reader = new FileReader();
-    reader.onload = (e) => {
+    reader.onload = async (e) => {
       try {
         const text = e.target?.result as string;
-        const importedApps = parseCSV(text);
+        // Headers are resolved before parsing: canonical names match directly,
+        // the rest goes through one judgment request, and anything left over
+        // is reported instead of being dropped silently.
+        const { fields, review, unmapped } = await resolveCsvColumns(parseCsvHeaders(text));
+        const importedApps = parseCSV(text, fields);
 
         if (importedApps.length > 0) {
           const existingIds = new Set(applications.map(app => app.id));
@@ -58,6 +63,15 @@ const CSVActions: React.FC = () => {
           } else {
             showSuccess(t('csv.importSuccess', { count: 0 }));
           }
+        } else {
+          showError(t('csv.importError'));
+        }
+
+        if (review.length > 0) {
+          showWarning(t('csv.columnsReview', { columns: review.join(', ') }));
+        }
+        if (unmapped.length > 0) {
+          showWarning(t('csv.columnsIgnored', { columns: unmapped.join(', ') }));
         }
       } catch (error) {
         console.error('Error importing CSV:', error);
