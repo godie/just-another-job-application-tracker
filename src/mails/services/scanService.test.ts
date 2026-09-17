@@ -394,6 +394,57 @@ describe('scanService', () => {
       expect(mockedMatchEmailToApplication).not.toHaveBeenCalled();
     });
 
+    it('records an audit row for every email it looked at', async () => {
+      mockGetState.mockReturnValue({
+        applications: [application],
+        addApplication: mockAddApplication,
+        updateApplication: mockUpdateApplication,
+      });
+      mockedClassifyEmails.mockResolvedValue(
+        new Map([
+          [0, { type: 'next_steps', verdict: 'auto', confidence: 0.9 }],
+          [1, { type: 'other', verdict: 'auto', confidence: 0.95 }],
+        ]),
+      );
+      mockedMatchEmailToApplication.mockResolvedValue({
+        applicationId: 'app-1',
+        verdict: 'auto',
+        confidence: 0.9,
+      });
+
+      const preview = await scanEmails(
+        new FakeEmailProvider([
+          {
+            id: 'm-interview',
+            subject: 'Interview invitation for Senior Engineer at Acme',
+            from: 'recruiter@acme.com',
+            body: 'We would like to schedule an interview next week.',
+            internalDate: String(Date.now() - 1000 * 60 * 60 * 24),
+          },
+          {
+            id: 'm-alert',
+            subject: 'New jobs matching your application keywords',
+            from: 'alerts@jobboard.io',
+            body: 'Ten new openings this week.',
+            internalDate: String(Date.now() - 1000 * 60 * 60 * 24),
+          },
+        ]),
+      );
+
+      expect(preview.audit).toHaveLength(2);
+      expect(preview.audit?.[0]).toMatchObject({
+        emailId: 'm-interview',
+        outcome: 'update',
+        matchedApplicationId: 'app-1',
+        classification: { type: 'next_steps', confidence: 0.9, verdict: 'auto' },
+      });
+      expect(preview.audit?.[1]).toMatchObject({
+        emailId: 'm-alert',
+        outcome: 'skipped',
+        classification: { type: 'other', verdict: 'auto' },
+      });
+    });
+
     it('keeps the keyword behaviour when the judgment is unavailable', async () => {
       mockGetState.mockReturnValue({
         applications: [application],

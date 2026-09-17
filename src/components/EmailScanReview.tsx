@@ -14,6 +14,7 @@ import { useGeminiKeyStore } from '../store/geminiKeyStore';
 import { processManualScanJson } from '../utils/manualScan';
 import { callGeminiApi } from '../utils/geminiApi';
 import { GeminiKeyModal } from './GeminiKeyModal';
+import { EmailScanAuditTable } from './EmailScanAuditTable';
 import { useFormatDate } from '../hooks/useFormatDate';
 import { useGoogleToken } from '../hooks/useGoogleToken';
 import { ScanAuthGate, type ScanAuthStatus } from './ScanAuthGate';
@@ -22,7 +23,7 @@ import { ManualProcessingPanel } from './ManualProcessingPanel';
 
 import { emailScanReviewReducer } from './emailScanReducer';
 
-type ActiveTab = 'automatic' | 'manual';
+type ActiveTab = 'automatic' | 'manual' | 'audit';
 
 
 const EmailScanHeader: React.FC = () => {
@@ -67,6 +68,17 @@ const EmailScanTabs: React.FC<{
         type="button"
       >
         {t('settings.emailScan.tabs.manual')}
+      </button>
+      <button
+        className={`px-4 py-2 font-medium text-sm transition-colors ${
+          activeTab === 'audit'
+            ? 'border-b-2 border-primary text-primary'
+            : 'text-muted-foreground hover:text-foreground dark:text-muted-foreground'
+        }`}
+        onClick={() => onTabChange('audit')}
+        type="button"
+      >
+        {t('settings.emailScan.tabs.audit')}
       </button>
     </div>
   );
@@ -437,7 +449,11 @@ export function EmailScanReview() {
           />
         )}
 
-        {showAuthed && preview && (
+        {showAuthed && activeTab === 'audit' && (
+          <EmailScanAuditTable rows={preview?.audit ?? []} />
+        )}
+
+        {showAuthed && activeTab !== 'audit' && preview && (
           <ScanResults
             preview={preview}
             applications={applications}

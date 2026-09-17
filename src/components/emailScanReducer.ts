@@ -1,6 +1,6 @@
 
 export interface EmailScanReviewState {
-  activeTab: 'automatic' | 'manual';
+  activeTab: 'automatic' | 'manual' | 'audit';
   processingMode: 'manual' | 'api';
   showGeminiModal: boolean;
   geminiProcessing: boolean;
@@ -10,7 +10,7 @@ export interface EmailScanReviewState {
 }
 
 export type EmailScanReviewAction =
-  | { type: 'SET_ACTIVE_TAB'; value: 'automatic' | 'manual' }
+  | { type: 'SET_ACTIVE_TAB'; value: 'automatic' | 'manual' | 'audit' }
   | { type: 'SET_PROCESSING_MODE'; value: 'manual' | 'api' }
   | { type: 'SET_SHOW_GEMINI_MODAL'; value: boolean }
   | { type: 'SET_GEMINI_PROCESSING'; value: boolean }
