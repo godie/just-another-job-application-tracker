@@ -385,7 +385,8 @@
       "geminiKeyNotConfiguredDesc": "Configura tu clave API de Gemini para habilitar el procesamiento directo por API para escaneo de emails.",
       "geminiKeySetup": "Configurar",
       "geminiKeyChange": "Cambiar",
-      "geminiKeyRemove": "Eliminar"
+      "geminiKeyRemove": "Eliminar",
+      "matchNeedsReview": "Revisar coincidencia"
     },
     "cloud": {
       "linkGoogle": "Vincular cuenta de Google",

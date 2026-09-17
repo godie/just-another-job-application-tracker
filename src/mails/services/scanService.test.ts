@@ -14,9 +14,24 @@ vi.mock('../../stores/applicationsStore', () => ({
   },
 }));
 
+vi.mock('../../utils/applicationMatch', () => ({
+  matchEmailToApplication: vi.fn(),
+}));
+
+vi.mock('../../utils/emailClassification', () => ({
+  classifyEmailsWithJudgment: vi.fn(),
+}));
+
+import { matchEmailToApplication } from '../../utils/applicationMatch';
+import { classifyEmailsWithJudgment } from '../../utils/emailClassification';
+
+const mockedMatchEmailToApplication = vi.mocked(matchEmailToApplication);
+const mockedClassifyEmails = vi.mocked(classifyEmailsWithJudgment);
+
 describe('scanService', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockedClassifyEmails.mockResolvedValue(new Map());
     mockGetState.mockReturnValue({
       applications: [],
       addApplication: mockAddApplication,
@@ -245,6 +260,164 @@ describe('scanService', () => {
       });
       expect(result.added).toBe(0);
       expect(result.updated).toBe(1);
+    });
+  });
+
+  describe('AI judgment fallback for company-name variants', () => {
+    const interviewEmail = {
+      id: 'm-interview',
+      subject: 'Interview invitation for Senior Engineer at Acme',
+      from: 'recruiter@acme.com',
+      body: 'We would like to schedule an interview next week.',
+      internalDate: String(Date.now() - 1000 * 60 * 60 * 24),
+    };
+
+    const variantApplication = {
+      id: 'app-1',
+      position: 'Senior Engineer',
+      company: 'ACME, Inc.',
+      status: 'interviewing',
+      applicationDate: '2026-01-10',
+      timeline: [],
+    } as JobApplication;
+
+    it('attaches the update when the judgment matches a variant company name', async () => {
+      mockGetState.mockReturnValue({
+        applications: [variantApplication],
+        addApplication: mockAddApplication,
+        updateApplication: mockUpdateApplication,
+      });
+      mockedMatchEmailToApplication.mockResolvedValue({
+        applicationId: 'app-1',
+        verdict: 'auto',
+        confidence: 0.88,
+      });
+
+      const preview = await scanEmails(new FakeEmailProvider([interviewEmail]));
+
+      expect(mockedMatchEmailToApplication).toHaveBeenCalledTimes(1);
+      expect(preview.proposedUpdates).toHaveLength(1);
+      expect(preview.proposedUpdates[0].applicationId).toBe('app-1');
+      expect(preview.proposedUpdates[0].company).toBe('ACME, Inc.');
+      expect(preview.proposedUpdates[0].needsReview).toBeFalsy();
+    });
+
+    it('marks a mid-confidence match for review', async () => {
+      mockGetState.mockReturnValue({
+        applications: [variantApplication],
+        addApplication: mockAddApplication,
+        updateApplication: mockUpdateApplication,
+      });
+      mockedMatchEmailToApplication.mockResolvedValue({
+        applicationId: 'app-1',
+        verdict: 'review',
+        confidence: 0.61,
+      });
+
+      const preview = await scanEmails(new FakeEmailProvider([interviewEmail]));
+
+      expect(preview.proposedUpdates[0].needsReview).toBe(true);
+    });
+
+    it('keeps the previous behaviour when the judgment is unavailable', async () => {
+      mockGetState.mockReturnValue({
+        applications: [variantApplication],
+        addApplication: mockAddApplication,
+        updateApplication: mockUpdateApplication,
+      });
+      mockedMatchEmailToApplication.mockResolvedValue(null);
+
+      const preview = await scanEmails(new FakeEmailProvider([interviewEmail]));
+
+      expect(preview.proposedUpdates).toHaveLength(0);
+    });
+  });
+
+  describe('AI email classification', () => {
+    const application = {
+      id: 'app-1',
+      position: 'Senior Engineer',
+      company: 'Acme',
+      status: 'interviewing',
+      applicationDate: '2026-01-10',
+      timeline: [],
+    } as JobApplication;
+
+    // Wording the keyword cascade has no rule for (no 'regret'/'lamentamos'/
+    // 'other candidates'/...), so `classify()` returns null for it.
+    const unfamiliarEmail = {
+      id: 'm-unfamiliar',
+      subject: 'Sobre tu candidatura',
+      from: 'people@acme.com',
+      body: 'Finalmente elegimos a otra persona para el puesto. Gracias por tu tiempo.',
+      internalDate: String(Date.now() - 1000 * 60 * 60 * 24),
+    };
+
+    it('classifies an email the keyword cascade cannot and proposes its update', async () => {
+      mockGetState.mockReturnValue({
+        applications: [application],
+        addApplication: mockAddApplication,
+        updateApplication: mockUpdateApplication,
+      });
+      mockedClassifyEmails.mockResolvedValue(
+        new Map([[0, { type: 'rejected', verdict: 'auto', confidence: 0.88 }]]),
+      );
+      mockedMatchEmailToApplication.mockResolvedValue({
+        applicationId: 'app-1',
+        verdict: 'auto',
+        confidence: 0.9,
+      });
+
+      const preview = await scanEmails(new FakeEmailProvider([unfamiliarEmail]));
+
+      expect(mockedClassifyEmails).toHaveBeenCalledTimes(1);
+      expect(preview.proposedAdditions).toHaveLength(0);
+      expect(preview.proposedUpdates).toHaveLength(1);
+      expect(preview.proposedUpdates[0].applicationId).toBe('app-1');
+      expect(preview.proposedUpdates[0].newEvent.type).toBe('rejected');
+    });
+
+    it('skips an email the judgment calls unrelated', async () => {
+      mockGetState.mockReturnValue({
+        applications: [application],
+        addApplication: mockAddApplication,
+        updateApplication: mockUpdateApplication,
+      });
+      mockedClassifyEmails.mockResolvedValue(
+        new Map([[0, { type: 'other', verdict: 'auto', confidence: 0.93 }]]),
+      );
+
+      const preview = await scanEmails(new FakeEmailProvider([unfamiliarEmail]));
+
+      expect(preview.proposedAdditions).toHaveLength(0);
+      expect(preview.proposedUpdates).toHaveLength(0);
+      expect(mockedMatchEmailToApplication).not.toHaveBeenCalled();
+    });
+
+    it('keeps the keyword behaviour when the judgment is unavailable', async () => {
+      mockGetState.mockReturnValue({
+        applications: [application],
+        addApplication: mockAddApplication,
+        updateApplication: mockUpdateApplication,
+      });
+
+      const preview = await scanEmails(
+        new FakeEmailProvider([
+          {
+            id: 'm-keyword-interview',
+            subject: 'Interview invitation for Senior Engineer at Acme',
+            from: 'recruiter@acme.com',
+            body: 'We would like to schedule an interview next week.',
+            internalDate: String(Date.now() - 1000 * 60 * 60 * 24),
+          },
+        ]),
+      );
+
+      // 'Interview invitation ... at Acme' matches the keyword cascade and the
+      // company map, so the update is proposed without any judgment call.
+      expect(preview.proposedUpdates).toHaveLength(1);
+      expect(preview.proposedUpdates[0].applicationId).toBe('app-1');
+      expect(mockedMatchEmailToApplication).not.toHaveBeenCalled();
     });
   });
 });

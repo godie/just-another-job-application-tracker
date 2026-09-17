@@ -37,6 +37,11 @@ export const ProposedUpdateItem: React.FC<ProposedUpdateItemProps> = ({
           <span className="px-2 py-0.5 rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 text-[10px] font-bold uppercase tracking-wider">
             +{t(`insights.interviewTypes.${update.newEvent.type}`)}
           </span>
+          {update.needsReview && (
+            <span className="px-2 py-0.5 rounded-full bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200 text-[10px] font-bold uppercase tracking-wider">
+              {t('settings.emailScan.matchNeedsReview')}
+            </span>
+          )}
         </div>
         <div className="flex items-center gap-3 mt-1">
           <p className="text-xs text-muted-foreground truncate flex-1">

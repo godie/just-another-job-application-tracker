@@ -140,6 +140,8 @@ $router->add('POST', '/suggestions', 'SuggestionsController@store');
 
 $router->add('POST', '/google-sheets', 'GoogleSheetsController@index');
 
+$router->add('POST', '/ai/judgments', 'AiJudgmentController@systemOne');
+
 $router->add('POST', '/job-search', 'JobSearchController@search');
 
 $router->add('GET', '/sync/applications', function() {

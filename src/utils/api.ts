@@ -34,7 +34,7 @@ interface MeResponse {
   isAuthenticated: boolean;
 }
 
-function fetchWithTrace(url: string, init: RequestInit = {}): Promise<Response> {
+export function fetchWithTrace(url: string, init: RequestInit = {}): Promise<Response> {
   return fetch(url, {
     ...init,
     headers: {

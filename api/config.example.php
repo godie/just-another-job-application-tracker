@@ -75,6 +75,8 @@ return [
     'google_client_secret' => getenv('GOOGLE_CLIENT_SECRET') ?: '__VITE_GOOGLE_CLIENT_SECRET__',
     'linkedin_client_id' => getenv('LINKEDIN_CLIENT_ID') ?: '__LINKEDIN_CLIENT_ID__',
     'linkedin_client_secret' => getenv('LINKEDIN_CLIENT_SECRET') ?: '__LINKEDIN_CLIENT_SECRET__',
+    'typesafe_api_key' => getenv('TYPESAFE_API_KEY') ?: '__TYPESAFE_API_KEY__',
+    'typesafe_model' => getenv('TYPESAFE_MODEL') ?: 'jev-latest',
 
     'logfire' => [
         'token' => getenv('LOGFIRE_TOKEN') ?: '',

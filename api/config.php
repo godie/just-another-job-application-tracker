@@ -69,6 +69,10 @@ return [
     'refresh_cookie_days' => 30,
     'google_client_id' => getenv('GOOGLE_CLIENT_ID') ?: '',
     'google_client_secret' => getenv('GOOGLE_CLIENT_SECRET') ?: '',
+    'linkedin_client_secret' => getenv('LINKEDIN_CLIENT_SECRET') ?: '',
+    'typesafe_api_key' => getenv('TYPESAFE_API_KEY') ?: '',
+    'typesafe_model' => getenv('TYPESAFE_MODEL') ?: 'jev-latest',
+
     'logfire' => [
         'token' => getenv('LOGFIRE_TOKEN') ?: '',
         'service_name' => getenv('OTEL_SERVICE_NAME') ?: 'overphp-api',
