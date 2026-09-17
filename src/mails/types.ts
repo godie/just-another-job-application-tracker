@@ -1,3 +1,5 @@
+import type { EmailEventType } from '../utils/emailClassification';
+
 import type { JobApplication, InterviewEvent } from '../types/applications';
 
 export interface RawEmail {
@@ -170,6 +172,33 @@ export interface ScanPreview {
   proposedAdditions: ProposedAddition[];
   proposedUpdates: ProposedUpdate[];
   emails: Email[];
+  /**
+   * One row per scanned email with what the pipeline decided, so the result
+   * can be audited and labelled by hand. Optional for callers that only care
+   * about the proposals.
+   */
+  audit?: ScanAuditRow[];
+}
+
+/** What the pipeline decided for one email, for auditing. */
+export interface ScanAuditRow {
+  emailId: string;
+  subject: string;
+  from: string;
+  date: string;
+  /** Normalized email body (already stripped of HTML by the provider). */
+  body: string;
+  classification: {
+    type: EmailEventType;
+    confidence: number;
+    verdict: 'auto' | 'review' | 'none';
+  } | null;
+  extraction: {
+    position?: string;
+    company?: string;
+  };
+  outcome: 'addition' | 'update' | 'skipped' | 'no_event';
+  matchedApplicationId?: string;
 }
 
 export interface ApplyResult {

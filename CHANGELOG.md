@@ -1,3 +1,18 @@
+## [2.10.0] - 2026-09-17
+
+### Added
+- **Email scan audit table** (new "Audit" tab in the email scan): every email the scan looked at is listed with its raw subject, sender, date and body snippet next to what the pipeline decided — outcome (`new application` / `update` / `skipped` / `not an application email`), the classification type with its confidence, and the extracted position/company. Each row is editable (event type, position, company, reviewed flag) so wrong results can be corrected by hand, labels persist per email id (a re-scan of the same emails keeps them), and live stats show how many rows were reviewed and corrected.
+- **Label export** (`src/utils/scanAudit.ts`): the labelled set downloads as JSON — pipeline result plus the human label and the stats, which is the dataset used to tune the classifier — or as CSV for a spreadsheet pass.
+- `ScanPreview.audit` now carries one row per scanned email, **including the ones that produce no proposal**, with classification, extraction, outcome and matched application. This is what makes the silently dropped emails visible for the first time.
+
+### Changed
+- `scanService.scanEmails` records an audit row on every exit path (addition, update, skipped, no event) instead of only when a proposal is produced.
+- The email scan tab type is now `'automatic' | 'manual' | 'audit'`; `EmailAdapter.classify` and the keyword cascade are untouched and remain the fallback.
+
+### Validation
+- New tests: 12 for the audit module (label persistence and merge across a re-scan, correction detection, stats, JSON shape, CSV quoting) and 4 for the table (empty state, pipeline rendering, the correction flow writing to storage and updating the stats, pipeline values as placeholders), plus a scan-level assertion that an email which produces no proposal still gets an audit row.
+- Full frontend suite 1,066 tests / 104 files (`LANG=en_US.UTF-8`), ESLint, production build and `knip` clean. PHP untouched.
+
 ## [2.9.0] - 2026-09-17
 
 ### Added

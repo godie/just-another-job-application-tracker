@@ -1,6 +1,6 @@
 import type { EmailProvider } from '../providers/emailProvider';
 import type { RawEmail, Email } from '../types';
-import type { ScanPreview, ProposedAddition, ProposedUpdate, ApplyResult } from '../types';
+import type { ScanPreview, ScanAuditRow, ProposedAddition, ProposedUpdate, ApplyResult } from '../types';
 import type { JobApplication } from '../../types/applications';
 
 import { EmailAdapter } from '../adapter/emailAdapter';
@@ -83,6 +83,7 @@ export async function scanEmails(provider: EmailProvider, daysBack: number = 30)
 
   const proposedAdditions: ProposedAddition[] = [];
   const proposedUpdates: ProposedUpdate[] = [];
+  const audit: ScanAuditRow[] = [];
   let judgmentsUsed = 0;
 
   const appByCompany = new Map<string, JobApplication>();
@@ -100,9 +101,25 @@ export async function scanEmails(provider: EmailProvider, daysBack: number = 30)
   for (let i = 0; i < emails.length; i++) {
     const email = emails[i];
     const classification = classifications.get(i);
+    const base: Omit<ScanAuditRow, 'outcome'> = {
+      emailId: email.id,
+      subject: email.subject,
+      from: email.from,
+      date: email.date,
+      body: email.body,
+      classification: classification?.type
+        ? {
+            type: classification.type,
+            confidence: classification.confidence,
+            verdict: classification.verdict,
+          }
+        : null,
+      extraction: {},
+    };
 
     if (classification?.type === 'other' && classification.verdict === 'auto') {
-      continue; // confidently not about an application (job alert, newsletter)
+      audit.push({ ...base, outcome: 'skipped' }); // job alert, newsletter
+      continue;
     }
 
     let event = adapter.classify(email);
@@ -117,6 +134,7 @@ export async function scanEmails(provider: EmailProvider, daysBack: number = 30)
         classification.type === 'other' ||
         classification.type === 'application_submitted'
       ) {
+        audit.push({ ...base, outcome: 'no_event' });
         continue;
       }
       event = {
@@ -129,15 +147,24 @@ export async function scanEmails(provider: EmailProvider, daysBack: number = 30)
       event.type = classification.type;
     }
     const needsReview = classification?.verdict === 'review';
+    const extraction = { position: event.position, company: event.company };
 
     if (event.type === 'application_submitted') {
       const company = event.company?.toLowerCase();
-      const exists = company ? appByCompany.has(company) : false;
-      if (!exists) {
+      const existing = company ? appByCompany.get(company) : undefined;
+      if (!existing) {
         proposedAdditions.push({
           id: `add-${event.id}`,
           data: adapter.applicationFromEvent(event),
           source: { subject: email.subject, date: email.date },
+        });
+        audit.push({ ...base, extraction, outcome: 'addition' });
+      } else {
+        audit.push({
+          ...base,
+          extraction,
+          outcome: 'skipped',
+          matchedApplicationId: existing.id,
         });
       }
     } else {
@@ -153,6 +180,7 @@ export async function scanEmails(provider: EmailProvider, daysBack: number = 30)
           source: { subject: email.subject, date: email.date },
           needsReview: needsReview || undefined,
         });
+        audit.push({ ...base, extraction, outcome: 'update', matchedApplicationId: app.id });
       } else if (judgmentsUsed < MAX_JUDGMENTS_PER_SCAN) {
         // Company names vary ("ACME, Inc." vs "Acme") and a classified email
         // may carry no company at all; ask a judgment instead of dropping the
@@ -176,12 +204,22 @@ export async function scanEmails(provider: EmailProvider, daysBack: number = 30)
             source: { subject: email.subject, date: email.date },
             needsReview: needsReview || (decision?.verdict === 'review'),
           });
+          audit.push({
+            ...base,
+            extraction,
+            outcome: 'update',
+            matchedApplicationId: matched.id,
+          });
+        } else {
+          audit.push({ ...base, extraction, outcome: 'skipped' });
         }
+      } else {
+        audit.push({ ...base, extraction, outcome: 'skipped' });
       }
     }
   }
 
-  return { proposedAdditions, proposedUpdates, emails };
+  return { proposedAdditions, proposedUpdates, emails, audit };
 }
 
 export function applyScanPreview(

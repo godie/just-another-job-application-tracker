@@ -335,7 +335,8 @@
       "enabledChatbots": "Enabled chatbots",
       "tabs": {
         "automatic": "Automatic Scan",
-        "manual": "Metadata & Chatbot"
+        "manual": "Metadata & Chatbot",
+        "audit": "Audit"
       },
       "snippetLength": "Snippet length",
       "generatePrompt": "Generate Chatbot Prompt",
@@ -386,7 +387,42 @@
       "geminiKeySetup": "Set up",
       "geminiKeyChange": "Change",
       "geminiKeyRemove": "Remove",
-      "matchNeedsReview": "Review match"
+      "matchNeedsReview": "Review match",
+      "audit": {
+        "title": "Audit the last scan",
+        "hint": "Compare what the scanner decided with the email itself, correct anything wrong, then export the labels to tune the classifier.",
+        "stats": "{{total}} emails · {{reviewed}} reviewed · {{corrected}} corrected",
+        "exportJson": "Export labels (JSON)",
+        "exportCsv": "Export labels (CSV)",
+        "noRows": "Run a scan first: this table lists every email it looked at, and what it decided for each one.",
+        "noClassification": "not classified",
+        "unknown": "unknown",
+        "columns": {
+          "email": "Email",
+          "pipeline": "Scanner result",
+          "label": "Your label"
+        },
+        "fields": {
+          "eventType": "Event type",
+          "position": "Position",
+          "company": "Company",
+          "reviewed": "Reviewed",
+          "unset": "— not set —"
+        },
+        "outcomes": {
+          "addition": "new application",
+          "update": "update",
+          "skipped": "skipped",
+          "no_event": "not an application email"
+        },
+        "eventTypes": {
+          "application_submitted": "Application confirmation",
+          "next_steps": "Interview / next steps",
+          "rejected": "Rejection",
+          "offer": "Offer",
+          "other": "Unrelated"
+        }
+      }
     },
     "cloud": {
       "linkGoogle": "Link Google account",

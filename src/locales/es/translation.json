@@ -335,7 +335,8 @@
       "enabledChatbots": "Chatbots habilitados",
       "tabs": {
         "automatic": "Escaneo Automático",
-        "manual": "Metadata y Chatbot"
+        "manual": "Metadata y Chatbot",
+        "audit": "Auditoría"
       },
       "snippetLength": "Longitud del extracto",
       "generatePrompt": "Generar Prompt para Chatbot",
@@ -386,7 +387,42 @@
       "geminiKeySetup": "Configurar",
       "geminiKeyChange": "Cambiar",
       "geminiKeyRemove": "Eliminar",
-      "matchNeedsReview": "Revisar coincidencia"
+      "matchNeedsReview": "Revisar coincidencia",
+      "audit": {
+        "title": "Auditar el último escaneo",
+        "hint": "Compara lo que decidió el escáner con el email, corrige lo que esté mal y exporta las etiquetas para afinar el clasificador.",
+        "stats": "{{total}} emails · {{reviewed}} revisados · {{corrected}} corregidos",
+        "exportJson": "Exportar etiquetas (JSON)",
+        "exportCsv": "Exportar etiquetas (CSV)",
+        "noRows": "Haz un escaneo primero: esta tabla lista todos los emails que revisó y qué decidió para cada uno.",
+        "noClassification": "sin clasificar",
+        "unknown": "desconocido",
+        "columns": {
+          "email": "Email",
+          "pipeline": "Resultado del escáner",
+          "label": "Tu etiqueta"
+        },
+        "fields": {
+          "eventType": "Tipo de evento",
+          "position": "Puesto",
+          "company": "Empresa",
+          "reviewed": "Revisado",
+          "unset": "— sin definir —"
+        },
+        "outcomes": {
+          "addition": "aplicación nueva",
+          "update": "actualización",
+          "skipped": "descartado",
+          "no_event": "no es de postulación"
+        },
+        "eventTypes": {
+          "application_submitted": "Confirmación de postulación",
+          "next_steps": "Entrevista / siguientes pasos",
+          "rejected": "Rechazo",
+          "offer": "Oferta",
+          "other": "No relacionado"
+        }
+      }
     },
     "cloud": {
       "linkGoogle": "Vincular cuenta de Google",
