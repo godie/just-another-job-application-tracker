@@ -677,7 +677,8 @@
     "importError": "Error al importar el archivo CSV",
     "noData": "No hay datos para exportar",
     "columnsReview": "Importado, pero revisa estas columnas: {{columns}}",
-    "columnsIgnored": "Columnas no importadas (sin campo equivalente): {{columns}}"
+    "columnsIgnored": "Columnas no importadas (sin campo equivalente): {{columns}}",
+    "valuesNotNormalized": "Algunos valores se importaron tal cual (sin formato equivalente): {{values}}"
   },
   "sheets": {
     "title": "Integración con Google Sheets",

@@ -38,33 +38,22 @@ export const exportToCSV = (applications: JobApplication[]): string => {
   return csvRows.join('\n');
 };
 
-/** Header row of a CSV export/import, in column order. */
-export const parseCsvHeaders = (csvText: string): string[] => {
-  const firstLine = csvText.split(/\r?\n/)[0] ?? '';
-  return firstLine.split(',').map((header) => header.replace(/^"|"$/g, '').trim());
-};
+/** Date columns that accept free text in an import. */
+const DATE_FIELDS = new Set(['applicationDate', 'interviewDate', 'followUpDate']);
 
-/**
- * Parse a CSV export.
- *
- * `fields` maps a column index to the application field it holds (or `null`
- * to skip the column), which is how imported files whose headers are not the
- * canonical names are handled. Without it, the header names are used as-is —
- * the behaviour an export of ours round-trips with.
- */
-export const parseCSV = (
-  csvText: string,
-  fields?: (string | null)[],
-): JobApplication[] => {
-  const lines = csvText.split(/\r?\n/);
-  if (lines.length < 2) return [];
+/** Values an import can carry in a form the app does not store. */
+export interface CsvValueNormalizers {
+  /** Returns the app's work type for a free-text value, if it can. */
+  workType?: (raw: string) => string | undefined;
+  /** Returns an ISO date for a free-text value, if it can. */
+  date?: (raw: string) => string | undefined;
+}
 
-  const headers = parseCsvHeaders(csvText);
-  const columnFields: (string | null)[] = fields ?? headers;
-  const applications: JobApplication[] = [];
+/** Raw cells of every non-empty line, header row included. */
+export const parseCsvRows = (csvText: string): string[][] => {
+  const rows: string[][] = [];
 
-  for (let i = 1; i < lines.length; i++) {
-    const line = lines[i];
+  for (const line of csvText.split(/\r?\n/)) {
     if (!line.trim()) continue;
 
     const values: string[] = [];
@@ -88,7 +77,40 @@ export const parseCSV = (
       }
     }
     values.push(current);
+    rows.push(values);
+  }
 
+  return rows;
+};
+
+/** Header row of a CSV export/import, in column order. */
+export const parseCsvHeaders = (csvText: string): string[] => {
+  const firstLine = csvText.split(/\r?\n/)[0] ?? '';
+  return firstLine.split(',').map((header) => header.replace(/^"|"$/g, '').trim());
+};
+
+/**
+ * Parse a CSV export.
+ *
+ * `fields` maps a column index to the application field it holds (or `null`
+ * to skip the column), which is how imported files whose headers are not the
+ * canonical names are handled. Without it, the header names are used as-is —
+ * the behaviour an export of ours round-trips with.
+ */
+export const parseCSV = (
+  csvText: string,
+  fields?: (string | null)[],
+  normalizers?: CsvValueNormalizers,
+): JobApplication[] => {
+  const rows = parseCsvRows(csvText);
+  if (rows.length < 2) return [];
+
+  const headers = parseCsvHeaders(csvText);
+  const columnFields: (string | null)[] = fields ?? headers;
+  const applications: JobApplication[] = [];
+
+  for (let i = 1; i < rows.length; i++) {
+    const values = rows[i];
     const app: Record<string, unknown> = {};
     columnFields.forEach((header, index) => {
       if (!header) return; // column resolved to "ignore" (or unmapped)
@@ -102,6 +124,10 @@ export const parseCSV = (
         }
       } else if (header === 'hybridDaysInOffice') {
         app[header] = value ? parseInt(value, 10) : undefined;
+      } else if (header === 'workType') {
+        app[header] = normalizers?.workType?.(value) ?? toWorkType(value);
+      } else if (DATE_FIELDS.has(header) && normalizers?.date) {
+        app[header] = normalizers.date(value) ?? value;
       } else {
         app[header] = value;
       }

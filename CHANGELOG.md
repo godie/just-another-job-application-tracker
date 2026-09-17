@@ -1,3 +1,22 @@
+## [2.12.0] - 2026-09-17
+
+### Added
+- Imported work types are normalised, with TypeSafe filling the gaps (`src/utils/fieldNormalization.ts`): an English/Spanish alias table resolves the common wordings (`Remote (EU)`, `En remoto`, `Teletrabajo 100%`, `Presencial`, `Híbrido`) and the office days are read from the text (`Híbrido: 3 días` → hybrid + 3 days). Only values the aliases do not cover go into ONE batched `Choice` request; when the wording is genuinely ambiguous the judgment answers `unknown`, the value stays out of the record and the import reports it instead of guessing.
+- Imported dates are parsed deterministically (`normalizeDate`): ISO, numeric day/month with the order taken from the user's own date-format preference, and month names in English and Spanish (`12 de marzo de 2026`, `March 12, 2026`).
+- `parseCsvRows` plus a `CsvValueNormalizers` parameter on `parseCSV` let the import apply those normalisations while parsing. `CSVActions` collects the distinct values of the work-type and date columns, normalises them once, and lists whatever could not be interpreted.
+
+### Changed
+- `CSVActions` warns about values it could not normalise (`csv.valuesNotNormalized`, en/es) on top of the unmapped-column warnings, so nothing is dropped silently.
+
+### Validation
+- Live measurement of the work-type path with the shipped module: 6/8 values resolved by the alias table at confidence 1.00 with no model call, and the two genuinely ambiguous ones declined by the judgment (imported as-is, reported) — the model received a single batched request for those two.
+- A date judgment (asking which reading of an ambiguous numeric date is meant) was implemented, **measured at 1/2 correct in a Spanish context, and removed**: the user's own date-format preference is authoritative, free and testable. The rationale is documented in the module so it is not retried blindly.
+- New tests: 15 for the normalisation module (alias coverage in both languages, hybrid-day extraction, ISO/numeric/month-name parsing, invalid dates, gates, batched-request shape, unavailable service) and 2 for the parser's normalizer parameter.
+- Full frontend suite 1,093 tests / 106 files (`LANG=en_US.UTF-8`), ESLint, production build and `knip` clean. PHP untouched.
+
+### Docs
+- `DOCS/TYPESAFE_OPPORTUNITIES.md` marks the last opportunity implemented; all six are now in place.
+
 ## [2.11.0] - 2026-09-17
 
 ### Added
