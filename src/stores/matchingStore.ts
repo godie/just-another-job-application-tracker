@@ -166,7 +166,7 @@ export const useMatchingStore = create<MatchingState>()((set, get) => ({
         apiKey = await getGeminiApiKey();
       }
 
-      const results = await batchCalculateHybridScores(apiKey, opportunities, currentProfile);
+      const results = await batchCalculateHybridScores(apiKey, opportunities, currentProfile, preferences.useGemini);
 
       saveMatchResults(results);
       set({

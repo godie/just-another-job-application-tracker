@@ -1,3 +1,21 @@
+## [2.8.0] - 2026-09-17
+
+### Added
+- Opportunity match scoring through TypeSafe: `src/utils/opportunityScoring.ts` asks six atomic `Score` questions — semantic, historical, skills, location/work-type, compensation and seniority fit — in **one request** and composes them in code with the exact weights the deterministic and Gemini paths already use. Strengths, gaps, verdict and explanation are derived from the subscores by the existing helpers (`generateStrengths`, `generateGaps`, `determineVerdict`, `generateExplanation`, now exported), so the wording stays consistent across all three scoring methods. There is no JSON to parse and the composite thresholds/weights can be tuned without touching a prompt.
+- Confidence-gated escalation: when the lowest answer confidence falls below `SCORE_ESCALATION_CONFIDENCE` (0.6) or the judgment service is unavailable, the existing Gemini path takes over — only when the user has supplied a key. Without one, the low-confidence judgment is still blended with the deterministic score instead of being discarded.
+
+### Changed
+- `batchCalculateHybridScores` / `calculateHybridScore` now resolve the AI subscores in the order TypeSafe → Gemini → deterministic, and accept the AI preference (`preferences.useGemini`) so a user who turned AI matching off never triggers either model.
+- `src/utils/matching.ts` exports `determineVerdict`, `generateExplanation`, `generateStrengths` and `generateGaps` so the TypeSafe path reuses them instead of duplicating the wording rules.
+
+### Validation
+- Live API measurements with the shipped questions and levels (one request per opportunity, ~1.0k input / 100 output tokens, 200-380 ms): a strong fit composed to **86** with five dimensions at 0.76-0.99 confidence, a weak fit to **2** (min confidence 0.80, no escalation) and an ambiguous fit to **64** (min confidence 0.41, escalation). The single 0-confidence dimension in the strong case was `historicalFit` against a profile with no recorded success patterns — the model reporting that the supplied state does not carry the evidence for that judgment, which is exactly what the escalation gate is for.
+- New tests: 10 for the scoring module (level→percent mapping, weight composition, incomplete/non-score answers, confidence mapping, min-confidence reporting) and 6 for the orchestration order (confident judgment without touching Gemini, escalation on low confidence, escalation when the service is down, judgment-only when no key is available, deterministic when neither is, and the AI preference toggle).
+- Full frontend suite 1,036 tests / 101 files (`LANG=en_US.UTF-8`), ESLint, production build and `knip` clean. PHP: 115 tests / 352 assertions and PHPStan clean. Secret scan and the 2.8.0 orphan sweep clean.
+
+### Docs
+- `DOCS/TYPESAFE_OPPORTUNITIES.md` marks the composite scoring opportunity as implemented.
+
 ## [2.7.9] - 2026-09-17
 
 ### Added

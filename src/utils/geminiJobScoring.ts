@@ -9,6 +9,7 @@ import type {
 } from '../types/matching';
 import { callGeminiApi } from './geminiApi';
 import { calculateDeterministicScore } from './matching';
+import { SCORE_ESCALATION_CONFIDENCE, scoreOpportunityWithJudgment } from './opportunityScoring';
 
 interface GeminiScoringResponse {
   overallScore: number;
@@ -142,27 +143,39 @@ async function scoreOpportunityWithGemini(
 async function calculateHybridScore(
   apiKey: string | null,
   opportunity: JobOpportunity,
-  profile: UserMatchProfile
+  profile: UserMatchProfile,
+  useAi = true
 ): Promise<JobMatchResult> {
   const deterministic = calculateDeterministicScore(opportunity, profile, profile.profileVersion);
 
-  if (!apiKey) {
+  if (!useAi) {
     return deterministic;
   }
 
   try {
-    const geminiResult = await scoreOpportunityWithGemini(apiKey, opportunity, profile);
-    if (!geminiResult) {
+    // TypeSafe first: one batched request carrying the six subscores, with no
+    // JSON to parse and weights owned by code. Escalation to the reasoning
+    // model happens only when the user brought a Gemini key AND the judgments
+    // are missing or not confident enough.
+    const judgment = await scoreOpportunityWithJudgment(opportunity, profile);
+    let aiResult = judgment?.result ?? null;
+
+    const needsEscalation = judgment === null || judgment.minConfidence < SCORE_ESCALATION_CONFIDENCE;
+    if (needsEscalation && apiKey) {
+      aiResult = (await scoreOpportunityWithGemini(apiKey, opportunity, profile)) ?? aiResult;
+    }
+
+    if (!aiResult) {
       return deterministic;
     }
 
     const blendedSubscores: JobMatchSubscores = {
-      semanticFit: Math.round(deterministic.subscores.semanticFit * 0.4 + geminiResult.subscores.semanticFit * 0.6),
-      historicalFit: Math.round(deterministic.subscores.historicalFit * 0.6 + geminiResult.subscores.historicalFit * 0.4),
-      skillsFit: Math.round(deterministic.subscores.skillsFit * 0.5 + geminiResult.subscores.skillsFit * 0.5),
-      locationWorkTypeFit: Math.round(deterministic.subscores.locationWorkTypeFit * 0.6 + geminiResult.subscores.locationWorkTypeFit * 0.4),
-      compensationFit: Math.round(deterministic.subscores.compensationFit * 0.7 + geminiResult.subscores.compensationFit * 0.3),
-      seniorityFit: Math.round(deterministic.subscores.seniorityFit * 0.5 + geminiResult.subscores.seniorityFit * 0.5),
+      semanticFit: Math.round(deterministic.subscores.semanticFit * 0.4 + aiResult.subscores.semanticFit * 0.6),
+      historicalFit: Math.round(deterministic.subscores.historicalFit * 0.6 + aiResult.subscores.historicalFit * 0.4),
+      skillsFit: Math.round(deterministic.subscores.skillsFit * 0.5 + aiResult.subscores.skillsFit * 0.5),
+      locationWorkTypeFit: Math.round(deterministic.subscores.locationWorkTypeFit * 0.6 + aiResult.subscores.locationWorkTypeFit * 0.4),
+      compensationFit: Math.round(deterministic.subscores.compensationFit * 0.7 + aiResult.subscores.compensationFit * 0.3),
+      seniorityFit: Math.round(deterministic.subscores.seniorityFit * 0.5 + aiResult.subscores.seniorityFit * 0.5),
     };
 
     const blendedOverall = Math.round(
@@ -177,12 +190,12 @@ async function calculateHybridScore(
     return {
       opportunityId: opportunity.id,
       overallScore: clamp(blendedOverall),
-      confidence: geminiResult.confidence,
+      confidence: aiResult.confidence,
       subscores: blendedSubscores,
-      strengths: geminiResult.strengths.length > 0 ? geminiResult.strengths : deterministic.strengths,
-      gaps: geminiResult.gaps.length > 0 ? geminiResult.gaps : deterministic.gaps,
-      verdict: geminiResult.verdict,
-      explanation: geminiResult.explanation,
+      strengths: aiResult.strengths.length > 0 ? aiResult.strengths : deterministic.strengths,
+      gaps: aiResult.gaps.length > 0 ? aiResult.gaps : deterministic.gaps,
+      verdict: aiResult.verdict,
+      explanation: aiResult.explanation,
       profileVersion: profile.profileVersion,
       computedAt: new Date().toISOString(),
       computationMethod: 'hybrid',
@@ -223,11 +236,12 @@ async function concurrentMap<T, R>(
 export async function batchCalculateHybridScores(
   apiKey: string | null,
   opportunities: JobOpportunity[],
-  profile: UserMatchProfile
+  profile: UserMatchProfile,
+  useAi = true
 ): Promise<Record<string, JobMatchResult>> {
   const entries = await concurrentMap(opportunities, async (opp) => {
     try {
-      const result = await calculateHybridScore(apiKey, opp, profile);
+      const result = await calculateHybridScore(apiKey, opp, profile, useAi);
       return [opp.id, result] as const;
     } catch (error) {
       console.error(`Failed to score opportunity ${opp.id}:`, error);
