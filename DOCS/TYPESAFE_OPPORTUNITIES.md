@@ -16,12 +16,13 @@ The rule this document follows, from
 semantic judgments.** Nothing here asks a model to generate text or choose its own next
 step.
 
-> Status: **partly implemented as of 2.7.9**. The email → application match (§2) and the
-> email event classification (§3) now run through `POST /api/ai/judgments`; both keep the
-> deterministic behaviour whenever the service is unavailable or the answer falls below
-> the confidence gates. Still open: composite scoring (§1), field extraction (§3, the
-> company/position spans), CSV header mapping (§5), work-type and date normalisation (§6).
-> Before extending the integration, read
+> Status: **partly implemented as of 2.8.0**. Opportunity match scoring (§1), the email →
+> application match (§2) and the email event classification (§3) run through
+> `POST /api/ai/judgments`; each keeps its existing deterministic behaviour whenever the
+> service is unavailable or the answer falls below the confidence gates, and the scoring
+> path escalates to Gemini only when a judgment is unsure and the user supplied a key.
+> Still open: field extraction (§3, the company/position spans), CSV header mapping (§5),
+> work-type and date normalisation (§6). Before extending the integration, read
 > [the HTTP API](https://docs.typesafe.ai/api.md) or
 > [JavaScript SDK](https://docs.typesafe.ai/sdk/javascript.md) for the current contracts.
 

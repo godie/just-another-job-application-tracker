@@ -256,14 +256,14 @@ function determineConfidence(
   return 'low';
 }
 
-function determineVerdict(overallScore: number): MatchVerdict {
+export function determineVerdict(overallScore: number): MatchVerdict {
   if (overallScore >= 85) return 'excellent_fit';
   if (overallScore >= 65) return 'good_fit';
   if (overallScore >= 40) return 'partial_fit';
   return 'low_fit';
 }
 
-function generateExplanation(subscores: JobMatchSubscores, verdict: MatchVerdict): string {
+export function generateExplanation(subscores: JobMatchSubscores, verdict: MatchVerdict): string {
   const parts: string[] = [];
   if (subscores.skillsFit >= 70) parts.push('strong skills alignment');
   if (subscores.skillsFit < 30) parts.push('significant skills gap');
@@ -287,7 +287,7 @@ function generateExplanation(subscores: JobMatchSubscores, verdict: MatchVerdict
   return `${verdictText} based on available data.`;
 }
 
-function generateStrengths(subscores: JobMatchSubscores): string[] {
+export function generateStrengths(subscores: JobMatchSubscores): string[] {
   const strengths: string[] = [];
   if (subscores.skillsFit >= 70) strengths.push(`Strong skills match (${subscores.skillsFit}%)`);
   if (subscores.semanticFit >= 70) strengths.push(`Role aligns well with your experience (${subscores.semanticFit}%)`);
@@ -298,7 +298,7 @@ function generateStrengths(subscores: JobMatchSubscores): string[] {
   return strengths.length > 0 ? strengths : ['Some alignment detected'];
 }
 
-function generateGaps(subscores: JobMatchSubscores): string[] {
+export function generateGaps(subscores: JobMatchSubscores): string[] {
   const gaps: string[] = [];
   if (subscores.skillsFit < 40) gaps.push(`Skills gap detected (${subscores.skillsFit}% match)`);
   if (subscores.semanticFit < 40) gaps.push('Role differs significantly from your experience');
