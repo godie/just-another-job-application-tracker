@@ -1,6 +1,20 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, within } from '@testing-library/react';
 import { EmailScanAuditTable } from './EmailScanAuditTable';
+
+const mockShowSuccess = vi.fn();
+const mockShowError = vi.fn();
+
+vi.mock('./AlertProvider', () => ({
+  useAlert: () => ({
+    showSuccess: mockShowSuccess,
+    showError: mockShowError,
+    showInfo: vi.fn(),
+    showWarning: vi.fn(),
+    alerts: [],
+    removeAlert: vi.fn(),
+  }),
+}));
 import type { ScanAuditRow } from '../mails/types';
 
 function makeRow(overrides: Partial<ScanAuditRow> = {}): ScanAuditRow {
@@ -50,6 +64,22 @@ describe('EmailScanAuditTable', () => {
     expect(screen.getByTestId('audit-stats')).toHaveTextContent('1 emails · 1 reviewed · 1 corrected');
     const stored = JSON.parse(localStorage.getItem('emailScanAuditLabels') ?? '{}');
     expect(stored.m1).toMatchObject({ eventType: 'rejected', reviewed: true });
+  });
+
+  it('copies the labelled dataset to the clipboard', async () => {
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    Object.defineProperty(navigator, 'clipboard', {
+      value: { writeText },
+      configurable: true,
+    });
+
+    render(<EmailScanAuditTable rows={[makeRow()]} />);
+    fireEvent.click(screen.getByTestId('audit-copy'));
+
+    await vi.waitFor(() => expect(writeText).toHaveBeenCalledTimes(1));
+    const payload = JSON.parse(writeText.mock.calls[0][0] as string);
+    expect(payload.rows[0]).toMatchObject({ emailId: 'm1', pipeline: { outcome: 'update' } });
+    expect(mockShowSuccess).toHaveBeenCalled();
   });
 
   it('keeps the pipeline value as the placeholder for empty labels', () => {

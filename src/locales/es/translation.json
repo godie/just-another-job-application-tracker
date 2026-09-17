@@ -421,7 +421,11 @@
           "rejected": "Rechazo",
           "offer": "Oferta",
           "other": "No relacionado"
-        }
+        },
+        "copyJson": "Copiar etiquetas (JSON)",
+        "copyHint": "Copia el dataset (resultado del escáner + tus etiquetas) para pegarlo en un chat y afinarlo",
+        "copySuccess": "Etiquetas copiadas — pégalas donde las necesites",
+        "copyError": "No se pudo copiar al portapapeles"
       }
     },
     "cloud": {

@@ -421,7 +421,11 @@
           "rejected": "Rejection",
           "offer": "Offer",
           "other": "Unrelated"
-        }
+        },
+        "copyJson": "Copy labels (JSON)",
+        "copyHint": "Copies the dataset (pipeline result + your labels) to paste into a chat for tuning",
+        "copySuccess": "Labels copied — paste them wherever you need them",
+        "copyError": "Could not copy to the clipboard"
       }
     },
     "cloud": {
