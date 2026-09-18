@@ -5,9 +5,7 @@ import {
   reclassifyRowsLocally,
   type LocalReclassification,
 } from '../mails/services/localReclassify';
-import { EMAIL_EVENT_TYPES, type EmailEventType } from '../utils/emailClassification';
 import {
-  REJECTION_KINDS,
   auditStats,
   effectiveEventType,
   loadAuditLabels,
@@ -22,21 +20,14 @@ import {
   updateAuditLabel,
   type AuditImport,
   type AuditLabels,
-  type RejectionKind,
 } from '../utils/scanAudit';
 import { Button } from './ui/Button';
+import { EmailScanAuditRow } from './EmailScanAuditRow';
 import { useAlert } from './AlertProvider';
 
 interface EmailScanAuditTableProps {
   rows: ScanAuditRow[];
 }
-
-const OUTCOME_CLASSES: Record<ScanAuditRow['outcome'], string> = {
-  addition: 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300',
-  update: 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300',
-  skipped: 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200',
-  no_event: 'bg-muted text-muted-foreground',
-};
 
 type View = 'pending' | 'reviewed';
 
@@ -66,24 +57,27 @@ export const EmailScanAuditTable: React.FC<EmailScanAuditTableProps> = ({ rows }
   const { showSuccess, showError } = useAlert();
   const [labels, setLabels] = useState<AuditLabels>(() => loadAuditLabels());
   const [imported, setImported] = useState<AuditImport | null>(() => loadImportedAudit());
+  const [importWins, setImportWins] = useState(false);
   const [view, setView] = useState<View>('pending');
-  const [local, setLocal] = useState<LocalReclassification | null>(null);
+  const [local, setLocal] = useState<{
+    source: ScanAuditRow[];
+    result: LocalReclassification;
+  } | null>(null);
   const fileInput = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     saveAuditLabels(labels);
   }, [labels]);
 
-  useEffect(() => {
-    // A fresh scan is the new truth: it replaces an imported snapshot.
-    if (rows.length > 0) {
-      setImported(null);
-      saveImportedAudit(null);
-      setLocal(null);
-    }
-  }, [rows]);
+  /**
+   * A scan from this session wins over a stored import unless the reviewer
+   * loaded one on purpose; the banner names the active dataset either way, so
+   * nothing is replaced behind their back.
+   */
+  const source = imported && (importWins || rows.length === 0) ? imported.rows : rows;
+  /** A keyless pass only belongs to the set it was computed from. */
+  const activeLocal = local?.source === source ? local.result : null;
 
-  const source = imported?.rows ?? rows;
   const stats = useMemo(() => auditStats(source, labels), [source, labels]);
   const pending = useMemo(() => pendingRows(source, labels), [source, labels]);
   const reviewed = useMemo(() => reviewedRows(source, labels), [source, labels]);
@@ -100,6 +94,18 @@ export const EmailScanAuditTable: React.FC<EmailScanAuditTableProps> = ({ rows }
    */
   const correctField = (emailId: string, patch: Parameters<typeof updateAuditLabel>[2]) => {
     setLabels((current) => updateAuditLabel(current, emailId, { ...patch, correct: false }));
+  };
+
+  /** Marks the pipeline right or wrong; clicking the active mark undoes it. */
+  const mark = (row: ScanAuditRow, correct: boolean) => {
+    const label = labels[row.emailId];
+    const undo = Boolean(label?.reviewed && label.correct === correct);
+    setLabel(row.emailId, {
+      reviewed: !undo,
+      correct: undo ? undefined : correct,
+      reviewedAt: new Date().toISOString(),
+      ...(undo ? {} : { eventType: label?.eventType ?? effectiveEventType(row) ?? undefined }),
+    });
   };
 
   const stamp = new Date().toISOString().split('T')[0];
@@ -146,35 +152,21 @@ export const EmailScanAuditTable: React.FC<EmailScanAuditTableProps> = ({ rows }
       return;
     }
     setImported(parsed);
+    setImportWins(true);
     saveImportedAudit(parsed);
     setLabels((current) => ({ ...current, ...parsed.labels }));
     setView('pending');
-    setLocal(null);
     showSuccess(t('settings.emailScan.audit.importSuccess', { count: parsed.rows.length }));
   };
 
   const discardImport = () => {
     setImported(null);
+    setImportWins(false);
     saveImportedAudit(null);
-    setLocal(null);
   };
 
   const runLocalPass = () => {
-    setLocal(reclassifyRowsLocally(source));
-  };
-
-  /** Marks the pipeline right or wrong; clicking the active mark undoes it. */
-  const mark = (row: ScanAuditRow, correct: boolean) => {
-    const label = labels[row.emailId];
-    const undo = label?.reviewed && label.correct === correct;
-    setLabel(row.emailId, {
-      reviewed: !undo,
-      correct: undo ? undefined : correct,
-      reviewedAt: new Date().toISOString(),
-      ...(undo
-        ? {}
-        : { eventType: label?.eventType ?? effectiveEventType(row) ?? undefined }),
-    });
+    setLocal({ source, result: reclassifyRowsLocally(source) });
   };
 
   const importButton = (
@@ -185,6 +177,7 @@ export const EmailScanAuditTable: React.FC<EmailScanAuditTableProps> = ({ rows }
         accept="application/json,.json"
         onChange={handleFile}
         className="hidden"
+        aria-label={t('settings.emailScan.audit.importJson')}
         data-testid="audit-import-input"
       />
       <Button
@@ -199,7 +192,7 @@ export const EmailScanAuditTable: React.FC<EmailScanAuditTableProps> = ({ rows }
     </>
   );
 
-  if (rows.length === 0 && !imported) {
+  if (source.length === 0) {
     return (
       <div className="space-y-3" data-testid="audit-empty">
         <p className="text-sm text-muted-foreground py-2">
@@ -264,7 +257,9 @@ export const EmailScanAuditTable: React.FC<EmailScanAuditTableProps> = ({ rows }
             type="button"
             variant="outline"
             size="sm"
-            onClick={() => download(`jajat_scan_labels_${stamp}.json`, toAuditJson(source, labels), 'application/json')}
+            onClick={() =>
+              download(`jajat_scan_labels_${stamp}.json`, toAuditJson(source, labels), 'application/json')
+            }
           >
             {t('settings.emailScan.audit.exportJson')}
           </Button>
@@ -272,7 +267,9 @@ export const EmailScanAuditTable: React.FC<EmailScanAuditTableProps> = ({ rows }
             type="button"
             variant="outline"
             size="sm"
-            onClick={() => download(`jajat_scan_labels_${stamp}.csv`, toAuditCsv(source, labels), 'text/csv')}
+            onClick={() =>
+              download(`jajat_scan_labels_${stamp}.csv`, toAuditCsv(source, labels), 'text/csv')
+            }
           >
             {t('settings.emailScan.audit.exportCsv')}
           </Button>
@@ -281,7 +278,6 @@ export const EmailScanAuditTable: React.FC<EmailScanAuditTableProps> = ({ rows }
             variant="outline"
             size="sm"
             onClick={runLocalPass}
-            disabled={source.length === 0}
             data-testid="audit-local"
           >
             {t('settings.emailScan.audit.reclassify')}
@@ -290,11 +286,11 @@ export const EmailScanAuditTable: React.FC<EmailScanAuditTableProps> = ({ rows }
         </div>
       </div>
 
-      {local && (
+      {activeLocal && (
         <p className="text-xs text-muted-foreground" data-testid="audit-local-summary">
           {t('settings.emailScan.audit.localSummary', {
-            agree: local.agree,
-            total: local.total,
+            agree: activeLocal.agree,
+            total: activeLocal.total,
           })}
         </p>
       )}
@@ -336,163 +332,18 @@ export const EmailScanAuditTable: React.FC<EmailScanAuditTableProps> = ({ rows }
               </tr>
             </thead>
             <tbody>
-              {visible.map((row) => {
-                const label = labels[row.emailId] ?? {};
-                const effectiveType = label.eventType ?? effectiveEventType(row) ?? '';
-                const effective = effectiveEventType(row);
-                const markedCorrect = Boolean(label.reviewed && label.correct === true);
-                const markedWrong = Boolean(label.reviewed && label.correct === false);
-                return (
-                  <tr key={row.emailId} className="border-t border-border align-top">
-                    <td className="p-2 max-w-xs">
-                      <p className="font-medium text-foreground break-words">{row.subject}</p>
-                      <p className="text-xs text-muted-foreground break-all">{row.from}</p>
-                      <p className="text-xs text-muted-foreground">{row.date.split('T')[0]}</p>
-                      <p className="text-xs text-muted-foreground mt-1 line-clamp-3 break-words">
-                        {row.body.slice(0, 240)}
-                      </p>
-                    </td>
-                    <td className="p-2 whitespace-nowrap">
-                      <span
-                        className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                          OUTCOME_CLASSES[row.outcome]
-                        }`}
-                      >
-                        {t(`settings.emailScan.audit.outcomes.${row.outcome}`)}
-                      </span>
-                      <p
-                        className="text-xs text-muted-foreground mt-1"
-                        data-testid={`audit-pipeline-${row.emailId}`}
-                      >
-                        {effective
-                          ? t(`settings.emailScan.audit.eventTypes.${effective}`)
-                          : t('settings.emailScan.audit.noClassification')}
-                        {row.effectiveEvent &&
-                          ` · ${t(`settings.emailScan.audit.sources.${row.effectiveEvent.source}`)}`}
-                        {row.classification && ` · ${row.classification.confidence.toFixed(2)}`}
-                      </p>
-                      <p className="text-xs text-foreground mt-1">
-                        {row.extraction.position ?? t('settings.emailScan.audit.unknown')}
-                        <span className="text-muted-foreground"> @ </span>
-                        {row.extraction.company ?? t('settings.emailScan.audit.unknown')}
-                      </p>
-                      {local && (
-                        <p className="text-xs mt-1" data-testid={`audit-local-${row.emailId}`}>
-                          {local.results.get(row.emailId)?.type
-                            ? t(
-                                local.results.get(row.emailId)?.type ===
-                                  (row.effectiveEvent?.type ?? row.classification?.type ?? null)
-                                  ? 'settings.emailScan.audit.localAgrees'
-                                  : 'settings.emailScan.audit.localDiffers',
-                                { type: local.results.get(row.emailId)?.type },
-                              )
-                            : t('settings.emailScan.audit.localNone')}
-                        </p>
-                      )}
-                      <div className="flex gap-1 mt-2">
-                        <Button
-                          type="button"
-                          size="sm"
-                          variant={markedCorrect ? 'primary' : 'outline'}
-                          onClick={() => mark(row, true)}
-                          aria-pressed={markedCorrect}
-                          data-testid={`audit-correct-${row.emailId}`}
-                        >
-                          {t('settings.emailScan.audit.actions.correct')}
-                        </Button>
-                        <Button
-                          type="button"
-                          size="sm"
-                          variant={markedWrong ? 'danger' : 'outline'}
-                          onClick={() => mark(row, false)}
-                          aria-pressed={markedWrong}
-                          data-testid={`audit-incorrect-${row.emailId}`}
-                        >
-                          {t('settings.emailScan.audit.actions.incorrect')}
-                        </Button>
-                      </div>
-                    </td>
-                    <td className="p-2">
-                      <div className="flex flex-col gap-2 min-w-48">
-                        <label className="text-xs text-muted-foreground">
-                          {t('settings.emailScan.audit.fields.eventType')}
-                          <select
-                            value={effectiveType}
-                            aria-label={`${t('settings.emailScan.audit.fields.eventType')} — ${row.subject}`}
-                            onChange={(event) =>
-                              correctField(row.emailId, {
-                                eventType: (event.target.value || undefined) as EmailEventType | undefined,
-                              })
-                            }
-                            className="mt-1 w-full text-xs rounded border border-border bg-background text-foreground p-1.5"
-                          >
-                            <option value="">{t('settings.emailScan.audit.fields.unset')}</option>
-                            {EMAIL_EVENT_TYPES.map((type) => (
-                              <option key={type} value={type}>
-                                {t(`settings.emailScan.audit.eventTypes.${type}`)}
-                              </option>
-                            ))}
-                          </select>
-                        </label>
-                        <label className="text-xs text-muted-foreground">
-                          {t('settings.emailScan.audit.fields.position')}
-                          <input
-                            type="text"
-                            value={label.position ?? ''}
-                            placeholder={row.extraction.position ?? ''}
-                            aria-label={`${t('settings.emailScan.audit.fields.position')} — ${row.subject}`}
-                            onChange={(event) => correctField(row.emailId, { position: event.target.value })}
-                            className="mt-1 w-full text-xs rounded border border-border bg-background text-foreground p-1.5"
-                          />
-                        </label>
-                        <label className="text-xs text-muted-foreground">
-                          {t('settings.emailScan.audit.fields.company')}
-                          <input
-                            type="text"
-                            value={label.company ?? ''}
-                            placeholder={row.extraction.company ?? ''}
-                            aria-label={`${t('settings.emailScan.audit.fields.company')} — ${row.subject}`}
-                            onChange={(event) => correctField(row.emailId, { company: event.target.value })}
-                            className="mt-1 w-full text-xs rounded border border-border bg-background text-foreground p-1.5"
-                          />
-                        </label>
-                        {effectiveType === 'rejected' && (
-                          <label className="text-xs text-muted-foreground">
-                            {t('settings.emailScan.audit.fields.rejectionKind')}
-                            <select
-                              value={label.rejectionKind ?? ''}
-                              aria-label={`${t('settings.emailScan.audit.fields.rejectionKind')} — ${row.subject}`}
-                              onChange={(event) =>
-                                setLabel(row.emailId, {
-                                  rejectionKind: (event.target.value || undefined) as RejectionKind | undefined,
-                                })
-                              }
-                              className="mt-1 w-full text-xs rounded border border-border bg-background text-foreground p-1.5"
-                            >
-                              <option value="">{t('settings.emailScan.audit.fields.unset')}</option>
-                              {REJECTION_KINDS.map((kind) => (
-                                <option key={kind} value={kind}>
-                                  {t(`settings.emailScan.audit.rejectionKinds.${kind}`)}
-                                </option>
-                              ))}
-                            </select>
-                          </label>
-                        )}
-                        <label className="text-xs text-muted-foreground">
-                          {t('settings.emailScan.audit.fields.note')}
-                          <input
-                            type="text"
-                            value={label.note ?? ''}
-                            aria-label={`${t('settings.emailScan.audit.fields.note')} — ${row.subject}`}
-                            onChange={(event) => setLabel(row.emailId, { note: event.target.value })}
-                            className="mt-1 w-full text-xs rounded border border-border bg-background text-foreground p-1.5"
-                          />
-                        </label>
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
+              {visible.map((row) => (
+                <EmailScanAuditRow
+                  key={row.emailId}
+                  row={row}
+                  label={labels[row.emailId] ?? {}}
+                  local={activeLocal?.results.get(row.emailId) ?? null}
+                  hasLocal={Boolean(activeLocal)}
+                  onLabel={(patch) => setLabel(row.emailId, patch)}
+                  onCorrectField={(patch) => correctField(row.emailId, patch)}
+                  onMark={(correct) => mark(row, correct)}
+                />
+              ))}
             </tbody>
           </table>
         </div>
