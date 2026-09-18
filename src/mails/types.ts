@@ -193,6 +193,17 @@ export interface ScanAuditRow {
     confidence: number;
     verdict: 'auto' | 'review' | 'none';
   } | null;
+  /**
+   * The event the pipeline actually acted on, and who decided its type. The
+   * keyword cascade and the judgment can disagree — `classification` records
+   * the judgment's opinion, this records what was used. Without it, "the
+   * pipeline got it right" and "the cascade missed it" look the same in the
+   * audit export (both have a null `classification`).
+   */
+  effectiveEvent: {
+    type: EmailEventType;
+    source: 'rule' | 'judgment';
+  } | null;
   extraction: {
     position?: string;
     company?: string;

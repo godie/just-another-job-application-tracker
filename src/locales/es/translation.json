@@ -391,7 +391,7 @@
       "audit": {
         "title": "Auditar el último escaneo",
         "hint": "Compara lo que decidió el escáner con el email, corrige lo que esté mal y exporta las etiquetas para afinar el clasificador.",
-        "stats": "{{total}} emails · {{reviewed}} revisados · {{corrected}} corregidos",
+        "stats": "{{total}} emails · {{reviewed}} revisados ({{correct}} correctos, {{corrected}} corregidos)",
         "exportJson": "Exportar etiquetas (JSON)",
         "exportCsv": "Exportar etiquetas (CSV)",
         "noRows": "Haz un escaneo primero: esta tabla lista todos los emails que revisó y qué decidió para cada uno.",
@@ -407,7 +407,9 @@
           "position": "Puesto",
           "company": "Empresa",
           "reviewed": "Revisado",
-          "unset": "— sin definir —"
+          "unset": "— sin definir —",
+          "rejectionKind": "Tipo de rechazo",
+          "note": "Nota"
         },
         "outcomes": {
           "addition": "aplicación nueva",
@@ -422,10 +424,41 @@
           "offer": "Oferta",
           "other": "No relacionado"
         },
-        "copyJson": "Copiar etiquetas (JSON)",
-        "copyHint": "Copia el dataset (resultado del escáner + tus etiquetas) para pegarlo en un chat y afinarlo",
+        "copyJson": "Copiar etiquetas (JSON) — {{count}}",
+        "copyHint": "Copia solo las filas etiquetadas (resultado del escáner + tus etiquetas) para pegar en un chat y afinar",
         "copySuccess": "Etiquetas copiadas — pégalas donde las necesites",
-        "copyError": "No se pudo copiar al portapapeles"
+        "copyError": "No se pudo copiar al portapapeles",
+        "rejectionKinds": {
+          "other_candidates": "Siguieron con otros candidatos (sin contacto)",
+          "position_filled": "Posición cubierta o cerrada (sin contacto)",
+          "after_interview": "Te entrevistaron y no pasaste el filtro (hubo contacto humano)"
+        },
+                "copyEmpty": "Etiquetá al menos un email — solo se exportan las filas etiquetadas",
+        "views": {
+          "pending": "Pendientes — {{count}}",
+          "reviewed": "Revisados — {{count}}",
+          "pendingEmpty": "Nada pendiente: todas las filas de este set están revisadas.",
+          "reviewedEmpty": "Todavía no revisaste ninguna — marcá una fila como correcta o corregí lo que esté mal."
+        },
+        "actions": {
+          "correct": "Correcto",
+          "incorrect": "Mal"
+        },
+        "sources": {
+          "rule": "regla",
+          "judgment": "modelo"
+        },
+        "importJson": "Importar etiquetas (JSON)",
+        "importHint": "Sin escanear: importá un JSON exportado desde esta tabla para seguir revisando un set anterior.",
+        "importError": "Ese archivo no es un export de auditoría — no se encontraron filas con id",
+        "importSuccess": "Importadas {{count}} filas — la revisión sigue donde la dejaste",
+        "importedBanner": "Set importado: {{count}} filas (exportado el {{date}}) — un escaneo nuevo lo reemplaza",
+        "importDiscard": "Volver al último escaneo",
+        "reclassify": "Re-clasificar en local",
+        "localSummary": "Solo reglas locales: {{agree}} de {{total}} coinciden con el escáner",
+        "localAgrees": "Local: {{type}} (coincide)",
+        "localDiffers": "Local: {{type}} (difiere)",
+        "localNone": "Local: sin coincidencia"
       }
     },
     "cloud": {

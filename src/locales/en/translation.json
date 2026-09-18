@@ -391,7 +391,7 @@
       "audit": {
         "title": "Audit the last scan",
         "hint": "Compare what the scanner decided with the email itself, correct anything wrong, then export the labels to tune the classifier.",
-        "stats": "{{total}} emails · {{reviewed}} reviewed · {{corrected}} corrected",
+        "stats": "{{total}} emails · {{reviewed}} reviewed ({{correct}} correct, {{corrected}} corrected)",
         "exportJson": "Export labels (JSON)",
         "exportCsv": "Export labels (CSV)",
         "noRows": "Run a scan first: this table lists every email it looked at, and what it decided for each one.",
@@ -407,7 +407,9 @@
           "position": "Position",
           "company": "Company",
           "reviewed": "Reviewed",
-          "unset": "— not set —"
+          "unset": "— not set —",
+          "rejectionKind": "Rejection kind",
+          "note": "Note"
         },
         "outcomes": {
           "addition": "new application",
@@ -422,10 +424,41 @@
           "offer": "Offer",
           "other": "Unrelated"
         },
-        "copyJson": "Copy labels (JSON)",
-        "copyHint": "Copies the dataset (pipeline result + your labels) to paste into a chat for tuning",
+        "copyJson": "Copy labels (JSON) — {{count}}",
+        "copyHint": "Copies only the labelled rows (pipeline result + your labels) to paste into a chat for tuning",
         "copySuccess": "Labels copied — paste them wherever you need them",
-        "copyError": "Could not copy to the clipboard"
+        "copyError": "Could not copy to the clipboard",
+        "rejectionKinds": {
+          "other_candidates": "Moved on with other candidates (no contact)",
+          "position_filled": "Position filled or closed (no contact)",
+          "after_interview": "Interviewed, did not pass the filter (human contact)"
+        },
+                "copyEmpty": "Label at least one email first — only labelled rows are exported",
+        "views": {
+          "pending": "Pending — {{count}}",
+          "reviewed": "Reviewed — {{count}}",
+          "pendingEmpty": "Nothing pending: every row in this set is reviewed.",
+          "reviewedEmpty": "Nothing reviewed yet — mark a row correct or fix what is wrong."
+        },
+        "actions": {
+          "correct": "Correct",
+          "incorrect": "Wrong"
+        },
+        "sources": {
+          "rule": "rule",
+          "judgment": "model"
+        },
+        "importJson": "Import labels (JSON)",
+        "importHint": "No scan needed: import a JSON exported from this table to keep reviewing an earlier set.",
+        "importError": "That file is not an audit export — no rows with an id were found",
+        "importSuccess": "Imported {{count}} rows — review continues where you left it",
+        "importedBanner": "Imported set: {{count}} rows (exported {{date}}) — a new scan replaces it",
+        "importDiscard": "Back to the last scan",
+        "reclassify": "Re-classify locally",
+        "localSummary": "Local rules only: {{agree}} of {{total}} match the scanner",
+        "localAgrees": "Local: {{type}} (matches)",
+        "localDiffers": "Local: {{type}} (differs)",
+        "localNone": "Local: no match"
       }
     },
     "cloud": {

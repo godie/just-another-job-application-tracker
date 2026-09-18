@@ -35,7 +35,8 @@ export const EMAIL_EVENT_CRITERIA = {
   },
   offer: {
     what: 'Makes or discusses a job offer.',
-    not_for: 'An interview invitation or a request for more information before deciding.',
+    not_for:
+      "An interview invitation, a request for more information before deciding, or a request to complete missing details before the application is processed — even when the subject says 'Accepted' or 'Congratulations'.",
   },
   next_steps: {
     what: 'Invites, schedules or describes an interview, screening call, assessment, or the next stage of the process.',
@@ -46,7 +47,7 @@ export const EMAIL_EVENT_CRITERIA = {
     not_for: 'Emails that schedule something (interview, call, assessment) or communicate a decision.',
   },
   other: {
-    what: 'Anything else: job alerts, newsletters, marketing, unrelated notices.',
+    what: "Anything else: job alerts, newsletters, marketing, unrelated notices, a recruiter's cold outreach about a role the user never applied to, or a research panel recruiting participants.",
     not_for: 'Any email about the progress of one specific application.',
   },
 };
