@@ -2,14 +2,9 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import type { ScanAuditRow } from '../mails/types';
 import type { LocalClassification } from '../mails/services/localReclassify';
-import { EMAIL_EVENT_TYPES, type EmailEventType } from '../utils/emailClassification';
-import {
-  REJECTION_KINDS,
-  effectiveEventType,
-  type AuditLabel,
-  type RejectionKind,
-} from '../utils/scanAudit';
+import { effectiveEventType, type AuditLabel } from '../utils/scanAudit';
 import { Button } from './ui/Button';
+import { EmailScanAuditLabelCell } from './EmailScanAuditLabelCell';
 
 interface EmailScanAuditRowProps {
   row: ScanAuditRow;
@@ -118,84 +113,14 @@ export const EmailScanAuditRow: React.FC<EmailScanAuditRowProps> = ({
           </Button>
         </div>
       </td>
-      <td className="p-2">
-        <div className="flex flex-col gap-2 min-w-48">
-          <label className="text-xs text-muted-foreground">
-            {t('settings.emailScan.audit.fields.eventType')}
-            <select
-              value={effectiveType}
-              aria-label={`${t('settings.emailScan.audit.fields.eventType')} — ${row.subject}`}
-              onChange={(event) =>
-                onCorrectField({
-                  eventType: (event.target.value || undefined) as EmailEventType | undefined,
-                })
-              }
-              className="mt-1 w-full text-xs rounded border border-border bg-background text-foreground p-1.5"
-            >
-              <option value="">{t('settings.emailScan.audit.fields.unset')}</option>
-              {EMAIL_EVENT_TYPES.map((type) => (
-                <option key={type} value={type}>
-                  {t(`settings.emailScan.audit.eventTypes.${type}`)}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="text-xs text-muted-foreground">
-            {t('settings.emailScan.audit.fields.position')}
-            <input
-              type="text"
-              value={label.position ?? ''}
-              placeholder={row.extraction.position ?? ''}
-              aria-label={`${t('settings.emailScan.audit.fields.position')} — ${row.subject}`}
-              onChange={(event) => onCorrectField({ position: event.target.value })}
-              className="mt-1 w-full text-xs rounded border border-border bg-background text-foreground p-1.5"
-            />
-          </label>
-          <label className="text-xs text-muted-foreground">
-            {t('settings.emailScan.audit.fields.company')}
-            <input
-              type="text"
-              value={label.company ?? ''}
-              placeholder={row.extraction.company ?? ''}
-              aria-label={`${t('settings.emailScan.audit.fields.company')} — ${row.subject}`}
-              onChange={(event) => onCorrectField({ company: event.target.value })}
-              className="mt-1 w-full text-xs rounded border border-border bg-background text-foreground p-1.5"
-            />
-          </label>
-          {effectiveType === 'rejected' && (
-            <label className="text-xs text-muted-foreground">
-              {t('settings.emailScan.audit.fields.rejectionKind')}
-              <select
-                value={label.rejectionKind ?? ''}
-                aria-label={`${t('settings.emailScan.audit.fields.rejectionKind')} — ${row.subject}`}
-                onChange={(event) =>
-                  onLabel({
-                    rejectionKind: (event.target.value || undefined) as RejectionKind | undefined,
-                  })
-                }
-                className="mt-1 w-full text-xs rounded border border-border bg-background text-foreground p-1.5"
-              >
-                <option value="">{t('settings.emailScan.audit.fields.unset')}</option>
-                {REJECTION_KINDS.map((kind) => (
-                  <option key={kind} value={kind}>
-                    {t(`settings.emailScan.audit.rejectionKinds.${kind}`)}
-                  </option>
-                ))}
-              </select>
-            </label>
-          )}
-          <label className="text-xs text-muted-foreground">
-            {t('settings.emailScan.audit.fields.note')}
-            <input
-              type="text"
-              value={label.note ?? ''}
-              aria-label={`${t('settings.emailScan.audit.fields.note')} — ${row.subject}`}
-              onChange={(event) => onLabel({ note: event.target.value })}
-              className="mt-1 w-full text-xs rounded border border-border bg-background text-foreground p-1.5"
-            />
-          </label>
-        </div>
-      </td>
+      <EmailScanAuditLabelCell
+        subject={row.subject}
+        label={label}
+        effectiveType={effectiveType}
+        extraction={row.extraction}
+        onLabel={onLabel}
+        onCorrectField={onCorrectField}
+      />
     </tr>
   );
 };

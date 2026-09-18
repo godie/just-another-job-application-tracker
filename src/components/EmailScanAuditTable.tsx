@@ -31,6 +31,12 @@ interface EmailScanAuditTableProps {
 
 type View = 'pending' | 'reviewed';
 
+/** The imported set, and whether the reviewer loaded it on purpose this session. */
+interface ImportState {
+  data: AuditImport;
+  explicit: boolean;
+}
+
 function download(filename: string, content: string, mime: string): void {
   const blob = new Blob([content], { type: `${mime};charset=utf-8;` });
   const url = URL.createObjectURL(blob);
@@ -56,8 +62,10 @@ export const EmailScanAuditTable: React.FC<EmailScanAuditTableProps> = ({ rows }
   const { t } = useTranslation();
   const { showSuccess, showError } = useAlert();
   const [labels, setLabels] = useState<AuditLabels>(() => loadAuditLabels());
-  const [imported, setImported] = useState<AuditImport | null>(() => loadImportedAudit());
-  const [importWins, setImportWins] = useState(false);
+  const [imported, setImported] = useState<ImportState | null>(() => {
+    const stored = loadImportedAudit();
+    return stored ? { data: stored, explicit: false } : null;
+  });
   const [view, setView] = useState<View>('pending');
   const [local, setLocal] = useState<{
     source: ScanAuditRow[];
@@ -74,7 +82,8 @@ export const EmailScanAuditTable: React.FC<EmailScanAuditTableProps> = ({ rows }
    * loaded one on purpose; the banner names the active dataset either way, so
    * nothing is replaced behind their back.
    */
-  const source = imported && (importWins || rows.length === 0) ? imported.rows : rows;
+  const source =
+    imported && (imported.explicit || rows.length === 0) ? imported.data.rows : rows;
   /** A keyless pass only belongs to the set it was computed from. */
   const activeLocal = local?.source === source ? local.result : null;
 
@@ -151,8 +160,7 @@ export const EmailScanAuditTable: React.FC<EmailScanAuditTableProps> = ({ rows }
       showError(t('settings.emailScan.audit.importError'));
       return;
     }
-    setImported(parsed);
-    setImportWins(true);
+    setImported({ data: parsed, explicit: true });
     saveImportedAudit(parsed);
     setLabels((current) => ({ ...current, ...parsed.labels }));
     setView('pending');
@@ -161,7 +169,6 @@ export const EmailScanAuditTable: React.FC<EmailScanAuditTableProps> = ({ rows }
 
   const discardImport = () => {
     setImported(null);
-    setImportWins(false);
     saveImportedAudit(null);
   };
 
@@ -215,8 +222,8 @@ export const EmailScanAuditTable: React.FC<EmailScanAuditTableProps> = ({ rows }
         >
           <p className="text-xs text-muted-foreground">
             {t('settings.emailScan.audit.importedBanner', {
-              count: imported.rows.length,
-              date: imported.exportedAt?.split('T')[0] ?? '—',
+              count: imported.data.rows.length,
+              date: imported.data.exportedAt?.split('T')[0] ?? '—',
             })}
           </p>
           <Button type="button" variant="outline" size="sm" onClick={discardImport}>
