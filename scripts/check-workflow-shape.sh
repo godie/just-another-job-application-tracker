@@ -31,7 +31,6 @@ WORKFLOW_DIR=".github/workflows"
 
 echo "Checking workflow-file wrappers (mode: $MODE)"
 
-EXIT_CODE=0
 FAIL_COUNT=0
 CHECKED_COUNT=0
 

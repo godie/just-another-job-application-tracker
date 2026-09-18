@@ -27,7 +27,7 @@
 set -uo pipefail
 
 REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-cd "$REPO_ROOT"
+cd "$REPO_ROOT" || exit 1
 
 # Ensure composer vendor dir is present so the OpenTelemetry SDK loads.
 if [ ! -d "api/vendor" ]; then

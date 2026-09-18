@@ -1,3 +1,19 @@
+## [2.14.1] - 2026-09-18
+
+### Added
+- Local audit tooling as a free stand-in for the paid Aikido scanner: `DOCS/LOCAL_AUDIT.md` maps the Aikido rule set to the tools that cover it, the rules that are irrelevant to this repository (no C/C++, Java, C#, Python) and the hosted-only value that stays manual (triage).
+- `npm run audit:dupes` runs `jscpd` with the existing `.jscpd.json` and gates on `audit/check-dupes.cjs`: 53 clones / 590 lines / 1.53% at landing. The gate only ratchets down — a new clone fails the run.
+- Three curated ESLint plugin blocks in `eslint.config.js`: `eslint-plugin-regexp` (slow-regex/ReDoS, 62 of its 140 findings land on the email classifiers), `eslint-plugin-security` (fs/regexp/child-process injection) and eleven curated `eslint-plugin-sonarjs` rules (complexity, duplication, dead stores, TODO, cleartext protocols, pseudo-randomness). 239 findings are baselined in the new `eslint-suppressions.json`, which stores a suppressed *count* per file and rule, so a new violation is still reported.
+
+### Changed
+- Dropped `eslint-plugin-unicorn`: its recommended set produced 1808 findings and three of its top rules contradict the repository's conventions (`filename-case` wants kebab-case filenames while AGENTS.md mandates PascalCase components, `prevent-abbreviations` and `no-null` are opinions).
+- Excluded docs, workflow boilerplate, PHP test fixtures and migrations from the duplication scan: their duplication is deliberate.
+- Fixed the two `shellcheck` findings that surfaced once the scripts were actually scanned: `scripts/check-env.sh` now exits when its `cd` fails, and `scripts/check-workflow-shape.sh` lost an unused `EXIT_CODE` assignment.
+
+### Validation
+- `npm run lint` runs the plugin blocks plus the suppression baseline; a probe regex with exponential backtracking injected into an already-suppressed file was still reported, confirming the ratchet works at count granularity.
+- Full frontend suite 1,143 tests / 107 files (`LANG=en_US.UTF-8`), `knip`, production build, `shellcheck -S warning scripts/*.sh`, `check-workflow-shape.sh --ci` and `scan-secrets.sh --ci` clean. PHP untouched except the version constant.
+
 ## [2.14.0] - 2026-09-18
 
 ### Added
