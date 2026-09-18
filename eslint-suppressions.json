@@ -1,0 +1,333 @@
+{
+  "src/components/AlertProvider.tsx": {
+    "sonarjs/pseudo-random": {
+      "count": 1
+    }
+  },
+  "src/components/ApplicationTableRow.tsx": {
+    "sonarjs/no-nested-conditional": {
+      "count": 1
+    }
+  },
+  "src/components/AuthForm.tsx": {
+    "sonarjs/no-nested-conditional": {
+      "count": 2
+    }
+  },
+  "src/components/AuthModals.tsx": {
+    "security/detect-possible-timing-attacks": {
+      "count": 1
+    },
+    "sonarjs/no-nested-conditional": {
+      "count": 1
+    }
+  },
+  "src/components/CSVActions.tsx": {
+    "sonarjs/no-nested-functions": {
+      "count": 1
+    }
+  },
+  "src/components/CalendarView.tsx": {
+    "sonarjs/no-nested-conditional": {
+      "count": 1
+    }
+  },
+  "src/components/EmailScanAuditRow.tsx": {
+    "sonarjs/no-nested-conditional": {
+      "count": 1
+    },
+    "sonarjs/no-nested-template-literals": {
+      "count": 1
+    }
+  },
+  "src/components/EmailScanReview.tsx": {
+    "sonarjs/no-nested-conditional": {
+      "count": 3
+    }
+  },
+  "src/components/FiltersBar.tsx": {
+    "sonarjs/no-nested-template-literals": {
+      "count": 1
+    }
+  },
+  "src/components/Footer.test.tsx": {
+    "security/detect-non-literal-regexp": {
+      "count": 1
+    }
+  },
+  "src/components/GeminiKeyModal.tsx": {
+    "security/detect-possible-timing-attacks": {
+      "count": 1
+    },
+    "sonarjs/cognitive-complexity": {
+      "count": 1
+    },
+    "sonarjs/no-nested-conditional": {
+      "count": 3
+    }
+  },
+  "src/components/GoogleSheetsSync.tsx": {
+    "sonarjs/cognitive-complexity": {
+      "count": 1
+    },
+    "sonarjs/no-nested-conditional": {
+      "count": 5
+    }
+  },
+  "src/components/JobPreviewPanel.tsx": {
+    "sonarjs/no-nested-conditional": {
+      "count": 1
+    }
+  },
+  "src/components/JobSearchResults.tsx": {
+    "sonarjs/no-nested-conditional": {
+      "count": 2
+    }
+  },
+  "src/components/KanbanView.tsx": {
+    "sonarjs/no-dead-store": {
+      "count": 1
+    }
+  },
+  "src/components/OnboardingWizard.tsx": {
+    "sonarjs/no-nested-conditional": {
+      "count": 1
+    }
+  },
+  "src/components/SyncStatusInfo.tsx": {
+    "sonarjs/no-nested-conditional": {
+      "count": 1
+    }
+  },
+  "src/components/TimelineEditor.tsx": {
+    "sonarjs/no-nested-conditional": {
+      "count": 2
+    }
+  },
+  "src/components/TimelineEventList.tsx": {
+    "sonarjs/no-all-duplicated-branches": {
+      "count": 1
+    },
+    "sonarjs/no-nested-conditional": {
+      "count": 4
+    }
+  },
+  "src/hooks/useCloudSync.ts": {
+    "sonarjs/cognitive-complexity": {
+      "count": 1
+    }
+  },
+  "src/hooks/useFilteredApplications.ts": {
+    "sonarjs/cognitive-complexity": {
+      "count": 2
+    }
+  },
+  "src/lib/perf.ts": {
+    "sonarjs/todo-tag": {
+      "count": 1
+    }
+  },
+  "src/lib/traceparent.ts": {
+    "sonarjs/pseudo-random": {
+      "count": 1
+    }
+  },
+  "src/mails/adapter/emailAdapter.ts": {
+    "regexp/no-dupe-characters-character-class": {
+      "count": 18
+    },
+    "regexp/no-dupe-disjunctions": {
+      "count": 1
+    },
+    "regexp/no-super-linear-backtracking": {
+      "count": 53
+    },
+    "regexp/no-useless-character-class": {
+      "count": 1
+    },
+    "regexp/no-useless-escape": {
+      "count": 11
+    },
+    "regexp/no-useless-non-capturing-group": {
+      "count": 1
+    },
+    "regexp/optimal-quantifier-concatenation": {
+      "count": 2
+    },
+    "sonarjs/cognitive-complexity": {
+      "count": 2
+    }
+  },
+  "src/mails/providers/fake/fakeProvider.ts": {
+    "sonarjs/pseudo-random": {
+      "count": 1
+    }
+  },
+  "src/mails/providers/gmail/gmailClient.ts": {
+    "regexp/no-useless-flag": {
+      "count": 1
+    }
+  },
+  "src/mails/services/scanService.ts": {
+    "sonarjs/cognitive-complexity": {
+      "count": 1
+    }
+  },
+  "src/pages/SettingsPage.tsx": {
+    "sonarjs/no-nested-conditional": {
+      "count": 2
+    }
+  },
+  "src/pages/SuggestionsViewerPage.tsx": {
+    "sonarjs/no-nested-conditional": {
+      "count": 1
+    }
+  },
+  "src/setupTests.ts": {
+    "security/detect-non-literal-regexp": {
+      "count": 2
+    },
+    "sonarjs/cognitive-complexity": {
+      "count": 1
+    }
+  },
+  "src/tests/TimelineEditor.test.tsx": {
+    "sonarjs/pseudo-random": {
+      "count": 1
+    }
+  },
+  "src/tests/helpers/mergeDataHelpers.ts": {
+    "sonarjs/pseudo-random": {
+      "count": 2
+    }
+  },
+  "src/utils/api.ts": {
+    "sonarjs/no-identical-functions": {
+      "count": 1
+    }
+  },
+  "src/utils/credentialsGuard.test.ts": {
+    "regexp/no-super-linear-backtracking": {
+      "count": 6
+    },
+    "regexp/no-useless-lazy": {
+      "count": 1
+    },
+    "security/detect-non-literal-fs-filename": {
+      "count": 4
+    },
+    "sonarjs/cognitive-complexity": {
+      "count": 2
+    }
+  },
+  "src/utils/cspConfig.test.ts": {
+    "regexp/no-useless-character-class": {
+      "count": 4
+    },
+    "regexp/optimal-quantifier-concatenation": {
+      "count": 4
+    },
+    "security/detect-non-literal-fs-filename": {
+      "count": 2
+    }
+  },
+  "src/utils/csv.ts": {
+    "sonarjs/cognitive-complexity": {
+      "count": 2
+    },
+    "sonarjs/no-nested-conditional": {
+      "count": 1
+    },
+    "sonarjs/no-redundant-assignments": {
+      "count": 1
+    }
+  },
+  "src/utils/emailExtraction.ts": {
+    "regexp/no-dupe-characters-character-class": {
+      "count": 4
+    },
+    "regexp/no-dupe-disjunctions": {
+      "count": 2
+    },
+    "regexp/no-super-linear-backtracking": {
+      "count": 3
+    },
+    "regexp/no-useless-character-class": {
+      "count": 5
+    },
+    "regexp/no-useless-non-capturing-group": {
+      "count": 1
+    },
+    "sonarjs/cognitive-complexity": {
+      "count": 1
+    }
+  },
+  "src/utils/fieldNormalization.ts": {
+    "regexp/no-dupe-disjunctions": {
+      "count": 1
+    },
+    "sonarjs/cognitive-complexity": {
+      "count": 1
+    }
+  },
+  "src/utils/id.ts": {
+    "sonarjs/pseudo-random": {
+      "count": 1
+    }
+  },
+  "src/utils/jobSearchApi.ts": {
+    "regexp/no-unused-capturing-group": {
+      "count": 3
+    },
+    "sonarjs/cognitive-complexity": {
+      "count": 1
+    }
+  },
+  "src/utils/matching.ts": {
+    "regexp/no-dupe-disjunctions": {
+      "count": 1
+    },
+    "security/detect-non-literal-regexp": {
+      "count": 6
+    },
+    "sonarjs/no-nested-conditional": {
+      "count": 4
+    }
+  },
+  "src/utils/mergeData.test.ts": {
+    "sonarjs/no-clear-text-protocols": {
+      "count": 16
+    }
+  },
+  "src/utils/networkingSchemas.ts": {
+    "regexp/no-unused-capturing-group": {
+      "count": 3
+    }
+  },
+  "src/utils/nonFetchHttpGuard.test.ts": {
+    "regexp/no-useless-assertions": {
+      "count": 1
+    },
+    "security/detect-non-literal-fs-filename": {
+      "count": 2
+    }
+  },
+  "src/utils/syncSchemas.test.ts": {
+    "sonarjs/pseudo-random": {
+      "count": 1
+    }
+  },
+  "src/utils/syncSchemas.ts": {
+    "regexp/no-unused-capturing-group": {
+      "count": 3
+    }
+  },
+  "vite.config.ts": {
+    "security/detect-non-literal-fs-filename": {
+      "count": 5
+    },
+    "sonarjs/cognitive-complexity": {
+      "count": 1
+    }
+  }
+}

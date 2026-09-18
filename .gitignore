@@ -59,3 +59,6 @@ skills/
 social-media-drafts/
 codedb.snapshot
 cve-lite-scan-*.json
+
+# jscpd report output (local-first audit)
+report/

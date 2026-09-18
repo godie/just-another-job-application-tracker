@@ -27,8 +27,17 @@
     "src/components/ManualProcessingPanel.tsx",
     "src/components/OpportunityForm.tsx",
     "src/components/ScanResults.tsx",
-    "src/pages/LandingPage.tsx"
+    "src/pages/LandingPage.tsx",
+    "**/*.md",
+    "**/*.yml",
+    "**/*.yaml",
+    "**/api/tests/**",
+    "**/*Test.php",
+    "**/db/migrations/**",
+    "report/**"
   ],
-  "reporters": ["json"],
+  "reporters": [
+    "json"
+  ],
   "absolute": true
 }
