@@ -1,3 +1,23 @@
+## [2.14.0] - 2026-09-18
+
+### Added
+- **Import labels (JSON)** in the scan audit table: a dataset exported from this table loads back — rows and labels — so a labelling pass continues without re-scanning the mailbox. The snapshot is kept in `localStorage` (survives a reload) and a new scan replaces it; a banner shows the imported row count and export date with a "Back to the last scan" button. The parser accepts the `{ rows: [...] }` export shape, a bare array, and files written before `effectiveEvent` existed (`src/utils/scanAudit.ts`, `EmailScanAuditTable.tsx`).
+- **Pending / Reviewed tabs** in the audit table: marking a row moves it out of the working list, so a 300-row scan never re-scrolls what is already done. The reviewed tab orders by `reviewedAt`, newest first.
+- **Correct / Wrong** buttons per row: one click records the reviewer's verdict (`correct: true|false`) and copies the type the pipeline used into the label. Editing a field records a correction (`correct: false`) without moving the row, and clicking the active button undoes the mark.
+- **Re-classify locally** button: runs the keyless keyword cascade over the audited rows (no mailbox, no model service) and reports how many of them match what the scanner decided — the number that says how much of a scan survives offline (`src/mails/services/localReclassify.ts`).
+- The export gains a derived `diagnosis` block per row (`typeWrong`, `fieldsWrong`, `missed`, `falsePositive`, `insufficient`) plus `pipeline.source` and `pipeline.classifiedEventType`, so the dataset can be sliced by failure class instead of inferring it from field diffs.
+
+### Fixed
+- The audit export wrote the *judgment's* type as `pipeline.eventType`, so every row the keyword cascade decided (or that the scanner acted on with no model) showed `eventType: null` — "the pipeline got it right" and "the cascade missed it" were indistinguishable. `ScanAuditRow.effectiveEvent` now records the type that was used and who decided it (`rule` | `judgment`).
+- Extraction candidates (`src/utils/emailExtraction.ts`): boilerplate prefixes are stripped so the employer survives (`"Thanks for applying to Financeit"` → `Financeit`; `"Thank you for applying for the Senior Solutions Engineer"` → that role as a position); the local part of an ATS address becomes an employer candidate (`moneris@myworkday.com` → `moneris`, address tags dropped: `githubinc+autoreply@talent.icims.com` → `githubinc`); the first non-empty body line is an employer candidate (Workable and BambooHR copies start with the company) while greetings are not; and the ATS/mailer domain list grew (`myworkday`, `dayforce`, `icims`, `bamboohr`, `workablemail`, `candidates`, `talent`, `jobalerts`, `ziprecruiter`, among others).
+- `isCorrected` compares against the type the pipeline used, not the judgment record, and an explicit `correct` marker wins over the inferred diff — the old inference counted a hand-typed spelling difference as a correction.
+- A confirmation the keyword cascade cannot type is no longer dropped when the extraction named the employer or the role; it stays dropped when the extraction found neither, because an "Unknown" addition is worse than no addition.
+- Contrastive criteria for the classifier gained the cases from the first labelling round: a request to complete information before the application is processed is not an offer even when the subject says "Accepted", and a recruiter's cold outreach or a research-panel invitation is `other`.
+
+### Validation
+- Full frontend suite 1,143 tests / 107 files (`LANG=en_US.UTF-8`), ESLint, production build and `knip` clean. PHP untouched except the version constant.
+- Round-trip tests: an exported dataset imports back with its rows, labels and `effectiveEvent` source intact; a legacy file (written before that field) imports with the type it carried; a file that is not an audit export is rejected without touching the current state.
+
 ## [2.13.1] - 2026-09-17
 
 ### Changed

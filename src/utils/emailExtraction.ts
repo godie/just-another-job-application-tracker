@@ -26,9 +26,33 @@ const MAX_CANDIDATE_LENGTH = 60;
 const TITLE_WORDS =
   /\b(?:engineer|developer|designer|manager|analyst|consultant|specialist|architect|scientist|lead|principal|staff|director|intern|trainee|practicante|pasante|ingenier[oa]|desarrollador[a]?|analista|diseñador[a]?|gerente|jefe[a]?|becario[a]?|coordinador[a]?)\b/i;
 
-/** Sender domains that are never the employer. */
+/**
+ * Sender domains that are never the employer. When one of these is used, the
+ * local part usually names the employer instead (`moneris@myworkday.com`,
+ * `priceline@myworkday.com`), which `companyFromAddress` reads.
+ */
 const NON_EMPLOYER_DOMAINS =
-  /^(?:gmail|googlemail|outlook|hotmail|yahoo|greenhouse|ashbyhq|workday|teamtailor|workable|lever|jobvite|smartrecruiters|applytojob|postmark|amazonses|sendgrid|mail|email|notifications|no-?reply)$/i;
+  /^(?:gmail|googlemail|outlook|hotmail|yahoo|greenhouse|ashbyhq|workday|myworkday|teamtailor|workable|workablemail|candidates|lever|hire|jobvite|smartrecruiters|applytojob|postmark|amazonses|sendgrid|mail|email|notifications|no-?reply|icims|bamboohr|dayforce|hirebridge|onstrider|jobalerts|ziprecruiter|talent|notify|recruiting)$/i;
+
+/**
+ * Boilerplate that wraps the employer in a subject or a body phrase:
+ * "Thanks for applying to Financeit", "Thank you for applying for the Senior
+ * Solutions Engineer", "Your application to join Prolific", "Update on your
+ * application with SS&C." Stripping it leaves the name itself as a candidate.
+ */
+const BOILERPLATE_PREFIX =
+  /^(?:re|fwd?|fw)\s*:\s*|^(?:thanks?|thank you)\s+(?:for|again for)\s+(?:applying|your application|your interest in|your application to)\s+(?:to|at|for|join|joining|with)?\s*|^(?:your|the)\s+application\s+(?:to|for|with|at)\s+|^update\s+(?:on|regarding|to)\s+(?:your|the)?\s*(?:application\s+)?(?:with|for|to|at)?\s*|^application\s+(?:status\s+)?update\s+(?:for|with|to|at)?\s*|^(?:update|status)\s*:\s*/i;
+
+/** The employer named in the local part of an ATS/mailer address. */
+function companyFromAddress(from: string): string | undefined {
+  const match = from.match(/<?([a-z0-9._+-]+)@([a-z0-9-]+)\.[a-z.]+>?/i);
+  if (!match) return undefined;
+  const [, localPart, domain] = match;
+  if (!NON_EMPLOYER_DOMAINS.test(domain)) return undefined;
+  const name = localPart.split('+')[0].replace(/[._-]+/g, ' ').trim();
+  if (name.length < 3 || /^(?:no|do|donot|auto|noreply|no?reply)$/i.test(name)) return undefined;
+  return name;
+}
 
 const SEGMENT_SPLIT = /\s*[-–—|:]\s*/;
 
@@ -115,8 +139,26 @@ export function buildExtractionCandidates(email: Email): ExtractionCandidates {
   // Subject: every segment is a candidate for one of the two roles.
   const subjectSegments = subject.split(SEGMENT_SPLIT).filter(Boolean);
   for (const segment of subjectSegments) {
-    const cleaned = cap(segment.replace(/^(?:re|fwd?|fw)\s*:\s*/i, ''));
+    const cleaned = cap(segment);
     if (!cleaned) continue;
+
+    // "Thanks for applying to X" / "Update on your application with X" — the
+    // tail is the employer, and for a title phrase the tail is the role. Only
+    // the tail is kept: the full phrase is what made the model answer
+    // "Thanks for applying to Financeit" as a company.
+    const tail = cap(
+      cleaned.replace(BOILERPLATE_PREFIX, '').replace(/^(?:join|joining|the|our)\s+/i, ''),
+    );
+    if (tail && tail !== cleaned) {
+      if (TITLE_WORDS.test(tail)) {
+        for (const titleTail of titleTails(tail)) pushCandidate(position, positionSeen, titleTail);
+        pushCandidate(position, positionSeen, tail);
+      } else {
+        pushCandidate(company, companySeen, tail);
+      }
+      continue;
+    }
+
     if (TITLE_WORDS.test(cleaned)) {
       // The clean role first, then the full phrase as a fallback candidate.
       for (const tail of titleTails(cleaned)) pushCandidate(position, positionSeen, tail);
@@ -156,6 +198,23 @@ export function buildExtractionCandidates(email: Email): ExtractionCandidates {
     pushCandidate(position, positionSeen, match[1]);
   }
 
+  // The first non-empty line of the body names the employer in Workable,
+  // BambooHR and similar application copies ("Financeit", "Providius"). A
+  // greeting or a quoted line is not a name.
+  const firstLine = body
+    .split(/\r?\n/)
+    .map((line) => cap(line))
+    .find((line) => line.length > 2 && line.length <= MAX_CANDIDATE_LENGTH);
+  if (
+    firstLine &&
+    !TITLE_WORDS.test(firstLine) &&
+    !/^(?:hi|hello|hey|dear|hola|estimado|estimada|buenas|greetings)\b/i.test(firstLine) &&
+    !/^[>[\]-]/.test(firstLine) &&
+    !/^[-=_*\s]+$/.test(firstLine)
+  ) {
+    pushCandidate(company, companySeen, firstLine);
+  }
+
   // Sender display name and domain.
   const displayName = from.match(/^\s*"?([^"<]+?)"?\s*</);
   if (displayName?.[1]) {
@@ -170,6 +229,8 @@ export function buildExtractionCandidates(email: Email): ExtractionCandidates {
   if (domain?.[1] && !NON_EMPLOYER_DOMAINS.test(domain[1])) {
     pushCandidate(company, companySeen, domain[1]);
   }
+  const fromAddress = companyFromAddress(from);
+  if (fromAddress) pushCandidate(company, companySeen, fromAddress);
 
   return {
     company: company.slice(0, MAX_CANDIDATES),

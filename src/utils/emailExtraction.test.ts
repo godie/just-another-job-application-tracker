@@ -70,6 +70,64 @@ describe('buildExtractionCandidates', () => {
     expect(position).toContain('Interview invitation for Senior Engineer');
   });
 
+  it('reads the employer from the local part of an ATS address', () => {
+    const { company } = buildExtractionCandidates(
+      makeEmail({ subject: 'Update on your application', from: 'moneris@myworkday.com' }),
+    );
+    expect(company).toContain('moneris');
+    expect(company).not.toContain('myworkday');
+  });
+
+  it('strips the address tag before using the local part', () => {
+    const { company } = buildExtractionCandidates(
+      makeEmail({ subject: 'Application received', from: 'githubinc+autoreply@talent.icims.com' }),
+    );
+    expect(company).toContain('githubinc');
+    expect(company).not.toContain('talent');
+  });
+
+  it('strips boilerplate prefixes and keeps the employer tail', () => {
+    const { company, position } = buildExtractionCandidates(
+      makeEmail({
+        subject: 'Thanks for applying to Financeit',
+        from: 'Workable <no-reply@workablemail.com>',
+        body: '',
+      }),
+    );
+
+    expect(company).toContain('Financeit');
+    expect(company).not.toContain('Thanks for applying to Financeit');
+    expect(position).toHaveLength(0);
+  });
+
+  it('keeps the role tail of a thank-you subject as a position candidate', () => {
+    const { position } = buildExtractionCandidates(
+      makeEmail({ subject: 'Thank you for applying for the Senior Solutions Engineer' }),
+    );
+
+    expect(position).toContain('Senior Solutions Engineer');
+  });
+
+  it('uses the first body line as an employer candidate', () => {
+    const { company } = buildExtractionCandidates(
+      makeEmail({
+        subject: 'Thanks for applying to Providius',
+        from: 'Workable <no-reply@workablemail.com>',
+        body: 'Providius\r\n\r\nHi Diego, we received your application.',
+      }),
+    );
+
+    expect(company).toContain('Providius');
+  });
+
+  it('does not mistake a greeting for the employer', () => {
+    const { company } = buildExtractionCandidates(
+      makeEmail({ subject: 'Application update', from: 'no-reply@acme.com', body: 'Hi Diego,\n\nThanks.' }),
+    );
+
+    expect(company).not.toContain('Hi Diego');
+  });
+
   it('detects Spanish titles', () => {
     const { position } = buildExtractionCandidates(
       makeEmail({

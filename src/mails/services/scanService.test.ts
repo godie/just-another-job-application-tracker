@@ -94,6 +94,67 @@ describe('scanService', () => {
       expect(acmeAdditions).toHaveLength(1);
     });
 
+    it('records who decided the type of every processed email', async () => {
+      const provider = new FakeEmailProvider([
+        {
+          id: 'audit-1',
+          subject: 'We regret to inform you',
+          from: 'hr@acme.com',
+          body: 'The position has been filled.',
+          internalDate: String(Date.now() - 1000 * 60 * 60 * 24),
+        },
+      ]);
+      const preview = await scanEmails(provider);
+
+      expect(preview.audit?.[0].effectiveEvent).toEqual({ type: 'rejected', source: 'rule' });
+      expect(preview.audit?.[0].classification).toBeNull();
+    });
+
+    it('adds a confirmation the cascade missed when the extraction named the company', async () => {
+      mockedClassifyEmails.mockResolvedValue(
+        new Map([[0, { type: 'application_submitted', confidence: 0.95, verdict: 'auto' }]]),
+      );
+      mockedExtractWithJudgment.mockResolvedValue(
+        new Map([[0, { company: 'Acme', position: 'Engineer', verdict: 'auto', confidence: 0.9 }]]),
+      );
+      const provider = new FakeEmailProvider([
+        {
+          id: 'synth-1',
+          subject: 'Hello from Acme',
+          from: 'hr@acme.com',
+          body: 'Your candidacy is moving along.',
+          internalDate: String(Date.now() - 1000 * 60 * 60 * 24),
+        },
+      ]);
+      const preview = await scanEmails(provider);
+
+      expect(preview.proposedAdditions).toHaveLength(1);
+      expect(preview.proposedAdditions[0].data).toMatchObject({ company: 'Acme', position: 'Engineer' });
+      expect(preview.audit?.[0]).toMatchObject({
+        outcome: 'addition',
+        effectiveEvent: { type: 'application_submitted', source: 'judgment' },
+      });
+    });
+
+    it('keeps dropping a confirmation with nothing to name it', async () => {
+      mockedClassifyEmails.mockResolvedValue(
+        new Map([[0, { type: 'application_submitted', confidence: 0.95, verdict: 'auto' }]]),
+      );
+      const provider = new FakeEmailProvider([
+        {
+          id: 'synth-2',
+          subject: 'Hello from Acme',
+          from: 'hr@acme.com',
+          body: 'Your candidacy is moving along.',
+          internalDate: String(Date.now() - 1000 * 60 * 60 * 24),
+        },
+      ]);
+      const preview = await scanEmails(provider);
+
+      expect(preview.proposedAdditions).toHaveLength(0);
+      expect(preview.audit?.[0].outcome).toBe('no_event');
+    });
+
     it('does not add application_submitted if company already exists', async () => {
       const existing: JobApplication = {
         id: 'existing-1',

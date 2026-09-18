@@ -120,6 +120,7 @@ export async function scanEmails(provider: EmailProvider, daysBack: number = 30)
             verdict: classification.verdict,
           }
         : null,
+      effectiveEvent: null,
       extraction: {},
     };
 
@@ -129,16 +130,17 @@ export async function scanEmails(provider: EmailProvider, daysBack: number = 30)
     }
 
     let event = adapter.classify(email);
+    let fromCascade = Boolean(event);
     if (!event) {
       // The keyword cascade found no rule; a confident judgment can still say
-      // what the email is. Only the type is known here — `company`/`position`
-      // stay undefined and the application match below resolves the target.
-      // A confirmation without an extractable company would only produce an
+      // what the email is. That is only actionable when the extraction named
+      // the employer or the role — a confirmation with neither would create an
       // "Unknown" addition, so it keeps the previous behaviour (dropped).
+      const picked = extractions.get(i);
       if (
         !classification?.type ||
         classification.type === 'other' ||
-        classification.type === 'application_submitted'
+        (classification.type === 'application_submitted' && !picked?.company && !picked?.position)
       ) {
         audit.push({ ...base, outcome: 'no_event' });
         continue;
@@ -151,7 +153,12 @@ export async function scanEmails(provider: EmailProvider, daysBack: number = 30)
       };
     } else if (classification?.type) {
       event.type = classification.type;
+      fromCascade = false;
     }
+    base.effectiveEvent = {
+      type: event.type,
+      source: fromCascade ? 'rule' : 'judgment',
+    };
     const picked = extractions.get(i);
     if (picked?.company) event.company = picked.company;
     if (picked?.position) event.position = picked.position;
