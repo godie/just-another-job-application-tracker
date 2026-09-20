@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuthModals } from './AuthModals';
 import { clearAuthCookie } from '../utils/api';
@@ -14,6 +14,7 @@ import {
   DropdownMenuTrigger,
 } from './ui/DropdownMenu';
 import { useIsLoggedIn } from '../hooks/useIsLoggedIn';
+import { useTheme } from '../hooks/useTheme';
 import { useAuthStore } from '../stores/authStore';
 import { type PageType } from '../App';
 
@@ -29,22 +30,7 @@ const Header: React.FC<HeaderProps> = ({ onToggleSidebar, onNavigate }) => {
   const { currentUser, logout } = useAuthStore();
   const { isOpen: isAuthOpen, initialMode, openLogin, closeModal, AuthModal } = useAuthModals();
   const [isLoading, setIsLoading] = useState(false);
-const [theme, setTheme] = useState<'light' | 'dark'>(() => {
-    if (typeof window !== 'undefined') {
-      const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' | null;
-      return savedTheme || 'light';
-    }
-    return 'light';
-  });
-  useEffect(() => {
-    const root = document.documentElement;
-    if (theme === 'dark') {
-      root.classList.add('dark');
-    } else {
-      root.classList.remove('dark');
-    }
-    localStorage.setItem('theme', theme);
-  }, [theme]);
+  const { theme, setTheme } = useTheme();
 
   const handleAuth = async () => {
     if (isLoggedIn) {

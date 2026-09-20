@@ -1,3 +1,11 @@
+## [2.14.1] - 2026-09-20
+
+### Refactored
+- Extracted theme management logic into a reusable `useTheme` custom hook (`src/hooks/useTheme.ts`) and simplified theme state handling in `Header.tsx`.
+
+### Validation
+- Unit test suite added in `src/hooks/useTheme.test.ts`. Full test suite and lint/knip checks pass clean.
+
 ## [2.14.0] - 2026-09-18
 
 ### Added
