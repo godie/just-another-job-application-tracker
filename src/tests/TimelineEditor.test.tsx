@@ -4,7 +4,7 @@ import TimelineEditor from '../components/TimelineEditor';
 import type { InterviewEvent } from '../types/applications';
 
 vi.mock('../storage/preferences', () => ({
-  generateId: vi.fn(() => `test-id-${Math.random().toString(36).substr(2, 9)}`),
+  generateId: vi.fn(() => `test-id-${Math.random().toString(36).slice(2, 11)}`),
   getPreferences: vi.fn(() => ({
     enabledFields: ['position', 'company', 'salary', 'status', 'applicationdate', 'interviewdate', 'platform', 'contactname', 'followupdate', 'notes', 'link'],
     customFields: [],

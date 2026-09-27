@@ -1,3 +1,8 @@
+## [2.14.1] - 2026-09-18
+
+### Changed
+- Replaced deprecated `String.prototype.substr()` with modern `String.prototype.slice()` in unique ID generation (`src/utils/id.ts`) and test helpers.
+
 ## [2.14.0] - 2026-09-18
 
 ### Added
