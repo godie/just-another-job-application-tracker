@@ -1,3 +1,8 @@
+## [2.14.1] - 2026-09-18
+
+### Refactored
+- Centralized theme state management in `src/hooks/useTheme.ts` custom hook (`useTheme`) and refactored `Header.tsx` to consume `useTheme`.
+
 ## [2.14.0] - 2026-09-18
 
 ### Added
