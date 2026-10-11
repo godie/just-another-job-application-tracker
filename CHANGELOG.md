@@ -1,3 +1,12 @@
+## [2.14.1] - 2026-07-11
+
+### Changed
+- **Refactored `JobSearchResults.tsx`**: Replaced repetitive source-checking helper functions (`hasJooble`, `hasTheirstack`, etc.) and nested ternary chains with a lookup map (`SOURCE_LABELS`) and data-driven rendering of source badges.
+- **Added `JobSearchResults.test.tsx`**: Comprehensive unit tests covering all search result states, source badges, job item actions, and error banners.
+
+### Validation
+- Full test suite, ESLint, Knip, and production build pass cleanly.
+
 ## [2.14.0] - 2026-09-18
 
 ### Added

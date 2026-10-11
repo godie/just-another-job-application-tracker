@@ -20,6 +20,13 @@ interface JobSearchResultsProps {
   errors?: Array<{ source: string; message: string }>;
 }
 
+const SOURCE_LABELS: Record<string, string> = {
+  jooble: 'Jooble',
+  theirstack: 'TheirStack',
+  adzuna: 'Adzuna',
+  careerjet: 'Careerjet',
+};
+
 const SOURCE_COLORS: Record<string, string> = {
   jooble: 'bg-violet-100 dark:bg-violet-900/40 text-violet-700 dark:text-violet-200',
   theirstack: 'bg-cyan-100 dark:bg-cyan-900/40 text-cyan-700 dark:text-cyan-200',
@@ -86,6 +93,10 @@ export const JobSearchResults: React.FC<JobSearchResultsProps> = ({
     return null; // Don't show anything before the first search
   }
 
+  const presentSources = Object.keys(SOURCE_LABELS).filter((source) =>
+    results.some((job) => job.source === source),
+  );
+
   return (
     <div className="mb-8" data-testid="job-search-results">
       {/* Header with count and source mix */}
@@ -94,26 +105,11 @@ export const JobSearchResults: React.FC<JobSearchResultsProps> = ({
           {t('opportunities.jobSearch.resultsCount', '{{count}} results', { count: totalCount })}
         </h2>
         <div className="flex items-center gap-2">
-          {hasJooble(results) && (
-            <Badge className={SOURCE_COLORS.jooble}>
-              Jooble
+          {presentSources.map((source) => (
+            <Badge key={source} className={SOURCE_COLORS[source]}>
+              {SOURCE_LABELS[source]}
             </Badge>
-          )}
-          {hasTheirstack(results) && (
-            <Badge className={SOURCE_COLORS.theirstack}>
-              TheirStack
-            </Badge>
-          )}
-          {hasAdzuna(results) && (
-            <Badge className={SOURCE_COLORS.adzuna}>
-              Adzuna
-            </Badge>
-          )}
-          {hasCareerjet(results) && (
-            <Badge className={SOURCE_COLORS.careerjet}>
-              Careerjet
-            </Badge>
-          )}
+          ))}
         </div>
       </div>
 
@@ -169,7 +165,7 @@ export const JobSearchResults: React.FC<JobSearchResultsProps> = ({
                     )}
                     {/* Source badge */}
                     <Badge className={SOURCE_COLORS[job.source] ?? ''}>
-                      {job.source === 'theirstack' ? 'TheirStack' : job.source === 'adzuna' ? 'Adzuna' : job.source === 'careerjet' ? 'Careerjet' : 'Jooble'}
+                      {SOURCE_LABELS[job.source] ?? job.source}
                     </Badge>
                     {job.remote && (
                       <Badge variant="outline" className="text-xs">
@@ -307,20 +303,3 @@ export const JobSearchResults: React.FC<JobSearchResultsProps> = ({
     </div>
   );
 };
-
-
-function hasJooble(results: UnifiedJobResult[]): boolean {
-  return results.some((r) => r.source === 'jooble');
-}
-
-function hasTheirstack(results: UnifiedJobResult[]): boolean {
-  return results.some((r) => r.source === 'theirstack');
-}
-
-function hasAdzuna(results: UnifiedJobResult[]): boolean {
-  return results.some((r) => r.source === 'adzuna');
-}
-
-function hasCareerjet(results: UnifiedJobResult[]): boolean {
-  return results.some((r) => r.source === 'careerjet');
-}
