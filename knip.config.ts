@@ -11,7 +11,6 @@ const config: KnipConfig = {
     '@types/dompurify',
     '@types/recharts',
     '@playwright/test',
-    'habit-hooks',
     'tailwindcss',
     // Used via Tailwind v4 @plugin directive in src/index.css; knip cannot trace CSS @plugin imports.
     'tailwindcss-animate',
