@@ -21,6 +21,7 @@ import {
   type AuditImport,
   type AuditLabels,
 } from '../utils/scanAudit';
+import { downloadFile } from '../utils/download';
 import { Button } from './ui/Button';
 import { EmailScanAuditRow } from './EmailScanAuditRow';
 import { useAlert } from './AlertProvider';
@@ -35,19 +36,6 @@ type View = 'pending' | 'reviewed';
 interface ImportState {
   data: AuditImport;
   explicit: boolean;
-}
-
-function download(filename: string, content: string, mime: string): void {
-  const blob = new Blob([content], { type: `${mime};charset=utf-8;` });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.setAttribute('href', url);
-  link.setAttribute('download', filename);
-  link.style.visibility = 'hidden';
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
 }
 
 /**
@@ -265,7 +253,7 @@ export const EmailScanAuditTable: React.FC<EmailScanAuditTableProps> = ({ rows }
             variant="outline"
             size="sm"
             onClick={() =>
-              download(`jajat_scan_labels_${stamp}.json`, toAuditJson(source, labels), 'application/json')
+              downloadFile(`jajat_scan_labels_${stamp}.json`, toAuditJson(source, labels), 'application/json')
             }
           >
             {t('settings.emailScan.audit.exportJson')}
@@ -275,7 +263,7 @@ export const EmailScanAuditTable: React.FC<EmailScanAuditTableProps> = ({ rows }
             variant="outline"
             size="sm"
             onClick={() =>
-              download(`jajat_scan_labels_${stamp}.csv`, toAuditCsv(source, labels), 'text/csv')
+              downloadFile(`jajat_scan_labels_${stamp}.csv`, toAuditCsv(source, labels), 'text/csv')
             }
           >
             {t('settings.emailScan.audit.exportCsv')}
