@@ -1,3 +1,11 @@
+## [2.14.1] - 2026-10-18
+
+### Refactored
+- Centralized client-side file download helper in `src/utils/download.ts` (`downloadFile` utility) and eliminated redundant Blob / object URL / DOM anchor boilerplate across `CSVActions`, `EmailScanAuditTable`, and `ToolsSettings`.
+
+### Validation
+- Unit test suite added in `src/utils/download.test.ts`. Full test suite (1144 tests / 108 test files), ESLint, production build, and `knip` clean.
+
 ## [2.14.0] - 2026-09-18
 
 ### Added

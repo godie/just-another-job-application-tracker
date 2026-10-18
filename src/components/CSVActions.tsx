@@ -6,6 +6,7 @@ import { resolveCsvColumns } from '../utils/csvHeaderMapping';
 import { normalizeDate, normalizeWorkTypes } from '../utils/fieldNormalization';
 import { usePreferencesStore } from '../stores/preferencesStore';
 import { getCurrentDateKey } from '../utils/dateHelpers';
+import { downloadFile } from '../utils/download';
 import { useAlert } from './AlertProvider';
 import { HiDownload, HiUpload } from 'react-icons/hi';
 import { Button } from './ui/Button';
@@ -25,16 +26,7 @@ const CSVActions: React.FC = () => {
     }
 
     const csvContent = exportToCSV(applications);
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.setAttribute('href', url);
-    link.setAttribute('download', `jajat_applications_${getCurrentDateKey()}.csv`);
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+    downloadFile(`jajat_applications_${getCurrentDateKey()}.csv`, csvContent, 'text/csv');
     showSuccess(t('csv.exportSuccess'));
   };
 
