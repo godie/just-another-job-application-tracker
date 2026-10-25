@@ -5,6 +5,7 @@ import { useOpportunitiesStore } from '../../stores/opportunitiesStore';
 import { useAlert } from '../AlertProvider';
 import CSVActions from '../CSVActions';
 import { getCurrentISOString, getCurrentDateKey } from '../../utils/dateHelpers';
+import { downloadFile } from '../../utils/download';
 
 function handleDebugInfo(): void {
   const apps = useApplicationsStore.getState().applications;
@@ -36,13 +37,7 @@ const ToolsSettings: React.FC = () => {
       const apps = useApplicationsStore.getState().applications;
       const opps = useOpportunitiesStore.getState().opportunities;
       const data = { applications: apps, opportunities: opps, exportDate: getCurrentISOString() };
-      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `jat-backup-${getCurrentDateKey()}.json`;
-      a.click();
-      URL.revokeObjectURL(url);
+      downloadFile(`jat-backup-${getCurrentDateKey()}.json`, JSON.stringify(data, null, 2), 'application/json');
       showSuccess(t('tools.exportSuccess'));
     } catch {
       showError(t('tools.exportError'));

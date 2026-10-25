@@ -1,3 +1,8 @@
+## [2.14.1] - 2026-09-18
+
+### Changed
+- Centralized client-side file downloading into a shared `downloadFile` utility (`src/utils/download.ts`) and refactored `CSVActions`, `EmailScanAuditTable`, and `ToolsSettings` to use it.
+
 ## [2.14.0] - 2026-09-18
 
 ### Added
